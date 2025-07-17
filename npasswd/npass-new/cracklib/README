@@ -1,0 +1,19 @@
+This directory contains an adaptation of the crack3.1
+goodpass() subroutine to fit into npasswd.
+
+By default, goodpass() will read /usr/dict/words.  You can cause it
+to read other dictionaries by creating a config file with lines like
+    dictionary /usr/dict/words
+    dictionary /usr/dict/words.german
+Note that specifying a config file overrides the default dictionary.
+
+You should use the script dictprep.sh to prepare a wordlist for
+use with this program; it compresses it and puts it in the right order.
+It can also merge multiple wordlists; a merged wordlist is faster to
+search than several smaller wordlists.
+
+The default name for the config file is /usr/adm/checkpasswd.cf, but
+the caller may set the name by calling setcheckpasswd,
+e.g setcheckpasswd("-c", "/usr/local/misc/adm/npasswd.conf", 0);
+
+- Dan Kegel (dank@blacks.jpl.nasa.gov)

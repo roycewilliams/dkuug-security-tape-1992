@@ -1,0 +1,18 @@
+'\"
+'\"	@(#)makedict.8	1.1 5/18/89 (cc.utexas.edu)
+'\"
+.TH MAKEDICT 1
+.SH NAME
+makedict \- Build DBM dictionary
+.SH SYNOPSIS
+.B makedict
+dbm_dictionary
+.SH DESCRIPTION
+.I Makedict
+reads the standard input and builds a DBM dictionary data base for use by
+.IR checkpasswd (8).
+If
+.I dbm_dictionary
+does not exist, it is created, else the data read is added to it.
+.SH SEE ALSO
+viewdict

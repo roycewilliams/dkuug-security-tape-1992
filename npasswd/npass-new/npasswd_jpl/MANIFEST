@@ -1,0 +1,37 @@
+MANIFEST		This file
+README			Do so
+CHANGE.LOG		Change descriptions from SCCS files
+Makefile.dist		q.e.d.
+version.h		Version information
+npasswd.c		Main program
+npasswd.help		Help file
+npasswd.conf		Sample config file (same as checkpasswd.cf)
+npasswd.motd		Sample message file
+pw_passwd.c		Standard password file updater
+pw_yp.c			Yellow Pages (NIS) updater
+pw_userinfo.c		UTCC 'userinfo' updater
+npasswd.1		Manual page boilerplate
+
+checkpasswd/README		Readme file for password checker
+checkpasswd/Makefile		Makefile for password checker
+checkpasswd/checkpasswd.8	Man page for password checker
+checkpasswd/checkpasswd.3	Man page for library version
+checkpasswd/checkpasswd.h	Include file
+checkpasswd/checkpasswd.cf	Sample configuration file
+checkpasswd/checkpasswd.c	Driver for password checker
+checkpasswd/libmain.c		Library glue main
+checkpasswd/main.c		Standalone program main
+checkpasswd/pwck_dict.c
+checkpasswd/pwck_lexical.c
+checkpasswd/pwck_local.c
+checkpasswd/pwck_passwd.c
+checkpasswd/util.c
+checkpasswd/version.h
+checkpasswd/call_ckpasswd.c
+
+checkpasswd/dict/README
+checkpasswd/dict/Makefile
+checkpasswd/dict/makedict.8
+checkpasswd/dict/makedict.c
+checkpasswd/dict/viewdict.8
+checkpasswd/dict/viewdict.c

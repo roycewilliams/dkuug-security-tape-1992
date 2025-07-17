@@ -1,0 +1,95 @@
+@(#)README.npasswd	1.4 9/9/91
+To get, compile and install jpl's version of npasswd:
+Retrieve files from blacks as follows:
+% ftp blacks
+FTP> cd /pub/npasswd
+FTP> get compile_npasswd
+FTP> get install_npasswd
+FTP> binary
+FTP> get npasswd_jpl.tar.Z
+FTP> get wds.all.Z
+FTP> quit
+
+Read the scripts compile_npasswd and install_npasswd first.
+
+The default is to put npasswd in /usr/local/npasswd/{bin,adm}.
+If you want to change the destination, change DEST in both compile_npasswd
+and install_npasswd.
+
+To compile npasswd for your machine, run /bin/csh compile_npasswd.
+compile_npasswd uses 'ps ax | grep ypbind' to sense whether to compile the YP
+or non-YP version of npasswd.  It also uses 'test -d /etc/security' to 
+sense whether to compile for adjunct passwords.
+If you later decide to enable or disable YP or adjunct passwords on your 
+system, you will need to run compile_npasswd and install_npasswd again.  
+Sorry about that; maybe somebody else can come up with a better way to do this.
+
+To install it, su root, then run /bin/csh install_npasswd.
+This copies it and its data files to DEST, then creates a symbolic 
+link /usr/ucb/passwd to npasswd, and marks the original passwd non-executable.
+If you need to disable npasswd in an emergency, and reenable the
+original passwd, su root and execute the command chmod +x /bin/passwd,
+then rehash.
+
+The YP version of npasswd can run on the YP master properly only if
+you have set up /etc/passwd as if the master was a YP slave, moved
+the real passwd file somewhere else, and arranged for yp password updating
+(see below).
+
+Warning: if you are using YP, you should choose a difficult-to-guess
+domainname, else anyone on the Internet can read your password file.
+Sun has had this problem for years, and needs to let system managers
+restrict which systems can connect to ypserv.
+
+- Dan Kegel
+
+Appendix - setting up a YP master to have its real password file in 
+/var/yp/src/passwd.  These are approximate directions.
+They don't explain how to convert to adjunct passwords; for that, see
+blacks:~ftp/pub/shadow/.
+
+Copy /etc/{passwd,group,...} to /var/yp/src, deleted all lines with +.
+Change /var/yp/Makefile to use /var/yp/src:
+    # Dan Kegel's changes
+    #DIR =/etc
+    DIR =/var/yp/src
+    #ALIASES = /etc/aliases
+    ALIASES = /var/yp/src/aliases
+    # End of Dan Kegel's changes
+
+Modify /var/yp/updaters to reference files in /var/yp/src rather than /etc:
+    # where the NIS files live
+    #DIR=/etc
+    DIR=/var/yp/src
+
+Add lines to /etc/rc to invoke yppasswdd:
+    # YP password daemon; allows remote setting of passwords
+    if [ -f /usr/etc/rpc.yppasswdd ]; then
+	if [ -f /var/yp/src/security/passwd.adjunct ]; then
+	    /usr/etc/rpc.yppasswdd \
+		/var/yp/src/passwd \
+		/etc/security/passwd.adjunct \
+		-nogecos -noshell -m passwd \
+		DIR=/var/yp/src; echo 'NIS Password daemon'
+	else
+	    /usr/etc/rpc.yppasswdd \
+		/var/yp/src/passwd \
+		-nogecos -noshell -m passwd \
+		DIR=/var/yp/src; echo 'NIS Password daemon'
+	fi
+    fi
+
+Modify /etc/passwd to refer to NIS for everything except username, 
+and to disallow all users not specifically listed.  (I keep a root
+password here just in case YP gets lost, too.)  i.e. 1st two entries are
+    root:fRbKXFe65D2.s:0:1:Operator:/:/bin/csh
+    nobody:*:65534:65534::/:
+every user has a line of form
+    +username:
+and last entry is
+    +:*:65534:65534::/tmp:/bin/true
+to recognize all other accounts but prevent them from logging in.
+
+The script blacks:~ftp/pub/npasswd/add_user+ automatically modifies /etc/passwd 
+and /var/yp/passwd when you use it to create a new account, and lets you set 
+initial password too.  

@@ -1,0 +1,60 @@
+#!/bin/csh -f
+# by dank@blacks.jpl.nasa.gov
+# @(#)patch_npasswd	1.2 9/9/91
+# Modifies npasswd to use crack 3.1's password checker instead
+# of the complex but whimpy one that comes with crack
+# Also allows use of SunOS adjunct passwords if ADJUNCT is defined
+# Requires the command 'patch'
+# If you don't want to run this, just grab npasswd_jpl.tar.Z from blacks
+
+mkdir npasswd_jpl; cd npasswd_jpl
+
+# Get archive from emx.utexas.edu:/pub/npasswd
+ftp -n blacks.jpl.nasa.gov <<_EOF_
+user ftp ${USER}@`hostname`.`domainname`
+cd /pub/npasswd
+binary
+get npasswd.tar.Z
+quit
+_EOF_
+
+# Get patches from blacks.jpl.nasa.gov:/pub/npasswd
+ftp -n blacks.jpl.nasa.gov <<_EOF_
+user ftp ${USER}@`hostname`.`domainname`
+cd /pub/npasswd
+get npasswd.patch.dank01
+get npasswd.patch.dave01
+quit
+_EOF_
+
+# Unpack archive
+zcat npasswd.tar.Z | tar xvf -
+rm npasswd.tar.Z
+
+# Apply a patch to one of the source files and Makefile
+# This patch makes npasswd fall back to YP even on YP master 
+# and work even if adjuct passwords are enabled
+mv Makefile.dist Makefile
+patch < npasswd.patch.dank01
+mv Makefile Makefile.dist
+# Apply another patch; this makes non-YP version of npasswd
+# handle adjunct passwords instead of regular passwords if ADJUNCT is
+# defined
+patch < npasswd.patch.dave01
+
+# Nuke the provided password checker, and substitute a stricter one
+mv checkpasswd old.checkpasswd
+ln -s cracklib checkpasswd
+ftp -n blacks.jpl.nasa.gov <<_EOF_
+user ftp ${USER}@`hostname`.`domainname`
+cd /pub/npasswd
+binary
+get cracklib.tar.Z
+quit
+_EOF_
+zcat cracklib.tar.Z | tar xvf -
+rm cracklib.tar.Z
+
+# Save the result as npasswd_jpl.tar.Z
+cd ..
+tar cf - npasswd_jpl | compress > npasswd_jpl.tar.Z

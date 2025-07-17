@@ -1,0 +1,124 @@
+*** pw_passwd.c.orig	Fri Jan 25 08:35:00 1991
+--- pw_passwd.c	Fri Sep  6 15:11:57 1991
+***************
+*** 14,19 ****
+--- 14,21 ----
+  /*
+   *	pw_passwd - Routines for dealing with password files.
+   *		Handles V7 / *.* BSD / Sys V format.
++  * Modified 8/27/91 to support Sun C2 shadowing for 4.X OS 
++  *	-Dave Hayes (dave@jato.jpl.nasa.gov)
+   */
+  #include <stdio.h>
+  #include <sys/types.h>
+***************
+*** 27,32 ****
+--- 29,40 ----
+  static char sccsid[] = "@(#)pw_passwd.c	1.9 1/24/91 (cc.utexas.edu)";
+  #endif
+  
++ #ifdef ADJUNCT
++ #include <sys/label.h>
++ #include <sys/audit.h>
++ #include <pwdadj.h>
++ #endif
++ 
+  #define	SLOP	128	/*  Size difference tolerated old <> new passwd file */
+  
+  #ifdef	SYSV
+***************
+*** 55,61 ****
+--- 63,87 ----
+  /*
+   *	File names
+   */
++ #ifdef ADJUNCT
++ 
+  #ifndef	PASSWD_FILE
++ #define	PASSWD_FILE	"/etc/security/passwd.adjunct"
++ #endif
++ 
++ #ifndef	PASSWD_SAVE
++ #define	PASSWD_SAVE	"/etc/security/opasswd"
++ #endif
++ 
++ #ifndef	PASSWD_TEMP
++ #define	PASSWD_TEMP	"/etc/security/ptmp"
++ #endif
++ 
++ #define	PASSWD_MODE	0600
++ 
++ #else  /*ADJUNCT*/
++ 
++ #ifndef	PASSWD_FILE
+  #define	PASSWD_FILE	"/etc/passwd"
+  #endif
+  
+***************
+*** 69,74 ****
+--- 95,102 ----
+  
+  #define	PASSWD_MODE	0644
+  
++ #endif /*ADJUNCT*/
++ 
+  #ifdef	DEBUG
+  static char	*passwdtemp = "./etc_ptmp",
+  		*passwdfile = "./etc_passwd",
+***************
+*** 257,262 ****
+--- 285,305 ----
+  #else
+  	oldsigs = sigblock(blocksigs);
+  #endif
++ #ifdef ADJUNCT
++ 	{
++ 	  struct passwd_adjunct *sun_pw;
++ 	
++ 	  setpwaent();
++ 	  while ((sun_pw = getpwaent()) != NULL) {
++ 		if (sun_pw->pwa_name == 0 || sun_pw->pwa_name[0] == 0) /* Sanity check */
++ 		  continue;
++ 		if (strcmp(sun_pw->pwa_name, theUser.pw_name) == 0)
++ 		  sun_pw->pwa_passwd = theUser.pw_passwd;
++ 		(void) fprintf(tf,"%s:%s:::::\n",sun_pw->pwa_name,sun_pw->pwa_passwd);
++ 	      }
++ 	  endpwaent();
++ 	}
++ #else /*ADJUNCT*/
+  	setpwent();
+  	while ((px = getpwent()) != NULL) {
+  		if (px->pw_name == 0 || px->pw_name[0] == 0) /* Sanity check */
+***************
+*** 266,271 ****
+--- 309,315 ----
+  		(void) putpwent(px, tf);
+  	}
+  	endpwent();
++ #endif /*ADJUNCT*/
+  	(void) fflush(tf);
+  	(void) fstat(fileno(tf), &newstat);
+  	(void) fclose(tf);
+*** Makefile.dist.orig	Fri Sep  6 15:10:53 1991
+--- Makefile.dist	Fri Sep  6 15:11:49 1991
+***************
+*** 115,122 ****
+  #	-DXFGETPWENT provides fgetpwent() if not in libc.
+  # FGETPWENT = -DXFGETPWENT
+  
+! #	-DADJUNCT lets YP version of npasswd change adjunct
+! #	passwords via YP.  (dank@blacks.jpl.nasa.gov)
+  ADJUNCT = -DADJUNCT
+  
+  #	-DUPDATE_YP causes YP version of npasswd (when run on
+--- 115,124 ----
+  #	-DXFGETPWENT provides fgetpwent() if not in libc.
+  # FGETPWENT = -DXFGETPWENT
+  
+! #	-DADJUNCT lets any version of npasswd change adjunct
+! #	passwords. You must define this if you are running 
+! #	ADJUNCT passwording!! (we warned you) 
+! #	(dank@blacks.jpl.nasa.gov and dave@jato.jpl.nasa.gov)
+  ADJUNCT = -DADJUNCT
+  
+  #	-DUPDATE_YP causes YP version of npasswd (when run on

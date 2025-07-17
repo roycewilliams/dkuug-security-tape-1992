@@ -1,0 +1,139 @@
+*** Makefile.orig	Mon Sep  2 18:03:50 1991
+--- Makefile	Mon Sep  2 18:16:52 1991
+***************
+*** 115,120 ****
+--- 115,132 ----
+  #	-DXFGETPWENT provides fgetpwent() if not in libc.
+  # FGETPWENT = -DXFGETPWENT
+  
++ #	-DADJUNCT lets YP version of npasswd change adjunct
++ #	passwords via YP.  (dank@blacks.jpl.nasa.gov)
++ ADJUNCT = -DADJUNCT
++ 
++ #	-DUPDATE_YP causes YP version of npasswd (when run on
++ #	a YP master) to update the YP tables after updating 
++ #	the local passwd file.  Don't enable this if you have
++ #	set up your master to have a YP-slave-like /etc/passwd
++ #	and are keeping the real data somewhere else for update
++ #	via YP.  (dank@blacks.jpl.nasa.gov)
++ #UPDATE_YP = -DUPDATE_YP
++ 
+  # ---------------------------------------------------------------
+  #	Program building
+  # ---------------------------------------------------------------
+***************
+*** 129,134 ****
+--- 141,147 ----
+  
+  #	'CFLAGS' are the flags for npasswd only
+  CFLAGS	= $(XFLAGS) $(SYSLOG) $(GETPASS) $(PUTPWENT) $(FGETPWENT) \
++ 	$(ADJUNCT) $(UPDATE_YP) \
+  	$(HFD) $(CFD) $(MFD) $(PWFD) $(PWTD) $(PWSD)
+  
+  #	Change the following line to $(DEBUG) for debugging
+*** pw_yp.c.orig	Mon Sep  2 17:07:33 1991
+--- pw_yp.c	Mon Sep  2 18:03:33 1991
+***************
+*** 31,36 ****
+--- 31,42 ----
+  #include <rpcsvc/yppasswd.h>
+  #include <sys/socket.h>
+  
++ #ifdef ADJUNCT
++ #include <sys/label.h>
++ #include <sys/audit.h>
++ #include <pwdadj.h>
++ #endif
++ 
+  #ifdef	SECURE_RPC
+  #include <rpc/key_prot.h>
+  #endif
+***************
+*** 136,141 ****
+--- 142,160 ----
+  
+  	if ((p = getpwnam(name)) == NULL)
+  		return(0);
++ 	if (strncmp(p->pw_passwd, "##", 2)==0) {
++ #ifdef ADJUNCT
++ 	    /* We are running as root, so we can get the encrypted
++ 	     * password from the adjunct file.
++ 	     */
++ 	    struct passwd_adjunct *getpwaent(), *ap;
++ 	    if ((ap = getpwanam(name)) == NULL)
++ 		return(0);
++ 	    strcpy(p->pw_passwd, ap->pwa_passwd);
++ #else
++ 	    quit(0, "Changing of adjunct passwords not supported.\n");
++ #endif
++ 	}
+  	_cppasswd(p, &theUser);
+  	(void) strcpy(passwdb, p->pw_passwd);
+  	return(1);
+***************
+*** 287,293 ****
+  	 * to update the Yellow Pages (NIS) password file.
+  	 */
+  	if (islocal == 0) {
+! 		if (is_yp_master() == NOT) {
+  			int	rc;		/* Return code from ypasswdd */
+  			int	why;		/* RPC call return code */
+  			int	ypport;		/* Port for RPC call */
+--- 306,312 ----
+  	 * to update the Yellow Pages (NIS) password file.
+  	 */
+  	if (islocal == 0) {
+! 		if (is_yp_master() == NOT || TRUE) {
+  			int	rc;		/* Return code from ypasswdd */
+  			int	why;		/* RPC call return code */
+  			int	ypport;		/* Port for RPC call */
+***************
+*** 294,300 ****
+  			struct yppasswd yppasswd; /* YP passwd change block */
+  			char	salt[4];	/* Password encryption salt */
+  
+! 			if (curpwd[0] == 0)
+  				quit(0, "Cannot change YP password without old password.\n");
+  			randomstring(salt, sizeof(salt));
+  			theUser.pw_passwd = crypt(newpwd, salt);
+--- 313,319 ----
+  			struct yppasswd yppasswd; /* YP passwd change block */
+  			char	salt[4];	/* Password encryption salt */
+  
+! 			if (FALSE && (curpwd[0] == 0))
+  				quit(0, "Cannot change YP password without old password.\n");
+  			randomstring(salt, sizeof(salt));
+  			theUser.pw_passwd = crypt(newpwd, salt);
+***************
+*** 413,420 ****
+--- 432,441 ----
+  		(void) link(savefile, passwdfile);
+  		quit(1, "Can't replace password file.\n");
+  	}
++ #ifdef UPDATE_YP
+  	if (is_yp_master() == IS)
+  		updateyp();
++ #endif
+  	(void) sigsetmask(oldsigs);
+  }
+  
+***************
+*** 560,565 ****
+--- 581,587 ----
+  	return(answer);
+  }
+  
++ #ifdef UPDATE_YP
+  /*
+   *	An example sh(1) script to update YP password map
+   */
+***************
+*** 608,613 ****
+--- 630,636 ----
+  #endif
+  	(void) system(ypcmd);
+  }
++ #endif
+  
+  #ifdef	SECURE_RPC
+  /*

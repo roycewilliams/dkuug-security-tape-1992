@@ -1,0 +1,21 @@
+#!/bin/csh -f
+# by dank@blacks.jpl.nasa.gov
+# @(#)install_npasswd	1.2 9/6/91
+# Script to install npasswd; you must already have executed compile_npasswd,
+# which grabs npasswd from blacks and compiles it in the current directory.
+# Must be root for this step.
+
+set DEST = /usr/local/npasswd
+set verbose
+
+mkdir ${DEST}
+mkdir ${DEST}/adm
+mkdir ${DEST}/bin
+cp npasswd_jpl/cracklib/goodpass.help ${DEST}/adm/npasswd.help
+zcat wds.all.Z > ${DEST}/adm/wds.all
+
+cd npasswd_jpl; make install; cd ..
+
+# Defeat the system passwd in a reversible way.
+chmod -x /usr/bin/passwd /usr/passwd /usr/bin/yppasswd
+ln -s ${DEST}/bin/npasswd /usr/ucb/passwd

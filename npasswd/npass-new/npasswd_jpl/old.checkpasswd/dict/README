@@ -1,0 +1,8 @@
+README for checkpasswd dictionary programs 4/25/89
+
+The programs 'makedict' and 'viewdict' may be build to use either the
+4.3BSD 'ndbm' routines or the 'mdbm' routines provided in ../mdbm
+
+Edit the Makefile to choose which option.  This option must match that
+chosen for 'view_dict.o' in ../Makefile (for checkpasswd).
+

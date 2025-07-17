@@ -1,0 +1,11 @@
+A UNIX system password should be at least 6 characters long and include 
+at least one upper case letter (A-Z), digit (0-9) or punctuation character
+(such as   .   ,  or -  ).
+
+Passwords will NOT be accepted that:
+    * Are less than 6 characters long.
+    * Matches anything in your UNIX account information, such as your login
+      name or an item from your "finger" data entry.
+    * Are found in the system's spelling dictionary.
+    * Have more than 3 repeated characters - thus "aaa" would be rejected.
+    * Fail any of these tests when reversed, pluralized, or truncated.

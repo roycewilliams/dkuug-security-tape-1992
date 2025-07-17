@@ -1,0 +1,370 @@
+
+SCCS/s.npasswd.1:
+
+D 1.3	90/08/14 14:45:58 clyde	3 2	00016/00006/00053
+Document -P flag
+
+D 1.2	89/09/21 14:31:45 clyde	2 1	00009/00016/00050
+Misc changes
+
+D 1.1	89/05/18 10:25:49 clyde	1 0	00066/00000/00000
+date and time created 89/05/18 10:25:49 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.npasswd.c:
+
+D 1.15	90/08/14 14:23:33 clyde	15 14	00099/00026/00471
+1. Include <errno.h>
+2. Add -P option (input via pipe from program).
+3. Use #ifdefs for index() vs. strchr().
+4. Change usage messages.
+5. Don't prompt if input is from a pipe.
+6. Print all status messages to stdout.
+7. Terminate upon password entry/match error if stdin = pipe.
+8. Exit messages to stdout if stdin = pipe.
+9. Use 'cat' if stdin != tty.
+10. Allow stdin to be tty or pipe (pipe only with -P option).
+11. Add fgetpwent().
+12. In putpwent(), type uid/gid as unsigned if UNSIGNED_UID defined.
+
+D 1.14	90/08/07 15:55:18 mic	14 13	00009/00004/00488
+Use getpwuid() to get user id if getlogin() fails.  This can happen if run
+from an rsh or by /bin/login before you are really logged in.
+
+D 1.13	90/06/05 11:07:10 clyde	13 12	00010/00003/00482
+Fix problem with overwriting password buffers
+
+D 1.12	90/01/16 16:21:38 clyde	12 11	00001/00001/00484
+Fix echo suppression for SunOS 4.0
+
+D 1.11	90/01/12 14:55:09 clyde	11 10	00006/00002/00478
+Build properly under SunOS 4.0
+
+D 1.10	89/11/15 14:17:19 clyde	10 9	00002/00001/00478
+Update some comments
+
+D 1.9	89/11/01 16:21:29 clyde	9 8	00001/00000/00478
+Fix messge-of-the-day output
+
+D 1.8	89/09/27 10:27:17 clyde	8 7	00006/00004/00472
+Work around syslogs with missing defines
+
+D 1.7	89/09/26 15:00:52 clyde	7 6	00015/00008/00461
+1. Add 'message of the day' capability.
+2. Change 'help()' to generalized 'motd()' routine.
+
+D 1.6	89/09/22 15:58:07 clyde	6 5	00033/00000/00436
+Insert putpwent() and rename() [under #ifdef control]
+
+D 1.5	89/09/21 17:16:46 clyde	5 4	00004/00004/00432
+Change occurances of 'npasswd' to 'passwd'
+
+D 1.4	89/09/21 17:08:49 clyde	4 3	00005/00004/00431
+Move some stuff to static storage (bug workaround)
+
+D 1.3	89/06/28 14:20:36 clyde	3 2	00004/00000/00431
+Put ifdefs around some configuration defines
+
+D 1.2	89/06/05 13:14:00 clyde	2 1	00056/00000/00375
+Add getpass() replacement routine (#ifdef XGETPASS)
+
+D 1.1	89/05/18 10:25:50 clyde	1 0	00375/00000/00000
+date and time created 89/05/18 10:25:50 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.npasswd.cf:
+
+D 1.1	89/05/18 10:25:52 clyde	1 0	00020/00000/00000
+date and time created 89/05/18 10:25:52 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.npasswd.hf:
+
+D 1.1	89/05/18 10:25:53 clyde	1 0	00005/00000/00000
+date and time created 89/05/18 10:25:53 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.pw_passwd.c:
+
+D 1.8	90/08/07 16:01:00 root	8 7	00007/00005/00380
+Use getpwuid() to get user id if getlogin() fails.  This can happen if run
+from an rsh or by /bin/login before you are really logged in.
+
+D 1.7	90/07/23 09:37:18 clyde	7 6	00001/00001/00384
+Fix pw_compare()
+
+D 1.6	90/06/22 10:39:16 clyde	6 5	00002/00000/00383
+Make password compare rtn deal with null password
+
+D 1.5	89/11/14 17:00:25 clyde	5 4	00005/00002/00378
+Don't remove temp file unless I created it
+
+D 1.4	89/11/01 16:24:47 clyde	4 3	00003/00003/00377
+Change DEBUG file names to './etc_XXXX'
+
+D 1.3	89/10/02 16:53:17 clyde	3 2	00018/00004/00362
+1. Set file names with #define(s).
+2. Set passwd file mode with a #define.
+
+D 1.2	89/09/22 15:57:24 clyde	2 1	00000/00033/00366
+Remove putpwent() [moved to npasswd.c]
+
+D 1.1	89/05/18 10:25:54 clyde	1 0	00399/00000/00000
+date and time created 89/05/18 10:25:54 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.pw_userinfo.c:
+
+D 1.4	90/08/07 15:56:31 mic	4 3	00008/00002/00248
+Use getpwuid() to get user id if getlogin() fails.  This can happen if run
+from an rsh or by /bin/login before you are really logged in.
+
+D 1.3	90/06/22 10:39:19 clyde	3 2	00002/00000/00248
+Make password compare rtn deal with null password
+
+D 1.2	89/06/05 13:48:30 clyde	2 1	00172/00105/00076
+First working version
+
+D 1.1	89/05/18 10:25:56 clyde	1 0	00181/00000/00000
+date and time created 89/05/18 10:25:56 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.pw_yp.c:
+
+D 1.14	90/08/14 14:27:17 clyde	14 13	00056/00019/00558
+1. Include filename in passwd open error messages.
+2. Password history checking ifdef on PASSWORD_HISTORY.
+3. Ignore passwd entries starting with YP special cookies.
+4. Detect if local password is in adjunct passwd file.
+5. Add newlines to all quit() messages.
+6. Set real uid to effective uid before running YP update script.
+7. Allow su to override YP ypdate script (env YP_UPDATE_PROC).
+
+D 1.13	90/08/07 16:01:01 root	13 12	00007/00005/00570
+Use getpwuid() to get user id if getlogin() fails.  This can happen if run
+from an rsh or by /bin/login before you are really logged in.
+
+D 1.12	90/06/22 10:39:13 clyde	12 11	00002/00000/00573
+Make password compare rtn deal with null password
+
+D 1.11	90/05/29 14:41:29 clyde	11 10	00002/00001/00571
+Set PATH before firing up YP make
+
+D 1.10	90/03/20 14:58:51 clyde	10 9	00003/00001/00569
+Make sure passwd.ptmp is removed if /etc/ptmp create fails
+
+D 1.9	90/03/19 16:34:51 clyde	9 8	00009/00004/00561
+Put secure RPC stuff in #ifdef SECURE_RPC
+
+D 1.8	90/03/19 16:09:27 clyde	8 7	00033/00014/00532
+1. Split code that does locked temp files into routine.
+2. If on YP master, create both "/etc/ptmp" and "PASSWD_FILE.ptmp".
+
+D 1.7	90/03/19 14:50:56 clyde	7 6	00154/00042/00392
+1. Use direct syslog of errors where needed.
+2. Add stub to call password history check.
+3. Always encrypt password with new salt.
+4. Use RPC calls directly for YP password change.
+5. Add error checking and reporting for YP password changes.
+6. Add stub for secure RPC key change.
+7. Rewrite is_yp_master() to call YP routines instead of using ypwhich.
+8. Add -DYPASSWDD_403 define to cope with SunOS 4.0.3 yppasswdd.
+
+D 1.6	89/11/14 17:00:39 clyde	6 5	00005/00002/00429
+Don't remove temp file unless I created it
+
+D 1.5	89/11/01 16:24:41 clyde	5 4	00003/00003/00428
+Change DEBUG file names to './etc_XXXX'
+
+D 1.4	89/10/02 16:52:59 clyde	4 3	00021/00004/00410
+1. Set file names with #define(s).
+2. Set passwd file mode with a #define.
+
+D 1.3	89/09/26 14:59:23 clyde	3 2	00040/00012/00374
+1. Try yppasswd() call multiple times.
+2. Move check for YP change capability from pw_replace() to pw_permission().
+
+D 1.2	89/05/19 11:01:35 clyde	2 1	00005/00001/00381
+Install PATH for exec of ypwhich
+
+D 1.1	89/05/18 10:25:57 clyde	1 0	00382/00000/00000
+date and time created 89/05/18 10:25:57 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.version.h:
+
+D 1.5	90/08/14 14:37:26 clyde	5 4	00001/00001/00007
+Bump patch level
+
+D 1.4	90/03/19 13:58:10 clyde	4 3	00002/00002/00006
+Bump overall version to 1.2
+
+D 1.3	89/11/28 12:32:30 clyde	3 2	00002/00002/00006
+Update version stamp
+
+D 1.2	89/09/21 17:25:54 clyde	2 1	00002/00002/00006
+Update date info
+
+D 1.1	89/05/18 10:25:59 clyde	1 0	00008/00000/00000
+date and time created 89/05/18 10:25:59 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.README:
+
+D 1.6	90/03/19 16:36:31 clyde	6 5	00002/00000/00129
+Add info about defining SECURE_RPC
+
+D 1.5	90/03/19 16:10:58 clyde	5 4	00000/00007/00129
+Remove stuff about YPPASSWDD_403
+
+D 1.4	90/03/19 15:05:05 clyde	4 3	00015/00007/00121
+1. Fix errors.
+2. Explain configuring for SunOS 4.0.3 
+
+D 1.3	89/11/28 12:24:45 clyde	3 2	00038/00004/00090
+Add sketch about the configuration file
+
+D 1.2	89/10/24 10:48:21 clyde	2 1	00001/00002/00093
+Remove 'beta test' comment
+
+D 1.1	89/05/18 10:26:01 clyde	1 0	00095/00000/00000
+date and time created 89/05/18 10:26:01 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.npasswd.help:
+
+D 1.1	89/09/21 14:20:53 clyde	1 0	00020/00000/00000
+date and time created 89/09/21 14:20:53 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.Makefile.dist:
+
+D 1.8	90/07/23 09:59:01 clyde	8 7	00001/00001/00163
+Fix error in BSD build options
+
+D 1.7	89/12/05 09:37:18 clyde	7 6	00001/00001/00163
+Fix bug in install directives
+
+D 1.6	89/10/30 14:34:11 clyde	6 5	00006/00005/00158
+Add DEST to install lines to allow install in alternate fs tree
+
+D 1.5	89/10/24 11:17:43 clyde	5 4	00019/00012/00144
+1. Add MANDIR for manual page install.
+2. Change npasswd to $(PASSWD) except for source file references.
+3. Don't replace config and help files if they already exist.
+
+D 1.4	89/10/04 09:54:42 clyde	4 3	00059/00016/00097
+Add commentary, massive other changes
+
+D 1.3	89/09/27 10:25:28 clyde	3 2	00014/00007/00099
+1. Document  -DXPUTPWENT flag.
+2. Better paramaterization of file names.
+
+D 1.2	89/09/26 15:01:52 clyde	2 1	00007/00005/00099
+Add message-of-the-day file
+
+D 1.1	89/09/21 17:22:20 clyde	1 0	00104/00000/00000
+date and time created 89/09/21 17:22:20 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none
+
+SCCS/s.passwd.1:
+
+D 1.1	89/10/24 10:51:25 clyde	1 0	00056/00000/00000
+date and time created 89/10/24 10:51:25 by clyde
+
+Users allowed to make deltas --
+	everyone
+
+Flags --
+	none
+
+Description --
+	none

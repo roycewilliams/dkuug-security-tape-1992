@@ -1,0 +1,71 @@
+'\"
+'\"	@(#)checkpasswd.3	1.1 5/18/89 (cc.utexas.edu)
+'\"
+.TH CHECKPASSWD 3
+.SH NAME
+checkpasswd \- check password
+.br
+setcheckpasswd \- set parameters for checkpasswd
+.SH SYNOPSIS
+.B int checkpasswd(uid,\ password);
+.br
+.B int\ uid;
+.br
+.B char\ *password;
+.sp
+.B void setcheckpasswd(opt1,\ opt2,\ ...\ optn,\ 0);
+.br
+.B char\ *opt1,\ *opt2,\ ...\ *optn;
+.SH DESCRIPTION
+.I Checkpasswd
+checks if
+.B password
+is suitable for use by the UNIX user with user id
+.BR uid .
+.PP
+.I Checkpasswd
+returns 1 if the password is deemed suitable, and 0 otherwise.
+An informative message is also printed to the standard output
+if the password does not pass the tests.
+.PP
+.I Setcheckpasswd
+may be used to change the operation parameters of 
+.IR checkpasswd .
+It accepts a list of strings which may be the following:
+.TP
+.B \-\^c
+Take the next argument as the configuration file to read.
+See the CONFIGURATION section in
+.IR checkpasswd (8)
+for information on the configuration file.
+.TP
+.B \-\^e
+Return the detailed check status instead of 1 or 0.
+See below for an explanation.
+.TP
+.B \-\^s
+Suppress message output.
+.PP
+The detailed check status is one of the following:
+.nf
+-1	Password check did not complete.
+0	Password passed all checks.
+1	Password was a null string.
+2	Password was \'too easy\' to guess.
+3	Password was part of the users \'\fIfinger\fP\' information.
+4	Password was found in a dictionary search.
+5	Password contained an illegal character or sequence of characters.
+6	Password was too short.
+.fi
+.SH SEE ALSO
+makedict(8), viewdict(8), checkpasswd(8), npasswd(1)
+.SH AUTHOR
+Clyde Hoover
+.br
+Computation Center
+.br
+The University of Texas at Austin
+.br
+Austin, Texas
+.br
+clyde@emx.utexas.edu, uunet!cs.utexas.edu!ut-emx!clyde

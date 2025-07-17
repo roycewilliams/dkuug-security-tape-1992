@@ -1,0 +1,48 @@
+#!/bin/csh -f
+# by dank@blacks.jpl.nasa.gov
+# %W% %G%
+# Compiles jpl's version of npasswd.  
+# You must already have retrieved the following files:
+#  npasswd_jpl.tar.Z
+#  wds.all.Z
+#  dictprep.sh
+
+set DEST = /usr/local/npasswd
+set verbose
+
+# Unpack archive
+zcat npasswd_jpl.tar.Z | tar xvf -
+rm npasswd_jpl.tar.Z
+cd npasswd_jpl
+
+# Set Makefile for SunOS and ${DEST}
+cat > tmp.sed <<_EOF_
+s,DEST	=,DEST  = ${DEST}/,
+s,BINDIR = /bin,BINDIR = bin,
+s,ADMDIR	= /usr/adm,ADMDIR        = adm,
+s,MANDIR	= /usr/man/man1,MANDIR        = man/man1,
+s,# SUNOS = -DSUNOS4,SUNOS = -DSUNOS4,
+s,#	install -c -m 0444 npasswd.1,	install -c -m 0444 npasswd.1,
+_EOF_
+# If not running with adjunct passwords, turn off the adjunct option.
+# This is needed because the current patch to pw_passwd can only
+# handle one or the other, not both kinds of passwords.
+if (! -d /etc/security) then
+    echo 's,^ADJUNCT =,# ADJUNCT =,' >> tmp.sed
+endif
+sed -f tmp.sed Makefile.dist > Makefile
+rm tmp.sed
+
+# Compile npasswd differently, depending on if your system is running
+# YP.  Check for YP by looking for a ypbind process.
+if (`ps ax | grep ypbind | grep -v grep | wc -l` == 0) then
+    # For non-YP systems:
+    make pw_passwd
+else
+    # For YP systems:
+    make yp_passwd
+endif
+
+# The install_npasswd script will unpack wds.all.Z to ${DEST}/adm/wds.all.
+# Create a config file that will tell npasswd to look there for words.
+echo dictionary ${DEST}/adm/wds.all > npasswd.conf

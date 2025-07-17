@@ -1,0 +1,131 @@
+README for npasswd March 1990
+
+@(#)README	1.6 3/19/90 (cc.utexas.edu)
+
+* Introduction
+
+Npasswd is a pretty-much-plug-compatable replacement for passwd(1).
+This version incorporates a password checking system
+that disallows simple-minded passwords.
+
+It does exactly ONE thing - change login passwords, though it would
+not be too difficult to make it do shells and GECOS stuff also.
+
+I have modeled npasswd after passwd(1) from 4.3BSD and SunOS 4.0, but
+it does not impliment the options those versions have.
+I have also included support for Sys VR3 password aging, but I don't have
+a SysV box around to test it on.
+
+* About npasswd
+
+The program is divided into upper and lower sections.
+The upper (driver) half deals with abstract data such as login names and
+passwords.  It has no knowledge of how or where passwords are stored.
+
+The lower (method) half does data lookup and replacement.  There are 
+two different method modules provided with this distribution.
+
+	pw_passwd.c - deals with standard /etc/passwd type files and
+		the hashed passwd database used in 4.3BSD.
+	pw_yp.c - deals with standard /etc/passwd files and Yellow Pages
+		passwd service.
+
+The lower half hides all its data from the upper half, and vice versa.
+The upper and lower halves communicate via this interface:
+
+	pw_initalize()		Do initializations 
+	pw_getuserbyname()	Get user information by name
+	pw_permission()		Check if user has permission
+				 to change this users' password
+	pw_compare()		Compare passwords (returns 1 on match, 0 if not)
+	pw_check()		Check password (returns 1 if ok, 0 otherwise)
+	pw_replace()		Replace the password
+	pw_cleanup()		Cleanup
+
+Both the upper and lower halves keep private state, and must determine
+such things as who invoked the program seperately.
+
+This approach allows there to be one user interface for a variety of
+password storage methods.  To support another method, such as shadow
+password files, a new collection of method routines need be written and
+linked to npasswd.o.
+
+I have tried to minimalize the assumptions about what is available in the
+C library and localized UNIX version dependancies.
+
+* Building npasswd
+
+- You will probably want to edit the manual page - it is fairly rough.
+
+- Look at the sources before you install to see if the assumptions
+  I made are correct for your site.
+
+1. Choose which version of npasswd you want to be the default and
+   retarget 'all' in Makefile to point to it.
+
+2. Read checkpasswd/README and configure Makefiles accordingly.
+
+3. Set the system target information in Makefile.
+	* For running under SunOS 4.X system, set OPTIONS = -DSUNOS4 
+	* If you are thinking about running Sun "Secure RPC", add
+	  -DSECURE_RPC to OPTIONS
+	* For running under System V, set OPTIONS = -DSYSV
+	* To use syslog(3), include -DSYSLOG in OPTIONS
+	* To update the 4.3BSD hashed password database,
+	  include '-DBSD4_3' in OPTIONS.
+	* Change the lines for 'CF' and 'HF' to retarget the config and
+	  or help files.
+
+4. Edit 'npasswd.help' to reflect the preferences chosen for the
+   password checking plus add any other local administrativa.
+
+5. Edit 'npasswd.conf' to reflect your preferences.  See
+   checkpasswd/checkpasswd.8 (or the section below) for information about
+   the password checking configuration file.
+
+6. Do a 'make'.
+
+7. Become super-user and do 'make install'.
+
+8. If you built npasswd with -DSYSLOG, modify /etc/syslog.conf to log
+   messages for facility LOG_AUTH level LOG_INFO.  This gives you a record
+   of password changes.
+
+* The configuration file explained
+
+dictionary	/path/to/dictionary	[description]
+	/usr/dict/words is always looked in.
+	There are 2 good reasons to have a DBM version of each dictionary:
+	1. Faster password checking.	
+	2. More secure checking.  If there are no DBM files, then egrep(1)
+	   is used and unfortunately, the candidate password must be put on the 
+	   command line - which makes it suspectible to being seen with ps(1).
+
+# singlecase	yes | [no]	- Pass single-case passwords
+	Allow single case passwords.  Default is not to.
+
+# minlength	N [5]	- Minimum password length
+	5 characters is the default minimum password length
+
+# maxlength	N [8]	Maximum effective password length
+	All this does is issue a warning message that just the first N
+	characters of a password are used.
+
+# printonly	yes | [no] 	- Allow only printable characters
+	Allow non-printable (ASCII control) characters in passwords
+
+# badchars	"<string>"	- Replace illegal character list
+	Set a list of characters verboten in passwords.
+	This form REPLACES the built-in illegal character list.
+	Control characters may be specified by the '^X' convention.  
+
+# badchars	+"<string>"	- Add to illegal character list
+	Adds to the built-in illegal character list.
+
+----------------------
+Bug reports & enhancements to
+clyde@emx.utexas.edu
+
+
+	-Clyde Hoover
+

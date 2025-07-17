@@ -1,0 +1,225 @@
+'\"
+'\"	@(#)checkpasswd.8	1.1 5/18/89 (cc.utexas.edu) /home/emx/u2/cc/clyde/src/new/passwd/checkpasswd/SCCS/s.checkpasswd.8
+'\"
+.TH CHECKPASSWD 8
+.SH NAME
+checkpasswd \- check passwords
+.SH SYNOPSIS
+.B checkpasswd
+[
+.B \-\^c
+config_file ] [
+.B \-\^e
+] [
+.B \-\^o
+] [
+.B \-\^s
+] [
+.B \-\^u
+user id ] [
+.B \-\^V
+] [
+.B \-\^?
+]
+.SH DESCRIPTION
+.I Checkpasswd
+reads passwords from the standard input and subjects them to suitablity tests.
+These tests are detailed below.
+It purposely does
+.B not
+take a password argument since process
+arguments are not secure on most UNIX systems - they can be printed by 
+.IR ps (1).
+.PP
+.I Checkpasswd
+is not meant as a replacement for 
+.IR passwd (1)
+and so does not suppress character echo while reading passwords.
+The standard input can be redirected from a pipe or file, which facilitates
+it being called from another program such as 
+.IR passwd (1).
+.PP
+.I Checkpasswd
+exits with the check status for the most recent password entered.
+The check status is one of the following:
+.nf
+-1	A serious error occured.
+0	The password passed all checks.
+1	The password was a null string.
+2	The password was \'too easy\' to guess.
+3	The password was part of the users \'\fIfinger\fP\' information.
+4	The password was found in a dictionary search.
+5	The password contained an illegal character or sequence.
+6	The password was too short.
+.fi
+.PP
+In addition to the check status, an informative message is printed to
+the standard output (unless supressed).
+.PP
+The options available are:
+.TP
+.B \-\^c
+Take the next argument as the configuration file to read.
+See the CONFIGURATION section for information on the configuration file.
+.TP
+.B \-\^e
+Print the check status in numeric form as well as the informative message.
+This is useful for programs which want to process the output from
+.IR checkpasswd .
+.TP
+.B \-\^o
+Test one password only and exit with check status.
+.TP
+.B \-\^s
+Supress output of informative messages.
+.TP
+.B \-\^u
+Take the next argument as the user id (in numeric form) to use for password
+file data checking.
+This option is restricted to the super-user.
+.TP
+.B \-\^V
+Print version information.
+.TP
+.B \-\^?
+Print help message.
+.SH "CHECKS PERFORMED"
+.PP
+.I Checkpasswd
+performs the following tests on each password:
+.IP 1.
+Length is checked to see if it is within bounds.
+Passwords which are too short are rejected, while passwords that are
+\'too long\' are passed but a warning message issued.
+.IP 2.
+The password is scanned for illegal characters and character combinations,
+such as runs of the same character (e.g. \'aaa\').
+Passwords that do not use upper and lower case alphabetics will be rejected
+unless otherwise specified via the configuration file.
+.IP 3.
+The password is checked against various per-site information, such as the
+host name.
+.IP 4.
+The password is checked against the
+.IR passwd (5)
+information for the user.
+The password is compared against a number of permutations of this data.
+.IP 5.
+The password is checked against the user\'s \'finger\' information.
+.IP 6.
+The password is search for in a list of dictionaries and is rejected if it
+is found in any of them.
+.SH CONFIGURATION
+.PP
+Many of the criteria used by
+.I checkpasswd
+can be set via a configuration file.
+The default configuration file is 
+.BR /usr/adm/checkpasswd.cf .
+.PP
+Lines in the configuration file which start with '#' ignored.
+Items in \'[ ]\' are optional, the default value is in \'{ }\'.
+.sp
+.nf
+\fBdictionary\fP	/path/to/dictionary	[description of dictionary]
+.fi
+.RS
+Specifies a dictionary to look in.
+If there is a DBM data base version of the dictionary, that will be used,
+else 
+.IR egrep
+will be used on the file.
+There may be multiple
+.B dictionary
+directives in the configuration file, and they will be searched in
+the order given.
+A list of default dictionaries may be built into
+.IR checkpasswd .
+.br
+The
+.I makedict
+program can be used to build DBM dictionaries, and
+.I viewdict
+used to review them.
+.RE
+.sp
+.nf
+\fBsinglecase\fP	yes | {no}
+.fi
+.RS
+Specifies whether or not single-case passwords are legal.
+The default is to reject single-case passwords.
+.RE
+.sp
+.nf
+\fBminlength\fP	N {5}	
+.fi
+.RS
+Specifies the minimum password length to accept.
+Passwords shorter that this will not be accepted.
+.RE
+.sp
+.nf
+\fBmaxlength\fP	N {8}
+.fi
+.RS
+Specifies the maximum effective password length.
+This does not affect acceptance of a password.
+The 
+.IR crypt (3)
+routine usually encrypts only the first 8 characters of a string due to the
+algorithim used.
+If the password is longer than this, a warning message is printed to inform the
+user that not the entire password will be used.
+.RE
+.sp
+.nf
+\fBprintonly\fP	yes | {no}
+.fi
+.RS
+Specifies that only printable ASCII characters are to be allowed in passwords.
+Use of control characters should be encouraged but may cause problems on
+some systems.
+.RE
+.sp
+.nf
+\fBbadchars\fP	"list-of-characters"
+.br
+\fBbadchars\fP	+"list-of-characters"
+.fi
+.RS
+Specifies a list of characters which are not allowed in passwords.
+The first form replaces the illegal character table.
+The second form adds to the illegal character table.
+Characters may be given in the following forms:
+.br
+.ti +.25i
+C special character escapes (e.g. \\\|t )
+.br
+.ti +.25i
+\\\|0[0\-7] (e.g. \\\|013)
+.br
+.ti +.25i
+\\\|0x[0\-9\| \|a\-f] (e.g. \\\|0xa)
+.br
+.ti +.25i
+^[a\-z\|,\|A\-Z\|,\|[\|,\|\\\|,\|]\|,\|^\|,\|-] (e.g.,^c)
+.br
+.sp
+The default content of the illegal characters table is a collection
+of terminal special characters.
+.RE
+.in 0
+.SH SEE ALSO
+makedict, viewdict, passwd(1)
+.SH AUTHOR
+Clyde Hoover
+.br
+Computation Center
+.br
+The University of Texas at Austin
+.br
+Austin, Texas
+.br
+clyde@emx.utexas.edu, uunet!cs.utexas.edu!ut-emx!clyde
+.PP

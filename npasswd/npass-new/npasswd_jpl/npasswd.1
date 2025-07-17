@@ -1,0 +1,69 @@
+'\"
+'\"	@(#)npasswd.1	1.3 8/14/90 (cc.utexas.edu)
+'\"
+.TH NPASSWD 1
+.SH NAME
+npasswd \- change login password
+.SH SYNOPSIS
+.B npasswd
+[
+.B \-\^P
+] [
+.B \-\^V
+] [ username ]
+.SH DESCRIPTION
+.I Npasswd
+changes or installs a login password for
+.B username
+(your own by default).
+Only the super-user can change another users' password.
+.PP
+When changing a password,
+.I npasswd
+prompts for the old password and then for the new one.
+The new password must be typed twice to forestall mistakes.
+The new password is checked for reasonableness.
+.PP
+.I Npasswd
+accepts the option switches of the 4.3BSD and SunOS 4.X
+.I passwd
+but impliments none of them.
+The
+.B \-\^V
+option prints version and patch level information.
+.PP
+The
+.B \-\^P
+option indicates that 
+.B npasswd
+will be fed input from another program via a pipe.
+This option is reserved for the super-user.
+.PP
+.I Npasswd
+can change both local passwords and passwords in a
+Network Information Service (aka Yellow Pages) database.
+.SH "THIS IS NOT A REAL MANUAL PAGE"
+\fB
+It will probably be easier to adapt the manual page for
+the existing version of passwd installed.
+I have put much of the particulars about configuring npasswd into the help file.
+\fR
+.br
+.SH "SEE ALSO"
+passwd(1), passwd(5), yppasswd(3R), yppasswdd(8C),
+finger(1), login(1), crypt(3), passwd.adjuct(5), ypfiles(5), ypmake(8)
+.SH DIAGNOSTICS
+Various, hopefully self-explanitory.
+.SH BUGS
+This program could do shells and fullnames.
+Probably a future version will.
+Since it tries to work for a range of UNIX systems, it will without
+doubt not do everything quite as well as the vendor-supplied version.
+.SH AUTHOR
+Clyde Hoover
+.br
+Computation Center
+.br
+The University of Texas at Austin
+.br
+clyde@emx.utexas.edu, uunet!cs.utexas.edu!ut-emx!clyde

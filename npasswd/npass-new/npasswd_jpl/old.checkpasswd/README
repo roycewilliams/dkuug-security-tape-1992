@@ -1,0 +1,164 @@
+README for checkpasswd
+
+	@(#)README	1.1 5/18/89
+
+** NOTE **
+Originally the 'mdbm' library was to be distributed along with this program,
+but license problems have led to its removal.  There are hooks in some of the
+code for "MDBM".  Should I locate with a public domain DBM workalike, 
+those hooks will be reworked to use it and it will be distributed.
+
+* Why this code...
+
+The infamous Internet worm of November 1988 used among its attacks
+a password guesser.  It is frightening how many passwords on how many UNIX
+systems were guessed by this algorithim.  With the publication of various
+papers about the internals of the worm, the password cracking algorithims
+came to light.
+
+I replicated the worm password cracker from those papers, ran it
+against my password file and got too many hits to be comfortable.
+I decided that some more rigourous validity checking was needed for passwords.
+
+So I took the worm algorithim and rewrote it into a password checker.
+
+A previous version of this code has appeared on comp.sources.misc.
+
+* What this code does...
+
+The sequence of checks done is:
+
+	1. Enforcement of a minimal length.
+
+	2. Simple 'lexical' checks to catch some dumb passwords, such as
+	   repeats of the same letter (e.g. 'aaa').  Strange characters
+	   are also checked for.
+
+	3. Password is compared against some host-specific information, such as
+	   the hostname.
+
+	4. Password is checked against a number of permutations on the users'
+	   passwd information (login name reversed, login name duplicated).
+
+	5. Password is checked against the user's FINGER information.
+
+	6. A list of dictionaries are scanned for the password.
+
+All string comparsions are case-independant.
+
+What kinds of passwords will be accepted:
+	Passwords which use mixed upper and lower case.
+	Passwords which use punctuation characters.
+	Passwords which use numbers.
+	Passwords which use allowed control characters.
+
+By default, the following control characters are NOT allowed in passwords:
+	control-c control-d control-h control-j control-m
+	control-o control-r control-s control-q control-y
+	control-z control-\ control-[ control-] DELETE
+
+These are typical tty special characters on UCB-derived UNIX systems.
+A user could put these characters in their password by quoting them
+with control-v, but there is no guarantee that the tty modes
+set by login(1) would allow them to be properly entered, so they
+are best avoided.
+
+This table may be replaced or supplimented via the configuration file.
+
+* About checkpasswd....
+
+The checking routine is table driven (in checkpasswd.c) so that new routines
+can be added easily.
+
+I did not use some other password check routines that have been made available
+because they rejected many passwords which I thought was reasonable.  These
+checks are concerned with filtering out words that might be easily guessed.
+I believe that my tests, especially the dictionary lookup, perform this
+function.  Checks can be inserted or deleted as desired.
+
+This version is much more functional and configurable that the original
+subroutine package provided.  I chose to convert the subroutine to a
+standalone program that is self-contained and can be executed from other
+programs.
+
+Very soon afterwards I realized that the standalone program could be 
+refitted to work as a library.  So checkpasswd comes in two forms:
+standalone and library.
+
+The standalone program reads from standard input and reports
+to standard output.
+
+The library version can be called from a program and will return
+1 or 0 depending on whether the password should be used.  It will
+also print a diagnostic message to stdout if it does not deem the password
+to be desirable.
+
+The routine setcheckpasswd() can be used to set options when using the library.
+See checkpasswd(3) about setting options.
+
+* Dictionaries...
+
+I figured that why no password checker to date did dictionary lookups is 
+because of the overhead in doing so.  I use a DBM database version of
+a dictionary to make the lookups fast.  On my system, the DBM version of
+/usr/dict/words takes up only about 800K - worth the space to make
+password checking fast.
+
+Since multiple dictionaries can be searched, any new words that you want
+to 'take out' of use can be added to one of them.  As an aside, this
+is why I just couldn't use the vanilla V7 dbm - it can not handle more
+than one database.
+
+The reason for the dictionary checking is to thwart crackers who go through
+the system dictionary looking for passwords.  If we prevent people from
+choosing passwords which are in publicly readable dictionaries, that
+cracking strategy should then fail.
+
+Passwords which use punctuation or control characters or have multiple 
+changes of case are not looked up.  Since these would not be found in the
+spelling dictionary, there is no reason to look for them.
+
+*** Important note ***
+It is a good idea to have dictionary data bases because if egrep(1)
+has to be used to search an ASCII file, its arguments are prey to being
+read with ps(1).
+
+* How to use checkpasswd...
+
+The standalone checkpasswd is not designed to be an end-user program.
+It should be installed in a library directory somewhere and used from
+another program.  The -o, -s and -e options are provided to facilitate
+such use, and the 'call_ckpasswd.c' module included shows an example of this.
+
+* To do...
+
+Provide some way to pass an encrypted password on the command line.
+Close the window of vunerablity on egrep argument sniffing.
+
+* Administrativa...
+
+I have done considerable testing but do not guarantee that this program
+is bullet-proof.
+
+There is no copyright on this version of checkpasswd. 
+
+* Building checkpasswd...
+
+1. Edit Makefile and select which DBM method to use and where to install
+   checkpasswd and config file
+2. Edit dict/Makefile and select which DBM method to use.
+3. Do a 'make all'.
+4. Use dict/makedict to build DBM dictionaries.
+
+** If you are not using the standalone application version, stop now **
+
+5. Edit checkpasswd.cf to reflect your preferences.
+6. Do a 'make install'.
+
+> Bugs & enhancements...
+
+Send bug report & enhancements to:
+	clyde@emx.utexas.edu
+		or
+	uunet!cs.utexas.edu!ut-emx!clyde
+

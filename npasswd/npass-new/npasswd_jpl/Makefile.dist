@@ -1,0 +1,255 @@
+
+# --------------------------------------------------------------------  #
+#                                                                       #
+#                         Author: Clyde Hoover                          #
+#                          Computation Center                           #
+#                   The University of Texas at Austin                   #
+#                          Austin, Texas 78712                          #
+#                         clyde@emx.utexas.edu                          #
+#                   uunet!cs.utexas.edu!ut-emx!clyde                    #
+#                                                                       #
+#This code may be distributed freely, provided this notice is retained. #
+#                                                                       #
+# --------------------------------------------------------------------  #
+#
+#	Makefile for npasswd
+
+#	@(#)Makefile.dist	1.11 11/26/90 (cc.utexas.edu)
+
+#	Top of install tree
+DEST	=
+
+#	Where the binary lives
+BINDIR = /bin
+
+#	Where condfiguration files live
+ADMDIR	= /usr/adm
+
+#	Where manual pages live
+MANDIR	= /usr/man/man1
+
+#	Mode for binary
+IMODE	= 4511
+
+#	Name of binary
+PASSWD	= npasswd
+
+#	Things to build in subdirectories
+SUBDIRS = checkpasswd 
+
+#	Name of password check library
+CHKLIB = checkpasswd/checkpasswd.a
+
+#	Name of distribution files
+DISTNAME = npasswd
+
+#	Name of library to get Sun RPC client routines from
+LIB_RPCSVC	= -lrpcsvc 
+
+#	Flags to pass down to password checker
+CHECKPW_FLAGS	=
+
+# ---------------------------------------------------------------
+#	Npasswd configuration
+# ---------------------------------------------------------------
+
+#	The password file location
+# PWF = /etc/passwd
+
+#	The temp and lock file for passwd file changes
+# PWT = /etc/ptmp
+
+#	The saved password file
+# PWS = /etc/opasswd
+
+# PWFD = -DPASSWD_FILE=\"$(PWF)\"
+# PWTD = -DPASSWD_TEMP=\"$(PWT)\"
+# PWSD = -DPASSWD_SAVE=\"$(PWS)\"
+
+#	The configuration file
+CF = $(DEST)$(ADMDIR)/$(PASSWD).conf
+CFD = -DCONFIG_FILE=\"$(CF)\"
+
+#	The help file
+HF = $(DEST)$(ADMDIR)/$(PASSWD).help
+HFD = -DHELP_FILE=\"$(HF)\"
+
+#	The message file
+MF = $(DEST)$(ADMDIR)/$(PASSWD).motd
+MFD = -DMOTD_FILE=\"$(MF)\"
+
+# ---------------------------------------------------------------
+#	Enable only ONE of the following options
+# ---------------------------------------------------------------
+
+#
+#	Ultrix 4.0 (highly mutated 4.2)
+# ULTRIX	= -DBSD4_3 -DNDBM -DNO_CLNT_SPERRNO -DXFGETPWENT -DXPUTPWENT
+# LIB_RPCSVC	=
+
+#	Using 4.3BSD hashed password file
+# BSD = -DBSD4_3 -DNDBM
+
+#	Running under System V
+# SYS5 = -DSYSV
+
+#	If running under SunOS 4.X (funky tty ioctls)
+# SUNOS = -DSUNOS4
+
+
+# ---------------------------------------------------------------
+#	Any number of the following options can be enabled
+# ---------------------------------------------------------------
+
+#	Use syslog(3) for recording password changes and errors
+SYSLOG = -DSYSLOG 
+
+#	Use private version of getpass(3) which is better behaved than
+#	the version in libc (at least the 4.3BSD version).
+GETPASS = -DXGETPASS
+
+
+#	-DXPUTPWENT provides putpwent() if not in libc.
+# PUTPWENT = -DXPUTPWENT
+
+#	-DXFGETPWENT provides fgetpwent() if not in libc.
+# FGETPWENT = -DXFGETPWENT
+
+#	-DADJUNCT lets YP version of npasswd change adjunct
+#	passwords via YP.  (dank@blacks.jpl.nasa.gov)
+ADJUNCT = -DADJUNCT
+
+#	-DUPDATE_YP causes YP version of npasswd (when run on
+#	a YP master) to update the YP tables after updating 
+#	the local passwd file.  Don't enable this if you have
+#	set up your master to have a YP-slave-like /etc/passwd
+#	and are keeping the real data somewhere else for update
+#	via YP.  (dank@blacks.jpl.nasa.gov)
+#UPDATE_YP = -DUPDATE_YP
+
+# ---------------------------------------------------------------
+#	Program building
+# ---------------------------------------------------------------
+
+#	Debugging switches
+DEBUG	= -g -DDEBUG
+
+#	'XFLAGS' are the configuration flags exported to sub-makes.
+#	Change '-O' in XFLAGS to $(DEBUG) for development work,
+#	change to '-g' to use source debugger.
+XFLAGS	= -O $(BSD) $(SYS5) $(SUNOS) $(ULTRIX)
+
+#	'CFLAGS' are the flags for npasswd only
+CFLAGS	= $(XFLAGS) $(SYSLOG) $(GETPASS) $(PUTPWENT) $(FGETPWENT) \
+	$(ADJUNCT) $(UPDATE_YP) \
+	$(HFD) $(CFD) $(MFD) $(PWFD) $(PWTD) $(PWSD)
+
+#	Change the following line to $(DEBUG) for debugging
+LDFLAGS	= 
+
+# ---------------------------------------------------------------
+#	Start of make rules
+# ---------------------------------------------------------------
+#
+#	Remove the leading comment of ONE of the following entries
+#	for 'all'
+#
+# all:	yp_passwd		# Build YP version
+# all:	pw_passwd		# Build standard version
+# all:	ui_passwd		# Build UT CC userinfo version
+
+first::
+	-@echo Do \"make yp_passwd\" to build YP/NIS version.
+	-@echo Do \"make pw_passwd\" to build standard version.
+	-@echo
+	-@echo You should also edit this Makefile to pick the
+	-@echo target for 'all' and configure npasswd for your system.
+
+# ---------------------------------------------------------------
+#	Standard password file version
+# ---------------------------------------------------------------
+OBJ_PW	= npasswd.o pw_passwd.o $(CHKLIB)
+
+pw_passwd:	$(OBJ_PW)
+	$(CC) -o $(PASSWD) $(LDFLAGS) $(OBJ_PW) 
+
+# ---------------------------------------------------------------
+#	Yellow Pages version
+# ---------------------------------------------------------------
+OBJ_YP	= npasswd.o pw_yp.o $(CHKLIB)
+
+yp_passwd:	$(OBJ_YP)
+	$(CC) -o $(PASSWD) $(LDFLAGS) $(OBJ_YP) $(LIB_RPCSVC)
+
+# ---------------------------------------------------------------
+#	UTEXAS CC database version
+# ---------------------------------------------------------------
+OBJ_UI	= npasswd.o pw_userinfo.o $(CHKLIB)
+
+ui_passwd:	$(OBJ_UI)
+	$(CC) -o $(PASSWD) $(LDFLAGS) $(OBJ_UI) -luserinfo 
+
+# ---------------------------------------------------------------
+#	Make password checker library
+# ---------------------------------------------------------------
+$(CHKLIB):
+	cd checkpasswd; \
+	make $(MFLAGS) "CFLAGS=$(XFLAGS)" $(CHECKPW_FLAGS) checkpasswd.a
+
+
+# ---------------------------------------------------------------
+#	Misc stuff
+# ---------------------------------------------------------------
+clean::
+	-rm -f *.o a.out n*passwd core
+	-rm -f passwd passwd.dir passwd.pag opasswd
+	-for f in $(SUBDIRS); do \
+		(cd $$f; make clean); done
+
+# ---------------------------------------------------------------
+install:	$(PASSWD)
+	@if [ `whoami` != root ]; then\
+		echo Must be super-user to install; \
+		exit 1; \
+	else \
+		exit 0; \
+	fi
+	install -s -m $(IMODE) $(PASSWD) $(DEST)$(BINDIR)/$(PASSWD)
+	@if [ ! -r $(CF) ]; then\
+		echo install -c -m 0644 npasswd.conf $(CF);\
+		install -c -m 0644 npasswd.conf $(CF);\
+	else \
+		echo $(CF) already exists.. edit to change; fi
+	@if [ ! -r $(HF) ]; then\
+		echo install -c -m 0644 npasswd.help $(HF);\
+		install -c -m 0644 npasswd.help $(HF);\
+	else \
+		echo $(HF) already exists.. edit to change; fi
+	@echo Put site-specific information in $(MF)
+
+install.man::
+	@echo Customize a manual page
+#	install -c -m 0444 npasswd.1 $(DEST)$(MANDIR)
+
+# ---------------------------------------------------------------
+#	Make copy of password file for testing
+setup::
+	-rm -f passwd passwd.dir passwd.pag passwd.old
+	cp /etc/passwd passwd
+	-if [ -f /etc/mkpasswd ]; then \
+		/etc/mkpasswd passwd; fi
+
+# ---------------------------------------------------------------
+dist::
+	@stuff/makedist $(DISTNAME)
+ 
+# ---------------------------------------------------------------
+#
+# Source dependancies
+#
+npasswd.o:	npasswd.c version.h
+pw_passwd.o:	pw_passwd.c
+pw_yp.o:	pw_yp.c
+pw_userinfo.o:	pw_userinfo.c
+
+#	End Makefile.dist
