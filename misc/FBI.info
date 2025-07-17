@@ -1,0 +1,112 @@
+From mojo!mimsy!haven!aplcen!uunet!tut.cis.ohio-state.edu!ucbvax!UPENN.EDU!topper%a1.relay Thu Mar 29 18:58:23 EST 1990
+Article: 1213 of misc.security:
+Path: mojo!mimsy!haven!aplcen!uunet!tut.cis.ohio-state.edu!ucbvax!UPENN.EDU!topper%a1.relay
+>From: topper%a1.relay@UPENN.EDU ("Frank Topper")
+Newsgroups: misc.security
+Subject: Meeting with the FBI
+Message-ID: <9003270541.AA01498@ucbarpa.Berkeley.EDU>
+Date: 7 Mar 90 21:31:01 GMT
+Sender: daemon@ucbvax.BERKELEY.EDU
+Organization: The Internet
+Lines: 97
+Approved: security@rutgers.edu
+
+Dear Security & Dasig Subscribers,
+
+	Activated by a suggestion from William Sessions, Director of the
+FBI, my associate Linda May and I scheduled a meeting with the local
+Philadelphia office to discuss computer, information and network security.
+We wanted to draw from their experience, learn their perspective, and
+establish a direct conection with the poeple who can help us in the event
+of an important security breach -- and to know what they can and can not do
+regarding the subsequent investigation.
+
+	We met with two agents last month.
+
+	Our agenda included discussing security breaches (principal kinds
+reported, principal deficiencies that enable such breaches, proportion
+involving perpetrators external/internal to the organization, proportion of
+organizations which had a security plan, program and officer, and the most
+important factor(s) for achieving appropriate levels of security),
+classifications of activities (legal, illegal and questionable), recaps of
+proposed legislation, and suggested actions & publications.
+
+	Regarding breaches:
+	They said that banks are the most susceptible to loss, and that
+most private companies absord losses without prosecuting due to the time,
+expense, and the wish to not appear stupid.  They said that companies that
+did prosecute breaches had fewer recurring problems.
+
+	Universities tend to get more young hacker-types, while
+corporations get embezzlers.  Most complaints are financial institutes that
+get 'hit over the wire' (wire fraud), bulletin boards containing pirated
+software & credit card access numbers, and, most recently, they are
+beginning to get calls about virus problems.
+
+	Although they were not allowed to give details, the FBI is
+currently involved in two major virus investigations.
+
+	They see a major problem being when a hacker receives 'celebrity
+status'.  This encourages trying to beat the system since fame and not
+disrepute is the potential payoff.
+
+	Statistically, lower-level employees are easier to catch because
+they leave a trail of their actions.  Higher-level (V.P.) employees know
+the systems and leave less of a trail.
+
+	Activity types:
+	The FBI gets involved when a Federal crime is committed. Usually
+this means either: 1)Crime involving more than one state, 2) crimes
+involving gov't computers or gov't networks, or 3) the more broad 86'
+Computer Fraud and Abuse Act.  Interestingly enough, one of the agents we
+spoke with participated in the investigation which has lead to the
+conviction of Robert Morris, Jr.
+
+	A questionable activity, but not illegal, is when a hacker (or
+employee) reads files they are not supposed to have seen.  Not so related
+to universities is the new wrinkle provided by cellular phones.  In this
+case the transmission travels through the airwaves to a hardwire
+transmission point.  It is not illegal to listen in to the part broadcasted
+(although, a recent note on the SECURITY list mentioned that it was illegal
+to disclose an overheard conversation).
+
+	Anytime we have a question about an activity we are encourages to
+contact the agents & get the latest perspective.  Legislation-wise, neither
+agent has received updates on the two 89' proposed acts: Computer
+Protection & Computer Virus Eradication.  They said there is always a lag
+time between when a law is passed and when they get instructions as to what
+it means and how it can be used.  They can prosecute computer crimes now
+involving threatsor harassment....and they said if they REALLY WANT to get
+someone they'll research any and all laws to try to find something to stick
+on the alleged criminal.
+
+	They suggest knowing what data is sensitive and take extra
+precautions.  Whatever security programs are running need to be monitored
+and checked for patterns of unusual activity, i.e., send reports to the
+user/custodians of each protected system.
+
+	Lastly, to get around the undesirable impression of security being
+iron-handed, they stressed the ned for an education program touching every
+employee with a solid emphasis on WHY the security efforts (and the
+employyees' efforts) are needed...and what can happen if the efforts are
+not made.
+
+	Based on an "OK" form the local agent-in-charge, both agents were
+willing to come to this university and speak to our planned-for Security
+Steering Committee, and without making specific recommendations, stress the
+importance of having a full-time security officer-type and comprehensive
+education/awareness program.
+
+	Regards.
+
+	Frank Topper
+	Information Analyst
+	University of Pennsylvania
+	(215) 898-2171
+	topper@a1.relay.upenn.edu
+
+"I have observed that persons of good sense seldom fall into disputes,
+except lawyers, university men, and men of all sorts that have been bred at
+Edinborough."  Ben Franklin
+
+

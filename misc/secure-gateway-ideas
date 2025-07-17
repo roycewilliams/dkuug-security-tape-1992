@@ -1,0 +1,316 @@
+From mojo!mimsy!cvl!haven!ames!ucsd!usc!cs.utexas.edu!uunet!mcsun!hp4nl!tnosoes!tom Tue May  8 09:03:19 EDT 1990
+Article: 318 of alt.security:
+Xref: mojo comp.protocols.tcp-ip:11005 alt.security:318
+Path: mojo!mimsy!cvl!haven!ames!ucsd!usc!cs.utexas.edu!uunet!mcsun!hp4nl!tnosoes!tom
+>From: tom@tnosoes.UUCP (Tom Vijlbrief)
+Newsgroups: comp.protocols.tcp-ip,alt.security
+Subject: A SUSPICIOUS SECURE GATEWAY
+Keywords: Security gateway
+Message-ID: <1158@tnosoes.UUCP>
+Date: 7 May 90 09:26:01 GMT
+Organization: TNO Institute for Perception, Soesterberg, The Netherlands
+Lines: 300
+Status: R
+
+I modified a version of Phil Karns KA9Q internet package
+so it acts as a suspicious secure gateway.
+
+The goal of this gateway is to establish security of a local network
+at the gateway instead of securing every host on your local network.
+
+One would for example disallow excess to rlogin, rsh, ftp and telnet
+because many users have bad passwords.
+
+I'll make the binary and sources available to those who are
+interested. 
+
+The README follows. (start reading at 'Security Features' if
+you are only interested in the secure gateway extensions)
+
+I would like to receive suggestions and comments about this package.
+=====================================================================
+Microsoft C 4.00 Changes to KA9Q
+================================
+
+The assembler files are translated to a format suitable for the
+MASM assembler.
+
+The clocktick rate has been increased from 1 tick per second to
+10 ticks per seconds. (This is useful for fast transmission paths
+like ethernet).
+
+A little bug in the ping command (Concerning echo timing) has been fixed.
+
+One can now specify TCP receive window and mss sizes which are different
+from the send sizes. The is needed for dumb ethernet cards (3C501, 3C503)
+which are easily overrun when a fast TCP peer (e.g. a Sun) sends bursts
+of ethernet packets.
+'tcp rwin 512' and 'tcp rmss 512' are appropriate values.
+
+Some little improvements has been made to the TCP timeout mechanisms.
+
+The file 'autoexec.net' is now searched for in the working directory and
+subsequently in the root. (This allows easy customization for different
+users).
+
+Command line arguments are now interpreted as NET commands.
+(It used to be the name of a startup file).
+These commands are executed after the default startup file has been
+read. Multiple command may be given when delimited by ';'.
+The FTP server now recognizes printer names, so you can use NET
+as a print server. (e.g.: put text lpt1).
+Function keys are transmitted as \033[ sequences. (Useful for emacs, etc).
+
+Four additional commands has been added:
+
+	funkeys [on|off]
+
+funkeys on will disable Functionkey-10 so one can use emacs. Abort is
+by means of CTRL-FN10 when funkeys are on.
+
+	rsh host command
+
+will execute a shell command on the specified host by means of the 
+rexecd(8) or rshd(8) daemon.
+
+	uprsh file host command
+
+acts like rsh but gives file as standard input.
+
+	buprsh file host command
+
+acts like rsh but gives binary file as standard input.
+Before a rsh command may be given you should identify yourself
+by means of the name command. ("name username password" or
+"name username RSH localname" for use of rshd instead of rexed).
+
+
+examples:
+
+DOS PROMPT> net rsh rainbow date
+
+will show the date on the unix host rainbow and return to DOS.
+
+DOS PROMPT> net uprsh \mail\greeting rainbow mail tom
+
+will mail the contents of DOS-file \mail\greeting to tom from host
+rainbow.
+
+DOS PROMPT> net buprsh \dos\del.com rainbow cat ">" binfile
+
+will copy the contents of DOS-file \dos\del.com to "binfile"
+in your home directory on host rainbow.
+
+
+A new server has been added. This server allows a tcp-stream to
+a serial line (COMx) or the screen of a PC. (Could be used for a 
+remotely accessible printer).
+
+start com 20000 1 silent
+
+This starts the server which listens on port 20000 and directs all
+incoming data to the first attached serial line. (Use 0 for the screen).
+In the attach command one should specify the COM-port, baudrate, etc.
+(E.g.: "attach asy 0x3f8 4 slip sl0 1024 576 9600").
+If the fourth argument is omitted then diagnostic output will be
+printed on the screen. (E.g.: "Incoming com session from.....")
+
+
+A WD8003E ethernet driver has been added.
+
+
+This version of the KA9Q internet package has been tested on a
+IBM-AT communicating with Suns running SunOS 3.2/3.5/4.0.3 and Masscomps.
+Slip has also been tested.
+
+SMTP mail has been tested.
+
+The log command now has an onscreen option which duplicates messages
+on the screen. The logfile is now cyclic and will be rewritten after
+500kB of messages. When net is started it will begin writing at the
+start of the logfile. The best strategy is to start with a logfile
+with a (random) contents of about 501kB. This will garantee that
+messages can be logged even if the disk is completely full.
+
+The NET program can act as a real gateway by giving an ethernet interface
+a different IP address:
+
+gateway ec0 [131.34.2.8]
+
+On this gateway interface is only ping (= ICMP Echo Request) allowed.
+
+SECURITY Features
+=================
+
+This version of net can act as a secure gateway between a local net
+and an external IP network.
+
+It allows connections to be initiated from the local network(s) to the
+external network(s) but it disallows all connection attempts from the
+external networks(s) the the local network(s).
+
+Note that the gateway itself is always accesible over all interfaces.
+So it can act as FTP server for the external insecure networks.
+(This has ofcourse a negative impact on its performance as a
+secure internetwork router.)
+Be carefull to configure the file '\ftpusers` before you start FTP service
+with the 'start ftp' command. Disallow access to the root directory or the
+NET binary!
+
+
+The insecure external network interface has to be attached with a name
+that starts with 'Se' (Secure).
+
+The local network(s) has to be specified with the command:
+
+secure localnet <network>[/<bits>]
+
+Example: secure localnet [140.24.67]/24
+
+This will add the specified network to the list of protected (local) networks.
+
+The protection is established by examination of packets which enter the network
+over the 'Secure' interface:
+
+1:
+==
+A packet which has an IP-source which matches one of the specified local
+networks is considered a faked packet and is simply dropped. A warning
+is written in the logfile.
+
+2:
+==
+Every UDP packet with a port destination number < 1024 is rejected
+with an ICMP Port Unreachable message.
+
+3:
+==
+Every TCP packet with a port destination number < 1024 is rejected
+with an ICMP Port Unreachable number.
+
+4:
+==
+ICMP redirect packets are dropped.
+
+5:
+==
+Source Routed packets are rejected with an ICMP Parameter Problem.
+
+
+Local networks (or hosts) can be completely isolated from the external networks
+by specifying a 'sink' route. The will reject EVERY packet with an
+IP-source or IP-destination that matches the specified sink route with
+an ICMP Host Unreachable message.
+
+Example:
+
+route add lonely sink
+route add [140.24.67.128]/25 sink
+
+A local network can be completely isolated with the exception of 1 or more
+specific hosts by:
+
+route add [197.25.45.0]/25 sink
+route add [197.25.45.128]/25 sink
+route add [197.25.45.212] ec0
+route add [197.25.45.213] ec0
+
+Tracing
+=======
+
+The command: secure trace on
+will trace incoming packets on the 'Secure' interface. Remember that
+turning trace on has a negative impact on routing performance.
+
+Creating (dangerous) exceptions
+===============================
+
+It is possible to allow TCP connections to special hosts in order to
+establish anonymous FTP connections or incoming mail.
+
+This can be very dangerous because many older Unix FTP- and SMTP-
+(= sendmail) daemons have dangerous security holes. A safe alternative
+is to use a PC which runs this NET program as anonymous FTP server.
+
+Many mail SMTP (and FTP) daemons have the famous Morris internet worm holes.
+Do not allow connections until you are certain that your version is
+secure. The safest way to assure this is to install the latest
+Berkeley sendmail and ftpd sources which are publicly available.
+The use of mail-aliases which resolve to programs (like |uudecode) is
+also considered insecure.
+
+This is an extract of:
+===============================================================================
+			    CERT Advisory
+			    March 19, 1990
+		      Internet Intruder Warning
+-------------------------------------------------------------------------------
+3) Exploit holes in sendmail.
+
+   Make sure you are running the latest sendmail from your vendor.
+BSD 5.61 fixes all known holes that the intruder is using.  
+
+
+4) Exploit bugs in old versions of FTP; exploit mis-configured
+   anonymous FTP
+
+   Make sure you are running the most recent version of FTP which is
+the Berkeley version 4.163 of Nov.  8 1988.  Check with your vendor
+for information on configuration upgrades.  Also check
+your anonymous FTP configuration.  It is important to follow the
+instructions provided with the operating system to properly configure
+the files available through anonymous ftp (e.g., file permissions,
+ownership, group, etc.).  Note especially that you should not use your
+system's standard password file as the password file for FTP.
+
+9) Examine the /usr/lib/aliases (mail alias) file for unauthorized
+entries.  Some alias files include an alias named 'uudecode'; if this
+alias exists on your system, and you are not explicitly using it, then
+it should be removed.
+=========================End of extract===============
+
+
+After you have convinced yourself that your Unix servers are really
+secure you can execute an secure allow command.
+
+Example: secure allow mailhost TCP 25
+
+This will allow TCP connections to be established over the Secure
+interface to tcp port 25 on host 'mailhost'. 25 is the TCP port number
+of the SMTP mail daemon.
+
+The general syntax is:
+
+secure allow <host/ALL> <TCP/UDP/RPC-UDP> <port/ALL> [source-host]
+
+If no source-host is specified then it defaults to ALL.
+
+RPC-UDP specifies a filter which examines UDP packets and determines
+if these packets are RPC calls to a RPC based server. The port number
+contains the RPC program number which should be filtered.
+
+Example:
+
+sec allow ALL RPC-UDP 100012 ALL
+
+
+One can also specify disallows:
+
+secure disallow <host/ALL> <TCP/UDP/RPC-UDP> <port/ALL> [source-host]
+
+Example:
+
+secure disallow ALL RPC-UDP ALL
+
+NOTE that 'disallow' specifiers always overrule 'allow' specifiers
+except 'allows' which have specified all four fields without any 'ALL' wildcard.
+
+===============================================================================
+Tom Vijlbrief
+TNO Institute for Perception
+P.O. Box 23				Phone: +31 34 63 562 11
+3769 ZG  Soesterberg			E-mail: tnosoes!tom@hp4nl.nluug.nl
+The Netherlands				or: uunet!hp4nl.nluug.nl!tnosoes!tom
+===============================================================================
+
+

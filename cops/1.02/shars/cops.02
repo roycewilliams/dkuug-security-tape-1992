@@ -1,0 +1,2010 @@
+#!/bin/sh
+# This is part 02 of cops
+# ============= cops/src/crc_check.c ==============
+if test ! -d 'cops'; then
+    echo 'x - creating directory cops'
+    mkdir 'cops'
+fi
+if test ! -d 'cops/src'; then
+    echo 'x - creating directory cops/src'
+    mkdir 'cops/src'
+fi
+if test -f 'cops/src/crc_check.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/src/crc_check.c (File already exists)'
+else
+echo 'x - extracting cops/src/crc_check.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/src/crc_check.c' &&
+X
+X/*
+X    This progam will compare two crc lists and report the differences.
+X    
+X    By Jon Zeeff (zeeff@b-tech.ann-arbor.mi.us)
+X
+X    Permission is granted to use this in any manner provided that    
+X    1) the copyright notice is left intact, 
+X    2) you don't hold me responsible for any bugs and 
+X    3) you mail me any improvements that you make.  
+X
+X
+X    report:
+X         corrupt	-	crc changed w/o date change
+X         replaced	-	crc + date changed
+X         perm		-	permissions changed
+X         own/grp	-	owner or group changed
+X	 removed	-	
+X	 added		-
+X
+XPrint the info for the new file except for deleted.
+X
+XUse:
+X
+Xfind / -print | sort | xargs crc -v > crc_file
+X
+Xto generate a crc list (crc.c should accompany this source).
+X
+XAssume that no files have tabs or spaces in the name.
+X
+X*/
+X
+X/* max size of line */
+X
+X#define BUF_SIZE 1124
+X
+X#include <stdio.h>
+X
+Xchar	*strrchr();
+Xvoid    exit();
+X
+Xchar	new_line[BUF_SIZE];
+Xchar	old_line[BUF_SIZE];
+X
+XFILE *new_file;
+XFILE *old_file;
+X
+Xmain(argc, argv)
+Xint	argc;
+Xchar	**argv;
+X{
+X   /*
+X
+X           If line =, read new line from each file
+X           else
+X           If date/perm/crc change, report and read new line from each file
+X           else
+X           If old_line < new_line, report file removed, read old line
+X           else
+X              report new line as added
+X              read new_line
+X        loop
+X*/
+X
+X   char	*new_ptr;
+X   char	*old_ptr;
+X
+X   if (argc != 3) {
+X      (void) printf("wrong number of arguments\n");
+X      (void) printf("crc_check old_crc_file new_crc_file\n");
+X      exit(1);
+X   }
+X   new_file = fopen(argv[2], "r");
+X   old_file = fopen(argv[1], "r");
+X
+X   if (new_file == NULL || old_file == NULL) {
+X      (void) printf("can't open input files\n");
+X      (void) printf("crc_check old_crc_file new_crc_file\n");
+X      exit(1);
+X   }
+X
+X   get_line(new_line);
+X   get_line(old_line);
+X
+X   for (; ; ) {
+X
+X      check_eof();
+X
+X      /* If equal, print nothing and get new lines */
+X
+X      if (strcmp(old_line, new_line) == 0) {
+X         get_line(new_line);
+X         get_line(old_line);
+X         continue;
+X      }
+X
+X      /* Compare just the file names */
+X
+X      new_ptr = strrchr(new_line, ' ');
+X      old_ptr = strrchr(old_line, ' ');
+X
+X      if (new_ptr == NULL || old_ptr == NULL) {
+X         (void) printf("Error in input data\n");
+X         exit(1);
+X      }
+X
+X      if (strcmp(old_ptr, new_ptr) == 0) {
+X
+X         new_ptr = strrchr(new_line, '\t');
+X         old_ptr = strrchr(old_line, '\t');
+X
+X         if (new_ptr == NULL || old_ptr == NULL) {
+X            (void) printf("Error in input data\n");
+X            exit(1);
+X         }
+X
+X         /* check crc change */
+X
+X         if (strncmp(new_line, old_line, 4) != 0)
+X            if (strcmp(new_ptr, old_ptr) == 0)
+X               (void) printf("corrupt  %s", new_line + 5);
+X            else
+X               (void) printf("replaced %s", new_line + 5);
+X
+X
+X         /* check permission chenage */
+X
+X         if (strncmp(new_line + 5, old_line + 5, 11) != 0)
+X            (void) printf("permiss  %s", new_line + 5);
+X
+X         /* check  owner/group */
+X
+X         if (strncmp(new_line+16, old_line+16, new_ptr - new_line - 15) != 0)
+X            (void) printf("own/grp  %s", new_line + 5);
+X
+X         get_line(new_line);
+X         get_line(old_line);
+X         continue;
+X      }
+X
+X
+X      if (strcmp(old_ptr, new_ptr) < 0) {
+X         (void) printf("removed  %s", old_line + 5);
+X         get_line(old_line);
+X         continue;
+X      }
+X
+X      (void) printf("added    %s", new_line + 5);
+X      get_line(new_line);
+X
+X   }
+X
+X}
+X
+X
+Xget_line(string)
+Xchar	*string;
+X{
+X   if (string == new_line)
+X      (void) fgets(string, BUF_SIZE, new_file);
+X   else
+X      (void) fgets(string, BUF_SIZE, old_file);
+X
+X}
+X
+X
+Xcheck_eof()
+X{
+X
+X   if (feof(new_file)) {
+X
+X      while (!feof(old_file)) {
+X         (void) printf("removed  %s", old_line + 5);
+X         (void) fgets(old_line, BUF_SIZE, old_file);
+X      }
+X      exit(0);
+X   } else if (feof(old_file)) {
+X      while (!feof(new_file)) {
+X         (void) printf("added    %s", new_line + 5);
+X         (void) fgets(new_line, BUF_SIZE, new_file);
+X      }
+X      exit(0);
+X   }
+X
+X}
+X
+X
+X
+SHAR_EOF
+chmod 0600 cops/src/crc_check.c ||
+echo 'restore of cops/src/crc_check.c failed'
+Wc_c="`wc -c < 'cops/src/crc_check.c'`"
+test 4068 -eq "$Wc_c" ||
+	echo 'cops/src/crc_check.c: original size 4068, current size' "$Wc_c"
+fi
+# ============= cops/src/filewriters.c ==============
+if test -f 'cops/src/filewriters.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/src/filewriters.c (File already exists)'
+else
+echo 'x - extracting cops/src/filewriters.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/src/filewriters.c' &&
+X/* Copyright 1985 Robert W. Baldwin */
+X/* Copyright 1986 Robert W. Baldwin */
+X
+X/*
+X   August 15, 1989: Dan Farmer
+X   One line changed -- #38 is the old line, #41 is my version.
+X   See comment for details...
+X*/
+Xstatic	char	*notice85 = "Copyright 1985 Robert W. Baldwin";
+Xstatic	char	*notice86 = "Copyright 1986 Robert W. Baldwin";
+X
+X/*
+X * Useage: filewriters pathname
+X * Writes on stdout the list of people who can write the file.
+X * This writer's list contains three tokens, the owner, the group, and
+X * the 'all others' group, respectively.
+X * If either group does not have write access, then that token is
+X * replace with the token "NONE".  If the 'all others' group has
+X * write access then that token is "OTHER".
+X *
+X * Notice that the owner of a file can always write it because the
+X * owner can change the file access mode.
+X *
+X * BUG: should handle links correctly.
+X */
+X
+X#include	<stdio.h>
+X#include	<sys/types.h>
+X#include	<sys/stat.h>
+X#include	<grp.h>
+X#include	<pwd.h>
+X
+X/*
+X  changed this line from upper to lower case 's'.
+X  Ultrix barfed 'cause already defined in sys/stat.h,
+X  no one else seemed to mind...
+X
+X#define	S_GWRITE	(S_IWRITE >> 3)
+X*/
+X
+X#ifdef cray
+Xstruct group *getgrgid();
+X#endif
+X
+X#define	s_GWRITE	(S_IWRITE >> 3)		/* Group write access. */
+X#define	S_OWRITE	(S_IWRITE >> 6)		/* Other write access. */
+X
+X
+Xmain(argc, argv)
+Xint	argc;
+Xchar	*argv[];
+X{
+X	int	i;
+X	struct	stat	buf;
+X
+X/*
+X * Make sure the file exists.
+X */
+X 	if (argc != 2)  {
+X		fprintf(stderr, "%s: wrong number of args.\n", argv[0]);
+X		exit(1);
+X		}
+X	if (stat(argv[1], &buf) != 0)  {
+X		fprintf(stderr, "%s: File %s does not exist.\n",
+X			argv[0], argv[1]);
+X		exit(1);
+X		}
+X/*
+X * Produce list of writers.
+X * Owner can always write.
+X */
+X	printf("        ");
+X	print_uid(stdout, buf.st_uid);
+X	printf(" ");
+X	if (s_GWRITE & (buf.st_mode))  {
+X		print_gid(stdout, buf.st_gid);
+X		}
+X	else {
+X		printf("NONE");
+X		}
+X	printf(" ");
+X	if (S_OWRITE & buf.st_mode)  {
+X		printf("OTHER");
+X		}
+X	else {
+X		printf("NONE");
+X		}
+X	printf("\n");
+X	exit(0);
+X}
+X
+X
+Xprint_uid(out, uid)
+XFILE	*out;
+Xint	uid;
+X{
+X	struct	passwd	*pwent;
+X	
+X	if ((pwent = getpwuid(uid)) == NULL)  {
+X		fprintf(stderr, "Bad user id %d.\n", uid);
+X		exit(1);
+X		}
+X	fprintf(out, "%s", pwent->pw_name);
+X}
+X
+X
+Xprint_gid(out, gid)
+XFILE	*out;
+Xint	gid;
+X{
+X	struct	group	*grpent;
+X	
+X	if ((grpent = getgrgid(gid)) == NULL)  {
+X		fprintf(stderr, "Bad group id %d.\n", gid);
+X		exit(1);
+X		}
+X	fprintf(out, "%s", grpent->gr_name);
+X
+X}
+X
+SHAR_EOF
+chmod 0600 cops/src/filewriters.c ||
+echo 'restore of cops/src/filewriters.c failed'
+Wc_c="`wc -c < 'cops/src/filewriters.c'`"
+test 2420 -eq "$Wc_c" ||
+	echo 'cops/src/filewriters.c: original size 2420, current size' "$Wc_c"
+fi
+# ============= cops/src/home.chk.c ==============
+if test -f 'cops/src/home.chk.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/src/home.chk.c (File already exists)'
+else
+echo 'x - extracting cops/src/home.chk.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/src/home.chk.c' &&
+X/*
+X
+X-------------------------------------------------------------------------
+XModification: Aug 2, 1989
+XAuthor: Dan Farmer
+X
+X  I made a minor change to this; it uses a bit mask instead of comparing
+Xto various ok modes.  Otherwise it is unchanged....
+X-------------------------------------------------------------------------
+X
+XOriginal Comment:
+X
+XThis was posted to comp.unix.wizards and net.sources, but I also wanted to
+Xsend it here, both for those that don't read or get news, and so that it
+Xwill be in the archives for posterity....
+X
+XOn the UNIX Security list, quite a while back, mention was made of
+Xproblems that could occur when home directories of users are writable.
+X(Installing |"some command" in ~uucp/.forward remotely and things like
+Xthat.)  This prompted me to write the enclosed program, both to check
+Xfor this, and to help protect users against themselves.
+X
+XThe program looks at all the home directories listed in /etc/passwd,
+Xand prints a message if they don't exist, are not directories, or
+Xtheir mode is not in the "table" of "OK" modes.  I'm using stat()
+Xinstead of lstat(), so symbolic links are perfectly acceptable, as
+Xlong as they point to directories....  This program should run on any
+Xversion of UNIX that I can think of; if it doesn't, please let me
+Xknow.
+X
+XThe list of good modes is, of course, subjective.  I initially used
+Xthe first set, then added the second set based on the output of the
+Xfirst run.  I didn't add all the mismatched modes I found; just the
+Xones that were fairly normal and that I didn't want to hear about....
+X
+XThe program is surprisingly (to me) fast.  It took under a second on
+Xour decently loaded VAX-11/785 running 4.3BSD with 501 passwd entries!
+X
+XThis program is placed in the public domain - you have only your
+Xconscience to stop you from saying "hey, look at this neat program I
+Xwrote"....
+X
+X	Enjoy!
+X
+XJohn Owens		Old Dominion University - Norfolk, Virginia, USA
+Xjohn@ODU.EDU		old arpa: john%odu.edu@RELAY.CS.NET
+X+1 804 440 3915		old uucp: {seismo,harvard,sun,hoptoad}!xanth!john
+X*/
+X
+X#include <pwd.h>
+X#include <sys/types.h>
+X#include <sys/stat.h>
+X
+X
+X/* mask for modes.... (world writable) */
+X#define DMODE 002
+X
+Xmain(argc,argv)
+Xchar **argv;
+X{
+X	register int mode;
+X	register int *p;
+X	struct passwd *pp;
+X	static struct stat statb;
+X
+X	if (argc != 1) {
+X		printf("Usage: %s\n",argv[0]);
+X		exit(1);
+X	}
+X
+X	while ((pp = getpwent()) != (struct passwd *)0) {
+X		if (stat(pp->pw_dir,&statb) < 0) {
+X		/*
+X			perror(pp->pw_dir);
+X		*/
+X			continue;
+X		}
+X
+X		if ((statb.st_mode & S_IFMT) != S_IFDIR) {
+X			printf("Warning!  User %s's home directory %s is not a directory! (mode 0%o)\n",
+X				pp->pw_name,pp->pw_dir,statb.st_mode);
+X			continue;
+X		}
+X
+X		mode = statb.st_mode & ~S_IFMT;
+X
+X		if (!(mode & DMODE)) goto ok;
+X
+X				/* note that 3.3 will print 4 if needed */
+X		printf("Warning!  User %s's home directory %s is mode 0%3.3o!\n",
+X		       pp->pw_name,pp->pw_dir,mode);
+Xok:	;
+X	}
+X
+X	exit(0);
+X
+X}
+SHAR_EOF
+chmod 0600 cops/src/home.chk.c ||
+echo 'restore of cops/src/home.chk.c failed'
+Wc_c="`wc -c < 'cops/src/home.chk.c'`"
+test 2916 -eq "$Wc_c" ||
+	echo 'cops/src/home.chk.c: original size 2916, current size' "$Wc_c"
+fi
+# ============= cops/src/is_able.c ==============
+if test -f 'cops/src/is_able.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/src/is_able.c (File already exists)'
+else
+echo 'x - extracting cops/src/is_able.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/src/is_able.c' &&
+X/*
+X    Usage:
+X
+X is_able filename {w|g|s|S}       {r|w|B|b|s}
+X         (world/group/SUID/SGID   read/write/{read&write}/{suid&write}/s[ug]id)
+X
+X    The second arg of {r|w} determines whether a file is (group or world
+X  depending on the first arg of {w|g}) writable/readable, or if it is
+X  SUID/SGID (first arg, either s or S, respectively), and prints out a
+X  short message to that effect.
+X
+X So:
+X    is_able w w		# checks if world writable
+X    is_able g r		# checks if group readable
+X    is_able s s		# checks if SUID
+X    is_able S b		# checks if world writable and SGID
+X
+X  	Permissions bits:		  vvv--- Permission bits
+X   	        1 = execute		00000
+X   	        2 = writable		 ^
+X   	        4 = readable		 + Setuid bits
+X
+X  	Setuid bits:
+X   	        1 = sticky
+X   	        2 = set group id
+X   	        4 = set user od
+X
+X    Pete Shipley (shipley@mica.berkeley.edu) gutted my original code,
+X  made in cleaner and smarter, and combined everything into one compact
+X  file.  What a deal, huh?  Then I came along and beat up his code and
+X  made it look ugly again (I changed the is_writeable option to return
+X  true if _any_ parent directories are writable, not just the target.  So
+X  you can blame me if you want.  Better yet, just send me a patch if I
+X  blew it.)
+X
+X*/
+X
+X#include <sys/types.h>
+X#include <sys/stat.h>
+X#include <ctype.h>
+X#include <stdio.h>
+X
+X#define G_READ_TEST 00044	/* group (or world) readable */
+X#define W_READ_TEST 00004	/* world readable */
+X#define G_READ_STRING	"Warning!  %s is group readable!\n"
+X#define W_READ_STRING	"Warning!  %s is _World_ readable!\n"
+X
+X#define G_WRITE_TEST 00022	/* group (or world) writable */
+X#define W_WRITE_TEST 00002	/* world writable */
+X#define G_WRITE_STRING	"Warning!  %s is group writable!\n"
+X#define W_WRITE_STRING	"Warning!  %s is _World_ writable!\n"
+X
+X#define SGID_TEST 02000		/* set group id */
+X#define SUID_TEST 04000		/* set user id */
+X#define SUID_STRING	"Warning!  %s is SUID!\n"
+X#define SGID_STRING	"Warning!  %s is SGID!\n"
+X
+Xchar usage[]="Usage: is_able file {w|g|S|s} {r|w|B|b|}\n";
+X
+Xmain(argc,argv)
+Xint argc;
+Xchar **argv;
+X{
+Xchar file[256], wg, rwb, gstring[35],wstring[35],suidstring[35];
+Xregister int group, read, write, both, suid, sgid, verbose, xmode;
+Xstatic struct stat statb;
+X
+Xgroup=read=write=suid=sgid=both=verbose=xmode=0;
+X
+X/* check out arguments */
+Xif (argc != 4) {
+X	fprintf(stderr, usage);
+X	exit(1);
+X	}
+X
+X/* parse arguments */
+Xstrcpy(file, argv[1]);
+X
+X/* get stats on file in question -- if doesn't exist, exit */
+Xif (stat(file,&statb) < 0) {
+X	fprintf(stderr, file);
+X	exit(2);
+X	}
+X
+Xwg   = argv[2][0];		/* world or group */
+Xrwb  = argv[3][0];		/* read/write/both */
+X
+X/* set the report string and some flags */
+Xif (wg == 'g') group = 1;
+Xelse if (wg == 's') suid = 1;
+Xelse if (wg == 'S') sgid = 1;
+X
+Xif (rwb == 'r') {
+X	if (group) strcpy(gstring, G_READ_STRING);
+X	else strcpy(wstring, W_READ_STRING);
+X	read = 1;
+X	}
+Xelse if (rwb == 's')
+X	(suid?strcpy(suidstring,SUID_STRING):strcpy(suidstring,SGID_STRING));
+X
+Xelse if (rwb == 'w') {
+X	if (group) strcpy(gstring, G_WRITE_STRING);
+X	else strcpy(wstring, W_WRITE_STRING);
+X	write = 1;
+X	}
+Xelse if (rwb == 'b') {
+X	/* do the write first, then read check */
+X	if (group) strcpy(gstring, G_WRITE_STRING);
+X	else strcpy(wstring, W_WRITE_STRING);
+X	if (suid) strcpy(suidstring,SUID_STRING);
+X	both = read = write = 1;
+X	}
+Xelse if (rwb == 'B') {
+X	/* do the write first, then s[ug]id check */
+X	if (suid) strcpy(suidstring, SUID_STRING);
+X	else if (sgid) strcpy(suidstring, SGID_STRING);
+X	else {
+X		fprintf(stderr, usage);
+X		exit(1);
+X		}
+X	both = write = 1;
+X	}
+Xelse {
+X	fprintf(stderr, usage);
+X	exit(1);
+X	}
+X
+X/*
+X *         the write stuff, so to speak...
+X *   What I'm doing in this mess is to parse the file in question, check out
+X * whole path; 'cause if anything is world writable, you can compromise.
+X * For instance, if /usr is world writable, then /usr/spool/mail is
+X * compromisable, no matter what its permissions are.
+X *
+X*/
+Xif (write) {
+X	/* 256 levels of dirs, max len each 256 chars */
+X	char foo_dirs[256][256];
+X	char *foo_file;
+X	int i = 0, j;
+X
+X	foo_file = file;
+X	strcpy(foo_dirs[i++], foo_file);
+X
+X	j=strlen(foo_file) - 1;
+X	do {
+X		if (foo_file[j] == '/')
+X			strncpy(foo_dirs[i++], foo_file, j);
+X	} while (--j > 0);
+X
+X	for (j = 0; j < i; j++) {
+X		if (stat(foo_dirs[j],&statb) < 0)
+X			continue;
+X		xmode=statb.st_mode;
+X		if (!group) {
+X			if (xmode & W_WRITE_TEST) {
+X				printf( wstring, file);
+X				if (both) goto bboth;
+X				exit(!xmode);
+X				}
+X			}
+X		else if (xmode & G_WRITE_TEST) {
+X			printf(gstring, file);
+X			if (both) goto bboth;
+X			exit(!xmode);
+X			}
+X		}
+X
+Xif (!both) exit(!xmode);
+X}
+X
+Xbboth:
+Xif (both) if (stat(file,&statb) < 0) {
+X		fprintf(stderr, file);
+X		exit(2);
+X		}
+X
+X/* find premissions on file in question */
+Xif (group)
+X	xmode = statb.st_mode & G_READ_TEST;
+Xelse
+X	xmode = statb.st_mode & W_READ_TEST;
+X
+Xif (wg == 's') {
+X	/* check SUID */
+X	xmode = statb.st_mode & SUID_TEST;
+X	if (xmode) printf( suidstring, file);
+X	exit (!xmode);
+X	}
+Xif (wg == 'S') {
+X	/* check SGID */
+X	xmode = statb.st_mode & SGID_TEST;
+X	if (xmode) printf( suidstring, file);
+X	exit (!xmode);
+X	}
+X
+Xif (rwb == 'b') {
+X	/* do the read now */
+X	if (group) strcpy(gstring, G_READ_STRING);
+X	else strcpy(wstring, W_READ_STRING);
+X	}
+X
+X/* report finding */
+Xif (xmode) printf( (group ? gstring : wstring), file);
+X
+Xexit(!xmode);
+X}
+SHAR_EOF
+chmod 0600 cops/src/is_able.c ||
+echo 'restore of cops/src/is_able.c failed'
+Wc_c="`wc -c < 'cops/src/is_able.c'`"
+test 5278 -eq "$Wc_c" ||
+	echo 'cops/src/is_able.c: original size 5278, current size' "$Wc_c"
+fi
+# ============= cops/src/is_something.c ==============
+if test -f 'cops/src/is_something.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/src/is_something.c (File already exists)'
+else
+echo 'x - extracting cops/src/is_something.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/src/is_something.c' &&
+X/*
+X    Usage: is_xxx [-gv] <filename>
+X
+X    This checks determines whether a file is (group or world)
+X  writable, readable, or SUID, and returns a 0 if false, 1 if true.
+X  The -g option checks for group status, the -v option prints out
+X  the result as well.
+X
+X  	Permissions bits:		  vvv--- Permission bits
+X   	        1 = execute		00000
+X   	        2 = writable		 ^
+X   	        4 = readable		 + Setuid bits
+X
+X  	Setuid bits:
+X   	        1 = sticky
+X   	        2 = set group id
+X   	        4 = set user od
+X
+X    Pete Shipley (shipley@mica.berkeley.edu) gutted my original code,
+X  made in cleaner and smarter, and combined everything into one compact
+X  file.  What a deal, huh?  Then I came along and beat up his code and
+X  made it look ugly again (I changed the is_writeable option to return
+X  true if _any_ parent directories are writable, not just the target.  So
+X  you can blame me if you want.  Better yet, just send me a patch if I
+X  blew it.)
+X
+X*/
+X
+X#include <sys/types.h>
+X#include <sys/stat.h>
+X
+X#ifdef SETUID
+X#define G_TEST 02000	/* set group id */
+X#define W_TEST 04000	/* set user id */
+X#define G_REPORT_STRING	"%s is set gid\n"
+X#define W_REPORT_STRING	"%s is set uid\n"
+X#endif SETUID
+X
+X#ifdef READABLE
+X#define G_TEST 00040	/* group readable */
+X#define W_TEST 00004	/* world readable */
+X#define G_REPORT_STRING	"%s is group readable\n"
+X#define W_REPORT_STRING	"%s is world readable\n"
+X#endif READABLE
+X
+X#ifdef WRITABLE
+X#define G_TEST 00020	/* group writable */
+X#define W_TEST 00002	/* world writable */
+X#define G_REPORT_STRING	"%s is group writable\n"
+X#define W_REPORT_STRING	"%s is world writable\n"
+X#endif WRITABLE
+X
+Xmain(argc,argv)
+Xint argc;
+Xchar **argv;
+X{
+X    register int group = 0,
+X	    verbose = 0,
+X	    xmode;
+X
+X    static struct stat statb;
+X
+X    /* check out arguments */
+X    if (argc < 2) {
+X	(void) printf("Usage: %s [-gv] file\n",argv[0]);
+X	exit(0);
+X    }
+X
+X    /* parse arguments */
+X    if (argc > 2) {
+X	while (argv[1][0] == '-' && argv[1][1] != '\0') {
+X	    if (argv[1][1] == 'g') { group++; argv++; }
+X	    if (argv[1][1] == 'v') { verbose++; argv++; }
+X	}
+X    }
+X
+X    /* get stats on file in question */
+X    if (stat(*++argv,&statb) < 0) {
+X	perror(*argv);
+X	exit(2);
+X    }
+X
+X/*
+X           the write stuff, so to speak...
+X     What I'm doing in this mess is to parse the file in question, check out
+X   whole path; 'cause if anything is world writable, you can compromise.
+X
+X*/
+X#ifdef WRITABLE
+X{
+Xchar foo_dirs[256][256];  /* 256 levels of dirs, max len each 256 chars */
+Xchar *foo_file;
+Xint i = 0, j;
+X
+X	foo_file = *argv;
+X	strcpy(foo_dirs[i++], foo_file);
+X
+X	j=strlen(foo_file) - 1;
+X	do {
+X		if (foo_file[j] == '/')
+X			strncpy(foo_dirs[i++], foo_file, j);
+X	} while (--j > 0);
+X
+X	for (j = 0; j < i; j++)
+X		{
+X		if (stat(foo_dirs[j],&statb) < 0)
+X			continue;
+X		else if (!group) {
+X			if (statb.st_mode & W_TEST)
+X				exit(0);
+X			}
+X		else if (statb.st_mode & G_TEST)
+X			exit(0);
+X		}
+X
+X	exit(1);
+X}
+X#endif WRITABLE
+X
+X    /* test premissions on file in question */
+X    if (group) {
+X	xmode = statb.st_mode & G_TEST;
+X    } else {
+X	xmode = statb.st_mode & W_TEST;
+X    }
+X
+X    /* report finding */
+X
+X    if(verbose && xmode) {
+X	(void) printf( (group ? G_REPORT_STRING : W_REPORT_STRING), *argv);
+X    }
+X
+X    exit(!xmode);
+X}
+SHAR_EOF
+chmod 0600 cops/src/is_something.c ||
+echo 'restore of cops/src/is_something.c failed'
+Wc_c="`wc -c < 'cops/src/is_something.c'`"
+test 3206 -eq "$Wc_c" ||
+	echo 'cops/src/is_something.c: original size 3206, current size' "$Wc_c"
+fi
+# ============= cops/src/members.c ==============
+if test -f 'cops/src/members.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/src/members.c (File already exists)'
+else
+echo 'x - extracting cops/src/members.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/src/members.c' &&
+X/* Copyright 1985 Robert W. Baldwin */
+X/* Copyright 1986 Robert W. Baldwin */
+Xstatic	char	*notice85 = "Copyright 1985 Robert W. Baldwin";
+Xstatic	char	*notice86 = "Copyright 1986 Robert W. Baldwin";
+X
+X/*
+X * useage: members GroupName
+X * Writes to stdout the list of UserNames that are in the given group.
+X * The UserNames are separated by space or newline characters.
+X *
+X */
+X
+X#include	<stdio.h>
+X#include	<grp.h>
+X#include	<pwd.h>
+X
+X
+X#ifdef cray
+Xstruct	group	*getgrnam();
+X#endif
+X
+Xmain(argc, argv)
+Xint	argc;
+Xchar	*argv[];
+X{
+X	int	i;
+X	int	gid;
+X	struct	group	*grent;
+X	struct	passwd	*pwent;
+X	char	**user;
+X
+X/*
+X * Print the list of group members from /etc/group.
+X */
+X	if ((grent = getgrnam(argv[1])) == NULL)  {
+X		fprintf(stderr, "%s: Bad group name %s.\n",
+X			argv[0], argv[1]);
+X		exit(1);
+X		}
+X	gid = grent->gr_gid;
+X	for (user = grent->gr_mem ; *user != NULL ; user++)  {
+X		fprintf(stdout, "%s ", *user);
+X		}
+X	fprintf(stdout, "\n");
+X	endgrent();
+X/*
+X * The passwd file must also be examined to find members of the group.
+X * Duplicates may occur, but the higher level code shouldn't care about them.
+X */
+X	while ((pwent = getpwent()) != NULL)  {
+X		if (pwent->pw_gid != gid)
+X			continue;
+X		fprintf(stdout, "%s ", pwent->pw_name);
+X		}
+X	fprintf(stdout, "\n");
+X	endpwent();
+X}
+X
+SHAR_EOF
+chmod 0600 cops/src/members.c ||
+echo 'restore of cops/src/members.c failed'
+Wc_c="`wc -c < 'cops/src/members.c'`"
+test 1258 -eq "$Wc_c" ||
+	echo 'cops/src/members.c: original size 1258, current size' "$Wc_c"
+fi
+# ============= cops/src/pass.c ==============
+if test -f 'cops/src/pass.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/src/pass.c (File already exists)'
+else
+echo 'x - extracting cops/src/pass.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/src/pass.c' &&
+X#include <stdio.h>
+X#include <pwd.h>
+X#include <ctype.h>
+X
+X/* number of words the dictionary can suck up */
+X#define ARB_CONST	32000
+X
+X#ifndef lint
+Xstatic char *rcsid = "$Header: pwchkr.c,v 1.1 85/09/10 16:00:56 root Exp $";
+X#endif
+X
+X/*
+X * Warning: this program burns a lot of cpu.
+X */
+X/*
+X * Insecure - find accounts with poor passwords
+X	Date: Tue, 29 Nov 83 18:19:32 pst
+X	From: leres%ucbarpa@Berkeley (Craig Leres)
+X
+X	Insecure is something that Jef Poskanzer and I wrote to rid a
+X	local system of an overly persistent ankle-biting adolescent.
+X	It was a quick hack we whipped up in just a few minutes and was
+X	never intended to be publically distributed. Unfortunately, I
+X	made the mistake of giving a copy to an associate at UC
+X	Berkeley. Apparently, he incorporated it in a security package
+X	he later developed for use at Berkeley. Someone else
+X	distributed it outside Berkeley which explains why it's been
+X	publically distributed.
+X
+X
+X	    Modified by Seth Alford, Roger Southwick, Steve Dum, and
+X	    Rick Lindsley for Tektronix
+X
+X      Bits and pieces hacked by me and others, 1/4/91... df
+X */
+X
+X/*
+X *	$Log:	pwchkr.c,v $
+X *	Revision 1.1  85/09/10  16:00:56  root
+X *	Initial revision
+X *	
+X *
+X * By default, this program only checks for accounts with passwords the same
+X * as the login name. The following options add more extensive checking. (The
+X * tradeoff is cpu time -- with all options enabled it can run into the 100's
+X * of MINUTES.) Any argument that does not begin with a "-" is assumed to be
+X * a file name. (A single '-' means stdin.) If no file name is given,
+X * /etc/passwd is used.
+X *
+X * Options:
+X *
+X *		-v:	verbose -- list all guesses on stdout
+X *		-u:	output the username on the line of the password file
+X *			currently being checked. If the program stops
+X *			abruptly you will then know how far it got.
+X *		-w file: use the list of words contained in "file" as likely
+X *			passwords. Words in the file are one to a line.
+X *		-b: 	check all guesses backwards too
+X *		-g:	use the Full Name portion of the gecos field to
+X *			generate more guesses; also check .plan, .signature
+X *			and .project files.
+X *		-s:	check the single letters a-z, A-Z, 0-9 as passwords
+X *		-c:	with each guess, check for all-lowercase and
+X *			all-uppercase versions too.
+X *		-n:	complain about null passwords (default is to keep quiet)
+X *		-p:	print the password when guessed
+X *		-P:	use alternate password file
+X */
+X
+Xint verbose = 0, singles = 0, backwards = 0, checkgecos = 0, checkcase = 0,
+X    chknulls = 0, printit = 0, users = 0, chkwords = 0;
+X
+Xchar *my_index(), *reverse();
+Xlong atol();
+XFILE *fopen();
+Xchar *fgets();
+X
+X/* char PASSWD[] = "/etc/passwd"; */
+Xchar PASSWD[256];
+X
+Xchar EMPTY[] = "";
+Xstatic FILE *pwf = NULL, *wlf = NULL;
+Xchar line[BUFSIZ+1];
+Xstruct passwd passwd;
+Xchar	*Curpw, *Wordlist = NULL;
+X
+Xmain(argc, argv)
+Xchar **argv;
+X{
+X    register int i;
+X    register char *arg;
+X    int onedone = 0;
+X
+X    /*
+X    You have to decide whether or not to include these lines....
+X
+X    if (getuid()) {
+X	printf("Did you really think we would let you run this?\n");
+X	exit(1);
+X	}
+X
+X    */
+X    strcpy(PASSWD, "/etc/passwd");
+X
+X    for (i = 1; i < argc; i++)
+X	if ((arg = argv[i]) && *arg == '-')
+X	    while (*++arg) {
+X		switch (*arg) {
+X		    case 'n':
+X			/*
+X			 * complain about null passwords
+X			 */
+X			chknulls++;
+X			break;
+X		    case 'c':
+X			/*
+X			 * check cases
+X			 */
+X			checkcase++;
+X			break;
+X		    case 'g':
+X			/*
+X			 * use gecos
+X			 */
+X			checkgecos++;
+X			break;
+X		    case 'v':
+X			/*
+X			 * turn on motormouth
+X			 */
+X			verbose++;
+X			break;
+X		    case 'b':
+X			/*
+X			 * check all attempts forwards and backwards
+X			 */
+X			backwards++;
+X			break;
+X		    case 's':
+X			/*
+X			 * carry out a more intensive search, checking for
+X			 * single letter passwords
+X			 */
+X			singles++;
+X			break;
+X		    case 'p':
+X			/*
+X			 * print out the password when found
+X			 */
+X			printit++;
+X			break;
+X		    case 'u':
+X			/*
+X			 * print out users as testing
+X			 */
+X			users++;
+X			break;
+X		    case 'P':
+X			/*
+X			 * use alternate passwd file
+X			 */
+X			if (argv[i+1] == NULL) {
+X			    fprintf(stderr,
+X				"%s: No file supplied with -P option\n",
+X				argv[0]);
+X			    exit (1);
+X			    }
+X			strcpy(PASSWD, argv[i+1]);
+X			argv[i+1] = NULL;
+X			break;
+X		    case 'w':
+X			/*
+X			 * consult word list of likely passwords
+X			 */
+X			if ((Wordlist = argv[i+1]) == NULL) {
+X			    fprintf(stderr,
+X				"%s: No file supplied with -w option\n",
+X				argv[0]);
+X			    exit (1);
+X			    }
+X			argv[i+1] = NULL;
+X			break;
+X		    case '\0':
+X			/*
+X			 * read from stdin
+X			 */
+X			break;
+X		    default:
+X			fprintf(stderr,
+X			    "%s: unknown option '%c'. Options are:\n",argv[0],
+X			    *arg);
+X			/* FALL THRU */
+X		    case '-':
+X			fprintf(stderr,"-v:\t\tverbose -- list all guesses on stdout\n");
+X			fprintf(stderr,"-u:\t\toutput the username currently being checked\n");
+X			fprintf(stderr,"-w file:\tconsult the indicated file for words to check as passwords\n");
+X			fprintf(stderr,"-b:\t\tcheck all guesses forwards and backwards\n");
+X			fprintf(stderr,"-g:\t\tuse the Full name portion of the gecos field for more guesses\n");
+X			fprintf(stderr,"-s:\t\tcheck the single letters a-z, A-Z, 0-9 as passwords\n");
+X			fprintf(stderr,"-c:\t\tcheck the all-upper and all-lower case version of each guess\n");
+X			fprintf(stderr,"-n:\t\tcomplain about null passwords\n");
+X			fprintf(stderr,"-p:\t\tprint the password when guessed\n");
+X			exit(1);
+X		    }
+X		argv[i] = NULL;
+X		}
+X    
+X    for (i = 1; i < argc; i++) {
+X	if (argv[i] == NULL) continue;
+X	onedone++;
+X	if (*(argv[i]) == '-') {
+X	    /*
+X	     * read from stdin; we'll cheat and set pwf directly
+X	     */
+X	    pwf = stdin;
+X	    chkpw();
+X	    /*
+X	     * don't fclose stdin!
+X	     */
+X	    clearerr(stdin);
+X	    }
+X	else {
+X	    if ((fopen(argv[i],"r")) == NULL) {
+X		perror(argv[i]);
+X		continue;
+X		}
+X	    Curpw = argv[i];
+X	    chkpw();
+X	    end2pwent();
+X	    }
+X	}
+X    if (!onedone) {
+X	Curpw = NULL;
+X	chkpw();
+X	}
+X    exit(0);
+X}
+X
+X/*
+X * Added by Jacob Gore, March 12, 1987.
+X *
+X * Finds the pointer of the leftmost occurance within the character string
+X * 'string' of any character found within the character string 'chars'.
+X *
+X * If none of the characters in 'chars' appear in 'string', NULL is retutned.
+X *
+X */
+Xchar *
+Xindexm (string, chars)
+X    char *string, *chars;
+X{
+X    while (*string) {
+X	if (my_index(chars, *string) != NULL) {
+X	    return string;
+X	}
+X	string++;
+X    }
+X    return NULL;
+X}
+X
+Xchkpw()
+X
+X{
+X    register char	*cp, *cp2;
+X    struct passwd	*pwd;
+X    struct passwd	*getpwent();
+X    char		guess[100];
+X    char		*wordarray[ARB_CONST];
+X    char		*malloc(), **wordptr, **endptr;
+X    int			done = 0;
+X
+X
+X    if (Wordlist)
+X    {
+X	if ((wlf = fopen(Wordlist,"r")) == NULL)
+X	{
+X	    perror(Wordlist);
+X	    exit(1);
+X	}
+X
+X	wordptr = wordarray;
+X	/*
+X	 * note that endptr points to space OUTSIDE of wordarray
+X	 */
+X	endptr = wordarray + (sizeof(wordarray)/sizeof(char *));
+X
+X	while (fscanf(wlf,"%[^\n]\n",guess) != EOF)
+X	{
+X
+X	    if (wordptr == endptr)
+X	    {
+X		fprintf(stderr,"Ran out of wordlist space. ARB_CONST %d must be too small.\n", ARB_CONST);
+X		exit(1);
+X	    }
+X	    if ((*wordptr = malloc(1+strlen(guess))) == NULL)
+X	    {
+X		fprintf(stderr,"malloc: no more memory for wordlist\n");
+X		exit (1);
+X	    }
+X	    strcpy(*wordptr,guess);
+X	    wordptr++;
+X  /* SunOs 4.03 on a Sun 3/80 didn't work properly, needed this one line fix */
+X	    if (feof(wlf)) break;
+X	}
+X	*wordptr = NULL;
+X	fclose(wlf);
+X    }
+X
+X    while ((pwd = getpwent()) != 0 ) {
+X
+X        done = 0;
+X
+X	if (verbose || users) {
+X	    if (Curpw == NULL)
+X		printf("\t%s \"%s\"\n", pwd->pw_name, pwd->pw_gecos);
+X	    else
+X		printf("%s -- \t%s \"%s\"\n", Curpw, pwd->pw_name,
+X		    pwd->pw_gecos);
+X	    fflush(stdout);
+X	    }
+X	if (*pwd->pw_passwd == '\0') {
+X	    if (chknulls) {
+X		if (Curpw == NULL)
+X		    printf("Warning!  Password Problem: null passwd:\t%s\tshell: %s\n",
+X			pwd->pw_name, pwd->pw_shell);
+X		else
+X		    printf("Warning!  %s -- Password Problem: null passwd:\t%s\tshell: %s\n",
+X			Curpw, pwd->pw_name, pwd->pw_shell);
+X		fflush(stdout);
+X		}
+X	    continue;
+X	}
+X	/*
+X	 * Try the user's login name
+X	 */
+X	if (uandltry(pwd,pwd->pw_name))
+X	    continue;
+X
+X	/*
+X	 * Try names from the gecos field
+X	 */
+X	if (checkgecos) {
+X	    /* Check extra files as well */
+X	    if (srch_aux_files(pwd->pw_dir, pwd)) {
+X		done++;
+X		continue;
+X	    }
+X	    strcpy(guess, pwd->pw_gecos);
+X	    cp = guess;
+X	    if (*cp == '-') cp++;		/* special gecos field */
+X	    if ((cp2 = my_index(cp, ';')) != NULL)
+X		*cp2 = '\0';
+X
+X	    for (;;) {
+X		/* use both ' ' and ',' as delimiters -- Jacob */
+X		if ((cp2 = indexm(cp, " ,")) == NULL) {
+X		    if (uandltry(pwd,cp))
+X			done++;
+X		    break;
+X		    }
+X
+X		*cp2 = '\0';
+X
+X		if (uandltry(pwd,cp)) {
+X		    done++;
+X		    break;
+X		    }
+X		cp = ++cp2;
+X		}
+X	    }
+X	    
+X	if (!done && Wordlist)
+X	{
+X	    /*
+X	     * try the words in the wordlist
+X	     */
+X	    wordptr = wordarray;
+X	    while (endptr != wordptr)
+X	    {
+X		if (*wordptr == NULL)
+X		    break;
+X		if (uandltry(pwd,*wordptr++))
+X		{
+X		    done++;
+X		    break;
+X		}
+X	    }
+X	}
+X	if (!done && singles) {
+X	    /*
+X	     * Try all single letters
+X	     * (try digits too .  --Seth)
+X	     */
+X	    guess[1] = '\0';
+X	    for (guess[0]='a'; guess[0] <= 'z'; guess[0]++)
+X		if (try(pwd,guess))
+X		    break;
+X	    for (guess[0]='A'; guess[0] <= 'Z'; guess[0]++)
+X		if (try(pwd,guess))
+X		    break;
+X	    for (guess[0]='0'; guess[0] <= '9'; guess[0]++)
+X		if (try(pwd,guess))
+X		    break;
+X	    }
+X    }
+X}
+X
+X/*
+X * Stands for "upper and lower" try.  Calls the "real" try, below,
+X * with the supplied version of the password, and with
+X * an upper and lowercase version of the password. If the user doesn't
+X * want to try upper and lower case then we just return after the one
+X * check.
+X*/
+X
+Xuandltry (pwd,guess)
+Xchar *guess;
+Xstruct passwd *pwd;
+X{
+X    register char *cp;
+X    char buf[100];
+X    int alllower, allupper;
+X
+X    alllower = allupper = 1;
+X
+X    if (try(pwd,guess) || (backwards && try(pwd,reverse(guess)))) return (1);
+X
+X    if (!checkcase) return(0);
+X
+X    strcpy (buf, guess);
+X    cp = buf-1;
+X    while (*++cp) {
+X	if (isupper(*cp))
+X	    alllower = 0;
+X	if (islower(*cp))
+X	    allupper = 0;
+X	}
+X
+X    if (!allupper) {
+X	for ( cp=buf; *cp != '\0'; cp++)
+X	    if (islower (*cp))
+X		*cp += 'A' - 'a';
+X
+X	if (try(pwd,buf) || (backwards && try(pwd,reverse(buf)))) return (1);
+X	}
+X
+X    if (!alllower) {
+X	for ( cp = buf; *cp != '\0'; cp++)
+X	    if (isupper (*cp))
+X		*cp += 'a' - 'A';
+X
+X	if (try(pwd,buf) || (backwards && try(pwd,reverse(buf)))) return (1);
+X	}
+X    return (0);
+X}
+X
+Xtry(pwd,guess)
+Xchar *guess;
+Xregister struct passwd *pwd;
+X{
+X    register char  *cp;
+X    char   *crypt ();
+X
+X    if (verbose) {
+X	if (Curpw == NULL)
+X	    printf ("Trying \"%s\" on %s\n", guess, pwd -> pw_name);
+X	else
+X	    printf ("%s -- Trying \"%s\" on %s\n", Curpw, guess,
+X		pwd -> pw_name);
+X	fflush (stdout);
+X	}
+X    if (! guess || ! *guess) return(0);
+X    cp = crypt (guess, pwd -> pw_passwd);
+X
+X/* silly sun tries to fool us by adding extra chars in their passwd field! */
+X/* but laddie, we're too smart for 'em, eh?!?  Kudos to Bernard Wilson */
+X    if (strncmp (cp, pwd -> pw_passwd, 13))
+X	return (0);
+X    if (Curpw == NULL)
+X	if (printit)
+X	    printf ("Warning!  Password Problem: Guessed:\t%s\tshell: %s passwd: %s\n",
+X		pwd -> pw_name, pwd -> pw_shell, guess);
+X	else
+X	    printf ("Warning!  Password Problem: Guessed:\t%s\tshell: %s\n", pwd -> pw_name,
+X		pwd -> pw_shell);
+X    else
+X	if (printit)
+X	    printf ("Warning!  %s -- Password Problem: Guessed:\t%s\tshell: %s passwd: %s\n",
+X		Curpw, pwd -> pw_name, pwd -> pw_shell, guess);
+X	else
+X	    printf ("Warning!  %s -- Password Problem: Guessed:\t%s\tshell: %s\n",
+X		Curpw, pwd -> pw_name, pwd -> pw_shell);
+X    fflush (stdout);
+X    return (1);
+X}
+X/* end of PW guessing program */
+X
+X#define MAXUID 0x7fff	/* added by tonyb 12/29/83 */
+X			/* altered to a reasonable number - mae 8/20/84 */
+X
+Xend2pwent()
+X{
+X    fclose(pwf);
+X    pwf = NULL;
+X}
+X
+Xchar *
+Xpwskip(p)
+Xregister char *p;
+X{
+X	while(*p && *p != ':' && *p != '\n')
+X		++p;
+X	if(*p == '\n')
+X		*p = '\0';
+X	else if(*p)
+X		*p++ = '\0';
+X	return(p);
+X}
+X
+Xstruct passwd *
+Xgetpwent()
+X{
+X	register char *p;
+X	long	x;
+X
+X	if(pwf == NULL)
+X	    if ((pwf = fopen(PASSWD,"r")) == NULL) {
+X		perror(PASSWD);
+X		return(NULL);
+X		}
+X	p = fgets(line, BUFSIZ, pwf);
+X	if(p == NULL)
+X		return(0);
+X	passwd.pw_name = p;
+X	p = pwskip(p);
+X	passwd.pw_passwd = p;
+X	p = pwskip(p);
+X	x = atol(p);	
+X	passwd.pw_uid = (x < 0 || x > MAXUID)? (MAXUID+1): x;
+X	p = pwskip(p);
+X	x = atol(p);
+X	passwd.pw_gid = (x < 0 || x > MAXUID)? (MAXUID+1): x;
+X/*	passwd.pw_comment = EMPTY; */
+X	p = pwskip(p);
+X	passwd.pw_gecos = p;
+X	p = pwskip(p);
+X	passwd.pw_dir = p;
+X	p = pwskip(p);
+X	passwd.pw_shell = p;
+X	(void) pwskip(p);
+X
+X	p = passwd.pw_passwd;
+X 
+X	return(&passwd);
+X
+X}
+X
+X
+X/*
+X * reverse a string
+X */
+Xchar *reverse(str)
+Xchar *str;
+X
+X{
+X    register char *ptr;
+X    char	*malloc();
+X    static char buf[100];
+X
+X    ptr = buf + strlen(str);
+X    *ptr = '\0';
+X    while (*str && (*--ptr = *str++))
+X	;
+X    return(ptr);
+X
+X}
+X
+X
+X/* Guess passwords using additional files for guesses. Returns 1 (true) if
+X * a match was found, otherwise 0 (false). The parameters to be passed to
+X * this function are a character pointer to the directory in which the files
+X * reside. This function access the "uandltry" routine from other 
+X * sections of the code.
+X */
+X#define MAXWORD 15		/* Maximum word length allow for guess */
+X
+X#include <stdio.h>
+X#include <ctype.h>
+X
+Xstatic char *file[] = { "/.project",		/* These are the extra files */
+X			"/.plan",		/* to be searched for */
+X			"/.signature",		/* prospective passwords */
+X			"" };			/* Note the initial "/" */
+X
+Xint
+Xsrch_aux_files(dir, pwd)
+X	char *dir;	/* Directory in which to search */
+X	struct passwd *pwd;	/* Encrypted password */
+X{
+X	char path[100];		/* Complete path */
+X	FILE *fp;
+X	char *wp;
+X	char *getword();
+X	char **p;
+X
+X	p = file;
+X	while (**p != NULL) {
+X		strcpy(path, dir);	/* Make complete path name */
+X		strcat(path, *p++);
+X		if ((fp = fopen(path, "r")) == NULL)
+X			continue;	/* If we can't open the file, skip it */
+X		while ((wp = getword(fp)) != NULL)
+X			if (uandltry(pwd, wp))
+X				return(1);
+X		fclose(fp);
+X	}
+X	return(0);
+X}
+X
+X/* Get a word from a stream. Word separators are user definable in "is_sep".
+X * Maximum word size is MAXWORD characters. If a word reaches it's maximum
+X * limit, we choose not to flush the rest of the word. Returns NULL on EOF.
+X */
+Xchar *
+Xgetword(fp)
+X	FILE *fp;
+X{
+X	static char word[MAXWORD + 1];
+X	char *p = word;
+X	int c;
+X	int is_sep();
+X
+X	while ((c = fgetc(fp)) != EOF && !isalnum(c))
+X		;		/* Skip over word separators */
+X	if (c == EOF)
+X	       return(NULL);
+X	*p++ = c;
+X	while ((c = fgetc(fp)) != EOF && isalnum(c) && p != &(word[MAXWORD])) {
+X		*p++ = c;	/* Quit when a word separator is encountered
+X				 * or we reach maximum word length
+X				 */
+X	}
+X	*p = '\0';		/* Mustn't forget that word terminator */
+X	return ((c == EOF) ? NULL : word);
+X}
+X/* taken from comp.binaries.ibm.pc.d:
+XSome users have reported trouble compiling the freely distributable
+Xuudecode I posted.  It seems that Berkeley moved the "index" function
+Xto one of their system libraries and some systems don't have it.
+XHere is the missing "index" function, excerpted from an earlier freely
+Xdistributable uudecode.  Just add it on the end of the uudecode I posted.
+X*/
+X/*
+X--Keith Petersen
+XMaintainer of SIMTEL20's CP/M, MSDOS, & MISC archives [IP address 26.2.0.74]
+XInternet: w8sdz@WSMR-SIMTEL20.Army.Mil, w8sdz@brl.arpa  BITNET: w8sdz@NDSUVM1
+XUucp: {ames,decwrl,harvard,rutgers,ucbvax,uunet}!wsmr-simtel20.army.mil!w8sdz
+X*/
+X
+X/*
+X * Return the ptr in sp at which the character c appears;
+X * NULL if not found
+X */
+X
+X#define	NULL	0
+X
+Xchar *
+Xmy_index(sp, c)
+Xregister char *sp, c;
+X{
+X	do {
+X		if (*sp == c)
+X			return(sp);
+X	} while (*sp++);
+X	return(NULL);
+X}
+X
+X
+SHAR_EOF
+chmod 0600 cops/src/pass.c ||
+echo 'restore of cops/src/pass.c failed'
+Wc_c="`wc -c < 'cops/src/pass.c'`"
+test 15629 -eq "$Wc_c" ||
+	echo 'cops/src/pass.c: original size 15629, current size' "$Wc_c"
+fi
+# ============= cops/src/tilde.c ==============
+if test -f 'cops/src/tilde.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/src/tilde.c (File already exists)'
+else
+echo 'x - extracting cops/src/tilde.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/src/tilde.c' &&
+X#include <pwd.h>
+X#include <sys/types.h>
+X#include <sys/stat.h>
+X
+Xmain(argc,argv)
+Xint argc;
+Xchar **argv;
+X{
+Xstruct passwd *pp;
+X
+Xif (argc != 2) {
+X	printf("Usage: %s\n",argv[0]);
+X	exit(1);
+X}
+X
+X/* print directory of user, else "Error"  -- need to print
+X  something, or kuang won't parse dir correctly */
+Xif ((pp = getpwnam(argv[1])) != (struct passwd *)0)
+X	printf("%s", pp->pw_dir);
+Xelse
+X	printf("Error");
+X
+X}
+SHAR_EOF
+chmod 0600 cops/src/tilde.c ||
+echo 'restore of cops/src/tilde.c failed'
+Wc_c="`wc -c < 'cops/src/tilde.c'`"
+test 401 -eq "$Wc_c" ||
+	echo 'cops/src/tilde.c: original size 401, current size' "$Wc_c"
+fi
+# ============= cops/src/user.chk.c ==============
+if test -f 'cops/src/user.chk.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/src/user.chk.c (File already exists)'
+else
+echo 'x - extracting cops/src/user.chk.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/src/user.chk.c' &&
+X#include <stdio.h>
+X#include <pwd.h>
+X#include <sys/types.h>
+X#include <sys/stat.h>
+X
+X/* Any file writable by all will be flagged */
+X#define DMODE 002
+X
+X#define MODE1 004
+X#define MODE2 040
+X
+X/* #define DMODE2 020 */
+X
+X/* potentially dangerous files */
+Xchar *ftable[] = {
+X	"rhosts",
+X	"profile",
+X	"login",
+X	"logout",
+X	"cshrc",
+X	"bashrc",
+X	"kshrc",
+X	"tcshrc",
+X	"netrc",
+X	"forward",
+X	"dbxinit",
+X	"distfile",
+X	"exrc",
+X	"emacsrc"
+X};
+Xchar *ft;
+Xchar *ftr, *malloc();
+X
+Xchar generic_file[100];
+X
+Xmain(argc,argv)
+Xint argc;
+Xchar **argv;
+X{
+Xregister int fmode;
+Xregister int index;
+Xstruct passwd *pp;
+Xstatic struct stat statb;
+X
+Xif (argc != 1) {
+X	printf("Usage: %s\n",argv[0]);
+X	exit(1);
+X	}
+X
+Xft = malloc(100);
+Xftr = malloc(100);
+X
+Xwhile ((pp = getpwent()) != (struct passwd *)0) {
+X	if (stat(pp->pw_dir,&statb) < 0) {
+X		continue;
+X		}
+X
+X	index = 0;
+X	/*
+X	 *   Use the home-dir, and add on each potential security threat
+X	 * file to the path one at a time.  Then check each file to see
+X	 * if it breaks with the modes established up above
+X	 *
+X	*/
+X	for (ft = ftable[index]; index < 13; ft = ftable[++index]) {
+X		if (strlen(pp->pw_dir) != 1)
+X			sprintf(generic_file, "%s/.%s", pp->pw_dir,ft);
+X		else 
+X			sprintf(generic_file, "%s.%s", pp->pw_dir,ft);
+X
+X		if (stat(generic_file,&statb) < 0)
+X			continue;
+X
+X		if (statb.st_mode & DMODE) 
+X			printf("Warning!  User %s:\t%s is mode \t0%3.3o!\n",
+X	       		pp->pw_name,generic_file,statb.st_mode&~S_IFMT);
+X
+X		/* check for mode on .netrc files; should be non-readable */
+X		if (!strcmp("netrc", ftable[index]))
+X			if (statb.st_mode & MODE1 || statb.st_mode & MODE2)
+X				printf("Warning!  User %s:\t%s is readable; mode \t0%3.3o!\n",
+X	       			pp->pw_name,generic_file,statb.st_mode&~S_IFMT);
+X		}
+X
+X	}
+X
+Xexit(0);
+X}
+SHAR_EOF
+chmod 0600 cops/src/user.chk.c ||
+echo 'restore of cops/src/user.chk.c failed'
+Wc_c="`wc -c < 'cops/src/user.chk.c'`"
+test 1721 -eq "$Wc_c" ||
+	echo 'cops/src/user.chk.c: original size 1721, current size' "$Wc_c"
+fi
+# ============= cops/chk_strings ==============
+if test -f 'cops/chk_strings' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/chk_strings (File already exists)'
+else
+echo 'x - extracting cops/chk_strings (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/chk_strings' &&
+X:
+X#
+X#  Usage: chk_strings filename
+X#
+X#  This will check pathnames inside executable files for writability,
+X# using the "strings" command and egrep.
+X#
+X#  I have identified three basic types of strings containing paths to files:
+X# 1)
+X#    /path1/path2/file			/* standard */
+X# 2) 
+X#    '/path1/path2/file'		/* standard, in single quotes */
+X# 3)
+X#    :/path1/file1:/path2/file2		/* a path for searching */
+X#
+X#  For the first two, I simply test the writability; for the last, I
+X# parse it into seperate paths and check each one in turn.
+X#
+XAWK=/bin/awk
+XEGREP=/usr/bin/egrep
+XTEST=/bin/test
+XECHO=/bin/echo
+XSORT=/usr/bin/sort
+XSTRINGS=/usr/ucb/strings
+X
+Xif test ! -s $STRINGS
+X	then
+X	exit 0
+Xfi
+X
+Xif test $# -eq 0
+X	then
+X	$ECHO "Usage: $0 file"
+X	exit 2
+Xfi
+X
+Xwhile test 0 -ne $#
+X	do
+X	# $ECHO Checking $1...
+X	# get the first two types:
+X	test_files=`$STRINGS $1 | $EGREP "/.*/" | $AWK '{for (i=1;i<=NF;i++) 
+X	if ((res=substr($i,1,1))=="/") 
+X		printf("%s\n",$i)
+X	else if ((res!=":") && (res=substr($i,2,1))=="/")
+X		printf("%s\n",substr($i,2,length($i)-2))}'| $SORT -u`
+X
+X	# and type number three, parse into separate paths as well:
+X	paths=`$STRINGS $1|$EGREP "/.*/" |$AWK '{for (i=1;i<=NF;i++) 
+X		if ((substr($i,1,1)==":") && (substr($i,2,1))=="/")
+X			printf("%s",$i)}'`
+X	paths=`$ECHO $paths | $AWK -F: '{for (i=1;i<=NF;i++) printf("%s\n",$i)}'| $SORT -u`
+X
+X
+X	all_files=$test_files$paths
+X
+X	for i in $all_files
+X		do
+X		if ./is_writable $i
+X			then
+X			$ECHO "      Warning!  File $i (inside root executed file $1) is _World_ writable!"
+X		fi
+X		done
+X	shift
+Xdone
+X
+X# end of script
+SHAR_EOF
+chmod 0700 cops/chk_strings ||
+echo 'restore of cops/chk_strings failed'
+Wc_c="`wc -c < 'cops/chk_strings'`"
+test 1551 -eq "$Wc_c" ||
+	echo 'cops/chk_strings: original size 1551, current size' "$Wc_c"
+fi
+# ============= cops/cops ==============
+if test -f 'cops/cops' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/cops (File already exists)'
+else
+echo 'x - extracting cops/cops (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/cops' &&
+X:
+X#
+X#  Usage: cops [architecture]
+X#
+X#  This will change into the $SECURE/architecture directory, ensure all
+X# the security programs (listed below) indeed do exist, and run all of the
+X# security programs.  If any of the programs find any security problems, it
+X# either sends mail to everyone in the $SECURE_USERS list, or saves the results
+X# in a file $SECURE/architecture/hostname.  It then destroys all temporary
+X# files, and exits the program.  Programs that are run (besides this one):
+X#
+X#	root.chk	dev.chk		group.chk
+X#	home.chk 	rc.chk		passwd.chk
+X#	is_able.chk	pass.chk 	user.chk
+X#	cron.chk	misc.chk	ftp.chk
+X#
+X# The U-kuang system runs these additional programs:
+X#	init_kuang	kuang		addto
+X#	clearfiles	filewriters	members
+X
+X#
+X#  If this is changed to "NO", the report that cops creates
+X# will not be deleted and the results will not be mailed to anyone.
+XMMAIL=NO
+X#
+X#  If this is changed to "YES", then the report will only be mailed
+X# if it detects a difference between the last report and this one.
+X# Note that this makes no sense unless the mail is set to "YES" as well.
+XONLY_DIFF=YES
+X
+X# Where is everyone?
+XECHO=/bin/echo
+XTEST=/bin/test
+XRM=/bin/rm
+XCAT=/bin/cat
+XMAIL=/bin/mail
+XDATE=/bin/date
+XCHMOD=/bin/chmod
+XAWK=/bin/awk
+XSED=/bin/sed
+XMV=/bin/mv
+XMKDIR=/bin/mkdir
+X
+X# send errors and verbosity to...
+XBIT_BUCKET=/dev/null
+X
+X######################
+X#  Change these lines!
+X######################
+XSECURE=/usr/foo/bar
+XSECURE_USERS="foo@bar.edu"
+X######################
+X
+X#  If an argument is present, that's the architecture;
+X# change to that dir, and execute cops there:
+Xif $TEST $# -gt 1 ; then
+X	$ECHO Usage: $0 [architecture]
+X	exit 1
+Xelif $TEST $# -eq 1 ; then
+X	if $TEST ! -d $SECURE/$1 ; then
+X		$ECHO Architecture directory $1 does not exist
+X		exit 1
+X		fi
+X	SECURE=$SECURE"/"$1
+X	cd $SECURE
+X	./cops
+X	exit
+X	fi
+X
+XSECURE_PROGRAMS="root.chk dev.chk is_able.chk group.chk \
+X                 home.chk rc.chk passwd.chk pass.chk misc.chk ftp.chk \
+X		 cron.chk user.chk init_kuang kuang addto \
+X		 clearfiles filewriters members is_able"
+X
+Xif $TEST ! -d "$SECURE" ; then
+X	$ECHO "Error -- Security directory $SECURE doesn't exist"
+X	exit 1
+Xfi
+X
+X$CHMOD 700 $SECURE
+Xcd $SECURE
+X
+Xfor i in $SECURE_PROGRAMS
+X	do
+X	if $TEST ! -s "$i" ; then
+X		$ECHO "Error -- Security program $i doesn't exist"
+X		exit 1
+X	fi
+Xdone
+X
+XRESULT=$SECURE/result.$$
+X$SECURE/root.chk		>	$RESULT 2> $BIT_BUCKET
+X$SECURE/dev.chk			>>	$RESULT 2> $BIT_BUCKET
+X$SECURE/is_able.chk		>>	$RESULT 2> $BIT_BUCKET
+X$SECURE/rc.chk			>>	$RESULT 2> $BIT_BUCKET
+X$SECURE/cron.chk		>>	$RESULT 2> $BIT_BUCKET
+X$SECURE/group.chk		>>	$RESULT 2> $BIT_BUCKET
+X$SECURE/home.chk		>>	$RESULT 2> $BIT_BUCKET
+X$SECURE/passwd.chk		>>	$RESULT 2> $BIT_BUCKET
+X$SECURE/user.chk		>>	$RESULT 2> $BIT_BUCKET
+X$SECURE/misc.chk		>>	$RESULT 2> $BIT_BUCKET
+X
+X# use the -a option for checking anon-ftp; e.g., "$SECURE/ftp.chk -a"
+X$SECURE/ftp.chk			>>	$RESULT 2> $BIT_BUCKET
+X
+X#   Optional -- use "pass_diff.chk", instead of "pass.chk" to make your
+X# life easier!
+X# $SECURE/pass_diff.chk		>>	$RESULT 2> $BIT_BUCKET
+X$SECURE/pass.chk 		>>	$RESULT 2> $BIT_BUCKET
+X
+X#   Optional -- use "kuang.pl", instead of "kuang", if you have perl
+X# installed on your system, for extra speed and functionality:
+X# $SECURE/kuang.pl		>	$BIT_BUCKET 2> $BIT_BUCKET
+X$SECURE/kuang			>	$BIT_BUCKET 2> $BIT_BUCKET
+X# kuang puts it's results in a file called "Success"; check it out:
+Xif $TEST -s "$SECURE/Success" ; then
+X	$CAT $SECURE/Success >> $RESULT
+Xfi
+X$RM -f $SECURE/Success
+X
+X# Optional!  Should use this interactively, with a secret key!
+X# $SECURE/crc.chk		>>	$RESULT 2> $BIT_BUCKET
+X# crc.chk puts it's results in a file called crc.results; check it out:
+X# if $TEST -s "$SECURE/crc.results" ; then
+X# 	$CAT $SECURE/crc.results >> $RESULT
+X# fi
+X
+X#
+X#   Save or Mail the final report to $SECURE_USERS and remove the evidence.
+X#
+X#  (Thanks to Ian Darwin for the next nifty idea!)
+X#  If the result is not mailed, it will be saved in a directory with the
+X# same name as the host, in a file with the name:
+X#
+X#  Year_Month_Day  (for example: $SECURE/ucbvax/1999_Dec_31 )
+X#
+Xif $TEST -s "$RESULT" ; then
+X	# want to put the date and hostname at top; use tmp file: report.$$
+X	REPORT=$SECURE/report.$$
+X
+X	# name of final resting place:
+X	NAME=`$DATE | $AWK '{print $NF"_"$2"_"$3}'`
+X	#
+X	if $TEST -s /bin/hostname ; then
+X		HOSTNAME=`/bin/hostname`
+X	elif $TEST -s /bin/uname ; then
+X		HOSTNAME=`/bin/uname -n`
+X	elif $TEST -s /usr/bin/uuname ; then
+X		HOSTNAME=`/usr/bin/uuname -l`
+X		fi
+X	if $TEST -z "$HOSTNAME" ; then
+X		HOSTNAME="foobar"
+X		fi
+X	HOST=`$ECHO $HOSTNAME | $SED 's/[.].*$//'`
+X
+X	$ECHO                                   >  $REPORT
+X	$ECHO ATTENTION:			>> $REPORT
+X	$ECHO "Security Report for "`$DATE`	>> $REPORT
+X
+X	$ECHO "from host $HOSTNAME"		>> $REPORT
+X	$ECHO					>> $REPORT
+X	$ECHO					>> $REPORT
+X	$CAT $SECURE/result.$$			>> $REPORT
+X
+X
+X	#   figure out where all the old reports are kept, or where the new
+X	# one should be kept; make directories if needed...
+X	if $TEST "$MMAIL" = "YES" ; then
+X		if $TEST $ONLY_DIFF = "YES" ; then
+X			if $TEST -n "`./res_diff $SECURE/$HOST $REPORT`" ; then
+X				$MAIL $SECURE_USERS < $REPORT
+X				fi
+X		else
+X			$MAIL $SECURE_USERS < $REPORT
+X		fi
+X		$RM -f $REPORT
+X
+X	else
+X		#  Either saving it to a hostname, in which case move to
+X		# the hostname directory, or just move result to
+X		# the current dir
+X
+X		if $TEST -n "$HOST" ; then
+X			$MKDIR $SECURE/$HOST 2> /dev/null
+X			$MV $REPORT $SECURE/$HOST/$NAME
+X		else
+X			$MV $REPORT $NAME
+X			fi
+X	fi
+Xfi
+X
+X$RM -f $SECURE/result.$$
+X
+X#  end it all....
+Xexit 0
+SHAR_EOF
+chmod 0700 cops/cops ||
+echo 'restore of cops/cops failed'
+Wc_c="`wc -c < 'cops/cops'`"
+test 5482 -eq "$Wc_c" ||
+	echo 'cops/cops: original size 5482, current size' "$Wc_c"
+fi
+true || echo 'restore of cops/cover_letter failed'
+echo End of part 2, continue with part 3
+exit 0

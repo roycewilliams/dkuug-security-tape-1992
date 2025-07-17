@@ -1,0 +1,1381 @@
+#!/bin/sh
+# this is p4.shar.03 (part 3 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/docs/COPS.report continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 3; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/docs/COPS.report'
+else
+echo 'x - continuing file cops_104/docs/COPS.report'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/docs/COPS.report' &&
+X.PP
+X6)  Check passwords of users on system.
+X.sp
+XMethod -- using the stock \*Qcrypt\*U command, compare the encrypted
+Xpassword found in the /etc/passwd file against the following
+X(encrypted) guesses:
+X.sp
+XThe login id (uid), information in the gecos field, and all single
+Xletter passwords.
+X.sp
+XThe program that performs this task is
+X.ul
+Xpass.chk
+Xand was written by Craig Leres and was modified by Seth Alford,
+XRoger Southwick, Steve Dum, and Rick Lindsley.  Bugs have been reported
+Xand fixed by numerous people.
+X.PP
+X7)  Check the root path, umask, also if root is in /etc/ftpuser and
+Xowns /bin, /etc, /etc/passwd, /.login, /.profile and /.rhosts, and
+Xfinally if a \*Q+\*U is in /etc/hosts.equiv.
+X.sp
+XThe program that performs this task is
+X.ul
+Xroot.chk
+X.PP
+X8)  Examine the commands in /etc/rc* to ensure that none of the
+Xfiles or paths used are world-writable.
+X.sp
+XThe program that performs this task is
+X.ul
+Xrc.chk
+X.PP
+X9)  Examine the commands in /usr/lib/crontab to ensure that none of the
+Xfiles or paths used are world-writable.
+X.sp
+XThe program that performs this task is
+X.ul
+Xcron.chk
+X.PP
+X10)  Check all of the user home directories to ensure they are not
+Xworld writable.
+X.sp
+XThe program that performs this task is
+X.ul
+Xhome.chk
+Xand was written by John Owens.
+X.PP
+X11) Check important user files in user's home directories to ensure
+Xthey are not world writable, plus checks netrc files to see if they
+Xare readable.  The files checked (all in the individual
+Xusers' home directory, all with the prefix \*Q.\*U):
+X.sp
+Xrhosts profile login cshrc kshrc tcshr crhost
+X.sp
+Xnetrc forward dbxinit distfile exrc emacsrc logout
+X.sp
+XThe program that performs this task is
+X.ul
+Xuser.chk
+X.PP
+X12) Checks ftp setup; anononymous ftp setup, if you support it.  This
+Xseems to be fairly site specific; it tries to check for correct ownership,
+Xfile/directory permissions, etc.; for a complete description, check the
+Xman page for ftp.chk.
+X.sp
+XThe program that performs this task is
+X.ul
+Xftp.chk [-a]
+X.PP
+X13) Check for unexpected file system corruption or security breaches,
+Xusing CRC values that are generated from your system files, then
+Xcompared against previously calculated values.  As the author says:
+X\*QIt's nice to be able to say that you know all your files
+Xare as they should be.\*U
+X.sp
+XThe program that performs this task is
+X.ul
+Xcrc.chk.
+XMark Mendel wrote most of
+X.ul
+Xcrc.c
+Xand Jon Zeef wrote
+X.ul
+Xcrc_check.c
+X.PP
+X14) Checks a few miscellaneous potential security problems that really
+Xdon't belong anywhere else.  This includes looking to see if tftp &
+Xrexecd are enabled, to check if the uudecode alias is in the mail
+Xalias file and not commented out, if uudecode is either SUID or can
+Xcreate SUID files, and if the programs inside the /etc/inetd.conf
+Xor /etc/servers aren't world-writable.
+X.sp
+XThe program that performs this task is
+X.ul
+Xmisc.chk
+X.PP
+X15) Given a goal to compromise, such as user root, and a list of user
+Xand group id's that can be used in an attempt to achieve the goal, this
+Xsecurity tool will search through the system until it verifies that the
+Xgoal is compromisible or not.  The program that performs this tricky task
+Xis part of the
+X.ul
+XU-Kuang
+X(rhymes with \*Qtwang\*U)
+Xsystem.  Robert Baldwin was kind enough to allow me to include this
+Xsecurity checker (a fine security machine in it's own right)
+Xwithin this distribution.  For more information on this fascinating
+Xsecurity checker, see kuang.man.ms and [Baldwin 87].  I have rewritten
+Xit in Bourne shell (it was in C-Shell) for further portability; Steve
+XRomig rewrote it in Perl for speed.
+X.PP
+X.PP
+XNone of programs listed above certain cover all of the possible areas
+Xthat can harm a system, but if run together they can aid an overworked
+Xadministrator to locate some of the potential trouble spots.  The COPS
+Xsystem is not meant to be a panacea against all UNIX security woes,
+Xbut an administrator who examines the security toolbox programs and 
+Xthis research paper might reduce the danger of their UNIX system being
+Xcompromised -- and that's all any security tool can ever hope to do.
+XThe COPS system could never replace a vigilant administration
+Xstaffed with knowledgeable people, but hopefully, as administrators look
+Xinto the package, more comprehensive programs will come into being,
+Xcovering more of the problems that will continue as the latest versions
+Xof UNIX continue to grow.
+X.PP
+XDesign Notes:
+X.PP
+XThe programs that are described here were designed to address the
+Xproblems discussed above, but still be usable on as many UNIX
+X\*Qflavors\*U as possible.  Speed was sacrificed for
+Xsimplicity/portability; hopefully the tools here will either be
+Xreplaced or modified, as by no means are they the final word or
+Xsolution to _any_ of these problems; indeed, it is my hope that
+Xafter other programmers/administrators see this report, they will
+Xcreate newer, better, and more general tools that can be
+Xre-distributed periodically.  None of the programs need to be run by
+Xroot to be effective, with the exception of the SUID checker (to
+Xensure that all files are checked.) Some of the tools were written by
+Xmyself, the others were written by other programmers on the network
+Xand (with their permission) presented here.  All of the programs in
+Xthis report are in the public domain, with the exception of Robert
+XBaldwin's U-Kuang system; they all exist solely to be used and
+Xmodified to fit your needs.  If they are re-distributed, please 
+Xkeep them in their original form unless it is clearly stated that
+Xthey were modified.  Any improvements (that might not be too hard :-)),
+Xsuggestions, or other security programs that
+Xyou would like to see get further distribution can be sent to:
+X.PP
+Xdf@medusa.cs.purdue.edu
+X.PP
+X(That's me)
+X.PP
+Xor
+X.PP
+Xspaf@uther.cs.purdue.edu
+X.PP
+X(Dr. Eugene Spafford)
+X.PP
+X.PP
+XEnhancements I envision include:
+X.sp
+Xi) Improved speed and portability without sacrificing functionality
+X(pretty obvious, I guess....)
+X.sp
+Xii) A level of severity assigned to each warning; anything that could 
+Xcompromise root instantly (root having no password, for example) might
+Xhave a level 0 priority, while simply having a user with a writable home
+Xdirectory might only be level 3.  This way the system could be run at
+Xa certain threshold level, or simply have the set of warnings
+Xprioritized for a less sophisticated administrator.
+X.sp
+Xiii) The eradication of any design flaws or coding errors that are in
+Xthe COPS system.
+X.PP
+XThe main purpose of creating the COPS system was twofold; the first was
+Xto foster an understanding of the security problems common to most UNIX
+Xsystems, and the second was to try to create and apply software tools
+Xthat, when run, will inform system administrators of potential problems
+Xpresent in their system.  No attempt is made by the tools to correct any
+Xproblems because a potential security problem at one site may be
+Xstandard policy/practice at another.  An emphasis on furthering
+Xeducation and knowledge about UNIX in general is the key to good
+Xsecurity practices, not following blindly what an unintelligent tool
+Xmight say.
+X.PP
+XSome of the advantages to using a system such as COPS are:
+X.sp
+Xi) Nearly Continuous monitoring of traditional problem areas.
+X.sp
+Xii) A new system can be checked before being put into production.
+X.sp
+Xiii) New or inexperienced administrators can not only stop some of their
+Xproblems in security they may have, but can also raise their
+Xconsciousness about the potential for security dilemmas.
+X.PP
+XAnd a couple of disadvantages:
+X.sp
+Xi) An administrator could get a false sense of security from running
+Xthese programs.  Caveat emptor (ok, they are free, but still beware.)
+X.sp
+Xii) A specific path to the elimination of the problem is not presented.
+XThis could also be construed as an advantage, when considering the third
+Xpoint.
+X.sp
+Xiii) Badguys can get these tools.  You know -- the guys with black hats.
+XWhat happens when they get a copy of this package?  With any sensitive
+Xsubject like security, knowledge is zealously guarded.  People are
+Xafraid that absolute knowledge corrupts -- who knows, they may be right.
+XBut I staunchly stand by the tree of knowledge.  Let the bad guys taste
+Xthe fruit, and they may see the light, so to speak.  In addition, the
+Xsystem does not say how to exploit the hole, just that it exists.
+X.PP
+X.ul
+XResults of Running COPS:
+X.PP
+XNot surprisingly, the results when COPS was run varied significantly
+Xdepending on what system and site it was run on.  Here at Purdue, it was
+Xrun on a Sequent Symmetry running DYNIX 3.0.12, on a pair of Suns (a
+X3/280 and 3/50) running UNIX 4.2 release 3.4, a VAX 11/780 running 4.3
+XBSD UNIX, a VAX 8600 running Ultrix 2.2, and finally a NeXT machine
+Xrunning their 0.9 O/S version of UNIX.  The results of the COPS
+Xsystem showed a reasonable amount of security concern on all of the
+Xmachines; the faculty only machines showed the weakest security, followed
+Xby the machines used by the graduate students, and finally the undergraduate
+Xmachines had the strongest security (our administrators _know_ that you
+Xcan't trust those (us?) young folks.)  Whether this was showing that
+XPurdue has a good administration, or that the UNIX vendors have a fairly
+Xgood grasp on potential security problems, or if it was merely 
+Xshowcasing the shortcomings of this system wasn't clear to me from the
+Xresults.
+X.PP
+XThe security results probably will vary significantly from machine to
+Xmachine -- this
+Xis not a fault of UNIX; merely having the same machine and software
+Xdoes not mean that two sites will not have completely different security
+Xconcerns.  In addition, different vendors and administrators have
+Xsignificantly varying opinions on how a machine should be set up.  There
+Xis no fundamental reason why any system cannot pass all or nearly all of
+Xthese tests, but what is standard policy at one sites may be an
+Xunthinkable risk at another, depending upon the nature of the work being
+Xdone, the information stored on the computer, and the users of the
+Xsystem.
+X.PP
+XWhen I first started researching this report, I thought it would be a
+Xfairly easy task.  Go to a few computing sites, read some theoretical
+Xpapers, gather all the programs everyone had written, and write a
+Xbrief summary paper.  But what I found was an
+Xtremendous lack of communication and concerted effort towards the
+Xsubject of security.  AT&T had written a couple of programs ([Kaplilow
+Xand Cherepov 88], as had Hewlett Packard ([Spence 89]), but they were
+Xproprietary.  I heard rumors that the
+Xgovernment was either working on or had such a security system, but they
+Xcertainly weren't going to give it to me.
+XThe one book devoted to UNIX security ([Kochran and Wood 86]) was good,
+Xbut the programs that they presented were not expansive enough for what
+XI had in mind, plus the fact that they had written their programs
+Xmostly based on System V.  And while most system administrators I talked
+Xto had written at least a shell script or two that performed a minor
+Xsecurity task (SUID programs seemed the most popular), no one seemed to
+Xexchange ideas or any
+Xtheir problems with other sites -- possibly afraid that the admission of
+Xa weakness in their site might be an invitation to disaster.  There is
+Xan excellent security discussion group on the network ([Various Authors
+X84-]), from which I received some excellent ideas for this project, but
+Xit is very restrictive to whom it allows to participate.  I hope that
+Xwith the release of this security system it will not only help stamp
+Xout problems with UNIX security, but would encourage people to exchange
+Xideas, programs, problems and solutions to the computer community at large.
+X
+XDan Farmer
+XSeptember 29, 1989
+X(latest changes on January 7, 1991)
+X.PP
+X.ul
+XAcknowledgements:
+XI would like to thank Eugene Spafford for his invaluable help in
+Xthe researching, planning, and development of this project.  Without
+Xthe writings and programs created by Robert Morris, Matt Bishop, and
+Xother capable UNIX programmers, this project could never have gotten
+Xoff the ground.  Thanks also go to Brian Kernighan, Dennis Ritchie,
+XDonald Knuth, and Ken Thompson, for such inspirational computer work.
+XAnd of course without Peg, none of this would have come into being.
+XThanks again to all of you.
+X.bp
+X.ce
+X.ul
+XBIBLIOGRAPHY
+X
+X.sp
+X_, UNIX Programmers Manual, 4.2 Berkeley Software Distribution,
+XComputer Science Division, Department of Electrical
+XEngineering and Computer Science University of California,
+XBerkeley, CA, August 1983.
+X.sp
+X_, DYNIX(R) V3.0.12 System Manuals, Sequent Computer Systems, Inc., 1984.
+X.sp
+XAho, Alfred V., Brian W. Kernighan, and Peter J. Weinberger, The
+XAWK Programming Language, Addison-Wesley Publishing Company, 1988.
+X.sp
+XAuthors, Various, UNIX Security Mailing List/Security Digest,
+XDecember 1984 -.
+X.sp
+XBaldwin, Robert W., Crypt Breakers Workbench, Usenet, October
+X1986.
+X.sp
+XBaldwin, Robert W., Rule Based Analysis of Computer Security,
+XMassachusetts Institute of Technology, June 1987.
+X.sp
+XBauer, David S. and Michael E. Koblentz, NIDX - A Real-Time
+XIntrusion Detection Expert System, Proceedings of the Summer
+X1988 USENIX Conference, Summer, 1988.
+X.sp
+XBishop, Matt, Security Problems with the UNIX Operating System,
+XDepartment of Computer Sciences, Purdue University, January
+X31, 1983.
+X.sp
+XBishop, Matt, How to Write a Setuid Program, April 18, 1985.
+X.sp
+XDenning, Dorothy, Cryptography and Data Security, Addison-Wesley
+XPublishing Company, Inc, 1983.
+X.sp
+XDuff, Tom, Viral Attacks On UNIX System Security, Proceedings of
+Xthe Winter 1988 USENIX Conference, Winter, 1988.
+X.sp
+XFiedler, David and Bruce Hunter, UNIX System Administration,
+XHayden Book Company, 1986.
+X.sp
+XGrampp, F. T. and R. H. Morris, "UNIX Operating System Security,"
+XAT&T Bell Laboratories Technical Journal, October 1984.
+X.sp
+XKaplilow, Sharon A. and Mikhail Cherepov, "Quest -- A Security
+XAuditing Tool," AT&T Bell Laboratories Technical Journal,
+XAT&T Bell Laboratories Technical Journal, May/June 1988.
+X.sp
+XMorris, Robert and Ken Thompson, "Password Security : A Case
+XHistory," Communications of the ACM, November 1979.
+X.sp
+XReed, Brian, "Reflections on Some Recent Widespread Computer
+XBreak-ins," Communications of the ACM, vol. Vol 30, No. 2,
+XFebruary 1987.
+X.sp
+XReed, J.A. and P.J. Weinberger, File Security and the UNIX System
+XCrypt Command, Vol 63, No. 8, AT&T Bell Laboratories
+XTechnical Journal, October 1984.
+X.sp
+XSmith, Kirk, Tales of the Damned, UNIX Review, February 1988.
+X.sp
+XSpafford, Eugene H., The Internet Worm Program: An Analysis,
+XPurdue Technical Report CSD-TR-823, Nov 28, 1988.
+X.sp
+XSpafford, Eugene H., 1989.  Private Communications
+X.sp
+XBruce Spence, spy: A UNIX File System Security Monitor, Workshop
+XProceedings of the Large Installation Systems Administration III,
+XSeptember, 1988.
+X.sp
+XStoll, Clifford, Stalking the Wily Hacker, Volume 31, Number 5,
+XCommunications of the ACM, May 1988.
+X.sp
+XThompson, Ken, Reflections on Trusting Trust, Volume 27, Number
+X8, Communications of the ACM, August 1984.
+X.sp
+XWood, Patrick and Stephen Kochran, UNIX System Security, Hayden
+XBooks, 1986.
+X.sp
+XWood, Patrick, A Loss of Innocence, UNIX Review, February 1988.
+SHAR_EOF
+echo 'File cops_104/docs/COPS.report is complete' &&
+chmod 0600 cops_104/docs/COPS.report ||
+echo 'restore of cops_104/docs/COPS.report failed'
+Wc_c="`wc -c < 'cops_104/docs/COPS.report'`"
+test 31849 -eq "$Wc_c" ||
+	echo 'cops_104/docs/COPS.report: original size 31849, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/KUANG.README ==============
+if test -f 'cops_104/docs/KUANG.README' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/KUANG.README (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/KUANG.README (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/KUANG.README' &&
+X
+X  The U-Kuang system is currently setup in a minimum configuration; e.g.
+Xit assumes only that world modes/permissions are to be used.  To fully
+Xuse the system, if the password checkers and the home-directory checker
+Xcome back with any positive results (i.e. with an account that can be
+Xbroken), modify the init_kuang file to reflect this.
+X  To use this system to it's full capabilities, be sure to read the
+Xmanual, kuang.man.ms.
+X
+XThis directory contains the various programs and shell scripts
+Xthat make up the Kuang security checking system.
+X
+XThe file, kuang.man.1, documents the system in the style of a UNIX
+Xmanual page.  The file, kuang.mss, is a draft of a paper on
+Xthis system.
+X
+X
+XTo run the system:
+X
+X0. Execute 'make' to build the programs.
+X1. Read kuang.man.1
+X2. Modify the file, init_kuang, to set the initial set of privileges.
+X3. Execute "sh kuang" (or run the COPS system.)
+X
+SHAR_EOF
+chmod 0600 cops_104/docs/KUANG.README ||
+echo 'restore of cops_104/docs/KUANG.README failed'
+Wc_c="`wc -c < 'cops_104/docs/KUANG.README'`"
+test 886 -eq "$Wc_c" ||
+	echo 'cops_104/docs/KUANG.README: original size 886, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/SUID.README ==============
+if test -f 'cops_104/docs/SUID.README' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/SUID.README (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/SUID.README (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/SUID.README' &&
+XFindsuid is a little utility we dreamt up to watch for potential Trojan horse
+Xprograms by keeping an eye on our suid and sgid files and telling us when
+Xthey change unexpectedly.
+X
+XWe run it using the following line in crontab:
+X
+X	40 3 * * * /etc/findsuid/findsuid >/etc/findsuid/fserror 2>&1
+X
+XIncluded here is the findsuid shell script, a man page, a makefile, and a
+Xsample "stop" file.
+X
+X--- Prentiss Riddle ("Aprendiz de todo, maestro de nada.")
+X--- {ihnp4,harvard,seismo,gatech,ctvax}!ut-sally!riddle
+SHAR_EOF
+chmod 0600 cops_104/docs/SUID.README ||
+echo 'restore of cops_104/docs/SUID.README failed'
+Wc_c="`wc -c < 'cops_104/docs/SUID.README'`"
+test 501 -eq "$Wc_c" ||
+	echo 'cops_104/docs/SUID.README: original size 501, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/cops ==============
+if test -f 'cops_104/docs/cops' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/cops (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/cops (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/cops' &&
+X.TH COPS 1 "Jan 4, 1991"
+X.UC 4
+X.SH NAME
+Xcops \- Checks security of system for potential danger areas.
+X.SH SYNOPSIS
+X.B cops
+X[
+X\-a architecture
+X]
+X[
+X\-b bit_bucket
+X]
+X[
+X\-s secure_dir
+X]
+X[
+X\-m user
+X]
+X[
+X\-xvV
+X]
+X.SH DESCRIPTION
+X.I cops
+Xruns a set of programs that each check a different aspect of security
+Xon a Unix system.  If any potential security holes do exist, the results
+Xare either mailed or saved to a report file.
+X.PP
+XThe following programs are currently executed by
+X.I cops
+X\-\- see the appropriate man page or other documentation for 
+Xmore information on each of the following:
+X.Ps
+Xroot.chk    dev.chk       group.chk
+Xhome.chk    rc.chk        passwd.chk
+Xpass.chk    user.chk      cron.chk
+Xmisc.chk    is_able.chk   crc.chk
+Xbug.chk
+X.Pe
+XIn addition, it runs the U-kuang expert system, which runs these
+Xadditional programs:
+X.Ps
+Xinit_kuang  kuang         addto
+Xclearfiles  filewriters   members
+X.Pe
+X.PP
+X.I cops
+Xuses three internal variables that may be changed to determine where
+Xwho gets any reports generated, if it is to mailed or saved to a file.
+XThes variables may be set by command line flags or by actually changing
+Xthe variables in the code.  $SECURE_USERS is used to determine who gets
+Xmailed any results, and is set when the \-m flag is used.  $SECURE is
+Xthe directory that
+X.I cops
+Xis in, and is set by the \-s flag.  Finally, if the variable $MMAIL is
+Xset to be NO (or the \-m flag is used), then
+X.I cops
+Xwill save the report in a subdirectory with the same name as the host
+Xit is being run on, in a file called
+X.I year_month_date
+X(where this stands for the actual values/date, not that string.)
+XOtherwise,
+X.I cops
+Xwill mail the report to the whomever is listed in $SECURE_USERS.
+X.PP
+XIf the variables $ONLY_DIFF and $MMAIL are set to be "YES", then cops
+Xwill examine the last report saved to a file, and compare it with the
+Xcurrent one.  If any differences do exist, then it will be mailed; else,
+Xthe report will be discarded.
+X.PP
+XIf you suspect that something is amiss, or if you're just curious or 
+Xa gluttons for punishment, you can set the variable $BIT_BUCKET to be a
+Xfile (or use the -b flag), to see all the error messages and such.
+XSome of the programs in cops print out an error message if a file isn't
+Xfound (for instance, if you put a file to be checked in the
+X.I is_able.lst
+Xconfiguration file, and it doesn't exist, it will not complain to the
+Xfinal report, only here; by default, this is our friend /dev/null.
+X.SH OPTIONS
+X.TP
+X.B \-a directory
+XSpecifies the architecure subdirectory you want to run in; you
+Xmust run "make install" to install the appropriate binaries there.
+X.TP
+X.B \-b file
+XSpecifies the "bit bucket", where all the error messages (stderr) go to.
+XYou can use "tty" to go to your terminal.
+X.TP
+X.B \-s secure_dir
+XTells cops where the secure directory is; this is used by
+Xcops itself when it is run with the -a flag; it will rerun itself
+Xwith the -a flag's argument as an argument to this.
+X.TP
+X.B \-m user
+XMail the output to the user specified.
+X.TP
+X.B \-x
+XPrints the current version number of COPS.
+X.TP
+X.B \-\[vV\]
+XVerbose flags.  Lowercase "v" prints the program currently
+Xrunning to the results file, and capital "V" will print the program
+Xto the screen.
+X.SH FILES
+X.EX 0
+Xroot.chk    dev.chk      group.chk
+Xhome.chk    rc.chk       passwd.chk
+Xpass.chk    user.chk     cron.chk
+Xmisc.chk    init_kuang   kuang
+Xaddto       clearfiles   filewriters
+Xmembers     crc.chk
+X.EE
+X.SH "SEE ALSO"
+X.EX 0
+Xroot.chk(1)    dev.chk(1)      file.chk(1)
+Xgroup.chk(1)   home.chk(1)     rc.chk(1)
+Xpasswd.chk(1)  pass.chk(1)     user.chk(1)
+Xcron.chk(1)    misc.chk(1)     kuang(1)
+Xbug.chk(1)     CRC.README      KUANG.README
+X.EE
+X.SH BUGS
+XCOPS will get confused if you use a command line arg that
+Xexpects an argument and you don't give it one.
+SHAR_EOF
+chmod 0600 cops_104/docs/cops ||
+echo 'restore of cops_104/docs/cops failed'
+Wc_c="`wc -c < 'cops_104/docs/cops'`"
+test 3759 -eq "$Wc_c" ||
+	echo 'cops_104/docs/cops: original size 3759, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/dev.chk ==============
+if test -f 'cops_104/docs/dev.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/dev.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/dev.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/dev.chk' &&
+X.TH DEV.CHK 1 "December 31, 1989"
+X.UC 4
+X.SH NAME
+Xdev.chk  \- Checks writability of devices and special files.
+X.SH SYNOPSIS
+X.B dev.chk
+X[
+X\-g
+X]
+X.SH DESCRIPTION
+X.I dev.chk
+Xchecks the permissions of /dev/mem, /dev/kmem, and
+Xall devs listed in the file /etc/fstab for readibility/writeability (the
+X.I mount
+Xcommand would be
+Xa preferable way of getting the file system name, but the syntax of the
+Xoutput is variable from machine to machine), and flags them if they are
+Xreadable by using the
+X.I is_readable
+Xcommand, unless they are NFS mounted,
+Xin which case they are ignored.  It also checks for unrestricted exported
+XNFS filesystems in /etc/exports.
+X.PP
+Xoptions are:
+X.TP
+X.B \-g
+XCheck for group writability as well as world.
+X.SH FILES
+X.EX 0
+X/etc/fstab
+X/etc/exports
+X.EE
+X.SH "SEE ALSO"
+Xis_able(1)
+SHAR_EOF
+chmod 0600 cops_104/docs/dev.chk ||
+echo 'restore of cops_104/docs/dev.chk failed'
+Wc_c="`wc -c < 'cops_104/docs/dev.chk'`"
+test 789 -eq "$Wc_c" ||
+	echo 'cops_104/docs/dev.chk: original size 789, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/CRC.README ==============
+if test -f 'cops_104/docs/CRC.README' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/CRC.README (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/CRC.README (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/CRC.README' &&
+X
+X  This README.suid and everything but the C programs has been hacked up be
+Xme, so all problems you have are probably due to me, unless you can't compile
+Xthe files.  Then blame Jon :-)
+X
+X  This checks for unexpected file system corruption or security breaches.
+XIt's nice to be able to say that you know all your files are as they should
+Xbe.  Mark Mendel wrote most of crc.c and Jon Zeef wrote crc_check.c.  Seems
+Xto work fine on BSD or SYS V.
+X
+XTo use it:
+X
+X1) You first create a crc list with the script "crc.chk", which takes one
+Xargument, the seed for the crc generator.  It reads the file "crc_list"
+Xfor a list of files to check; what I have are some of the more interesting
+Xbinaries, but you can add or delete from this list to your hearts content.
+XWildcards or specific file names are fine.  The first time you run it,
+Xit will create a file called "crc.files", which contains all the crc
+Xvalues you generated.  Optionally, you can do a:
+X
+Xfind / -mount -print | sort | xargs ./crc -v > crc.tmp
+X
+X  However, "xargs" is a security problem, when combined with find.  Use
+Xthis judiciously, if at all, unless your vendor puts some "safe" options
+Xto find in.
+X
+X2) You can now use "crc.chk" to compare this "crc.files" file to a crc list
+Xcreated each time you run the shell program.  If everything is ok, nothing
+Xis outputted, otherwise, the results are either mailed to the user INFORM,
+Xon line xxx, or saved to a file "crc.results".  You *MUST* use the same
+Xseed each time you run the program, or the numbers generated will be
+Xdifferent each time you run the program, which kind of makes it useless.
+X
+XIMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT
+XIMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT
+XIMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT
+X
+X  Have I got your attention?  Good.  There are some fundamental problems
+Xwith using a crc program like this.  *If* you use a seed that is hardcoded
+Xin the program, or no seed at all, this is *bad*.  That means to really
+Xuse this program usefully, you can't run it in crontab, like the rest
+Xof COPS.  Even worse, you should really store the results offline, since
+Xanyone who breaks into your machine can modify a binary file, run the
+Xcrc checker again, then put the new values in your file.  That's the
+Xright way.  But I know that most of you won't do this, so by default,
+X"crc.chk" just stores everything like everything else, in the COPS secure
+Xdirectory.  It can still help you, if the attacker doesn't know where
+Xyou keep stuff, or doesn't know enough to trash your database of old
+Xcrc values.  If nothing else, be sure that you keep your older values
+Xon tape or secondary medium, so when your system gets kicked around a
+Xbit, you can grab the crc program off the tape (the intruder could modify
+Xthat, too, you know), run it on your binaries, and finally compare it
+Xto your old values.  Believe me, this is a lot easier, though still not
+Xperfect, than reloading everything on your system from tape, then still
+Xnot knowing.  I've put it in the "cops" shell script, but left it commented
+Xout, on line 123, so if you want to use it this way, just uncomment this
+Xline.
+X  One thing you can do, if you keep the numbers online, is do a crc on the
+Xfile of values you keep; write it down, or memorize it, then if it is ever
+Xtampered with, you can detect it.
+X
+X  Jon goes on about the initial crc value, and other stuff:
+X
+X=========================================================================
+X  ... don't tell anyone what this is, you can 
+X  make it nearly impossible for anyone to modify a file in such a way 
+X  that it has the same crc value as the old one (primarily because they 
+X  don't know what the old one was).  If anyone does discover a way to 
+X  make files of the same size that produce the same unknown crc value 
+X  for any unknown -i value, let me know.  
+X
+X  To really do it right, you need to 
+X
+X  1) Run find_crc in single user mode (unless you modify the crc source).
+X  2) Store all crc results offline.
+X  3) Don't let anyone see your -i value or the crc results.
+X
+X  Please send me any modifications you make.
+X
+X  Jon Zeeff
+X  zeeff@b-tech.ann-arbor.mi.us
+X=========================================================================
+X
+X  Send 'em to me, too!
+X
+X -- dan
+SHAR_EOF
+chmod 0600 cops_104/docs/CRC.README ||
+echo 'restore of cops_104/docs/CRC.README failed'
+Wc_c="`wc -c < 'cops_104/docs/CRC.README'`"
+test 4278 -eq "$Wc_c" ||
+	echo 'cops_104/docs/CRC.README: original size 4278, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/home.chk ==============
+if test -f 'cops_104/docs/home.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/home.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/home.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/home.chk' &&
+X.TH HOME.CHK 1 "December 31, 1989"
+X.UC 4
+X.SH NAME
+Xhome.chk  \- Checks user home directories for world writability.
+X.SH SYNOPSIS
+X.B home.chk
+X.SH DESCRIPTION
+XThis checks all of the user home directories (it calls getpwent() to
+Xget user directories) for world writability.
+SHAR_EOF
+chmod 0600 cops_104/docs/home.chk ||
+echo 'restore of cops_104/docs/home.chk failed'
+Wc_c="`wc -c < 'cops_104/docs/home.chk'`"
+test 270 -eq "$Wc_c" ||
+	echo 'cops_104/docs/home.chk: original size 270, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/pass.chk ==============
+if test -f 'cops_104/docs/pass.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/pass.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/pass.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/pass.chk' &&
+X.TH PASS.CHK 1 "Feb 4, 1992"
+X.UC 4
+X.SH NAME
+Xpass.chk  \- Checks for poor passwords in a password file.
+X.SH SYNOPSIS
+X.B pass.chk
+X[
+Xoptions
+X]
+X.SH DESCRIPTION
+XBy default
+X.I pass.chk
+Xonly checks for accounts with passwords the same
+Xas the login name. The following options add more extensive checking. (The
+Xtradeoff is cpu time -- with all options enabled it can run into the 100's
+Xof MINUTES.) Any argument that does not begin with a "-" is assumed to be
+Xa file name. (A single '-' means stdin.) If no file name is given, /etc/passwd
+Xis used.
+X.PP
+XOptions are:
+X.TP
+X.B \-v
+Xverbose -- list all guesses on stdout
+X.TP
+X.B \-u
+Xoutput the username on the line of the password file
+Xcurrently being checked. If the program stops
+Xabruptly you will then know how far it got.
+X.TP
+X.B \-w file
+Xuse the list of words contained in "file" as likely
+Xpasswords. Words in the file are one to a line.
+XA variable, "ARB_CONST", on line 6 of the source file, "pass.c",
+Xdetermines how many words can be in the dictionary file.  Default is 32000.
+X.TP
+X.B \-b
+Xcheck all guesses backwards too
+X.TP
+X.B \-g
+Xuse the Full Name portion of the gecos field, the user's .plan, .forward,
+Xand .signature files to generate more guesses
+X.TP
+X.B \-s
+Xcheck the single letters a-z, A-Z, 0-9 as passwords
+X.TP
+X.B \-c
+Xwith each guess, check for all lower case and
+Xall upper case versions too.
+X.TP
+X.B \-n
+Xcomplain about null passwords (default is to keep quiet)
+X.TP
+X.B \-p
+Xprint the password when guessed
+X.TP
+X.B \-P file
+Xuse an alternate password file
+X.PP
+XIf used on a Sun or Sun compatible, compiling with the -DC2 flag will
+Xenable C2/shadow passwords to be cracked (it must be run as root, however,
+Xto read the shadow password file.)
+X.SH FILES
+X.br
+X.nf
+X/etc/passwd
+X.fi
+SHAR_EOF
+chmod 0600 cops_104/docs/pass.chk ||
+echo 'restore of cops_104/docs/pass.chk failed'
+Wc_c="`wc -c < 'cops_104/docs/pass.chk'`"
+test 1716 -eq "$Wc_c" ||
+	echo 'cops_104/docs/pass.chk: original size 1716, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/is_able ==============
+if test -f 'cops_104/docs/is_able' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/is_able (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/is_able (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/is_able' &&
+X.TH IS_ABLE 1 "Jan 4, 1991"
+X.UC 4
+X.SH NAME
+Xis_able \- Check for write/read\-ability of a file.
+X.SH SYNOPSIS
+X.B is_able
+Xfile {w|g|S|s} {r|w|s|B|b}
+X.SH DESCRIPTION
+X.I is_able
+Xcan check a file to see if a file is either write/read-able by group or by
+Xall, or if it is setuid/setgid, or a combination of these.  A first argument
+Xof "w" or "g" determines whether it is to be world or group writable,
+Xrespectively, a "s" or "S" allows checking of SUID or SGID files, respectively.
+XA second argument of "r", "w", or "s", stands for readability, writeability,
+Xor set[ug]id-ness, respectively; a "B" and a "b" stand for read and write,
+Xand set[ug]id and write, respectively.
+X.I is_able
+Xwith a write option also checks the parent directories, if a complete path is
+Xgiven, for writeability.
+X.SH BUGS
+XThe Andrew File System, or Mach, or the combination of the two, apparently
+Xplays games with stat(), the way I get the file info, so it can report things
+Xas writable, when they aren't.
+SHAR_EOF
+chmod 0600 cops_104/docs/is_able ||
+echo 'restore of cops_104/docs/is_able failed'
+Wc_c="`wc -c < 'cops_104/docs/is_able'`"
+test 973 -eq "$Wc_c" ||
+	echo 'cops_104/docs/is_able: original size 973, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/kuang.1 ==============
+if test -f 'cops_104/docs/kuang.1' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/kuang.1 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/kuang.1 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/kuang.1' &&
+XNAME
+X	kuang -	rule based system to find inconsistencies in the security
+X		configuration of a BSD 4.2 Unix.
+X
+XSYSNOPSIS
+X	edit init_kuang to reflect attackers initial goals
+X	sh kuang > tracelog
+X
+XDESCRIPTION
+X	Kuang is a rule based system that searches for a path from an
+Xinitial set of privileges to a desired set.  Given a goal, kuang uses
+Xrules to determine a set of subgoals which are sufficient to achieve the
+Xinitial goal.  The rules are then applied to the subgoals to determine a
+Xset of sub-subgoals, etc.  This process repeats until there are no new
+Xgoals to examine.  If a subgoal can be directly achieved using the
+Xattacker's initial privileges, then a line is added to the file
+X'Success' that describes how the attacker can achieve the top level goal.
+X	The rules for Unix can be divided into three categories
+Xdepending on whether they deal with files, users, or groups.  Kuang
+Xembodies these rules in three shell scripts, dofiles, douids, and
+Xdogids.  Goals that have been examined are recorded in the files
+Xfiles.p, uids.p, and gids.p.  The files files.n, uids.n, and gids.n
+Xrecord the goals that will be examined next.  The shell script, kuang,
+Xapplies the goals in each .n file to the corresponding rule file.
+X	The initial privileges and ultimate goal are set up in the shell
+Xscript, init_kuang.  If the program finds a sequence of rules that
+Xconnects the initial privileges to the ultimate goal, that sequence will
+Xbe recorded in the file Success.  Each step in the sequence is recorded
+Xas a pair of words.  For example, the line "gids users, write
+X/usr/bob/.login, trojan baldwin, grant staff, write /etc, replace
+X/etc/passwd" means that the password file can be replaced because the
+Xgroup staff has write access to the directory /etc, and you can get
+Xaccess to the staff group because the .login file for the user bob can
+Xbe written by members of the group users, which is one of your initial
+Xprivileges.
+X
+XFILES
+X	*.n		- goals to process in the next round.
+X	*.x		- goals currently being processed.
+X	*.p		- goals that have been examined.
+X	uids.*		- goals related to user IDs.
+X	gids.*		- goals related to group IDs.
+X	files.*		- goals related to files.
+X	Success		- log of holes that are found.
+X	tracelog	- step by step trace of search.
+X
+XAUTHOR
+X	Bob Baldwin, MIT Lab for Computer Science, Programming and
+XSystems Group.  
+XE-Mail Address   :
+X
+Xbaldwin@xx.lcs.mit.edu
+X...!mit-eddie!baldwin
+X
+XKuang was inspired by William Gibson's book, Neuromancer, which won the
+X1984 Hugo award.  In honor of Gibon's book, systems that use rule based
+Xsearching to find security holes should be called a kuang-type systems.
+X
+XBUGS
+X	Needs to be smarter about command files (e.g., it should look
+Xfor writeable files executed via crontab).
+X	Doesn't include rules for all the programs that run with
+Xtheir user id set to root.
+SHAR_EOF
+chmod 0600 cops_104/docs/kuang.1 ||
+echo 'restore of cops_104/docs/kuang.1 failed'
+Wc_c="`wc -c < 'cops_104/docs/kuang.1'`"
+test 2809 -eq "$Wc_c" ||
+	echo 'cops_104/docs/kuang.1: original size 2809, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/kuang.man ==============
+if test -f 'cops_104/docs/kuang.man' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/kuang.man (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/kuang.man (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/kuang.man' &&
+X.ps 12
+X.vs 12
+X.PH ````
+X.nr W 80
+X.in 0
+X.ce 3
+X\fBKuang: Rule-Based Security Checking\fP
+XRobert W. Baldwin
+XMIT, Lab for Computer Science Programming Systems Research Group
+X
+X.PP
+XThe security of data in a particular computer depends both on the
+Xintegrity of the computer's protection mechanism and on the consistent
+Xuses of those mechanisms by the users of that computer.  Software
+Xverification and specification technology addresses the integrity
+Xproblem, but very little has been done to insure that the protection
+Xmechanisms are being used consistently.  This paper describes a
+Xrule-based system that finds inconsistencies in the set of protection
+Xdecisions made by the users of an information system.
+X
+X.PP
+X\fBIntroduction\fP
+X.PP
+XThe trend in commercial computer systems has been to increase the the
+Xnumber of mechanisms that allow users to execute commands and to
+Xincrease the number of mechanisms that allow users to share
+Xinformation.  All of these mechanisms must be considered to be part of
+Xthe protection system.  For example, if users can specify a set of
+Xcommands that will be executed automatically every night, then the
+Xdatabase that contains these commands, and the program that processes
+Xthe database must be considered part of the protection system.  Even
+Xif the program has been certified to work correctly, the access list
+Xfor the command database and the set of privileges available to the
+Xprocessing program must be considered to be part of the protection
+Xconfiguration \**
+X.FS
+XThe protection configuration is a subset of the
+Xaccess matrix.  The access matrix specifies how each user can access
+Xeach object.  I use the term
+X.ul
+Xprotection configuration
+Xto refer to the portion of the access matrix concerning the objects 
+Xused by any piece of the protection system.
+X.FE
+Xof that computer.  The problem
+Xconsidered in this paper is ensuring that the protection configuration
+Xis consistent with the user's security goals.
+X.PP
+XThe goal of flexible information processing and sharing makes
+Xcomputers more useful, but that goal also makes protection systems
+Xlarger and more complex.  The large number of interactions between the
+Xpieces of the protection system makes it hard for the users to make
+Xprotection decisions correctly.  This is particularly true when parts
+Xof an information system are managed by novices (e.g., personal work
+Xstations).  Users need automated tools for analyzing the interactions
+Xbetween the pieces of a large protection system.
+X.PP
+XThis paper describes a class of systems, called Kuang-type \**
+X.FS
+XThis
+Xproject was inspired by William Gibson's book
+X.ul
+XNeuromancer
+X, which won the 1984 Nebula award for best science fiction novel.
+XGibson's book describes innovative ways to visualize the structure of
+Xinformation systems.  In particular, it describes a program called a
+XKuang Grade Mark 11 Ice Breaker (
+X.ul
+Xice
+Xrefers to the mechanisms used
+Xto protect access to information).  The program described in this memo
+Xis a greatly simplified version of that ice breaker program.
+X.FE
+Xsystems, for analyzing large protection configurations.  
+XThis class of systems is illustrated by a Simple Unix Kuang program
+X(SU-Kuang) that answers a question about a Unix protection
+Xconfiguration.  The question is "what if an attacker had access to a
+Xgiven set of privileges (groups), could that attacker become
+Xsuper-user?".  SU-Kuang allows a system manager to perform a simple
+Xwhat-if analysis of a protection configuration, and in this mode it
+Xhelps the manager make protection decisions.  A typical use of SU-Kuang
+Xis to run it periodically to see if access to the group, World, (i.e.,
+Xminimum privileges) is sufficient to become super-user.  In this mode
+XKuang functions as an automatic security checker.  SU-Kuang is just one
+Xpossible tool for helping users cope with the complexity of a large
+Xprotection system.  Some other desirable tools are mentioned at the
+Xend of this paper.
+X.PP
+XThe heart of the SU-Kuang program is a set of rules that describe the
+XUnix (BSD4.2) protection system from the point of view of an
+Xattacker.  For example, one rule says that if an attacker can write
+Xthe file /etc/passwd (the authentication database), then that attacker
+Xcan become super-user.  To decide whether to use this rule, an
+Xattacker would examine the protection configuration of the target
+Xmachine to see what privileges are required to write the file
+X/etc/passwd.  Using similar rules, SU-Kuang can answers the what-if
+Xquestion by performing a backward chaining search of the protection
+Xconfiguration (see figure
+X.ul
+Xgoal-tree
+X).  Given a goal, like become
+Xsuper-user, SU-Kuang examines all the rules to produce a list of
+Xsubgoals that would be sufficient to meet its goal.  Recursively, each
+Xof the subgoals can be processed to produce a list of sub-subgoals.
+XThe process continues until there are no new goals.  At each step, if
+Xa goal can be achieved using the initial privileges of the attacker,
+XSU-Kuang prints out a message that describes the sequence of steps
+Xthat leads from the initial goals to the target goal.
+X.sp
+X.sp
+X.nf
+X             Become Super-User
+X             /                     \\
+X            /                       \\
+X   Replace /etc/passwd      Write /.rhosts
+X        /        \\                      .
+X       /          \\                    . .
+X Become Staff   Write /etc
+X     .                                   .
+X    . .                                 . .
+X   .   .                               .   .
+X
+X
+X.fi
+X(Example of a goal-tree used by SU-Kuang.  The nodes of the tree
+Xare goals desired by an attacker.
+XThe children of each node are the subgoals that are sufficient to
+Xachieve the parent goal.  The goal-tree used by SU-Kuang is a pure
+XOR-tree.  Any one of the subgoals is sufficient to grant the parent goal.)
+X
+X.PP
+XNotice that SU-Kuang does not find holes in the Unix operating system.
+XIt finds mistakes in the protection configuration.  For example,
+XSU-Kuang found a security hole on an MIT machine that resulted from
+Xtwo incorrect decisions about who should have write access to start-up
+Xcommand files.  SU-Kuang points out holes by describing the sequence
+Xof steps used to exploit the hole.  The sequence SU-Kuang printed was:
+X"member MIT, write ~tom/.cshrc, member A_STAFF, write ~dick/.login,
+Xmember STAFF, write /etc, replace /etc/passwd, become ROOT".  This
+Xmeans that the attacker had access to the group MIT, which all users
+Xare in.  The MIT group had write access to one of the start-up command
+Xfiles executed automatically when the user Tom (not his real
+Xname) logged in.  Anyone in the MIT group could add commands to Tom's
+Xstart-up command file, and have these commands executed with Tom's
+Xprivileges next time Tom logged into the machine.  Tom is a member of
+Xthe Athena Staff group, which is not particularly privileged.  However,
+Xthe A_STAFF group does have write access to one of Dick's start-up
+Xcommand files, and Dick is a member of the Staff group, which is one
+Xof the most privileged groups.  In fact, members of the staff group
+Xcan write the directory that contains the password database.  Write
+Xaccess to the directory allows staff members to delete and recreate
+Xthe password database.  By creating a password database that has a
+Xknown password for the super-user account, members of the staff group
+Xcan acquire super-user privileges.
+X.PP
+XMy experience running SU-Kuang is that these mistakes are created
+Xperiodically because the users do not understand the interactions
+Xbetween the numerous pieces of the Unix protection system.  However,
+Xit is not complicated to write a program that can explore all the
+Xpossible interactions.  SU-Kuang itself is a simple program, and
+Xgenerating the rules that describe the pieces of the protection system
+Xis also easy (see section
+X.ul
+Xrules
+X).  The simplifying idea is to
+Xdescribe the protection system in terms of how an attacker can
+Xmanipulate it.  Using this framework, performing the analysis is easy.
+X.PP
+XI consider any system that uses attacker-oriented rules to be a
+XKuang-type system.  The remainder of this paper describes the Unix
+XKuang system I built to determine whether a given set of privileges is
+Xsufficient to become super-user.  The nature of the rules and the
+Xprocess used to deduce them is illustrated in section
+X.ul
+Xrules
+X, which lists the set of rules used to model Unix.  The model used by
+XSU-Kuang was incomplete in several ways, so section
+X.ul
+Xextensions
+Xdescribes some of the features of Unix that were not
+Xmodeled.  The incomplete model turned out to be very effective at
+Xfinding security holes, so section
+X.ul
+Xexperience
+Xpresents the
+Xlessons learned from running SU-Kuang on the computers at MIT.  The last
+Xsection discusses other kinds of Kuang systems and their benefits.
+X.PP
+X\fBRules to model Unix\fP
+X.PP
+XThe first step in generating attacker-oriented rules is to determine
+Xthe types of goals that are relevant to an attacker of the target
+Xsystem.  These goal types can be deduced from the basic protection
+Xmodel of the operating system, so before presenting the rules, the
+XUnix protection model is summarized.  The second step is to make a
+Xlist of the pieces of the protection system and to examine each one in
+Xterms of the goals an attacker could achieve using each piece.
+XThe pieces of the Unix protection system that were included in the
+Xprototype's model are listed below along with the rules used to
+Xdescribe each piece.
+X.PP
+X\fBSummary of the Unix protection model\fP
+X.PP
+XThe Unix protection model concerns processes and files.  Associated
+Xwith each process is one user identifier UID, and one or more group
+Xidentifiers (GIDs).  The UID and GIDs are generally inherited when one
+Xprocess forks another.  One exception is that the super-user (UID =
+X0) can change the UID and GIDs of his current process.  The other
+Xexception is that a user can associate a UID and GID with a program
+Xstored in the file system.  When anyone runs such a program, the
+Xprocess executing that program will run with the stored user and/or
+Xgroup IDs.
+X.PP
+XAssociated with each file is one UID, one GID, and nine permission
+Xbits.  The nine permission bits are divided into three groups to
+Xspecify the read, write, and execute rights for the file's owner
+X(specified by the UID), for the members of the file's group (specified
+Xby the GID), and for all others (the World group).  Directories are a
+Xspecial case of files.  For a directory, read permission allows a
+Xprocess to list a directory, write permission allows a process to
+Xcreate or delete files in that directory, and execute permission
+Xallows a process to resolve names in that directory even if the
+Xdirectory is unreadable.
+X.PP
+XWhen a process accesses a file or directory it is given either owner,
+Xgroup, or world access permissions, but only one of those three.
+XOwner access is granted if the process and file UIDs match; Group
+Xaccess is granted if the process and file UIDs are different but the
+Xfile's GID is in the list of GIDs for the process; otherwise, World
+Xaccess is granted.  The super-user has full access to all files and
+Xdirectories.  Only the owner or the super-user can change the access
+Xpermissions of a file.
+X.PP
+X\fBThree types of attacker goals\fP
+X.PP
+XThe Unix protection model deals with users, groups, and files, so
+Xthose are the three types of goals that will concern an attacker.  The
+Xcanonical user goal is "execute one of the attacker's programs with a
+Xparticular UID".  For example, the top level goal is "execute a
+Xprogram chosen by the attacker under UID zero (i.e., as
+Xsuper-user)".  It is important that the attacker be able to specify
+Xthe program to be executed with super-user privileges.  The login
+Xprogram runs as super-user, and anyone can run it.  The attacker wants
+Xto specify the computation performed with super-user privileges.  One
+Xscheme for getting access to super-user privileges is to write the
+Xcommand file that is executed automatically when the super-user logs
+Xin.
+X.PP
+XGroup ID goals are similar.  The canonical form of a GID goal is
+X"execute an arbitrary program with a particular group ID".  One
+Xpossible way to achieve this goal is to add the attacker's UID to the
+Xlist of users allowed to access the desired group.  This authorization
+Xdatabase is stored in the file /etc/group.
+X.PP
+XThe canonical file goal is "obtain read/write/replace access to a particular
+Xfile".  Achieving a file goal usually involves getting access to a
+Xparticular group or user ID.  However, if the attacker wants to replace
+Xa file, one way to do that is to delete the old file and create a new
+Xone.  That can be done if the attacker has write or replace access to
+Xthe directory that contains the target file.
+X.PP
+XIn summary, SU-Kuang considers three types of goals for an attacker of
+XUnix: user, group, and file.  Each type of goal can lead to subgoals
+Xof the same or different type.
+X.PP
+X\fBSome pieces of the Unix protection system\fP
+X.PP
+XThis section presents the rules that describe many of the pieces of the
+XUnix protection system.  Section
+X.ul
+Xextensions
+Xdescribes the
+Xsignificant pieces that were left out of the prototype's model.  The
+Xpieces of the Unix protection system include all programs, like 
+X.ul
+Xlogin,
+Xthat have the set user/group ID property.  It also  includes programs
+Xlike 
+X.ul
+Xcron
+X(cron executes commands in the future) that
+Xare forked off by processes that run with special user or group IDs.
+XFinally, programs like 
+X.ul
+Xsh
+X(a command interpreter) must be included
+Xin the protection system because when they are started they execute
+Xcommands from a file using the privileges of the user invoking them.
+X.PP
+XEach rule describes how a piece of the protection system can be
+Xused by an attacker to achieve a desired goal in terms of the ability
+Xto achieve a subgoal.  The method used to achieve a goal given the
+Xsubgoal may require that some condition be true.  For that reason the
+Xrules include a condition that can be tested to decide if the subgoal
+Xshould be pursued.  The conditions are general predicates on the state
+Xof the protection configuration.  For example, the rule that says that
+Xan attacker can become the super-user by writing the password file,
+Xhas the condition that the password file is writable by someone other
+Xthan the super-user.
+X.PP
+XIn the rules listed below, the notation \*Q/d/f\*U means a
+Xpathname for the file \*Qf\*U in the directory with pathname \*Q/d\*U.
+XThe goal, \*Qbecome U\*U, means to execute an arbitrary command under the
+Xuser ID \*QU\*U.  The goal, \*Qmember G\*U, means the same thing for
+Xgroup \*QG\*U.  The goal, \*Qwrite /d/f\*U, means being able to write the
+Xfile \*Q/d/f\*U.  Finally, \*Qreplace /d/f\*U, means being able to write
+X\*Q/d/f\*U or being able to delete \*Q/d/f\*U and recreate it.
+X.PP
+X\fBThe file system\fP
+X.PP
+XMost programs in the protection system use the file hierarchy to
+Xlocate their databases.  If the file hierarchy can be modified, then
+Xthe protection system can be tricked into using the wrong database
+Xfiles.  The file hierarchy itself must be treated as one of the
+Xmain databases in the protection configuration.
+X.PP
+XThe notation \*QOwner(/d/f)\*U refers to the UID associated with the
+Xfile \*Q/d/f\*U.  Similarly \*QGroup(/d/f)\*U refers to the file's GID.
+XThe expression \*QGroupWrite(/d/f)\*U is true if the file \*Q/d/f\*U can
+Xbe written by the members of \*QGroup(/d/f)\*U.  The expression
+X\*QWorldWrite(/d/f)\*U is true if the file can be written by members of
+Xthe World group (i.e., all users).
+X.sp
+XRules{
+X.sp
+X.ul
+X<Goal/Condition/Subgoal/Note>
+X.PP
+XReplace /d/f Write /d/f
+X.PP
+XReplace /d/f Replace /d\**
+X.FS
+XThe condition stops the
+Xrecursion at the root directory of the file system.
+X.FE
+X.PP
+XWrite /d/f Become Owner(/d/f)\**
+X.FS
+XThe owner of a file can
+Xalways change the access permissions to allow owner write access.
+X.FE
+X.PP
+XWrite /d/f GroupWrite(/d/f) Member Group(/d/f)
+X.PP
+XWrite /d/f WorldWrite(/d/f) Member World\**
+X.FS
+XThis subgoal is
+Xis achievable by all users provided they can get to the file.  The
+Xnotable exceptions are users logged in via anonymous ftp or uucp
+Xconnections.  These users have restricted access to the file
+Xhierarchy.
+X.FE
+X.sp
+X}
+X.PP
+X\fBlogin\fP
+X.PP
+XThe login program uses two database to set the UID and GIDs of the
+Xuser's command interpreter.  The contents of
+Xthese databases and the protection of the databases themselves
+Xmust be considered part of the protection configuration.
+X.PP
+XThe user name \*Qroot\*U refers to the super-user.  The label, \*QU\*U, stands
+Xfor an arbitrary UID including \*Qroot\*U.  The label, \*QG\*U, stands for
+Xan arbitrary GID.  The expression \*QUIDS(G)\*U expands to all the
+XUIDs authorized to use the group \*QG\*U according to the files
+X/etc/group or /etc/passwd.
+X
+X.sp
+XRules{
+X.sp
+X.ul
+X<Goal/Condition/Subgoal/Note>
+X
+XBecome U Replace /etc/passwd\**
+X.FS
+XThis rule matches the goal \*QBecome root\*U.
+X.FE
+X
+XMember G Replace /etc/group
+X
+XMember G Become UIDS(G)\**
+X.FS
+XThe subgoal means to try to become any member of the group \*QG\*U.
+SHAR_EOF
+true || echo 'restore of cops_104/docs/kuang.man failed'
+fi
+echo 'End of  part 3'
+echo 'File cops_104/docs/kuang.man is continued in part 4'
+echo 4 > _shar_seq_.tmp
+exit 0
+

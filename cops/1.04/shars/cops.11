@@ -1,0 +1,2080 @@
+#!/bin/sh
+# this is p4.shar.11 (part 11 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/src/conf.h continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 11; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/src/conf.h'
+else
+echo 'x - continuing file cops_104/src/conf.h'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/src/conf.h' &&
+X#if	defined(BIG_ENDIAN) && defined(LITTLE_ENDIAN)
+XERROR_BAD_BIT_ORDER;		/* YES */
+X#endif
+X
+X/* are we still ignorant ? */
+X#if	!defined(BIG_ENDIAN) && !defined(LITTLE_ENDIAN)
+XERROR_NO_BIT_ORDER;		/* YES */
+X#endif
+X
+X
+X/*
+X * define this if you have the macros _toupper() and _tolower(), which are
+X * compatible with the un-intelligent K&R versions of the toupper() and
+X * tolower() functions, and which do not test their input for validity.
+X */
+X
+X#undef FAST_TOCASE
+X
+X/*
+X * define this if you are on a Sys V type system with a uname() system call
+X * AND YOU HAVE NO gethostname() - it fakes up a BSD gethostname() so you can
+X * use CRACK_NETWORK; see crack-port.c
+X */
+X
+X#undef CRACK_UNAME
+X
+X/*
+X * define this if you want to search the first 1Kb segment of users
+X * .plan/.project/.signature files for potential passwords
+X */
+X
+X#undef CRACK_DOTFILES
+X
+X/*
+X * define this if you are using fcrypt() - you might not want to if fcrypt()
+X * doesn't work properly
+X */
+X
+X#define FCRYPT
+X
+X/*
+X * THE FOLLOWING SYMBOLS PERTAIN ONLY TO FCRYPT() USAGE
+X */
+X
+X/*
+X * if defined, use builtin clearing in preference to using bzero(), for 4
+X * or 8 byte long ints.  This is most preferable, and a Good Thing.  If it
+X * is not defined, fcrypt() will try to use bzero().
+X */
+X
+X#define BUILTIN_CLEAR
+X
+X/*
+X * define this if you have a 4 byte "long_int" on RISC machines and want a
+X * speedup - it should not hurt CISC machines either.  Do NOT define it on a
+X * 8-byte int machine...
+X */
+X
+X#undef FDES_4BYTE
+X
+X/*
+X * define this if you are on a Cray or something with an 8-byte int, to
+X * enable Matthew Kaufman's fcrypt fix.  I hope it works okay, cos I can't
+X * test it - AEM.
+X */
+X
+X#undef FDES_8BYTE
+X
+X/*
+X * undef this if your compiler knows the fact that 6*x == x<<1 + x<<2
+X */
+X
+X#undef BRAINDEAD6
+X
+X/* END OF THINGS THAT NEED CONFIGURING */
+X
+X#ifdef DEVELOPMENT_VERSION
+X#define FDES_4BYTE
+X#endif
+SHAR_EOF
+echo 'File cops_104/src/conf.h is complete' &&
+chmod 0600 cops_104/src/conf.h ||
+echo 'restore of cops_104/src/conf.h failed'
+Wc_c="`wc -c < 'cops_104/src/conf.h'`"
+test 3826 -eq "$Wc_c" ||
+	echo 'cops_104/src/conf.h: original size 3826, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/src/crack-fcrypt.c ==============
+if test -f 'cops_104/src/crack-fcrypt.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/src/crack-fcrypt.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/src/crack-fcrypt.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/src/crack-fcrypt.c' &&
+X/*
+X * This program is copyright Alec Muffett 1991 except for some portions of
+X * code in "crack-fcrypt.c" which are copyright Robert Baldwin, Icarus
+X * Sparry and Alec Muffett.  The author(s) disclaims all responsibility or
+X * liability with respect to it's usage or its effect upon hardware or
+X * computer systems, and maintain copyright as set out in the "LICENCE"
+X * document which accompanies distributions of Crack v4.0 and upwards. 
+X */
+X
+X/*
+X * Misc defs for the fast password transform optimisations.
+X */
+X
+X#include "crack.h"
+X
+X/*
+X * Data segment gathered into one place, try to keep this stuff long aligned
+X * - AEM
+X */
+X
+Xstatic char iobuf[16];
+Xstatic obpb1 crypt_block[72];	/* 72 is next multiple of 8 bytes after 66 */
+Xstatic sbpb24 KS[32];
+Xstatic sbpb24 S0H[64], S1H[64], S2H[64], S3H[64];
+Xstatic sbpb24 S4H[64], S5H[64], S6H[64], S7H[64];
+Xstatic sbpb24 S0L[64], S1L[64], S2L[64], S3L[64];
+Xstatic sbpb24 S4L[64], S5L[64], S6L[64], S7L[64];
+Xstatic sbpb24 out96[4];
+X
+X/*
+X * Start of the real thing
+X */
+X
+Xvoid
+Xfsetkey ()
+X{
+X    /*
+X     * This used to be utterly horrendous. It still is, but it's much, much,
+X     * smaller... (and quite a bit faster...) - AEM
+X     */
+X    static unsb KeyToKS[] =
+X    {
+X	9, 50, 33, 59, 48, 16, 32, 56, 1, 8, 18, 41, 2, 34, 25, 24,
+X	43, 57, 58, 0, 35, 26, 17, 40, 21, 27, 38, 53, 36, 3, 46, 29,
+X	4, 52, 22, 28, 60, 20, 37, 62, 14, 19, 44, 13, 12, 61, 54, 30,
+X	1, 42, 25, 51, 40, 8, 24, 48, 58, 0, 10, 33, 59, 26, 17, 16,
+X	35, 49, 50, 57, 56, 18, 9, 32, 13, 19, 30, 45, 28, 62, 38, 21,
+X	27, 44, 14, 20, 52, 12, 29, 54, 6, 11, 36, 5, 4, 53, 46, 22,
+X	50, 26, 9, 35, 24, 57, 8, 32, 42, 49, 59, 17, 43, 10, 1, 0,
+X	48, 33, 34, 41, 40, 2, 58, 16, 60, 3, 14, 29, 12, 46, 22, 5,
+X	11, 28, 61, 4, 36, 27, 13, 38, 53, 62, 20, 52, 19, 37, 30, 6,
+X	34, 10, 58, 48, 8, 41, 57, 16, 26, 33, 43, 1, 56, 59, 50, 49,
+X	32, 17, 18, 25, 24, 51, 42, 0, 44, 54, 61, 13, 27, 30, 6, 52,
+X	62, 12, 45, 19, 20, 11, 60, 22, 37, 46, 4, 36, 3, 21, 14, 53,
+X	18, 59, 42, 32, 57, 25, 41, 0, 10, 17, 56, 50, 40, 43, 34, 33,
+X	16, 1, 2, 9, 8, 35, 26, 49, 28, 38, 45, 60, 11, 14, 53, 36,
+X	46, 27, 29, 3, 4, 62, 44, 6, 21, 30, 19, 20, 54, 5, 61, 37,
+X	2, 43, 26, 16, 41, 9, 25, 49, 59, 1, 40, 34, 24, 56, 18, 17,
+X	0, 50, 51, 58, 57, 48, 10, 33, 12, 22, 29, 44, 62, 61, 37, 20,
+X	30, 11, 13, 54, 19, 46, 28, 53, 5, 14, 3, 4, 38, 52, 45, 21,
+X	51, 56, 10, 0, 25, 58, 9, 33, 43, 50, 24, 18, 8, 40, 2, 1,
+X	49, 34, 35, 42, 41, 32, 59, 17, 27, 6, 13, 28, 46, 45, 21, 4,
+X	14, 62, 60, 38, 3, 30, 12, 37, 52, 61, 54, 19, 22, 36, 29, 5,
+X	35, 40, 59, 49, 9, 42, 58, 17, 56, 34, 8, 2, 57, 24, 51, 50,
+X	33, 18, 48, 26, 25, 16, 43, 1, 11, 53, 60, 12, 30, 29, 5, 19,
+X	61, 46, 44, 22, 54, 14, 27, 21, 36, 45, 38, 3, 6, 20, 13, 52,
+X	56, 32, 51, 41, 1, 34, 50, 9, 48, 26, 0, 59, 49, 16, 43, 42,
+X	25, 10, 40, 18, 17, 8, 35, 58, 3, 45, 52, 4, 22, 21, 60, 11,
+X	53, 38, 36, 14, 46, 6, 19, 13, 28, 37, 30, 62, 61, 12, 5, 44,
+X	40, 16, 35, 25, 50, 18, 34, 58, 32, 10, 49, 43, 33, 0, 56, 26,
+X	9, 59, 24, 2, 1, 57, 48, 42, 54, 29, 36, 19, 6, 5, 44, 62,
+X	37, 22, 20, 61, 30, 53, 3, 60, 12, 21, 14, 46, 45, 27, 52, 28,
+X	24, 0, 48, 9, 34, 2, 18, 42, 16, 59, 33, 56, 17, 49, 40, 10,
+X	58, 43, 8, 51, 50, 41, 32, 26, 38, 13, 20, 3, 53, 52, 28, 46,
+X	21, 6, 4, 45, 14, 37, 54, 44, 27, 5, 61, 30, 29, 11, 36, 12,
+X	8, 49, 32, 58, 18, 51, 2, 26, 0, 43, 17, 40, 1, 33, 24, 59,
+X	42, 56, 57, 35, 34, 25, 16, 10, 22, 60, 4, 54, 37, 36, 12, 30,
+X	5, 53, 19, 29, 61, 21, 38, 28, 11, 52, 45, 14, 13, 62, 20, 27,
+X	57, 33, 16, 42, 2, 35, 51, 10, 49, 56, 1, 24, 50, 17, 8, 43,
+X	26, 40, 41, 48, 18, 9, 0, 59, 6, 44, 19, 38, 21, 20, 27, 14,
+X	52, 37, 3, 13, 45, 5, 22, 12, 62, 36, 29, 61, 60, 46, 4, 11,
+X	41, 17, 0, 26, 51, 48, 35, 59, 33, 40, 50, 8, 34, 1, 57, 56,
+X	10, 24, 25, 32, 2, 58, 49, 43, 53, 28, 3, 22, 5, 4, 11, 61,
+X	36, 21, 54, 60, 29, 52, 6, 27, 46, 20, 13, 45, 44, 30, 19, 62,
+X	25, 1, 49, 10, 35, 32, 48, 43, 17, 24, 34, 57, 18, 50, 41, 40,
+X	59, 8, 9, 16, 51, 42, 33, 56, 37, 12, 54, 6, 52, 19, 62, 45,
+X	20, 5, 38, 44, 13, 36, 53, 11, 30, 4, 60, 29, 28, 14, 3, 46,
+X	17, 58, 41, 2, 56, 24, 40, 35, 9, 16, 26, 49, 10, 42, 33, 32,
+X	51, 0, 1, 8, 43, 34, 25, 48, 29, 4, 46, 61, 44, 11, 54, 37,
+X	12, 60, 30, 36, 5, 28, 45, 3, 22, 27, 52, 21, 20, 6, 62, 38
+X    };
+X
+X    reg int i;
+X    reg int j;
+X    reg unsigned long r;
+X    reg unsb *k;
+X
+X    k = KeyToKS;
+X
+X    for (i = 0; i < 32; i++)
+X    {
+X	/* 16-bit tweaks suggested by cip_maz@fb6tcp.physik.uni-paderborn.de */
+X	/* inlining speedup tweak suggested by tahorsley@csd.harris.com */
+X	/* (strange addition compensates missing TF_TO_SIXBIT) */
+X	r = (unsigned long) crypt_block[*(k++)];
+X	r |= (unsigned long) crypt_block[*(k++)] << 1;
+X	r |= (unsigned long) crypt_block[*(k++)] << 2;
+X	r |= (unsigned long) crypt_block[*(k++)] << 3;
+X	r |= (unsigned long) crypt_block[*(k++)] << 4;
+X	r |= (unsigned long) crypt_block[*(k++)] << 5;
+X	r |= (unsigned long) crypt_block[*(k++)] << (2 + 6);
+X	r |= (unsigned long) crypt_block[*(k++)] << (2 + 7);
+X	r |= (unsigned long) crypt_block[*(k++)] << (2 + 8);
+X	r |= (unsigned long) crypt_block[*(k++)] << (2 + 9);
+X	r |= (unsigned long) crypt_block[*(k++)] << (2 + 10);
+X	r |= (unsigned long) crypt_block[*(k++)] << (2 + 11);
+X	r |= (unsigned long) crypt_block[*(k++)] << (4 + 12);
+X	r |= (unsigned long) crypt_block[*(k++)] << (4 + 13);
+X	r |= (unsigned long) crypt_block[*(k++)] << (4 + 14);
+X	r |= (unsigned long) crypt_block[*(k++)] << (4 + 15);
+X	r |= (unsigned long) crypt_block[*(k++)] << (4 + 16);
+X	r |= (unsigned long) crypt_block[*(k++)] << (4 + 17);
+X	r |= (unsigned long) crypt_block[*(k++)] << (6 + 18);
+X	r |= (unsigned long) crypt_block[*(k++)] << (6 + 19);
+X	r |= (unsigned long) crypt_block[*(k++)] << (6 + 20);
+X	r |= (unsigned long) crypt_block[*(k++)] << (6 + 21);
+X	r |= (unsigned long) crypt_block[*(k++)] << (6 + 22);
+X	r |= (unsigned long) crypt_block[*(k++)] << (6 + 23);
+X	KS[i] = r;
+X    }
+X}
+X
+Xvoid
+XXForm (saltvalue)
+X    sbpb24 saltvalue;
+X{
+X#ifdef BIG_ENDIAN		/* Icarus Sparry, Bath - mod AEM */
+X#define STEP --
+X#define START &sdata.c[7]
+X#define Dl sdata.b[1]
+X#define Dh sdata.b[0]
+X#else				/* LITTLE_ENDIAN */
+X#define STEP ++
+X#define START &sdata.c[0]
+X#define Dl sdata.b[0]
+X#define Dh sdata.b[1]
+X#endif
+X    union SDATA sdata;
+X    reg sbpb24 Rl;
+X    reg sbpb24 Rh;
+X    reg sbpb24 Ll;
+X    reg sbpb24 Lh;
+X    reg sbpb6 *dp;
+X    int loop;
+X    int kloop;
+X    sbpb24 *kp;
+X    reg sbpb24 k;
+X#ifdef FDES_8BYTE
+X    reg sbpb24 tmpi;
+X#endif	/* FDES_8BYTE */
+X
+X    Ll = Lh = Rl = Rh = 0;
+X
+X    for (loop = 25; loop--; /* nothing */ )
+X    {
+X	kp = KS;
+X	for (kloop = 8; kloop--; /* nothing */ )
+X	{
+X	    k = (Rl ^ Rh) & saltvalue;
+X#ifndef FDES_8BYTE
+X	    Dl = (k ^ Rl ^ *kp++) << SIZEFIX;
+X	    Dh = (k ^ Rh ^ *kp++) << SIZEFIX;
+X#else
+X	    /* hack to make things work better - matthew kaufman */
+X	    /* I haven't tried any of this - I don't have a cray... AEM */
+X	    tmpi = (k ^ Rl ^ *kp++);
+X	    sdata.c[3] = (tmpi >> 24) & 0x00ff;
+X	    sdata.c[2] = (tmpi >> 16) & 0x00ff;
+X	    sdata.c[1] = (tmpi >> 8) & 0x00ff;
+X	    sdata.c[0] = (tmpi) & 0x00ff;
+X	    tmpi = (k ^ Rh ^ *kp++);
+X	    sdata.c[7] = (tmpi >> 24) & 0x00ff;
+X	    sdata.c[6] = (tmpi >> 16) & 0x00ff;
+X	    sdata.c[5] = (tmpi >> 8) & 0x00ff;
+X	    sdata.c[4] = (tmpi) & 0x00ff;
+X#endif	/* FDES_8BYTE */
+X
+X	    dp = START;
+X	    Lh ^= INDIRECT (S0H, *dp);
+X	    Ll ^= INDIRECT (S0L, *dp STEP);
+X	    Lh ^= INDIRECT (S1H, *dp);
+X	    Ll ^= INDIRECT (S1L, *dp STEP);
+X	    Lh ^= INDIRECT (S2H, *dp);
+X	    Ll ^= INDIRECT (S2L, *dp STEP);
+X	    Lh ^= INDIRECT (S3H, *dp);
+X	    Ll ^= INDIRECT (S3L, *dp STEP);
+X	    Lh ^= INDIRECT (S4H, *dp);
+X	    Ll ^= INDIRECT (S4L, *dp STEP);
+X	    Lh ^= INDIRECT (S5H, *dp);
+X	    Ll ^= INDIRECT (S5L, *dp STEP);
+X	    Lh ^= INDIRECT (S6H, *dp);
+X	    Ll ^= INDIRECT (S6L, *dp STEP);
+X	    Lh ^= INDIRECT (S7H, *dp);
+X	    Ll ^= INDIRECT (S7L, *dp STEP);
+X
+X	    k = (Ll ^ Lh) & saltvalue;
+X#ifndef FDES_8BYTE
+X	    Dl = (k ^ Ll ^ *kp++) << SIZEFIX;
+X	    Dh = (k ^ Lh ^ *kp++) << SIZEFIX;
+X#else
+X	    tmpi = (k ^ Ll ^ *kp++);
+X	    sdata.c[3] = (tmpi >> 24) & 0x00ff;
+X	    sdata.c[2] = (tmpi >> 16) & 0x00ff;
+X	    sdata.c[1] = (tmpi >> 8) & 0x00ff;
+X	    sdata.c[0] = (tmpi) & 0x00ff;
+X	    tmpi = (k ^ Lh ^ *kp++);
+X	    sdata.c[7] = (tmpi >> 24) & 0x00ff;
+X	    sdata.c[6] = (tmpi >> 16) & 0x00ff;
+X	    sdata.c[5] = (tmpi >> 8) & 0x00ff;
+X	    sdata.c[4] = (tmpi) & 0x00ff;
+X#endif	/* FDES_8BYTE */
+X
+X	    dp = START;
+X	    Rh ^= INDIRECT (S0H, *dp);
+X	    Rl ^= INDIRECT (S0L, *dp STEP);
+X	    Rh ^= INDIRECT (S1H, *dp);
+X	    Rl ^= INDIRECT (S1L, *dp STEP);
+X	    Rh ^= INDIRECT (S2H, *dp);
+X	    Rl ^= INDIRECT (S2L, *dp STEP);
+X	    Rh ^= INDIRECT (S3H, *dp);
+X	    Rl ^= INDIRECT (S3L, *dp STEP);
+X	    Rh ^= INDIRECT (S4H, *dp);
+X	    Rl ^= INDIRECT (S4L, *dp STEP);
+X	    Rh ^= INDIRECT (S5H, *dp);
+X	    Rl ^= INDIRECT (S5L, *dp STEP);
+X	    Rh ^= INDIRECT (S6H, *dp);
+X	    Rl ^= INDIRECT (S6L, *dp STEP);
+X	    Rh ^= INDIRECT (S7H, *dp);
+X	    Rl ^= INDIRECT (S7L, *dp STEP);
+X	}
+X
+X	Ll ^= Rl;
+X	Lh ^= Rh;
+X	Rl ^= Ll;
+X	Rh ^= Lh;
+X	Ll ^= Rl;
+X	Lh ^= Rh;
+X    }
+X
+X    /*
+X     * for reasons that I cannot explain, if I insert the contents of the
+X     * UnXForm function right HERE, making the tweaks as necessary to avoid
+X     * using out96[] to pass data, I LOSE 30% of my speed.  I don't know why.
+X     * Hence, I continue to use out96[]...
+X     */
+X    {
+X	reg sbpb24 *qp;
+X	qp = out96;
+X	*qp++ = Ll;
+X	*qp++ = Lh;
+X	*qp++ = Rl;
+X	*qp++ = Rh;
+X    }
+X}
+X
+Xvoid
+XUnXForm ()
+X{
+X    reg sbpb24 Rl;
+X    reg sbpb24 Rh;
+X    reg sbpb24 Ll;
+X    reg sbpb24 Lh;
+X    reg obpb1 *ptr;
+X    reg long int mask;
+X    register long int *lip;
+X
+X    Ll = SIXBIT_TO_TF (out96[0]);
+X    Lh = SIXBIT_TO_TF (out96[1]);
+X    Rl = SIXBIT_TO_TF (out96[2]);
+X    Rh = SIXBIT_TO_TF (out96[3]);
+X
+X#ifdef BUILTIN_CLEAR
+X    lip = (long int *) crypt_block;
+X    for (mask = (sizeof (crypt_block) / sizeof (long int)); mask--; /* - */ )
+X    {
+X	*(lip++) = 0L;
+X    }
+X#else				/* BUILTIN_CLEAR */
+X    bzero (crypt_block, 66);
+X#endif				/* BUILTIN_CLEAR */
+X
+X    ptr = crypt_block;
+X    mask = 0x000400L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x400000L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000400L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x400000L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000200L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x200000L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000200L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x200000L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000100L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x100000L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000100L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x100000L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000080L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x080000L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000080L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x080000L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000010L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x010000L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000010L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x010000L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000008L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x008000L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000008L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x008000L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000004L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x004000L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000004L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x004000L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000002L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x002000L;
+X    if (Rl & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Ll & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x000002L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    mask = 0x002000L;
+X    if (Rh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X    if (Lh & mask)
+X	*ptr = 0x01;
+X    ptr++;
+X}
+X
+Xchar *
+Xfcrypt (pw, salt)
+X    char *pw;
+X    char *salt;
+X{
+X    /* Table lookups for salts reduce fcrypt() overhead dramatically */
+X    static sbpb24 salt0[] =
+X    {
+X	18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+X	32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+X	48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
+X	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 5, 6, 7, 8, 9, 10, 11, 12,
+X	13, 14, 15, 16, 17,
+X
+X	18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+X	32, 33, 34, 35, 36, 37, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+X	42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+X	58, 59, 60, 61, 62, 63, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+X	12, 13, 14, 15, 16, 17,
+X
+X	18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+X	32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+X	48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
+X	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+X
+X	18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+X	32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+X	48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
+X	0, 1, 2, 3, 4
+X    };
+X    static sbpb24 salt1[] =
+X    {
+X	1152, 1216, 1280, 1344, 1408, 1472, 1536, 1600, 1664,
+X	1728, 1792, 1856, 1920, 1984, 2048, 2112, 2176, 2240, 2304,
+X	2368, 2432, 2496, 2560, 2624, 2688, 2752, 2816, 2880, 2944,
+X	3008, 3072, 3136, 3200, 3264, 3328, 3392, 3456, 3520, 3584,
+X	3648, 3712, 3776, 3840, 3904, 3968, 4032, 0, 64, 128, 192, 256,
+X	320, 384, 448, 512, 576, 640, 704, 320, 384, 448, 512, 576, 640,
+X	704, 768, 832, 896, 960, 1024, 1088,
+X
+X	1152, 1216, 1280, 1344, 1408, 1472, 1536, 1600, 1664,
+X	1728, 1792, 1856, 1920, 1984, 2048, 2112, 2176, 2240, 2304,
+X	2368, 2048, 2112, 2176, 2240, 2304, 2368, 2432, 2496, 2560,
+X	2624, 2688, 2752, 2816, 2880, 2944, 3008, 3072, 3136, 3200,
+X	3264, 3328, 3392, 3456, 3520, 3584, 3648, 3712, 3776, 3840,
+X	3904, 3968, 4032, 0, 64, 128, 192, 256, 320, 384, 448, 512, 576,
+X	640, 704, 768, 832, 896, 960, 1024, 1088,
+X
+X	1152, 1216, 1280, 1344, 1408, 1472, 1536, 1600, 1664,
+X	1728, 1792, 1856, 1920, 1984, 2048, 2112, 2176, 2240, 2304,
+X	2368, 2432, 2496, 2560, 2624, 2688, 2752, 2816, 2880, 2944,
+X	3008, 3072, 3136, 3200, 3264, 3328, 3392, 3456, 3520, 3584,
+X	3648, 3712, 3776, 3840, 3904, 3968, 4032, 0, 64, 128, 192, 256,
+X	320, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1024,
+X	1088,
+X
+X	1152, 1216, 1280, 1344, 1408, 1472, 1536, 1600, 1664,
+X	1728, 1792, 1856, 1920, 1984, 2048, 2112, 2176, 2240, 2304,
+X	2368, 2432, 2496, 2560, 2624, 2688, 2752, 2816, 2880, 2944,
+X	3008, 3072, 3136, 3200, 3264, 3328, 3392, 3456, 3520, 3584,
+X	3648, 3712, 3776, 3840, 3904, 3968, 4032, 0, 64, 128, 192, 256
+X    };
+X
+X    /* final perutation desalting */
+X    static obpb1 final[] =
+X    {
+X	46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66,
+X	67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82,
+X	83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103,
+X	104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
+X	117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
+X	130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
+X	143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155,
+X	156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168,
+X	169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
+X	182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194,
+X	195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
+X	208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220,
+X	221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233,
+X	234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246,
+X	247, 248, 249, 250, 251, 252, 253, 254, 255,
+X        /* Truncate overflow bits at 256 */
+X	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+X	16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+X	32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+X	48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58
+X    };
+X
+X    reg int i, j, k;
+X    reg long int *lip;
+X    sbpb24 saltvalue;
+X
+X#ifdef BUILTIN_CLEAR
+X    lip = (long int *) crypt_block;
+X    for (i = (sizeof (crypt_block) / sizeof (long int)); i--; /* - */ )
+X    {
+X	*(lip++) = 0L;
+X    }
+X#else				/* BUILTIN_CLEAR */
+X    bzero (crypt_block, 66);
+X#endif				/* BUILTIN_CLEAR */
+X
+X    for (i = 0; (k = *pw) && i < 64; pw++)
+X    {
+X	crypt_block[i++] = (k >> 6) & 01;
+X	crypt_block[i++] = (k >> 5) & 01;
+X	crypt_block[i++] = (k >> 4) & 01;
+X	crypt_block[i++] = (k >> 3) & 01;
+X	crypt_block[i++] = (k >> 2) & 01;
+X	crypt_block[i++] = (k >> 1) & 01;
+X	crypt_block[i++] = (k >> 0) & 01;
+X	i++;			/* have to skip one here (parity bit) */
+X    }
+X
+X    fsetkey ( /* crypt_block */ );
+X
+X#ifdef BUILTIN_CLEAR
+X    lip = (long int *) crypt_block;
+X    for (i = (sizeof (crypt_block) / sizeof (long int)); i--; /* - */ )
+X    {
+X	*(lip++) = 0L;
+X    }
+X#else				/* BUILTIN_CLEAR */
+X    bzero (crypt_block, 66);
+X#endif				/* BUILTIN_CLEAR */
+X
+X    iobuf[0] = salt[0];
+X    iobuf[1] = salt[1];
+X
+X    saltvalue = salt0[iobuf[0]] | salt1[iobuf[1]];
+X    saltvalue = TF_TO_SIXBIT (saltvalue);
+X
+X    XForm (saltvalue);
+X    UnXForm ();
+X
+X    for (i = 0; i < 11; i++)
+X    {
+X	k = 0;
+X
+X	for (j = 0; j < 6; j++)
+X	{
+X	    k = (k << 1) | crypt_block[SIX_TIMES (i) + j];
+X	}
+X	iobuf[i + 2] = final[k];
+X    }
+X
+X    iobuf[i + 2] = 0;
+X
+X    if (iobuf[1] == 0)
+X    {
+X	iobuf[1] = iobuf[0];
+X    }
+X    return (iobuf);
+X}
+X/********* INITIALISATION ROUTINES *********/
+X
+Xfbpb4
+XlookupS (tableno, t6bits)
+X    unsl tableno;
+X    sbpb6R t6bits;
+X{
+X    static fbpb4R S[8][64] =
+X    {
+X	14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7,
+X	0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8,
+X	4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0,
+X	15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13,
+X
+X	15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10,
+X	3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5,
+X	0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15,
+X	13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9,
+X
+X	10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8,
+X	13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1,
+X	13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7,
+X	1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12,
+X
+X	7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15,
+X	13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9,
+X	10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4,
+X	3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14,
+X
+X	2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9,
+X	14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6,
+X	4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14,
+X	11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3,
+X
+X	12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11,
+X	10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8,
+X	9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6,
+X	4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13,
+X
+X	4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1,
+X	13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6,
+X	1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2,
+X	6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12,
+X
+X	13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7,
+X	1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2,
+X	7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8,
+X	2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11,
+X    };
+X    sbpb6 fixed6bits;
+X    fbpb4R r;
+X    fbpb4 fixedr;
+X
+X    fixed6bits = (((t6bits >> 0) & 01) << 5) +
+X	(((t6bits >> 1) & 01) << 3) +
+X	(((t6bits >> 2) & 01) << 2) +
+X	(((t6bits >> 3) & 01) << 1) +
+X	(((t6bits >> 4) & 01) << 0) +
+X	(((t6bits >> 5) & 01) << 4);
+X
+X    r = S[tableno][fixed6bits];
+X
+X    fixedr = (((r >> 3) & 01) << 0) +
+X	(((r >> 2) & 01) << 1) +
+X	(((r >> 1) & 01) << 2) +
+X	(((r >> 0) & 01) << 3);
+X
+X    return (fixedr);
+X}
+X
+Xvoid
+Xinit (tableno, lowptr, highptr)
+X    unsl tableno;
+X    sbpb24 *lowptr, *highptr;
+X{
+X
+X    static unsb P[] =
+X    {
+X	15, 6, 19, 20,
+X	28, 11, 27, 16,
+X	0, 14, 22, 25,
+X	4, 17, 30, 9,
+X	1, 7, 23, 13,
+X	31, 26, 2, 8,
+X	18, 12, 29, 5,
+X	21, 10, 3, 24,
+X    };
+X
+X    static unsb E[] =
+X    {
+X	31, 0, 1, 2, 3, 4,
+X	3, 4, 5, 6, 7, 8,
+X	7, 8, 9, 10, 11, 12,
+X	11, 12, 13, 14, 15, 16,
+X	15, 16, 17, 18, 19, 20,
+X	19, 20, 21, 22, 23, 24,
+X	23, 24, 25, 26, 27, 28,
+X	27, 28, 29, 30, 31, 0,
+X    };
+X
+X    static obpb1 tmp32[32];
+X    static obpb1 tmpP32[32];
+X    static obpb1 tmpE[48];
+X
+X    int j, k, i;
+X    int tablenoX4;
+X    reg sbpb24 spare24;
+X
+X    tablenoX4 = tableno * 4;
+X
+X    for (j = 0; j < 64; j++)
+X    {
+X	k = lookupS (tableno, j);
+X
+X	for (i = 0; i < 32; i++)
+X	{
+X	    tmp32[i] = 0;
+X	}
+X	for (i = 0; i < 4; i++)
+X	{
+X	    tmp32[tablenoX4 + i] = (k >> i) & 01;
+X	}
+X	for (i = 0; i < 32; i++)
+X	{
+X	    tmpP32[i] = tmp32[P[i]];
+X	}
+X	for (i = 0; i < 48; i++)
+X	{
+X	    tmpE[i] = tmpP32[E[i]];
+X	}
+X
+X	lowptr[j] = 0;
+X	highptr[j] = 0;
+X
+X	for (i = 0; i < 24; i++)
+X	{
+X	    lowptr[j] |= (unsigned long) tmpE[i] << i;
+X	}
+X	for (k = 0, i = 24; i < 48; i++, k++)
+X	{
+X	    highptr[j] |= (unsigned long) tmpE[i] << k;
+X	}
+X
+X	spare24 = lowptr[j];	/* to allow for macro expansion */
+X	lowptr[j] = TF_TO_SIXBIT (spare24);
+X	spare24 = highptr[j];	/* to allow for macro expansion */
+X	highptr[j] = TF_TO_SIXBIT (spare24);
+X    }
+X}
+Xinit_des ()
+X{
+X    init (0L, S0L, S0H);
+X    init (1L, S1L, S1H);
+X    init (2L, S2L, S2H);
+X    init (3L, S3L, S3H);
+X    init (4L, S4L, S4H);
+X    init (5L, S5L, S5H);
+X    init (6L, S6L, S6H);
+X    init (7L, S7L, S7H);
+X}
+SHAR_EOF
+chmod 0600 cops_104/src/crack-fcrypt.c ||
+echo 'restore of cops_104/src/crack-fcrypt.c failed'
+Wc_c="`wc -c < 'cops_104/src/crack-fcrypt.c'`"
+test 22754 -eq "$Wc_c" ||
+	echo 'cops_104/src/crack-fcrypt.c: original size 22754, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/src/crack-lib.c ==============
+if test -f 'cops_104/src/crack-lib.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/src/crack-lib.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/src/crack-lib.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/src/crack-lib.c' &&
+X/*
+X * This program is copyright Alec Muffett 1991 except for some portions of
+X * code in "crack-fcrypt.c" which are copyright Robert Baldwin, Icarus
+X * Sparry and Alec Muffett.  The author(s) disclaims all responsibility or
+X * liability with respect to it's usage or its effect upon hardware or
+X * computer systems, and maintain copyright as set out in the "LICENCE"
+X * document which accompanies distributions of Crack v4.0 and upwards. 
+X */
+X
+X#include "crack.h"
+X
+X#define RULE_NOOP	':'
+X#define RULE_PREPEND	'^'
+X#define RULE_APPEND	'$'
+X#define RULE_REVERSE	'r'
+X#define RULE_UPPERCASE	'u'
+X#define RULE_LOWERCASE	'l'
+X#define RULE_PLURALISE	'p'
+X#define RULE_CAPITALISE	'c'
+X#define RULE_DUPLICATE	'd'
+X#define RULE_REFLECT	'f'
+X#define RULE_SUBSTITUTE	's'
+X#define RULE_MATCH	'/'
+X#define RULE_NOT	'!'
+X#define RULE_LT		'<'
+X#define RULE_GT		'>'
+X#define RULE_EXTRACT	'x'
+X
+Xvoid
+XTrim (string)			/* remove trailing whitespace from a string */
+X    register char *string;
+X{
+X    register char *ptr;
+X
+X    for (ptr = string; *ptr; ptr++);
+X    while ((--ptr >= string) && isspace (*ptr));
+X    *(++ptr) = '\0';
+X}
+X
+Xchar *
+XClone (string, maxsize)
+X    char *string;
+X    int maxsize;
+X{
+X    register int len;
+X    register char *retval;
+X
+X    len = strlen (string);
+X    if (maxsize && len > maxsize)
+X    {
+X	len = maxsize;
+X    }
+X    retval = (char *) malloc (len + 1);
+X    strncpy (retval, string, len);
+X    retval[len] = '\0';
+X    return (retval);
+X}
+X
+Xint
+XSuffix (word, suffix)
+X    char *word;
+X    char *suffix;
+X{
+X    register int i;
+X    register int j;
+X
+X    i = strlen (word);
+X    j = strlen (suffix);
+X
+X    if (i > j)
+X    {
+X	return (STRCMP ((word + i - j), suffix));
+X    } else
+X    {
+X	return (-1);
+X    }
+X}
+X
+Xchar *
+XReverse (str)			/* return a pointer to a reversal */
+X    register char *str;
+X{
+X    register int i;
+X    register int j;
+X    register char *ptr;
+X    static char area[STRINGSIZE];
+X
+X    j = i = strlen (str);
+X    while (*str)
+X    {
+X	area[--i] = *str++;
+X    }
+X    area[j] = '\0';
+X    return (area);
+X}
+X
+Xchar *
+XUppercase (str)			/* return a pointer to an uppercase */
+X    register char *str;
+X{
+X    register char *ptr;
+X    static char area[STRINGSIZE];
+X
+X    ptr = area;
+X    while (*str)
+X    {
+X	*(ptr++) = islower (*str) ? toupper (*str) : *str;
+X	str++;
+X    }
+X    *ptr = '\0';
+X
+X    return (area);
+X}
+X
+Xchar *
+XLowercase (str)			/* return a pointer to an lowercase */
+X    register char *str;
+X{
+X    register char *ptr;
+X    static char area[STRINGSIZE];
+X
+X    ptr = area;
+X    while (*str)
+X    {
+X	*(ptr++) = isupper (*str) ? tolower (*str) : *str;
+X	str++;
+X    }
+X    *ptr = '\0';
+X
+X    return (area);
+X}
+X
+Xchar *
+XCapitalise (str)		/* return a pointer to an capitalised */
+X    register char *str;
+X{
+X    register char *ptr;
+X    static char area[STRINGSIZE];
+X
+X    ptr = area;
+X
+X    while (*str)
+X    {
+X	*(ptr++) = isupper (*str) ? tolower (*str) : *str;
+X	str++;
+X    }
+X
+X    *ptr = '\0';
+X
+X    if (islower (area[0]))
+X    {
+X	area[0] = toupper (area[0]);
+X    }
+X    return (area);
+X}
+X
+Xchar *
+XPluralise (string)		/* returns a pointer to a plural */
+X    register char *string;
+X{
+X    register int length;
+X    static char area[STRINGSIZE];
+X
+X    length = strlen (string);
+X    strcpy (area, string);
+X
+X    if (!Suffix (string, "ch") ||
+X	!Suffix (string, "ex") ||
+X	!Suffix (string, "ix") ||
+X	!Suffix (string, "sh") ||
+X	!Suffix (string, "ss"))
+X    {
+X	/* bench -> benches */
+X	strcat (area, "es");
+X    } else if (length > 2 && string[length - 1] == 'y')
+X    {
+X	if (strchr ("aeiou", string[length - 2]))
+X	{
+X	    /* alloy -> alloys */
+X	    strcat (area, "s");
+X	} else
+X	{
+X	    /* gully -> gullies */
+X	    strcpy (area + length - 1, "ies");
+X	}
+X    } else if (string[length - 1] == 's')
+X    {
+X	/* bias -> biases */
+X	strcat (area, "es");
+X    } else
+X    {
+X	/* catchall */
+X	strcat (area, "s");
+X    }
+X
+X    return (area);
+X}
+X
+Xchar *
+XSubstitute (string, old, new)	/* returns pointer to a swapped about copy */
+X    register char *string;
+X    register char old;
+X    register char new;
+X{
+X    register char *ptr;
+X    static char area[STRINGSIZE];
+X
+X    ptr = area;
+X    while (*string)
+X    {
+X	*(ptr++) = *string == old ? new : *string;
+X	string++;
+X    }
+X    *ptr = '\0';
+X    return (area);
+X}
+X
+Xint
+XChar2Int (character)
+X    char character;
+X{
+X    if (character >= '0' && character <= '9')
+X    {
+X	return (character - '0');
+X    }
+X    if (character >= 'a' && character <= 'z')
+X    {
+X	return (character - 'a' + 10);
+X    }
+X    if (character >= 'A' && character <= 'Z')
+X    {
+X	return (character - 'A' + 10);
+X    }
+X    return (-1);
+X}
+X
+Xchar *
+XMangle (input, control)		/* returns a pointer to a controlled Mangle */
+X    char *input;
+X    char *control;
+X{
+X    int limit;
+X    register char *ptr;
+X    static char area[STRINGSIZE];
+X    char area2[STRINGSIZE];
+X
+X    area[0] = '\0';
+X    strcpy (area, input);
+X
+X    for (ptr = control; *ptr; ptr++)
+X    {
+X	switch (*ptr)
+X	{
+X	case RULE_NOOP:
+X	    break;
+X	case RULE_REVERSE:
+X	    strcpy (area, Reverse (area));
+X	    break;
+X	case RULE_UPPERCASE:
+X	    strcpy (area, Uppercase (area));
+X	    break;
+X	case RULE_LOWERCASE:
+X	    strcpy (area, Lowercase (area));
+X	    break;
+X	case RULE_CAPITALISE:
+X	    strcpy (area, Capitalise (area));
+X	    break;
+X	case RULE_PLURALISE:
+X	    strcpy (area, Pluralise (area));
+X	    break;
+X	case RULE_REFLECT:
+X	    strcat (area, Reverse (area));
+X	    break;
+X	case RULE_DUPLICATE:
+X	    strcpy (area2, area);
+X	    strcat (area, area2);
+X	    break;
+X	case RULE_GT:
+X	    if (!ptr[1])
+X	    {
+X		Log ("Mangle: '>' missing argument in '%s'\n",
+X		     control);
+X	    } else
+X	    {
+X		limit = Char2Int (*(++ptr));
+X		if (limit < 0)
+X		{
+X		    Log ("Mangle: '>' weird argument in '%s'\n",
+X			 control);
+X		    return ((char *) 0);
+X		}
+X		if (strlen (area) <= limit)
+X		{
+X		    return ((char *) 0);
+X		}
+X	    }
+X	    break;
+X	case RULE_LT:
+X	    if (!ptr[1])
+X	    {
+X		Log ("Mangle: '<' missing argument in '%s'\n",
+X		     control);
+X	    } else
+X	    {
+X		limit = Char2Int (*(++ptr));
+X		if (limit < 0)
+X		{
+X		    Log ("Mangle: '<' weird argument in '%s'\n",
+X			 control);
+X		    return ((char *) 0);
+X		}
+X		if (strlen (area) >= limit)
+X		{
+X		    return ((char *) 0);
+X		}
+X	    }
+X	    break;
+X	case RULE_PREPEND:
+X	    if (!ptr[1])
+X	    {
+X		Log ("Mangle: prepend missing argument in '%s'\n",
+X		     control);
+X	    } else
+X	    {
+X		area2[0] = *(++ptr);
+X		strcpy (area2 + 1, area);
+X		strcpy (area, area2);
+X	    }
+X	    break;
+X	case RULE_APPEND:
+X	    if (!ptr[1])
+X	    {
+X		Log ("Mangle: append missing argument in '%s'\n",
+X		     control);
+X	    } else
+X	    {
+X		register char *string;
+X
+X		string = area;
+X		while (*(string++));
+X		string[-1] = *(++ptr);
+X		*string = '\0';
+X	    }
+X	    break;
+X	case RULE_SUBSTITUTE:
+X	    if (!ptr[1] || !ptr[2])
+X	    {
+X		Log ("Mangle: substitute missing argument in '%s'\n",
+X		     control);
+X	    } else
+X	    {
+X		strcpy (area, Substitute (area, ptr[1], ptr[2]));
+X		ptr += 2;
+X	    }
+X	    break;
+X	case RULE_EXTRACT:
+X	    if (!ptr[1] || !ptr[2])
+X	    {
+X		Log ("Mangle: extract missing argument in '%s'\n",
+X		     control);
+X	    } else
+X	    {
+X		int i;
+X		int start;
+X		int length;
+X
+X		start = Char2Int (*(++ptr));
+X		length = Char2Int (*(++ptr));
+X		if (start < 0 || length < 0)
+X		{
+X		    Log ("Mangle: extract: weird argument in '%s'\n",
+X			 control);
+X		    return ((char *) 0);
+X		}
+X		strcpy (area2, area);
+X		for (i = 0; length-- && area2[start + i]; i++)
+X		{
+X		    area[i] = area2[start + i];
+X		}
+X		/* cant use strncpy() - no trailing NUL */
+X		area[i] = '\0';
+X	    }
+X	    break;
+X	case RULE_MATCH:
+X	    if (!ptr[1])
+X	    {
+X		Log ("Mangle: '/' missing argument in '%s'\n",
+X		     control);
+X	    } else
+X	    {
+X		register char *string;
+X		register char c;
+X
+X		c = *(++ptr);
+X		for (string = area; *string; string++)
+X		{
+X		    if (*string == c)
+X		    {
+X			break;
+X		    }
+X		}
+X		if (!*string)
+X		{
+X		    return ((char *) 0);
+X		}
+X	    }
+X	    break;
+X	case RULE_NOT:
+X	    if (!ptr[1])
+X	    {
+X		Log ("Mangle: '!' missing argument in '%s'\n",
+X		     control);
+X	    } else
+X	    {
+X		register char *string;
+X		register char c;
+X
+X		c = *(++ptr);
+X		for (string = area; *string; string++)
+X		{
+X		    if (*string == c)
+X		    {
+X			return ((char *) 0);
+X		    }
+X		}
+X	    }
+X	    break;
+X	default:
+X	    Log ("Mangle: unknown command %c in %s\n",
+X		 *ptr,
+X		 control);
+X	    break;
+X	}
+X    }
+X    return (area);
+X}
+SHAR_EOF
+chmod 0600 cops_104/src/crack-lib.c ||
+echo 'restore of cops_104/src/crack-lib.c failed'
+Wc_c="`wc -c < 'cops_104/src/crack-lib.c'`"
+test 8130 -eq "$Wc_c" ||
+	echo 'cops_104/src/crack-lib.c: original size 8130, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/src/crack.h ==============
+if test -f 'cops_104/src/crack.h' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/src/crack.h (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/src/crack.h (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/src/crack.h' &&
+X/*
+X * This program is copyright Alec Muffett 1991 except for some portions of
+X * code in "crack-fcrypt.c" which are copyright Robert Baldwin, Icarus
+X * Sparry and Alec Muffett.  The author(s) disclaims all responsibility or
+X * liability with respect to it's usage or its effect upon hardware or
+X * computer systems, and maintain copyright as set out in the "LICENCE"
+X * document which accompanies distributions of Crack v4.0 and upwards. 
+X */
+X
+X#define Log printf
+X
+X#include "conf.h"
+X
+X#define STRINGSIZE	255
+X
+Xextern void Trim ();
+Xextern char *Reverse ();
+Xextern char *Uppercase ();
+Xextern char *Lowercase ();
+Xextern char *Clone ();
+Xextern char *Mangle ();
+Xextern char *gethostname ();
+X
+X#ifdef FAST_TOCASE
+X#define toupper(x) 	_toupper(x)
+X#define tolower(x)	_tolower(x)
+X#endif
+X
+X/* #ifdef FCRYPT
+X#define crypt(a,b)	fcrypt(a,b)
+X#endif */
+X
+X#ifdef INDEX_NOT_STRCHR
+X#define strchr(a,b) 	index(a,b)
+X#endif
+X
+Xstruct USER
+X{
+X    int done;			/* bool flag */
+X    char *filename;		/* where we got it from */
+X    char *passwd_txt;		/* plaintext of password */
+X    struct passwd passwd;	/* ...guess... */
+X    struct USER *across;	/* line of users with same salt */
+X    struct USER *next;		/* next users with different salt */
+X};
+X
+Xstruct DICT
+X{
+X    char *word;			/* simple linked list */
+X    struct DICT *next;
+X};
+X
+Xstruct RULE
+X{
+X    char *rule;
+X    struct RULE *next;
+X};
+X
+X#define STRCMP(x,y) ((x)[0] != (y)[0] ? -1 : strcmp((x),(y)))
+X
+X/* Rest of stuff is from crack-fcrypt.c */
+X
+X#define	reg	register
+X#define	uns	unsigned
+X#define unsb	uns char
+X#define	unsl	uns long
+X
+X/*
+X * Types for the different ways to represent DES bit patterns.  Bits are
+X * always right justified within fields.  Bits which have lower indices in
+X * the NBS spec are stored in the vax bits with less significance (e.g., Bit
+X * 1 of NBS spec is stored in the bit with weight 2 ** 0 to the Vax.
+X */
+X
+X#define	obpb1	unsb		/* One bit per byte. */
+X#define sbpb6	unsb		/* Six bits per byte, 6 held. */
+X#define sbpb6R	unsb		/* Six bits per byte Reversed order, 6 held. */
+X#define	sbpb24	unsl		/* Six bits per byte, 24 held. */
+X#define	ebpb24	unsl		/* Eight bits per bit, 24 held. */
+X#define	fbpb4	unsb		/* Four bits per byte, 4 held. */
+X#define	fbpb4R	unsb		/* Four bits per byte Reversed order, 4 held. */
+X
+X/*
+X * The operation (6 * x) is often better optimised as this (for really
+X * braindead compilers) - AEM
+X */
+X
+X#ifdef BRAINDEAD6
+X#define SIX_TIMES(exprn)		(((exprn) << 2) + ((exprn) << 1))
+X#else
+X#define SIX_TIMES(exprn)		(6 * (exprn))
+X#endif				/* BRAINDEAD6 */
+X
+X/* DES transformation type... */
+X
+Xunion SDATA
+X{
+X    sbpb24 b[2];
+X    sbpb6 c[8];
+X};
+X
+X#ifndef FDES_8BYTE		/* Not on a Cray */
+X#ifndef FDES_4BYTE		/* Thanks to Matt Bishop for this idea -AEM. */
+X#define SIZEFIX		0
+X#define INDIRECT(a,b) 	(a)[b]
+X#else
+X#define SIZEFIX		2	/* "n" where 2^n == sizeof(sbpb24) */
+X#define INDIRECT(a,b) 	(*((sbpb24 *)(((unsigned char *) a) + (b))))
+X#endif
+X#endif
+X
+X/*
+X * These used to be rather slow and frequently used functions - AEM
+X */
+X
+X#define TF_TO_SIXBIT(tf) \
+X	(sbpb24)((tf & 077L) | \
+X		((tf & 07700L) << 2) | \
+X		((tf & 0770000L) << 4) | \
+X		((tf & 077000000L) << 6))
+X
+X#define SIXBIT_TO_TF(sb) \
+X	(ebpb24)((sb & 0x3fL) | \
+X		((sb & 0x3f00L) >> 2) | \
+X		((sb & 0x3f0000L) >> 4) | \
+X		((sb & 0x3f000000L) >> 6))
+SHAR_EOF
+chmod 0600 cops_104/src/crack.h ||
+echo 'restore of cops_104/src/crack.h failed'
+Wc_c="`wc -c < 'cops_104/src/crack.h'`"
+test 3254 -eq "$Wc_c" ||
+	echo 'cops_104/src/crack.h: original size 3254, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/suid.chk ==============
+if test -f 'cops_104/suid.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/suid.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/suid.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/suid.chk' &&
+X:
+X#
+X#  Usage: suid.chk [-s secure_dir] [-S start_dir] [-m user] [-o file] [-n] [-x]
+X#
+X#
+X#   Shell script intended to be run periodically by cron in order
+X#   to spot changes in files with the suid or sgid bits set.
+X#
+X#	suid.chk	840919		Prentiss Riddle
+X#
+X#     This changes into the $SECURE directory first, then 
+X#   uses find(1) to search the directories in $SEARCH for all
+X#   files with the 4000 or 2000 permission bits set.  $STOP is a file
+X#   containing "ls -lga" output for known setuid or setgid programs.
+X#   Any additions or changes to this list represent potential security
+X#   problems, so they are reported to the users named in $INFORM.
+X#
+X# [-m user]  mail to user specified here.
+X#
+X# [-n]  Do *not* follow NFS mounted partitions.  This probably won't
+X#	work on most machines -- check the string; this works on a
+X#	sun: "-type d \( -fstype nfs -prune \)"; you can send me
+X#	what works on your machine.
+X#
+X# [-o file]  Write results to this file instead of mailing.
+X#
+X# [-s secure_dir]  Set the secure dir, good for running this in cron -- 
+X#	else it'll think it's "/", and you'll chmod that to 700 :-)
+X#
+X# [-S search_dir]  Start the "find" here, instead of the default "/"
+X#
+X# [-x]  Look for strangely named files, too.  Really primative right
+X#	now; I'm pondering what to do with this.  Ideally, you'd pass
+X#	all the files through a filter (preferably perl), but then I'd
+X#	have to rethink the general suid finding stuff, or do a separate
+X#	find.  Yuck, both ways.  I have a perl filter that does the
+X#	right thing, or close to it; it's in "extra_src/bad_dir.pl".
+X#	You say something like: "find $1 -exec perl ./bad_dir.pl {} \;"
+X#
+X#  Lots of changes by dan:
+X#	Changed the program/doc names and some of the temp files to
+X#	make it fit in with the rest of the programs, flags SUID shell
+X#	scripts and world writeable SUID files, too, added command line
+X#	flags, look for strange files, etc.
+X
+X#  CHANGE THIS LINE!
+XINFORM="foo@bar.edu"
+X#
+X
+XTEST=/bin/test
+XECHO=/bin/echo
+XLS=/bin/ls
+XCAT=/bin/cat
+XCP=/bin/cp
+XMAIL=/bin/mail
+XCHMOD=/bin/chmod
+XSORT=/usr/bin/sort
+XCOMM=/usr/bin/comm
+XFIND=/usr/bin/find
+XRM=/bin/rm
+XMV=/bin/mv
+XAWK=/bin/awk
+XSED=/bin/sed
+XGREP=/bin/grep
+XEGREP=/usr/bin/egrep
+XYPCAT=/usr/bin/ypcat
+XDATE=/bin/date
+XNONFS=false
+X
+X#   Arg stuff:
+Xwhile $TEST $# != 0 ; do
+X		case "$1" in
+X		-m)     INFORM=$2 ; shift ;;
+X		-n)     NONFS=true ;;
+X		-o)     OUTFILE=$2 ; shift ;;
+X		-s)     SECURE=$2 ; shift ;;
+X		-S)     SEARCH=$2 ; shift ;;
+X		-x)     STRANGE=true ;;
+X		*)      $ECHO "Usage $0 [-s secure_dir] [-m user] [-o outfile] [-n] [-x]" ; exit 2 ; ;;
+X		esac
+X		shift
+X        done
+X
+X#   Checking for non-executable SUID files;
+X#
+X#   simple way; just see if file says it's a script -- this is a *definite*
+X# no-no, and the default:
+X#	type_filter="$GREP script"
+X#
+X#   Safer/paranoid way; anything but an executable is flagged (may not be
+X# good over NFS mounts with different binaries...
+X#	type_filter="$GREP -v xecut"
+X#
+X#   You may want to grep out "ermission" string, too, in case NFS mount
+X# stuff that you can't read gives you "permission denied", even as root:
+X#	type_filter="$EGREP"' -v '"xecut|ermiss"
+X#
+Xtype_filter="$GREP script"
+X
+X# did you use the -s option?
+Xif $TEST -z "$SECURE" ; then
+X	SECURE=.
+X	fi
+X
+Xif $TEST -z "$SEARCH" ; then
+X	SEARCH=/
+X	fi
+X
+X#
+X# Warning messages used below:
+XWARN_NEW="These files are newly setuid/setgid"
+XWARN_NO="These files are no longer setuid/setgid"
+X
+X# Strange stuff; "..." directories, etc.
+Xif $TEST "$STRANGE" = "true" ; then
+X	STRANGE_DIRS="-o -type d ( ! -name '.' -a ! -name '..' \
+X		      -a ! -name '[A-z0-9]*' -a ! -name '.[A-z0-9]*' )"
+X	WARN_NO=$WARN_NO"/strange"
+X	WARN_NEW=$WARN_NEW"/strange"
+X	fi
+X
+X# Yellow Pages check further down...
+Xetc_passwd=/etc/passwd
+XSTOP=./suid.stop
+XTEMPOLD=./fsold$$
+XTEMPCUR=./fscur$$
+XTEMPNEW=./fsnew$$
+XTEMPGON=./fsgon$$
+XTEMPM=./fsm$$
+X
+Xumask 077
+XOLDCWD=`pwd`
+X
+Xif $TEST ! -d "$SECURE" ; then
+X	$ECHO "Error -- Security directory $SECURE doesn't exist"
+X	exit 1
+X	fi
+X
+X$CHMOD 700 $SECURE
+Xcd $SECURE
+X
+X#
+X# The actual Find!  Never thought you'd make it, eh?
+X#
+Xif $TEST "$NONFS" = "false" ; then
+X	$FIND $SEARCH -type f \( -perm -4000 -o -perm -2000 \) $STRANGE_DIRS \
+X		-exec $LS -ldga {} \; | $SORT > $TEMPCUR
+Xelse
+X	# this is the trouble spot:
+X	$FIND $SEARCH -type d \( -fstype nfs -prune \) -o \
+X		-type f \( -perm -4000 -o -perm -2000 \) $STRANGE_DIRS \
+X		-exec $LS -ldga {} \; | $SORT > $TEMPCUR
+X	fi
+X
+X# find the setuid programs and sort
+X
+X# compare with the sorted stop list
+Xif $TEST ! -f "$STOP" ; then
+X	$CP /dev/null $TEMPOLD
+Xelse
+X	$SORT <$STOP >$TEMPOLD
+X	fi
+X
+X$COMM -13 $TEMPOLD $TEMPCUR | $SORT +8 >$TEMPNEW
+X$COMM -23 $TEMPOLD $TEMPCUR | $SORT +8 >$TEMPGON
+X
+X# report changes
+Xif $TEST -s $TEMPNEW -o -f $TEMPGON; then
+X
+X	# YP?  Thanks again, to Rob Kolstad...
+X	# Scratch files for testing:
+X	yp_passwd=./ypsuid.$$
+X
+X	# generic test to check for yp use?
+X	if $TEST -f $YPCAT -a -s $YPCAT ; then
+X		$YPCAT passwd > $yp_passwd
+X		if $TEST $? -eq 0 ; then
+X			etc_passwd=$yp_passwd
+X			fi
+X		fi
+X
+X	# get the hostname:
+X	if $TEST -s /bin/hostname ; then
+X		HOSTNAME=`/bin/hostname`
+X	elif $TEST -s /bin/uname ; then
+X		HOSTNAME=`/bin/uname -n`
+X	elif $TEST -s /usr/bin/uuname ; then
+X		HOSTNAME=`/usr/bin/uuname -l`
+X		fi
+X	if $TEST -z "$HOSTNAME" ; then
+X		HOSTNAME="foobar"
+X		fi
+X
+X	$ECHO >>$TEMPM
+X        $ECHO ATTENTION:                        >> $TEMPM
+X        $ECHO "SUID Security Report for "`$DATE`>> $TEMPM
+X
+X        $ECHO "from host $HOSTNAME"             >> $TEMPM
+X	$ECHO >>$TEMPM
+X
+X# NEW STUFF... $TEMPNEW holds the new SUID files; stuff the results in $TEMPM:
+X	for i in `$AWK '{print $NF}' $TEMPNEW`
+X		do
+X		# don't want SUID files to be world writable!
+X		./is_able $i w w >> $TEMPM
+X
+X		type=`file "$i" | $SED 's/.*://' | $type_filter`
+X
+X		if $TEST -n "$type" ; then
+X			owner=`$LS -ldga $i | $AWK '{print $3}'`
+X			uid=`$AWK -F: '/^'"$owner"'/{print $3}' $etc_passwd`
+X
+X			# set to nobody, if can't find 'em in the password file
+X			if $TEST -z "$uid" ; then
+X				uid="-2"
+X				fi
+X
+X			if $TEST "$uid" -eq "0" ; then
+X				$ECHO Warning!  ROOT owned SUID file $i is type: $type! >> $TEMPM
+X			else
+X				$ECHO Warning!  User: $owner SUID file $i is type: $type! >> $TEMPM
+X				fi
+X			fi
+X		done
+X
+X	if $TEST -s $TEMPNEW; then
+X		$ECHO $WARN_NEW":" >>$TEMPM
+X		$ECHO '' >>$TEMPM
+X		$CAT $TEMPNEW >>$TEMPM
+X		$ECHO '' >>$TEMPM
+X	fi
+X	if $TEST -s $TEMPGON; then
+X		$ECHO $WARN_NO":" >>$TEMPM
+X		$ECHO '' >>$TEMPM
+X		$CAT $TEMPGON >>$TEMPM
+X	fi
+X
+X	# mail or save to a file?
+X	if $TEST -z "$OUTFILE" ; then
+X		$MAIL $INFORM <$TEMPM
+X	else
+X		$MV $TEMPM $OUTFILE
+X		fi
+X	$RM -f $TEMPM
+Xfi
+X$RM -f $TEMPOLD $TEMPCUR $TEMPNEW $TEMPGON $yp_passwd
+X
+X#  end it all....
+Xexit 0
+SHAR_EOF
+chmod 0700 cops_104/suid.chk ||
+echo 'restore of cops_104/suid.chk failed'
+Wc_c="`wc -c < 'cops_104/suid.chk'`"
+test 6578 -eq "$Wc_c" ||
+	echo 'cops_104/suid.chk: original size 6578, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/yp_pass.chk ==============
+if test -f 'cops_104/yp_pass.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/yp_pass.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/yp_pass.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/yp_pass.chk' &&
+X:
+X#
+X#  yp_pass.chk [whatever flags you want to pass to pass.chk]
+X#
+X#   This shell script is a wrapper for the pass.chk password guessing
+X# program for systems using Yellow Pages/NIS.  All this does is dump the
+X# yppassword file into a temp file, then runs "pass.chk" with whatever
+X# flags were passed to it.
+X#
+X#   Obviously, it doesn't make any sense to use the "-P" flag with
+X# this script (which specifies an alternate password file.)
+X# 
+X
+XTEST=/bin/test
+XECHO=/bin/echo
+XRM=/bin/rm
+XYPCAT=/usr/bin/ypcat
+X
+X# Important files:
+Xyp_pass=./yp.$$
+X
+X# password guessing program:
+Xpass_chk=./pass.chk
+X
+X# generic test to check for yp use?
+Xif $TEST -s $YPCAT ; then
+X	$YPCAT passwd > $yp_pass
+Xelse
+X	$RM -f $yp_pass
+X	$ECHO Can\'t find anything to crack...
+X	exit 1
+X	fi
+X
+X#  crack them passwords
+Xif $TEST -s "$yp_pass" ; then	
+X	$pass_chk $* -P $yp_pass
+X	fi
+X
+X# kill off the evidence
+X$RM -f $yp_pass
+X
+X# end
+SHAR_EOF
+chmod 0755 cops_104/yp_pass.chk ||
+echo 'restore of cops_104/yp_pass.chk failed'
+Wc_c="`wc -c < 'cops_104/yp_pass.chk'`"
+test 886 -eq "$Wc_c" ||
+	echo 'cops_104/yp_pass.chk: original size 886, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extra_src/diff_last.sh ==============
+if test ! -d 'cops_104/extra_src'; then
+    echo 'x - creating directory cops_104/extra_src'
+    mkdir 'cops_104/extra_src'
+fi
+if test -f 'cops_104/extra_src/diff_last.sh' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extra_src/diff_last.sh (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extra_src/diff_last.sh (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extra_src/diff_last.sh' &&
+X#!/bin/csh -f
+X#
+X# Now for the good news: below is yet another little COPS accessory
+X# script.  As you will recall, I keep a number of COPS reports around in
+X# a subdirectory named after the host.  This script will find the last
+X# two and do a diff on them.  I've wondered whether I should take this a
+X# step further and use something like this as the basis for the mailed
+X# report, but that might make it too easy to miss things.  Still, this
+X# script seems to be useful when I get a COPS report in the mail and I
+X# can't see that anything important has changed.  Enjoy.
+X# 
+X# -- Prentiss Riddle ("aprendiz de todo, maestro de nada") riddle@rice.edu
+X# -- Unix Systems Programmer, Office of Networking and Computing Systems
+X# -- Rice University, POB 1892, Houston, TX 77251 / Mudd 208 / 713-285-5327
+X# -- Opinions expressed are not necessarily those of my employer.
+X# 
+X#
+X#  difflast - do a diff on the last two COPS reports for a specific host
+X#
+X#  Usage:  difflast [host-directory]
+X#
+X#
+X#  History:
+X#  11/25/91  P.Riddle  Original version.
+X#
+Xset AWK=/bin/awk
+Xset DIFF=/bin/diff
+Xset LS=/bin/ls
+X
+Xset DIR="$1"
+Xif ( "x$DIR" == x ) then
+X	set DIR=.
+Xendif
+Xif ( ! -d "$DIR" ) then
+X	echo "difflast: directory \"$DIR\" not found."
+X	exit 1
+Xendif
+Xset FILES=`$LS -t ${DIR}/[0-9][0-9][0-9][0-9]_[A-Z][a-z][a-z]_[0-9]* | $AWK 'NR<=2'`
+Xecho "$FILES"
+X$DIFF $FILES
+Xexit 0
+SHAR_EOF
+chmod 0755 cops_104/extra_src/diff_last.sh ||
+echo 'restore of cops_104/extra_src/diff_last.sh failed'
+Wc_c="`wc -c < 'cops_104/extra_src/diff_last.sh'`"
+test 1352 -eq "$Wc_c" ||
+	echo 'cops_104/extra_src/diff_last.sh: original size 1352, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extra_src/mail.chk ==============
+if test -f 'cops_104/extra_src/mail.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extra_src/mail.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extra_src/mail.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extra_src/mail.chk' &&
+X:
+X#  mail.chk -- COPS-driveable shell script to check for problems in
+X#              the mail spool directory.
+X#
+X#  This script uses awk(1) to find all files in the mail spool
+X#  directory with improper names, permission, or ownership.  If
+X#  it finds no bad files, it exits silently.
+X#
+X#  Installation: Make sure that the MAILDIR variable is set to your
+X#  mail spool directory (/var/spool/mail or /usr/spool/mail) and
+X#  that the executables (AWK, CAT, LS and RM) are named correctly.
+X#
+X#  History:
+X#  11/08/91  Prentiss Riddle (riddle@rice.edu): Original version.
+X#
+XAWK=/bin/awk
+XCAT=/bin/cat
+XLS=/bin/ls
+XRM=/bin/rm
+XMAILDIR=/var/spool/mail
+X#
+XPROG="/usr/tmp/mchk.p$$"
+XTEMP="/usr/tmp/mchk.t$$"
+X#
+Xumask 077
+X#
+X# Unpack the awk script from a "hereis".
+X# The script reports files with bad permissions or where filename !=
+X# owner's userid.
+X$RM -f $PROG
+Xcat <<'EndOfProg' >$PROG
+X$1 == "total"                                   { next }
+X$9 == "." || $9 == ".." || $9 == "lost+found"   { next }
+X$1 != "-rw-------" || $3 != $9                  { print $0 }
+XEndOfProg
+X#
+X# Pipe long ls through the awk script.  Save the output and print it
+X# with a heading if it's non-null.
+Xcd "$MAILDIR"
+X$RM -f $TEMP
+X$LS -lag | $AWK -f $PROG >$TEMP
+Xif [ -s $TEMP ] ; then
+X        echo 'Warning: problem files in '"$MAILDIR"':'
+X        $CAT $TEMP
+Xfi
+X#
+X# Clean up.
+X$RM -f $TEMP $PROG
+Xexit 0
+SHAR_EOF
+chmod 0755 cops_104/extra_src/mail.chk ||
+echo 'restore of cops_104/extra_src/mail.chk failed'
+Wc_c="`wc -c < 'cops_104/extra_src/mail.chk'`"
+test 1363 -eq "$Wc_c" ||
+	echo 'cops_104/extra_src/mail.chk: original size 1363, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extra_src/trust.pl ==============
+if test -f 'cops_104/extra_src/trust.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extra_src/trust.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extra_src/trust.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extra_src/trust.pl' &&
+X#!/usr/local/bin/perl
+X#
+X# Checks a host.equiv file to see what it trusted
+X#
+X#  trust.he [-h host.equiv] [-d]
+X#
+X#  options specify alternate data files, except the -d, which is the debug flag.
+X#
+X#  Originally written by me, but then tim tessin grabbed it and optimized
+X# it.  This is one of the building blocks for SATAN, BTW.  You'll see
+X# more of this later...
+X#
+X#  - d
+X#
+X#  routine tjt hack job - 10/28/91
+X#  - deleted netgroup file specifcation.  netgroups is always gotten 
+X#    from yp maps, never from the file.
+X#  - simplified and optimized second pass, store intermediate values
+X#    avoiding second open.  Code runs in 1/3 the time. 
+X#  - make the %trusted array hold individual hostnames, so we can subtract
+X#    more easily.
+X#  - implemented subtract option.
+X#  - fixed a bug or two adding single hosts.
+X#  - output one per line so I can sort and diff it to test it.
+X#  - Wow! Total rethink of algorithm.  Need to tag untrusted as well
+X#    as trusted cuz 1st match either way causes access search to 
+X#    terminate. 
+X#  - single entries can have - as per spec
+X#  - lots of error checking bypassed.  Do we need it?  If there are
+X#    syntax errors will system allow access? In what cases?
+X#
+X
+X# Process the command args...
+Xrequire 'getopts.pl';
+X$usage = "Usage: $0  [-h host.equiv] [-n netgroup] [-d]\n";
+Xdie $usage unless &Getopts('h:n:d');
+X
+Xif (!defined($opt_h)) { $hosts_equiv = "/etc/hosts.equiv"; }
+Xelse { $hosts_equiv = $opt_h; }
+X
+X&init_net_group;
+X
+Xopen (HE, $hosts_equiv) || die "Can't open $hosts_equiv\n";
+Xwhile (<HE>) {
+X	chop;
+X	/^\s*#/ && next;
+X	/^\s*$/ && next; 		# trash garbage
+X	/^\+\s*$/ && do {		# + in hosts.equiv is trouble
+X		print "Trust WORLD\n";
+X		exit 0;
+X		};
+X
+X	($sign,$at,$name) = /^([+-])?(@)?(.*)/;
+X	print "sign: $sign at: $at name: $name\n" if $opt_d;
+X	unless ($at) {
+X		if ($sign eq "-") {
+X			$untrusted{$name} = $name unless ($trusted{$name});
+X			}
+X		else {
+X			$trusted{$name} = $name unless ($untrusted{$name});
+X			}
+X		}
+X	# handle netgroups now...
+SHAR_EOF
+true || echo 'restore of cops_104/extra_src/trust.pl failed'
+fi
+echo 'End of  part 11'
+echo 'File cops_104/extra_src/trust.pl is continued in part 12'
+echo 12 > _shar_seq_.tmp
+exit 0
+

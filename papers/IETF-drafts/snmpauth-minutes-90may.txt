@@ -1,0 +1,104 @@
+
+
+CURRENT_MEETING_REPORT_
+
+
+Reported by Jeff Schiller/ MIT
+
+Mintues
+
+The SNMP Authentication Working Group met at the Pittsburgh IETF meeting
+on May 2, 1990.
+
+The primary focus of the meeting was a discussion of the relative merits
+of various Cryptographic Checksum algorithms used to ensure origination
+authentication and integrity of Protocol Data Units (PDUs).  This
+discussion was the result of comments received from members of the
+Privacy and Security Research Group which reviewed the documents.
+Basically the problem boiled down to identifying which algorithms were
+both secure enough and yet were fast enough for the potential high
+traffic volumes that they may be needed to process.  The algorithms
+discussed were:
+
+QMDC4, QMDC1, MD2, MD4, SNEFRU2, SNEFRU4.
+
+It was announced at the meeting that SNEFRU2 had been broken, and the
+consensus was that it therefore should not be considered.
+
+There was a sense that we needed to get cloture on the issue of what
+algorithm to use, in time for implementations to be demonstrated at
+Interop in October.
+
+Therefore the following decisions and action items resulted:
+
+
+   o Consensus was reached that the RFC should *not* provide a menu of
+     choices for implementors.  Instead the RFC should specify just one
+     of the candidate algorithms as the selected algorithm.  This was
+     argued on the basis that if more then one was allowed, each vendor
+     would pragmatically need to support all of them, at a cost in terms
+     of the development time for product, and memory size of the runtime
+     binary.
+   o Jeff Mogul and Chuck Davin volunteered to get performance numbers
+     on the various candidate algorithms and post their results to the
+     mailing list.  The hope here is that of all the algorithms,
+     sufficient number would be of high performance that at least one
+     could be found that would be both fast and secure enough to pass a
+     review by people who can judge the security of these types of
+     algorithms.
+   o The above work would be completed and a selection made in time to
+     advance the three documents for consideration as "Proposed
+     Standards" of the Internet.
+
+
+Since the meeting was held, the performance measures have been made and
+
+                                   1
+
+
+
+
+
+
+it appears that MD4 is the clear performance winner.  The documents will
+be changed to reflect this and submitted to the IETF with the
+recommendation they be progressed to the Proposed Draft state.
+
+ATTENDEES
+
+    Hossein Alaee             hossein_alaee@3com.com
+    Stan Ames                 sra@mbunix.mitre.org
+    Douglas Bagnall           bagnall_d@apollo.hp.com
+    Pat Barron                pat@trqnsarc.com
+    Pablo Brenner
+    Alison Brown              alison@maverick@osc.edu
+    Ted Brunner               tob@thumper.bellcore.com
+    Jeff Carpenter            jjc@unix.cis.pitt.edu
+    Martina Chan              mchan@mot.com
+    Steve Crocker             crocker@tis.com
+    James Davin               jrd@ptt.lcs.mit.edu
+    Frank Kastenholtz         kasten@interlan.interlan.com
+    Louis Mamakos             louie@trantor.umd.edu
+    Keith McCloghrie          sytek!kzm@hplabs.hp.com
+    Jeffrey Mogul             mogul@decwrl.dec.com
+    Oscar Newkerk             newkerk@decwet.dec.com
+    John O'hara               johara@mit.edu
+    Brad Parker               brad@cayman.com ?
+    Mike Patton               map@lcs.mit.edu
+    David Perkins             dave_perkins@3com.com
+    Tod Pike                  tgp@sei.emu.edu
+    Jonathan Saperia          saperia%tcpjon@decwrl.dec.com
+    Greg Satz                 satz@cisco.com
+    Jeffrey Schiller          jis@athena.mit.edu
+    Richard Smith             smiddy@dss.com ?
+    Ted Soo-Hoo               soo-hoo@dg-rtp.dg.com
+    Michael StJohns           stjohns@umd5.umd.edu
+    Louis Steinberg           louiss@ibm.com
+    Ian Thomas                ian@chipcom.com
+    David Waiteman            djw@bbn.com
+    Steve Waldbusser          sw0l@andrew.cmu.edu
+    Y C Wang                  21040 Homestead Rd Cupertino,Ca 95041
+
+
+
+                                   2

@@ -1,0 +1,236 @@
+Matt,
+
+Thank you very much for your thoughtful, insightful analysis and
+recommendations on security in NTP. I hope your report, which is
+directed to the PRSG, will soon appear as an RFC or published elsewhere,
+since I would like to cite it in other publications. Following are some
+comments and suggestions of my own.
+
+Access Control
+
+On page 10 you raise specific problems with the suggested access-control
+mechanism, problems which of course are not unique to NTP. However,
+there is an interesting subtlety that applies to NTP. A host will not
+synchronize to a peer unless that peer cooperates in maintaining state.
+In other words, the threat model must require that, if an attacker
+successfully spoofs a source address, port or source-route, the attacker
+must also either be able to capture the packets returned from the victim
+or predict enough state to fool the victim. In particular, the sanity
+checks require knowledge of the origin timestamp provided in messages
+transmitted by the victim. Since, as you observe, this timestamp is
+recorded to a precision of 232 picoseconds, specific values are not
+easily predictable, even with knowledge of previously transmitted
+packets.
+
+On the other hand, a determined attacker could simply generate a raft of
+NTP packets with different, bogus IP source addresses, ports and/or
+source routes. This could cause the victim to quickly exhaust memory
+and/or processing resources necessary to create associations, especially
+if encryption is used. The conclusion I draw is that the connection
+model used by NTP and many other ubiquitous services involving
+persistent (configured) and itinerant (public) associations should have
+a more specific template for association matching other than just the IP
+addresses and ports. I think perhaps a warning about this vulnerability
+should be included in the spec; or, better yet, a reference to your
+vulnerability study.
+
+There is another detail about the ability to spoof destination addresses
+and ports. The template match including destination (local host)
+addresses was designed for multi-homed hosts. The presumptive model was
+that delivery to only those addresses actually owned by the host would
+be assured by ordinary routing procedures. Therefore, destination-
+address spoofing is possible only if the routing procedures are
+compromised.
+
+Authentication
+
+Your comments on keys and key distribution are well founded. I am
+somewhat relieved you find the use of the "default key" uncompromising,
+since I have found that most useful in testing and damage repair.
+Earlier this year there was a potentially serious problem with a broken
+primary server, which was chiming the wrong year, but unreachable for
+repair. Disaster was conveniently avoided simply by changing the keys of
+the remaining primary servers. I find it convenient to experiment with
+subsets of servers without accidently warping ordinary clocks using the
+same technique.
+
+You correctly anticipated my intent in assigning keys on a per-host,
+rather than a per-association basis as simplifying key distribution. In
+point of fact, this need not be nailed down by the specification, which
+could simply create a host-key variable for each association, leaving
+the question of whether to use the same key id for each host-key
+variable an operational issue. That sounds like a worthwhile amendment
+to the spec, especially since nothing in the existing implementations
+needs to be changed.
+
+On page 8 where you describe the authentication bits, note that the
+behavior is different for configured and unconfigured peers. The intent
+is that configured peers can become the clock source if either the
+packet is correctly authenticated or the configuration information
+explicitly states that authentication is not required; however,
+unconfigured peers must always be correctly authenticated (if the
+authentication mechanism is implemented, of course).
+
+Note that the authentication-enabled bit (peer.authenable) is set in the
+case of unconfigured peers (only) if the packet contains an
+authenticator and the authenticated bit (peer.authentic) set if the
+cryptosum checks okay. Finally, note in Version 3 I tried to entirely
+separate the authentication variables, including these two bits, as
+required only if authentication is implemented in order to simplify
+description and implementation.
+
+Message Modification Attack
+
+You found an interesting vulnerability where an attacker can
+artificially adjust the roundtrip delay by fiddling the pkt.precision
+variable included in the NTP packet. You also suggested a sanity test
+should check that and discard the packet if the test fails. In Version 3
+it turns out the pkt.precision field is not used, so that vulnerability
+is removed. However, Version 3 does prescribe "reasonable" bounds checks
+for pkt.stratum, pkt.rootdelay, pkt.rootdispersion and the calculated
+delay. Nevertheless, while the pkt.precision vulnerability is removed,
+vulnerabilities in pkt.rootdelay and pkt.rootdispersion remain. Note
+that pkt.reftime could in principle be diddled, with effect that the
+skew-error computation of Version 3 might be result in invalid
+dispersions. The bound required by the spec is NTP.MAXAGE (one full
+day), which limits the skew error to NTP.MAXSKEW (one second); however,
+I forgot to check for values in the future relative to the current local
+clock.
+
+Perhaps the most serious vulnerability you point out is that the packet
+variables used by the packet procedure can be latched in the peer
+variables even if some sanity checks fail. In principle, this might
+allow an attacker who can't get by the sanity checks to infect bogus
+header information, even if his timestamps are noted as invalid. While
+the attack cannot result in synchronizing with infectious timestamps, it
+can affect the clock-selection procedure, such as by the insertion of a
+bogusly low stratum, for example.
+
+The summary on page 13 I think correctly shows the effect of septic
+header fields, assuming an infectious packet header is inhaled. Note
+that the leap bits, while not affecting NTP itself, are presumably
+inhaled by the host timekeeping system, which may then bump and/or grind
+on the occasion of the next midnight rollover. However, and assuming the
+pkt.precision vulnerability no longer exists, the damage due to attack
+consists of service denial or improper clock selection and not the
+ingest of unsanitary data.
+
+By the way, in my cited messages the reference to 80 nanoseconds should
+be changed to 232 nanoseconds. My error.
+Replay Attack
+
+There may be a misconception as to the damage that could be inflicted by
+a replay (i.e., without message modification) attack. First, the replay
+will be rejected unless its origin timestamp matches the latest one
+transmit timestamp used by the victim. Second, the replay will be
+rejected if its transmit timestamp matches one already received by the
+victim. In other words, the replay is effective only up until the victim
+transmits the next message and only if the replay of the response
+reaches the victim before the first legitimate response arrives. We
+might postulate a scenario where the attacker has access to a superfast
+path unknown to the victim, so that its replay indeed does arrive before
+the legitimate reply. In fact, the same damage could be done by simply
+rerouting the legitimate packet.
+
+Now, the real problem is that the victim will update its receive and
+origin timestamps even if the sanity checks fail, not to mention the
+header variables (at present). This is in order that a possibly newly
+synchronized legitimate peer can become synchronized. Thus, a determined
+replay artist can replay just often enough to invalidate legitimate data
+from ever being captured by the victim, in other words, a denial attack.
+On the assumption it is most likely that the attacker's packets do not
+arrive before the legitimate ones, a useful defense would be to toss out
+all packets with transmit timestamps older than any already received. Of
+course, it might happen that the legitimate peer might set its clock
+back for some, presumably valid, reason. This could result in the victim
+discarding some or all future packets. However, this condition can last
+only as long as it takes to completely empty the clock filter, a couple
+of hours at most.
+
+However, if NTP should follow your suggestion and ignore all packets
+with transmit timestamps older than the latest one received, there would
+exist an awkward situation where a reboot or restart of a legitimate
+synchronizing source would result in a delay of up to a couple of hours
+before synchronization could be achieved. This could be avoided by
+making an exception to the age rule that undefined (zero) timestamps
+would bypass the age test; however, if the attacker ever managed to
+capture the first packet transmitted by a server, it could save it for
+later attack, with result the same vulnerability as before. While an
+entrenched paranoid might elect to include the stricter test, I am
+inclined to leave things the way they are.
+
+Note that in no case can replays cause the clock to be set backwards; in
+fact, replays even if not detected can cause only minor wiggle of the
+filter data. From the defining equations for delay and offset it should
+be clear that these quantities are insensitive to a translation in time
+of both t(i) and t(i-1), as long as both are translated the same amount.
+In Version 3 it could make a minor difference in the skew-error
+accumulation (as the result of off-frequency local clocks), which would
+tend to underestimate the skew error. In the scheme of things, I think
+this can be safely neglected.
+
+Denial of Service Attacks
+
+The easiest way to upset an NTP host is to artfully delay an NTP packet
+in transit or simply to drop it entirely. There is of course no way to
+distinguish such attacks from ordinary network misbehavior on other than
+a probabilistic basis. In fact, both NTP Version 3 and DTS will continue
+to call the apparent peer a truechimer, since the artful delay simply
+widens the correctness interval, even though it degrades timekeeping
+accuracy. However, if the correctness interval exceeds some
+predetermined sanity threshold, like 1000 seconds in NTP, the behavior
+advised is to tinkle the operator bell or other reliable source of
+unimpeachable sanity. The argument extends to the NTP parameter
+CLOCK.MAX (+-128 ms), which is the aperture within which gradual
+adjustments are made. It can happen, either due to an attack or timewarp
+at a primary server, that this aperture is exceeded, causing a step
+adjustment instead of a gradual one and perhaps stepping the clock
+backwards.
+
+In NTP Version 3 a sufficient time (15 minutes) must elapse in which no
+corrections are received within the CLOCK.MAX aperture before the step
+adjustment is performed. This is intended to suppress local-clock
+timewarps during and after leap seconds, for example, but also further
+hardens against those attacks that manage to pass the sanity checks and
+succeed in generating a correction outlyer, since the attacker would
+have to capture the clock filter continuously for at least 15 minutes.
+
+Miscellany
+
+In Figure 1 on page 3 you should probably replace the "fuzzballs" label
+with "primary servers" or something like that, since the fuzzbugs are
+not the only primary servers.
+
+I believe "dispersion" first mentioned on page 5, but without concise
+definition. The semantic intent is perhaps best captured by "estimated
+maximum error."
+
+While you are working with Version 2 and Version 3 has not officially
+been blessed, you may find updating your text for Version 3 quite easy.
+The updated spec contains procedure segments similar to those in Figures
+4 and 6, which can be pasted in situ. In addition, the names of some of
+the variables shown in Figures 3, 4 and 5 have changed in minor ways,
+both due to minor differences in processing and also to systematize the
+naming conventions. While hoping not to cause confusion with older
+versions, I wanted to reduce the namespace clutter.
+
+Conclusions
+
+Specifically, I suggest the following changes to the NTP Version 3
+specification:
+
+1.   In the packet procedure, test 6, require the reference time to be
+     greater than zero and less than NTP.MAXAGE.
+
+2.   In the authentication procedures change the system key ids to apply
+     separately to each association (call them host key ids) and mention
+     that one scheme might be to set the host key ids all the same and
+     function as a system key id as at present. The peer key ids would
+     remain the same and be separate from the host key ids.
+
+3.   Avoid latching packet variables (except origin and receive
+     timestamps) if the sanity checks fail
+
+Again, thanks for your efforts.
+
+Dave

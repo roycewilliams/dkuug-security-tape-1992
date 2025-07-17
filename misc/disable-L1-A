@@ -1,0 +1,42 @@
+From Sun-Nets-request@umiacs.UMD.EDU Sat Feb  2 04:02:32 1991
+Received: from hellcat.eng.umd.edu 
+	by bacchus.eng.umd.edu (5.64/UMDENG-0.4/09-20-90)
+	id AA13153; Sat, 2 Feb 91 04:02:24 -0500
+Received: from skippy.umiacs.umd.edu 
+	by hellcat.eng.umd.edu (5.64/UMDENG-0.4/09-20-90)
+	id AA03608; Sat, 2 Feb 91 04:02:30 -0500
+Received: by skippy.umiacs.UMD.EDU (5.61/UMIACS-0.9/04-05-88)
+	id AA17492; Fri, 1 Feb 91 23:46:59 -0500
+From: rutgers!atlantis.pacesetter.com!mnichols@umiacs.UMD.EDU
+Date: Fri, 1 Feb 91 20:05:37 PST
+To: SUE%geneseo.bitnet@umiacs.UMD.EDU, sun-managers@eecs.nwu.edu,
+        sun-nets@umiacs.umd.edu
+Subject: Re:  SUN L1-A and b -s
+Status: RO
+
+
+We use the following adb script to disable breaks on our server
+consoles.  Users get kind of nasty when you inadvertently hit the
+break key while trying to hit the setup key. This might provide an
+additional level of security when augmented with setting all the
+entries in /etc/ttytab to secure on the clients. We have this patch
+installed on all of our Sun 3 and Sun 4 systems running Sun OS 4.0.3.
+We don't have any 4.1.1 machines yet so I can't tell you if it will
+work under 4.1.1.
+
+
+Mark
+
+--------
+Mark Nichols			! internet: mnichols@pacesetter.com
+Pacesetter Systems Inc.		! voice: (818) 362-6822 x3104
+Sylmar,  California 		!
+
+----- Cut here ----
+#! /bin/sh
+# Patch to disable the BREAK key and L1-A in one fell swoop
+adb -w -k /vmunix /dev/mem << EOF
+montrap?w0x4e75
+montrap/w0x4e75
+EOF
+

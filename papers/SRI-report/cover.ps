@@ -1,0 +1,41 @@
+%!
+/inch { 72 mul } def
+
+/Helvetica-Bold findfont
+	[65 0 0 72 0 0] makefont setfont
+
+1.0 inch 9.5 inch moveto
+(SRI) true charpath stroke
+2.656 inch 9.5 inch moveto
+(International) true charpath stroke
+
+2 setlinewidth
+1.0 inch 8.0 inch moveto
+8.0 inch 8.0 inch lineto stroke
+
+/Helvetica-Bold findfont
+	20 scalefont setfont
+
+2.0 inch 7.25 inch 20 sub moveto
+(IMPROVING THE SECURITY OF YOUR) show
+2.0 inch 7.25 inch 42 sub moveto
+(UNIX SYSTEM) show
+
+/Helvetica findfont
+	10 scalefont setfont
+
+2.0 inch 7.25 inch 64 sub moveto
+(David A. Curry, Systems Programmer) show
+2.0 inch 7.25 inch 75 sub moveto
+(Information and Telecommunications Sciences and Technology Division) show
+2.0 inch 7.25 inch 97 sub moveto
+(ITSTD-721-FR-90-21) show
+
+/str (Final Report \267 April 1990) def
+8.0 inch str stringwidth pop sub 7.8125 inch 10 sub moveto
+str show
+
+1.0 inch 0.875 inch 10 sub moveto
+(333 Ravenswood Avenue \267 Menlo Park, CA 94025-3493 \267 (415) 326-6200 \267 FAX: (415) 326-5512 \267 Telex: 334486) show
+
+showpage

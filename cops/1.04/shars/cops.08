@@ -1,0 +1,1941 @@
+#!/bin/sh
+# this is p4.shar.08 (part 8 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/is_able.lst continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 8; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/is_able.lst'
+else
+echo 'x - continuing file cops_104/is_able.lst'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/is_able.lst' &&
+X#   /etc/hosts.equiv /etc/profile /etc/syslog.conf /etc/export /etc/utmp
+X#   /etc/wtmp
+X/etc/*			w		w
+X
+X/bin/*			w		w
+X/usr/bin/*		w		w
+X/usr/etc/*		w		w
+X/usr/adm/*		w		w
+X/usr/lib/*		w		w
+X/usr/include/*		w		w
+X/usr/local/lib/*	w		w
+X/usr/local/bin/*	w		w
+X/usr/etc/yp*		w		w
+X/usr/etc/yp/*		w		w
+X
+X# individual files:
+X/usr/lib/crontab	w		b
+X/usr/lib/aliases	w		w
+X/usr/lib/sendmail	w		w
+X/usr/spool/uucp/L.sys	g		b
+X
+X#  NEVER want these writeable/readable!
+X/dev/kmem		w		b
+X/dev/mem		w		b
+X
+X#   Optional List of assorted files that shouldn't be
+X# write/readable (mix 'n match; add to the list as desired):
+X/usr/adm/sulog		w		r
+X/.netrc			w		b
+X# HP-UX and others:
+X/etc/btmp		w		b
+X/etc/securetty		w		b
+X# Sun-fun
+X/dev/drum		w		b
+X/dev/nit		w		b
+X/etc/sunlink/dni/rc	w		w
+SHAR_EOF
+echo 'File cops_104/is_able.lst is complete' &&
+chmod 0755 cops_104/is_able.lst ||
+echo 'restore of cops_104/is_able.lst failed'
+Wc_c="`wc -c < 'cops_104/is_able.lst'`"
+test 1678 -eq "$Wc_c" ||
+	echo 'cops_104/is_able.lst: original size 1678, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/kuang.pl.shar ==============
+if test -f 'cops_104/kuang.pl.shar' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/kuang.pl.shar (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/kuang.pl.shar (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/kuang.pl.shar' &&
+X#!/bin/sh
+X# This is a shell archive (produced by shar 3.49)
+X# To extract the files from this archive, save it to a file, remove
+X# everything above the "!/bin/sh" line above, and type "sh file_name".
+X#
+X# made 01/09/1991 15:04 UTC by df@death.cert.sei.cmu.edu
+X#
+X# existing files will NOT be overwritten unless -c is specified
+X#
+X# This shar contains:
+X# length  mode       name
+X# ------ ---------- ------------------------------------------
+X#   9782 -rw------- README.perl
+X#   1776 -rwx------ get-cf
+X#   6490 -rw------- kuang.1
+X#  16925 -rwx------ kuang.pl
+X#    284 -rwx------ kuang_all
+X#   1307 -rw------- put-cf
+X#   1274 -rw------- yagrip.pl
+X#
+X# ============= README.perl ==============
+Xif test -f 'README.perl' -a X"$1" != X"-c"; then
+X	echo 'x - skipping README.perl (File already exists)'
+Xelse
+Xecho 'x - extracting README.perl (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'README.perl' &&
+XXThis is a perl version of Dan's version of Bob Baldwin's Kuang program
+XX(originally written as some shell scripts and C programs). 
+XX
+XXThe original intent was to improve the speed of kuang, which is
+XXespecially important for installations like ours with several thousand
+XXaccounts and NFS things and all that.  The shell version of Kuang used
+XXC programs to add rules, get a groups members, determine the writers
+XXof a file, and so on, which really slowed things down.
+XX
+XX		"no" problems	/etc staff writeable
+XX		-------------	--------------------
+XXshell kuang	2:14 (14)	12:26 (98)	0.1 p/s
+XXperl kuang	1:10 (18)	 2:34 (588)	3.8 p/s
+XX
+XXThe "no" problems column indicates the time taken (and number of plans
+XXconsidered) for the shell and Perl versions of Kuang on a system with
+XXno known security problems.  The "/etc staff writeable" column gives
+XXtiming and # of plans for a system with a /etc directory that is
+XXwriteable by group staff, which contains several dozen users.
+XX
+XXAs you can see, the Perl version is a bit faster.  Turns out there are
+XXall sorts of details that need to be considered in real
+XXimplementations of Kuang type programs, some of which are discussed
+XXbelow.
+XX
+XX  --- Steve Romig, CIS, Ohio State, October 1990
+XX
+XX------------------------------------------------------------------------------
+XX
+XXSome Features of the Perl Version
+XX
+XX  Caches passwd/group file entries in an associative array for faster
+XX  lookups.  This is particularly helpful on insecure systems using YP
+XX  where password and group lookups are slow and you have to do a lot of
+XX  them...:-)
+XX
+XX  Can specify target (uid or gid) on command line.
+XX
+XX  Can use -l option to generate PAT for a goal.
+XX
+XX  Can use -f to preload file owner, group and mode info, which is
+XX  helpful in speeding things up and in avoiding file system
+XX  'shadows'...  See the man page for details.
+XX
+XXFuture plans, things to fix:
+XX
+XX- An earlier version scanned the password file looking for generally
+XX  accessible accounts (no password), which would be added to the
+XX  uids.known list (in addition to -1, "other").  I had planned on also
+XX  adding a password checker which would allow us to also add accounts
+XX  with easily guessed passwords.  Eventually I nuked the code that
+XX  scanned the password file to speed things up, and further reflection
+XX  reveals that it isn't wise to add the password scanning to Kuang
+XX  itself (since there are many other things that might be considered
+XX  in determining whether an account is accessible or not, and you
+XX  probably don't want to add them all to Kuang).  
+XX
+XX  At some point we should add a command line option that allows us to
+XX  add additional uid's (or gid's?) to the uids.known list.  That way
+XX  the user could run some other tool to scan the password file and
+XX  generate a list of accessible accounts, which could then be fed to
+XX  kuang.  Makes it faster on clients using YP since most of the
+XX  password file is the same for all N clients, why scan it N times.
+XX  This would make it easier for the Kuang user to do smarter things
+XX  to/with the password file checks (list all accounts with no password
+XX  or easily guessed password, filter out "ok" entries (eg, sync) and
+XX  etc.)
+XX
+XX- This version doesn't deal with uid's and gid's correctly.  If there
+XX  are several entries that list the same UID, but with different
+XX  names, directories and shells, we'll only check plans for becoming
+XX  one of them, rather than any of them, so some possible plans aren't
+XX  even examined.  
+XX
+XX  Hmmm...this is easier than I thought - when we evaluate some plan
+XX  for granting a particular uid, we need to evaluate plans for all
+XX  usernames that can become that uid.  Just stick a loop in there
+XX  somewhere...get CF's for each of username's in turn.  
+XX
+XX  Bah, harder than I thought, since it'd have to scan the whole
+XX  password file to figure which username/home directories can become
+XX  which uid's.  Similarly with groups.  
+XX
+XX  Current plan: by default, kuang will have to scan the whole password
+XX  and group files so it can be sure to get all possible ways to become
+XX  some uid or gid.  Internally, really need several lists:
+XX
+XX	mapping from uid to list of usernames that have that uid
+XX	mapping from a username to home directory, shell
+XX	mapping from gid to list of uids that have access to that
+XX	  gid when they login (either member of group with that gid or
+XX	  given as login group in passwd file)
+XX	mapping from gid to list of group names for that gid
+XX
+XX  Course, this means that we have to read the whole password and group
+XX  file, most of which will be common to many machines (like in a YP
+XX  environment).  We could preload the tables above from files created
+XX  once, containing the brunt of the YP info, and then augment that
+XX  with the local passwd and group info on each host when kuang is
+XX  invoked, but then we need to correctly interpret funky YP things
+XX  like +@netgroup:::*:..., which means that the uid has a name but no
+XX  password here...and similarly with shell substitutions and so on.
+XX  Bah. 
+XX
+XX- In a large environment (like ours, 260+ machines, 30+ file systems
+XX  on as many servers, 2000 password file entries served by YP) it
+XX  would be nice to 'precompute' successful plans that would be common
+XX  to all systems.  In particular, plans for becoming most of the users
+XX  with home directories on the NFS file systems would be useful, since
+XX  we don't really want to recheck these on each host.  You wouldn't
+XX  want the plan to be too deep - probably shouldn't span more than 2
+XX  uids (1 on each end: grant u.romig grant g.staff write ~foo/.login
+XX  grant u.foo).  I'm thinking that you could feed a list of these
+XX  precomputed plans to kuang and add some code that causes it to
+XX  splice in relevant plans where it can to short cut the planning
+XX  steps.  For example, if one of the plans in uids.next is something
+XX  like "grant u.foo ...", and I have the precomputed plan mentioned
+XX  above, I could splice the two: "grant u.romig grant g.staff write
+XX  ~foo/.login grant u.foo ..." and skip all the normal steps that
+XX  would've been taken to get there.
+XX
+XX  I'm not sure this is even feasible or useful.  Food for thought.
+XX
+XX- Hmmm...thinking about it, it seems like some of the steps are a bit
+XX  too implicit...maybe the rules should be broken out a bit more.
+XX  That will cost in processing time, though.
+XX
+XX- Would be really, really nice to be able to deal with PATH variables
+XX  - location of ., who can write elements of path, etc.  Basic rule is
+XX  "anyone who can replace anything in any of path directories or the
+XX  path directories themselves can become that PATH's user..."  This
+XX  can be really messy though - in our environment, the path for a user
+XX  will depend on the architecture type of the machine that he is
+XX  logged into, and to get the path, you'd have to read and interpret
+XX  his .login (including variable assignments, source's and
+XX  conditionals).  Urf.  One wonders whether it might be better to have
+XX  something running as root that su's to each username in turn and
+XX  gets the path that way...:-)
+XX
+XX- The kuang described in Baldwin's dissertation is somewhat different
+XX  in nature from this one.  The original computes a Privilege Access
+XX  Table (PAT) which describes for each uid and gid which uids have
+XX  access to that uid.  To assess security, we compare this against the
+XX  security policy for the site, which similarly describes which uid's
+XX  are supposed to have access to each uid and gid.  A sample SP might
+XX  be that each uid should be accessible only by itself and root, and
+XX  each gid should be accessible only to the members of that group and
+XX  root.  If the PAT listed additional uid's for some priv, that would
+XX  constitute a violation of the Security Policy for the site.
+XX
+XX  The current kuang is different.  It registers Success (a problem was
+XX  found) if it determines that some uid in the uids.known list (-1,
+XX  "other" by default) can access the target privilege.  It may find
+XX  along the way that extra uids can access some uid, but these aren't
+XX  reported as specific problems unless they are added to the
+XX  uids.known list. 
+XX
+XX  We could do something similar to the kuang described in the paper by
+XX  setting uids.known to be all the uids that aren't in the security
+XX  policy table for the target uid, and running kuang against the
+XX  target.  This would report success for each uid that could access
+XX  the target.  You could do similar things with groups - uids.known
+XX  would be all the uids that aren't members of the group...
+XX
+XX  Alternately, we could simply have kuang record the list of uids that
+XX  can access the target priv and print the list when its done.  That
+XX  way you could iterate kuang against all uids and gids and compare
+XX  the resulting PAT against your security policy and record the
+XX  differences.  You'd probably want to record the plan for each uid
+XX  reported also.
+XX
+XX  On our system this would mean running kuang roughly 2500
+XX  times to check 1 host, and we have about 300 hosts...urf...assuming
+XX  that each kuang invocation has to check 50 plans, that's a total of
+XX  125,000 plans per host, or about an hour of real time...not as bad
+XX  as it could be, though.
+XX
+XX- It would be nice to add to the list of rules.  It would be especially
+XX  nice to extract the rules from the code so that we can create site
+XX  specific rule files (for example, we use X11r4 here, and many users
+XX  have a .Xinitrc that contains shell commands that get executed when
+XX  they login.)
+XX
+XX  Easiest way to do this would be to extract the rules as Perl code so
+XX  we can take advantage of conditionals and so on, and include them
+XX  within the body of kuang somehow.  A sample rule in perl:
+XX
+XX	if (&shell($uid) eq "/bin/csh") {
+XX	    &addto("files", &home($uid)."/.login", 
+XX			"replace .login $plan");
+XX	}
+XX
+XX  which simply means "if the user's shell is csh, then try to replace
+XX  his .login file." 
+XX
+XSHAR_EOF
+Xchmod 0600 README.perl ||
+Xecho 'restore of README.perl failed'
+XWc_c="`wc -c < 'README.perl'`"
+Xtest 9782 -eq "$Wc_c" ||
+X	echo 'README.perl: original size 9782, current size' "$Wc_c"
+Xfi
+X# ============= get-cf ==============
+Xif test -f 'get-cf' -a X"$1" != X"-c"; then
+X	echo 'x - skipping get-cf (File already exists)'
+Xelse
+Xecho 'x - extracting get-cf (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'get-cf' &&
+XX#! /usr/local/bin/perl
+XX
+XX@dot_files = (
+XX    ".login", ".logout", ".cshrc",			# csh, cshe or tcsh
+XX    ".profile",						# ksh, sh
+XX    ".env",						# ksh
+XX    ".alias", ".aliases",				# common for all shells
+XX    "user.ps", ".user.ps", "tools.ps", ".tools.ps",
+XX	"startup.ps", ".startup.ps",			# NeWS
+XX    ".mgrc",						# MGR
+XX    ".X11init", ".awmrc", ".twmrc", ".xinitrc",		# X11
+XX    ".emacs"						# emacs
+XX);
+XX
+XX%seen = {};
+XX
+XXopen(HOST, "/bin/hostname |") || die "can't get the hostname";
+XXchop($hostname=<HOST>);
+XXclose(HOST);
+XX
+XXuser_loop:
+XX    for (($name,$passwd,$uid,$gid,$quota,$comment,$gcos,$dir,$shell) = getpwent();
+XX         $name ne "";
+XX         ($name,$passwd,$uid,$gid,$quota,$comment,$gcos,$dir,$shell) = getpwent()) {
+XX
+XX	#
+XX	# If the user has a home directory on this server, get the info 
+XX	# about the directory, his CF's and so on.
+XX	#
+XX	if ($dir =~ m,^/n/$hostname/,) {
+XX	    if (! -d $dir) {
+XX		printf(stderr "home directory '%s' for user '%s' doesn't exist.\n",
+XX			$dir,
+XX			$name);
+XX		next user_loop;
+XX	    }
+XX
+XX	    ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+XX                    $atime,$mtime,$ctime,$blksize,$blocks)
+XX                        = stat(_);
+XX	    $mode = $mode & 07777;
+XX
+XX	    &spit_it_out("d", $uid, $gid, $mode, $dir);
+XX
+XX	    foreach $file (@dot_files) {
+XX		$path = "$dir/$file";
+XX
+XX		if (-f $path) {
+XX		    ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+XX                        $atime,$mtime,$ctime,$blksize,$blocks)
+XX                            = stat(_);
+XX		    $mode = $mode & 07777;
+XX
+XX		    &spit_it_out("f", $uid, $gid, $mode, $dir);
+XX		}
+XX	    }
+XX	}
+XX    }
+XX
+XX
+XX
+XX
+XXsub spit_it_out {
+XX    local($type, $uid, $gid, $mode, $name) = @_;
+XX
+XX    if (defined($seen{$name})) {
+XX	return;
+XX    }
+XX
+XX    printf("%s %d %d 0%o %s\n", $type, $uid, $gid, $mode, $name);
+XX    $seen{$name} = 1;
+XX}
+XX
+XSHAR_EOF
+Xchmod 0700 get-cf ||
+Xecho 'restore of get-cf failed'
+XWc_c="`wc -c < 'get-cf'`"
+Xtest 1776 -eq "$Wc_c" ||
+X	echo 'get-cf: original size 1776, current size' "$Wc_c"
+Xfi
+X# ============= kuang.1 ==============
+Xif test -f 'kuang.1' -a X"$1" != X"-c"; then
+X	echo 'x - skipping kuang.1 (File already exists)'
+Xelse
+Xecho 'x - extracting kuang.1 (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'kuang.1' &&
+XX.TH KUANG 1 "4 October 1990"
+XX.SH NAME
+XXkuang \- find security problems through rule based analysis
+XX.SH SYNOPSIS
+XX.B kuang
+XX.RB "[\|" \-v  "\|]"
+XX.RB "[\|" \-d "\|]"
+XX.RB "[\|" \-l "\|]"
+XX.RB "[\|" \-D "\|]"
+XX.RB "[\|" \-f filedata "\|]"
+XX.RB "[\|" 
+XX.IR u.username "\|]"
+XX.br
+XX.B kuang
+XX.RB "[\|" \-v  "\|]"
+XX.RB "[\|" \-d "\|]"
+XX.RB "[\|" \-l "\|]"
+XX.RB "[\|" \-D "\|]"
+XX.RB "[\|" \-f filedata "\|]"
+XX.RB "[\|" 
+XX.IR g.groupname "\|]"
+XX.br
+XX.SH DESCRIPTION
+XX.LP
+XX.B kuang
+XXuses rule based analysis to examine the current security configuration
+XXof a site and determine whether certain security problems exist.
+XX
+XX.B kuang 
+XXcontains embedded rules that describe the projection model and
+XXsome of the attacker tricks used on Unix systems.  It uses these rules
+XXto reason backward from a desired goal (such as "grant u.root"),
+XXgenerating potential "attack" plans from the rules and file system
+XXstate and then evaluating them to see whether they are reachable
+XXaccording to the state recorded in the password and group files and in
+XXthe ownership and modes of the file systems.
+XX
+XXBy default, 
+XX.B kuang 
+XXuses "grant u.root" as its initial goal.  You can change that by
+XXspecifying a username (u.username) or groupname (g.groupname) on the
+XXcommand line.  Normally 
+XX.B kuang
+XXdetermines a plan to be successful if it determines that anyone
+XX(u.other) can become the initial goal.  
+XX
+XXThe 
+XX.B \-v
+XXoption causes 
+XX.B kuang
+XXto print a message about every plan added to the evaluation list.
+XXThis can help one to understand how 
+XX.B kuang 
+XXworks.  The 
+XX.B \-d 
+XXoption causes 
+XX.B kuang
+XXto print a message when it evaluates a plan to determine whether to
+XXretain it and add onto it or ignore it.  These options will often
+XXproduce lots of output, beware.
+XX
+XXNormally 
+XX.B kuang
+XXonly registers success when it finds that everyone on the system can
+XXbecome the target uid or gid.  With the 
+XX.B \-l
+XXoption, 
+XX.B kuang
+XXwill list every uid that can become the goal.  This provides a more
+XXcomplete picture of the state of security - you might deem it a
+XXproblem if several users can become root, even if the rest cannot.  
+XX
+XXOne might adopt the view that each uid should only be accessible by
+XXitself and root, and that each gid should be accessible only by the
+XXmembers of that group and root.  One can then compare the expected
+XXaccess list for a given uid or gid against the 
+XX.B kuang
+XXgenerated list to find security problems that 
+XX.B kuang
+XXwouldn't ordinarily tell you about.
+XX
+XXThe goals that 
+XX.B kuang
+XXuse seem cryptic, but are really pretty straightforward.  Each goal
+XXconsists of a list of <action> <object> pairs.  Typical actions are
+XXgrant, write and replace.  Typical objects are user names
+XX(u.username), group names (g.groupname) and files names.  The goal
+XX"grant u.root" means to have access to the root UID (0), in other
+XXwords, to be able to run any program using that uid.  Similarly,
+XX"grant g.staff" means to have access to group staff.  The long goal
+XX"grant u.bill grant g.graphics replace /n/shoe/0/fred replace
+XX/n/shoe/0/fred/.profile grant u.fred grant g.staff" means become
+XXuser bill, get access to the graphics group, replace the file
+XX/n/shoe/0/fred, replace /n/shoe/0/fred/.profile, become fred,
+XXgrant access to the staff group.  The problem that allows this to
+XXhappen is that the /n/shoe/0 directory is writeable by the graphics
+XXgroup, meaning that anyone in that group can replace the .profile file
+XXfor the fred user and gain access to that account and the groups it
+XXbelongs to when fred next logs in.  Ooops.
+XX
+XXTo do a thorough job, 
+XX.B kuang 
+XXreally needs to be able to access all of
+XXthe controlling files of all users.  In some environments, home
+XXdirectories are located in NFS mounted file systems where the client
+XXdoesn't have root access.  
+XX
+XXProblem is that some home directories may be
+XXprotected so that group foo can read/write them, but OTHER can't.
+XX.B kuang 
+XXrunning as some user not in group foo won't be able to read or
+XXsearch the directory, creating a blind spot that may hide security
+XXproblems (for example, if group foo can write that user's .login and
+XXgain access to some other important priv...)  Running 
+XX.B kuang
+XXas root
+XXwon't help unless we are running on the server that exports that
+XXfile system, since root==nobody through NFS here.  Of course, then
+XXyou'll find other blind spots on other servers, meaning that you'll
+XXnever be able to see a complete picture of how things are from any
+XXspot on the net.  Running 
+XX.B kuang
+XXon every machine might not even
+XXhelp, since the blind spots might prevent them from seeing viable
+XXpaths to Success on any of the machines.  Sigh.
+XX
+XXSoooo we've added a 
+XX.B -f 
+XXoption that causes 
+XX.B kuang 
+XXto preload owner, group and mode information for a list of files.
+XXEach line of the file should be of the form "type uid gid mode name".
+XX.B type
+XXis ignored by 
+XX.B kuang.
+XX.B uid 
+XXand 
+XX.B gid
+XXare the user and group ID numbers, in decimal.
+XX.B mode
+XXis the permissions for the file, in octal.  And 
+XX.B name
+XXis the name of the file.  We've also added a program called
+XX.B get-cf
+XXthat can be run as root on a server to create a file of the above form
+XXfor the control files for the user's with home directories on that
+XXserver.  Then you can run 
+XX.B get-cf 
+XXon every server as root, concatenate all the data together, and
+XXpreload it into Perl.  This will fix the shadow problems mentioned
+XXabove and should also speed things up since you won't need to do all
+XXthe file system references.
+XX
+XX.B kuang -f file
+XXwill use a DBM database in place of a text file if file.dir exists.
+XXTo create a DBM database from a text file of the form described above,
+XXuse 
+XX.B kuang -f file -D.
+XXThis will suck in the text file and create a DBM database from it and
+XXquit.  This speeds up kuang's initialization somewhat, though it isn't
+XXclear that its worth doing unless you have a local disk for the DBM
+XXfile. 
+XX
+XX.SH "SEE ALSO"
+XX"Rule Based Analysis of Computer Security", Robert W. Baldwin, MIT, June 1987.
+XX.SH NOTES
+XX.LP
+XXThis version of 
+XX.B kuang
+XXis based on the shell script versions that Dan Farmer included with
+XXthe 
+XX.B COPS 
+XXsecurity package, which in turn were based on code written by  Robert
+XXBaldwin himself.
+XX
+XXYou should read the other documentation that should come with this
+XXversion and modify the rules in 
+XX.B kuang
+XXto suite your site.
+XX
+XX.SH BUGS
+XX.LP
+XXThe rules should be extracted from the code so that they could be
+XXaugmented in a site specific fashion more readily.
+XX
+XXThe system doesn't work correctly when multiple users in the password
+XXfile share the same UID.  In that event, it only checks plans for the
+XXfirst. 
+XSHAR_EOF
+Xchmod 0600 kuang.1 ||
+Xecho 'restore of kuang.1 failed'
+XWc_c="`wc -c < 'kuang.1'`"
+Xtest 6490 -eq "$Wc_c" ||
+X	echo 'kuang.1: original size 6490, current size' "$Wc_c"
+Xfi
+X# ============= kuang.pl ==============
+Xif test -f 'kuang.pl' -a X"$1" != X"-c"; then
+X	echo 'x - skipping kuang.pl (File already exists)'
+Xelse
+Xecho 'x - extracting kuang.pl (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'kuang.pl' &&
+XX#! /usr/local/bin/perl
+XX
+XX#
+XX# kuang - rule based analysis of Unix security
+XX#
+XX# Perl version by Steve Romig of the CIS department, The Ohio State
+XX# University, October 1990. 
+XX# 
+XX# Based on the shell script version by Dan Farmer from his COPS
+XX# package, which in turn is based on a shell version by Robert
+XX# Baldwin. 
+XX#
+XX
+XXdo 'yagrip.pl' ||
+XX  die "can't do yagrip.pl";
+XX
+XX$options = "vdlf:D";
+XX$usage = "usage: kuang [-v] [-d] [-l] [-D] [-f filedata] [u.username|g.groupname]\n";
+XX
+XX#
+XX# Simple Unix Kuang, a security checking program.
+XX#
+XX# This is a perl version of Dan Farmer's version of Bob Baldwin's
+XX# shell scripts. 
+XX#
+XX
+XX#
+XX# passwd_byuid lookup a password entry by uid, return as 
+XX# (name, password, directory, shell) list.
+XX#
+XXsub passwd_byuid {
+XX    local($uid) = @_;
+XX    local($name, $passwd, $gid, $quota, $comment, $gcos, $dir, $shell);
+XX
+XX    if (! defined($passwd_byuid_list{$uid})) {
+XX	($name, $passwd, $t_uid, $gid, $quota, $comment, $gcos, $dir, $shell) =
+XX	    getpwuid($uid);
+XX
+XX	if ($t_uid eq "") {
+XX	    return();
+XX	}
+XX
+XX	$passwd_byuid_list{$uid} = join(':', $name, $passwd, $dir, $shell);
+XX	$passwd_byname_list{$name} = $uid;
+XX    }
+XX
+XX    return(split(/:/, $passwd_byuid_list{$uid}));
+XX}
+XX
+XXsub passwd_byname {
+XX    local($name) = @_;
+XX    local($passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell);
+XX
+XX    if (! defined($passwd_byname_list{$name})) {
+XX	($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) =
+XX	    getpwnam($name);
+XX
+XX	if ($uid eq "") {
+XX	    return();
+XX	}
+XX
+XX	$passwd_byuid_list{$uid} = join(':', $name, $passwd, $dir, $shell);
+XX	$passwd_byname_list{$name} = $uid;
+XX    }
+XX
+XX    return($passwd_byname_list{$name});
+XX}
+XX
+XX#
+XX# group_bygid lookup a group entry by gid, return as 
+XX# (name, members) list.
+XX#
+XXsub group_bygid {
+XX    local($gid) = @_;
+XX    local($name, $t_passwd, $t_gid, $members);
+XX
+XX    if (! defined($group_bygid_list{$gid})) {
+XX	($name, $t_passwd, $t_gid, $members) = getgrgid($gid);
+XX
+XX	if ($t_gid eq "") {
+XX	    return();
+XX	}
+XX
+XX	$group_bygid_list{$gid} = join(':', $name, $members);
+XX	$group_byname_list{$name} = $gid;
+XX    }
+XX
+XX    return(split(/:/, $group_bygid_list{$gid}));
+XX}
+XX
+XXsub group_byname {
+XX    local($name) = @_;
+XX    local($gname, $passwd, $gid, $members);
+XX
+XX    if (! defined($group_byname_list{$name})) {
+XX	($gname, $passwd, $gid, $members) = getgrnam($name);
+XX
+XX	if ($gid eq "") {
+XX	    printf(stderr "A group named '$name' does not exist!\n");
+XX	    exit(1);
+XX        }
+XX
+XX	$group_bygid_list{$gid} = join(':', $name, $members);
+XX	$group_byname_list{$name} = $gid;
+XX    }
+XX
+XX    return($group_byname_list{$name});
+XX}
+XX
+XX#
+XX# Do various initialization type things.
+XX#
+XX
+XXsub init_kuang {
+XX    local($which, $name, $uid, $gid);
+XX    local($f_type, $f_uid, $f_gid, $f_mode, $f_name);
+XX    local($count);
+XX
+XX    $which = "u";
+XX    $name = "root";
+XX
+XX    #
+XX    # Deal with args...
+XX    #
+XX
+XX    &getopt($options) ||
+XX      die $usage;
+XX
+XX    if ($#ARGV == 0) {
+XX	($which, $name) = split(/\./, $ARGV[0]);
+XX
+XX	if ($name eq "") {
+XX	    $name = $which;
+XX	    $which = "u";
+XX	}
+XX
+XX	if ($which ne "u" && $which ne "g") {
+XX	    printf(stderr "target must be given as u.user or g.group\n");
+XX	    exit(1);
+XX	}
+XX    } elsif ($#ARGV > 0) {
+XX	printf(stderr $usage);
+XX	exit(1);
+XX    }
+XX
+XX    #
+XX    # Preload the file data...
+XX    #
+XX    if (defined($opt_f)) {
+XX	#
+XX	# If we are dumping the file data to a DBM file, nuke the existing 
+XX	# ones and open the dbm file.  Otherwise, open the DBM file
+XX 	# only if they exist. 
+XX	#
+XX	$read_from_file = 1;
+XX
+XX	if (defined($opt_D)) {	
+XX	    unlink("$opt_f.dir", "$opt_f.pag");
+XX
+XX	    dbmopen(files, $opt_f, 0644) ||
+XX	      die sprintf("can't open DBM file '%s'", $opt_f);
+XX	} elsif (-f "$opt_f.dir") {
+XX	    dbmopen(files, $opt_f, 0644) ||
+XX	      die sprintf("can't open DBM file '%s'", $opt_f);
+XX
+XX	    $read_from_file = 0;
+XX	}
+XX
+XX	if ($read_from_file) {
+XX	    open(FILEDATA, $opt_f) || 
+XX	      die sprintf("kuang: can't open '%s'", $opt_f);
+XX
+XX	    $count = 0;
+XX	    while (<FILEDATA>) {
+XX		$count++;
+XX
+XX		chop;
+XX		($f_type, $f_uid, $f_gid, $f_mode, $f_name) = split;
+XX
+XX		if ($count % 1000 == 0) {
+XX		    printf("line $count, reading entry for $f_name\n");
+XX		}
+XX		$files{$f_name} = join(' ', $f_uid, $f_gid, $f_mode);
+XX	    }
+XX
+XX	    close(FILEDATA);
+XX	}
+XX    }
+XX
+XX    if (defined($opt_D)) {
+XX	dbmclose(files);
+XX
+XX	exit(0);
+XX    }
+XXif (defined($opt_v)) {
+XX    printf("done with files\n");
+XX    }
+XX    #
+XX    # Need some of the password and group stuff.  Suck in passwd and 
+XX    # group info, store by uid and gid in an associative array of strings
+XX    # which consist of fields corresponding to the passwd and group file 
+XX    # entries (and what the heck, we'll use : as a delimiter also...:-)
+XX    #
+XX
+XX    $passwd_byuid_list{-1} = "OTHER:::";	# add an entry for OTHER
+XX    $passwd_byname_list{"OTHER"} = -1;
+XX
+XX    $uids_known{-1} = "";			# we can access OTHER
+XX    %uids_new = ();
+XX
+XX    %gids_known = ();
+XX    %gids_new = ();
+XX
+XX    %files_new = ();
+XX
+XX    #
+XX    # Set up initial goal: become target user or group
+XX    #
+XX    if ($which eq "u") {
+XX	$uid = &passwd_byname($name);
+XX	if ($uid ne "") {
+XX	    &addto("uids", $uid, "grant u.$name do anything");
+XX	} else {
+XX	    printf(stderr "There is no user with username '$name'.\n");
+XX	    exit(1);
+XX	}
+XX    } else {
+XX	$gid = &group_byname($name);
+XX	if ($gid ne "") {
+XX	    &addto("gids", $gid, "grant g.$name");
+XX	} else {
+XX	    printf(stderr "There is no group named '$name'.\n");
+XX	    exit(1);
+XX	}
+XX    }
+XX}
+XX
+XX#
+XX# Get the home directory for this UID from the passwd file cache.
+XX#
+XXsub gethome {
+XX    local($uid) = @_;
+XX    local($tmp, $home);
+XX
+XX    ($tmp, $tmp, $home, $tmp) = &passwd_byuid($uid);
+XX    return($home);
+XX}
+XX
+XX#
+XX# Get the writers of the named file - return as (UID, GID, OTHER)
+XX# triplet.  Owner can always write, since he can chmod the file if he
+XX# wants. 
+XX#
+XX# (fixme) are there any problems in this sort of builtin rule?  should
+XX# we make this knowledge more explicit?
+XX#
+XXsub filewriters {
+XX    local($name) = @_;
+XX    local($tmp, $mode, $uid, $gid, $other);
+XX    
+XX    #
+XX    # Check the file cache - avoid disk lookups for performance and 
+XX    # to avoid shadows...
+XX    #
+XX    if (defined($files{$name})) {
+XX	$cache_hit++;
+XX	
+XX	($uid, $gid, $mode) = split(/ /, $files{$name});
+XX	$mode = oct($mode);
+XX    } else {
+XX	$cache_miss++;
+XX
+XX	if (! -e $name && $read_from_file) {
+XX	    $files{$name} = "";
+XX	    return;
+XX	}
+XX
+XX	($tmp,$tmp,$mode,$tmp,$uid,$gid) = stat(_);
+XX	if ($read_from_file) {
+XX	    $files{$name} = join(' ', $uid, $gid, $mode);
+XX	}
+XX    }
+XX
+XX    if (($mode & 020) != 020) {
+XX	$gid = "";
+XX    }
+XX    
+XX    if (($mode & 02) == 02) {
+XX	$other = 1;
+XX    } else {
+XX	$other = 0;
+XX    }
+XX
+XX    return($uid, $gid, $other);
+XX}
+XX
+XX#
+XX# return # of entries in given associative array.
+XX#
+XXsub sizeof {
+XX    local(*which) = @_;
+XX    local(@keywords);
+XX
+XX    @keywords = keys %which;
+XX    return($#keywords + 1);
+XX}
+XX
+XX#
+XX# return appropriate entry from named associative array of given type.
+XX# returns a (key, value) pair - if key is "", there was no entry.
+XX#
+XXsub getentry {
+XX    local($which, $type, $key) = @_;
+XX    local($newkey, $value);
+XX
+XX    $newkey = "";
+XX    $value = "";
+XX
+XX    which: {
+XX	if ($which eq "uids") {
+XX	    type0: {
+XX	        if ($type eq "known") {
+XX		    if (defined($uids_known{$key})) {
+XX		        $newkey = $key;	$value = $uids_known{$key};
+XX		    }
+XX	            last type0;
+XX	        }
+XX
+XX	        if ($type eq "new") {
+XX		    if (defined($uids_new{$key})) {
+XX		        $newkey = $key;	$value = $uids_new{$key};
+XX		    }
+XX	            last type0;
+XX	        }
+XX
+XX	        if ($type eq "pending") {
+XX		    if (defined($uids_pending{$key})) {
+XX		        $newkey = $key;	$value = $uids_pending{$key};
+XX		    }
+XX	            last type0;
+XX	        }
+XX
+XX	        if ($type eq "old") {
+XX		    if (defined($uids_old{$key})) {
+XX		        $newkey = $key;	$value = $uids_old{$key};
+XX		    }
+XX	            last type0;
+XX	        }
+XX
+XX	        printf(stderr "kuang: fatal error in getentry: type is wrong (%s)\n", 
+XX			$type);
+XX	        exit(1);
+XX	    }
+XX
+XX	    last which;
+XX        }
+XX
+XX	if ($which eq "gids") {
+XX	    type1: {
+XX	        if ($type eq "known") {
+XX		    if (defined($gids_known{$key})) {
+XX		        $newkey = $key;	$value = $gids_known{$key};
+XX		    }
+XX	            last type1;
+XX	        }
+XX
+XX	        if ($type eq "new") {
+XX		    if (defined($gids_new{$key})) {
+XX		        $newkey = $key;	$value = $gids_new{$key};
+XX		    }
+XX	            last type1;
+XX	        }
+XX
+XX	        if ($type eq "pending") {
+XX		    if (defined($gids_pending{$key})) {
+XX		        $newkey = $key;	$value = $gids_pending{$key};
+XX		    }
+XX	            last type1;
+XX	        }
+XX
+XX	        if ($type eq "old") {
+XX		    if (defined($gids_old{$key})) {
+XX		        $newkey = $key;	$value = $gids_old{$key};
+XX		    }
+XX	            last type1;
+XX	        }
+XX
+XX	        printf(stderr "kuang: fatal error in getentry: type is wrong (%s)\n", 
+XX			$type);
+XX	        exit(1);
+XX	    }
+XX
+XX	    last which;
+XX	}
+XX
+XX	if ($which eq "files") {
+XX	    type2: {
+XX	        if ($type eq "known") {
+XX		    if (defined($files_known{$key})) {
+XX		        $newkey = $key;	$value = $files_known{$key};
+XX		    }
+XX	            last type2;
+XX	        }
+XX
+XX	        if ($type eq "new") {
+XX		    if (defined($files_new{$key})) {
+XX		        $newkey = $key;	$value = $files_new{$key};
+XX		    }
+XX	            last type2;
+XX	        }
+XX
+XX	        if ($type eq "pending") {
+XX		    if (defined($files_pending{$key})) {
+XX		        $newkey = $key;	$value = $files_pending{$key};
+XX		    }
+XX	            last type2;
+XX	        }
+XX
+XX	        if ($type eq "old") {
+XX		    if (defined($files_old{$key})) {
+XX		        $newkey = $key;	$value = $files_old{$key};
+XX		    }
+XX	            last type2;
+XX	        }
+XX
+XX	        printf(stderr "kuang: fatal error in getentry: type is wrong (%s)\n", 
+XX			$type);
+XX	        exit(1);
+XX	    }
+XX
+XX	    last which;
+XX	}
+XX
+XX	printf(stderr "kuang: fatal error in getentry: which is wrong (%s)\n",
+XX		$which);
+XX	exit(1);
+XX    }
+XX
+XX    return($newkey, $value);
+XX}
+XX
+XX
+XX#
+XX# stores a (key, value) in the associative array of the given type.
+XX#
+XXsub putentry {
+XX    local($which, $type, $key, $value) = @_;
+XX
+XX    which: {
+XX	if ($which eq "uids") {
+XX	    type0: {
+XX	        if ($type eq "known") {
+XX		    $uids_known{$key} = $value;	last type0;
+XX	        }
+XX
+XX	        if ($type eq "new") {
+XX		    $uids_new{$key} = $value;	last type0;
+XX	        }
+XX
+XX	        if ($type eq "pending") {
+XX		    $uids_pending{$key} = $value;	last type0;
+XX	        }
+XX
+XX	        if ($type eq "old") {
+XX		    $uids_old{$key} = $value;	last type0;
+XX	        }
+XX
+XX	        printf(stderr "kuang: fatal error in putentry: type is wrong (%s)\n", 
+XX			$type);
+XX	        exit(1);
+XX	    }
+XX
+XX	    last which;
+XX        }
+XX
+XX	if ($which eq "gids") {
+XX	    type1: {
+XX	        if ($type eq "known") {
+XX		    $gids_known{$key} = $value;	last type1;
+XX	        }
+XX
+XX	        if ($type eq "new") {
+XX		    $gids_new{$key} = $value;	last type1;
+XX	        }
+XX
+XX	        if ($type eq "pending") {
+XX		    $gids_pending{$key} = $value;	last type1;
+XX	        }
+XX
+XX	        if ($type eq "old") {
+XX		    $gids_old{$key} = $value;	last type1;
+XX	        }
+XX
+XX	        printf(stderr "kuang: fatal error in putentry: type is wrong (%s)\n", 
+XX			$type);
+XX	        exit(1);
+XX	    }
+XX
+XX	    last which;
+XX	}
+XX
+XX	if ($which eq "files") {
+XX	    type2: {
+XX	        if ($type eq "known") {
+XX		    $files_known{$key} = $value;	last type2;
+XX	        }
+XX
+XX	        if ($type eq "new") {
+XX		    $files_new{$key} = $value;	last type2;
+XX	        }
+XX
+XX	        if ($type eq "pending") {
+XX		    $files_pending{$key} = $value;	last type2;
+XX	        }
+XX
+XX	        if ($type eq "old") {
+XX		    $files_old{$key} = $value;	last type2;
+XX	        }
+XX
+XX	        printf(stderr "kuang: fatal error in putentry: type is wrong (%s)\n", 
+XX			$type);
+XX	        exit(1);
+XX	    }
+XX
+XX	    last which;
+XX	}
+XX
+XX	printf(stderr "kuang: fatal error in putentry: which is wrong (%s)\n",
+XX		$which);
+XX	exit(1);
+XX    }
+XX}
+XX
+XX
+XXsub addto {
+XX    local($which, $key, $plan) = @_;
+XX    local($tkey, $tvalue);
+XX
+XX    #
+XX    # See whether there's an entry for $key in the known list for the
+XX    # $which array.  If so - success, we've found a suitable breakin
+XX    # path. 
+XX    #
+XX
+XX    ($tkey, $tvalue) = &getentry($which, "known", $key);
+XX    if ($tkey eq $key) {
+XX	printf("Success! $key $plan\n");
+XX	return;
+XX    }
+XX
+XX    #
+XX    # Check to see if its a duplicate - if so, don't need to do anything.
+XX    #
+XX    ($tkey, $tvalue) = &getentry($which, "pending", $key);
+XX    if ($tkey eq $key) {
+XX	return;
+XX    }
+XX
+XX    #
+XX    # Add to pending list for $which...
+XX    #
+XX    &putentry($which, "pending", $key, $plan);
+XX
+XX    #
+XX    # Add to next goal list for $which...
+XX    #
+XX    &putentry($which, "new", $key, $plan);
+XX
+XX    if (defined($opt_v)) {
+XX	printf("addto: $which --> $plan\n");
+XX    }
+XX
+XX    #
+XX    # If this is a uid goal, then add the plan to the accessible list.
+XX    #
+XX    if ($which eq "uids" && $key ne "0" && defined($opt_l)) {
+XX	$accessible{$plan} = "1";
+XX    }
+XX}
+XX
+XX#
+XX#----------------------------------------------------------------------
+XX#Main program follows...initialize and loop till we're done.
+XX#
+XX
+XX&init_kuang();
+XX
+XX#
+XX# While there's still something to pursue...
+XX#
+XXwhile (&sizeof(*uids_new) != 0 || 
+XX       &sizeof(*gids_new) != 0 || 
+XX       &sizeof(*files_new) != 0) {
+XX
+XX    #
+XX    # Deal with uids first...
+XX    #
+XX    if (&sizeof(*uids_new) != 0) {
+XX        %uids_old = %uids_new;
+XX        %uids_new = ();
+XX
+XX        foreach $uid (keys %uids_old) {
+XX	    $plan = $uids_old{$uid};
+XX
+XX	    if (defined($opd_d)) {
+XX		printf("uids evel: $uid '$plan'\n");
+XX	    }
+XX            
+XX            &addto("files", "/etc/passwd", "replace /etc/passwd $plan");
+XX            &addto("files", "/usr/lib/aliases", "replace /usr/lib/aliases $plan");
+XX
+XX	    #
+XX	    # Add controlling files for this user.  There are probably 
+XX	    # others (such as .logout, X tool start things and so on).
+XX	    # (fixme) add other CF's...
+XX	    #
+XX	    $home = &gethome($uid);
+XX
+XX	    if ($home ne "") {
+XX		if ($home eq "/") {
+XX		    $home = "";
+XX		}
+XX
+XX		if (-e "$home/.rhosts") {
+XX		    &addto("files", "$home/.rhosts", "write $home/.rhosts $plan");
+XX		}
+XX
+XX		if (-e "$home/.login") {
+XX		    &addto("files", "$home/.login", "replace $home/.login $plan");
+XX		}
+XX
+XX		if (-e "$home/.logout") {
+XX		    &addto("files", "$home/.logout", "replace $home/.logout $plan");
+XX		}
+XX
+XX		if (-e "$home/.cshrc") {
+XX		    &addto("files", "$home/.cshrc", "replace $home/.cshrc $plan");
+XX		}
+XX
+XX		if (-e "$home/.profile") {
+XX		    &addto("files", "$home/.profile", "replace $home/.profile $plan");
+XX		}
+XX	    }
+XX
+XX	    #
+XX	    # Controlling files for root...
+XX	    #
+XX	    if ($uid+0 == 0) {
+XX		foreach $file ("/etc/rc", "/etc/rc.boot", "/etc/rc.single", "/etc/rc.config", "/etc/rc.local", "/usr/lib/crontab", "/usr/spool/cron/crontabs") {
+XX		    if (-e $file) {
+XX			&addto("files", $file, "replace $file $plan");
+XX		    }
+XX		}
+XX	    }
+XX
+XX	    if ($uid+0 != 0) {
+XX		&addto("files", "/etc/hosts.equiv", "replace /etc/hosts.equiv allow rlogin $plan");
+XX
+XX		if (-s "/etc/hosts.equiv") {
+XX		    &addto("files", "/etc/hosts", "replace /etc/hosts fake hostaddress allow rlogin $plan");
+XX		}
+XX	    }
+XX	}
+XX    }
+XX
+XX    #
+XX    # Deal with groups...
+XX    #
+XX    if (&sizeof(*gids_new) != 0) {
+XX        %gids_old = %gids_new;
+XX        %gids_new = ();
+XX
+XXbar_loop:
+XX        foreach $gid (keys %gids_old) {
+XX	    $plan = $gids_old{$gid};
+XX	    if (defined($opt_d)) {
+XX		printf("gids eval: $gid '$plan'\n");
+XX	    }
+XX            
+XX	    ($gname, $members) = &group_bygid($gid);
+XX	    if ($gname eq "") {
+XX		printf("There is no group with gid $gid.\n");
+XX		next bar_loop;
+XX	    }
+XX
+XXfoo_loop:
+XX	    foreach $uname (split(/[ \t\n]+/, $members)) {
+XX		$uid = &passwd_byname($uname);
+XX
+XX		if ($uid eq "") {
+XX		    printf(stderr "Group $gname has an unknown user $uname\n");
+XX		    next foo_loop;
+XX		}
+XX
+XX		&addto("uids", "$uid", "grant u.$uname $plan");
+XX	    }
+XX
+XX	    &addto("files", "/etc/group", "replace /etc/group $plan");
+XX	}
+XX    }
+XX
+XX    #
+XX    # Deal with files...
+XX    #
+XX    if (&sizeof(*files_new) != 0) {
+XX        %files_old = %files_new;
+XX        %files_new = ();
+XX
+XXfile_loop:
+XX        foreach $file (keys %files_old) {
+XX	    $plan = $files_old{$file};
+XX	    ($mode) = split(/[ \t\n]+/, $plan);
+XX
+XX	    if (defined($opt_d)) {
+XX		printf("files eval: $file '$plan'\n");
+XX	    }
+XX
+XX	    ($owner, $group, $other) = &filewriters($file);
+XX
+XX	    if ($owner eq "") {
+XX		printf("%s does not exist\n", $file);
+XX		next file_loop;
+XX	    }
+XX
+XX	    ($uname) = &passwd_byuid($owner);
+XX	    if ($uname eq "") {
+XX		$uname = $owner;
+XX	    }
+XX
+XX	    &addto("uids", $owner, "grant u.$uname $plan");
+XX
+XX	    if ($group ne "") {
+XX		($gname, $tmp) = &group_bygid($group);
+XX
+XX		if ($gname ne "") {
+XX		    &addto("gids", $group, "grant g.$gname $plan");
+XX		} else {
+XX		    printf(stderr "There is no group with gid $group.\n");
+XX		}
+XX	    }
+XX
+XX	    if ($other) {
+XX		&addto("uids", -1, "grant u.OTHER $plan");
+XX	    }
+XX
+XX	    if ($mode eq "replace") {
+XX		$parent = $file;
+XX		$parent =~ s|/[^/]*$||;		# strip last / and remaining
+XX
+XX		if ($parent eq "") {		# if nothing left, use /
+XX		    $parent = "/";
+XX		}
+XX
+XX		if ($parent ne $file) {		# since $file might've been /
+XX		    &addto("files", $parent, "replace $parent $plan");
+XX		}
+XX	    }
+XX	}
+XX    }
+XX}
+XX
+XXif (defined($opt_l)) {
+XX    foreach $key (keys %accessible) {
+XX	printf("$key\n");
+XX    }
+XX}
+XX
+XXif (defined($opt_v) || $cache_hit) {
+XX    printf("File info cache hit/access ratio: %g\n", 
+XX            $cache_hit / ($cache_hit + $cache_miss));
+XX    }
+XSHAR_EOF
+Xchmod 0700 kuang.pl ||
+Xecho 'restore of kuang.pl failed'
+XWc_c="`wc -c < 'kuang.pl'`"
+Xtest 16925 -eq "$Wc_c" ||
+X	echo 'kuang.pl: original size 16925, current size' "$Wc_c"
+Xfi
+X# ============= kuang_all ==============
+Xif test -f 'kuang_all' -a X"$1" != X"-c"; then
+X	echo 'x - skipping kuang_all (File already exists)'
+Xelse
+Xecho 'x - extracting kuang_all (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'kuang_all' &&
+XX#!/bin/sh
+XX#
+XX#   Quick script to run kuang on all the users on your system.  Requires
+XX# the perl version of kuang, of course.
+XX#
+XX#  df, 1990
+XX#
+XXetc_passwd=/etc/passwd
+XXresults=./Success
+XX
+XXall_users=`awk -F: '{print $1}' $etc_passwd`
+XX
+XXfor i in $all_users
+XX	do
+XX	./kuang $i >> $results
+XX	done
+XX
+XSHAR_EOF
+Xchmod 0700 kuang_all ||
+Xecho 'restore of kuang_all failed'
+XWc_c="`wc -c < 'kuang_all'`"
+Xtest 284 -eq "$Wc_c" ||
+X	echo 'kuang_all: original size 284, current size' "$Wc_c"
+Xfi
+X# ============= put-cf ==============
+Xif test -f 'put-cf' -a X"$1" != X"-c"; then
+X	echo 'x - skipping put-cf (File already exists)'
+Xelse
+Xecho 'x - extracting put-cf (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'put-cf' &&
+XX#! /usr/local/bin/perl
+XX
+XXfor ($i = 0; $i <= $#ARGV; $i++) {
+XX    open(FILE, $ARGV[$i]);
+XX
+XX  line:
+XX    while (<FILE>) {
+XX	chop;
+XX	($type, $uid, $gid, $mode, $name) = split;
+XX	$mode = oct($mode);
+XX
+XX	&create_dirs_as_needed(&basename($name));
+XX
+XX	if ($type eq "d") {
+XX	    if (mkdir($name, $mode) == 0) {
+XX		printf(stderr "mkdir $name failed: $!\n");
+XX		if (chmod($mode, $name) != 1) {
+XX		    printf(stderr "chmod $mode $name failed\n");
+XX		}
+XX	    }
+XX
+XX	} else {
+XX	    open(TMP, $name) ||
+XX	      printf(stderr "can't create $name: $!\n");
+XX	    
+XX	    close(TMP);
+XX
+XX	    if (chmod($mode, $name) != 1) {
+XX		printf(stderr "chmod $mode $name failed\n");
+XX	    }
+XX	}
+XX
+XX	if (chown($uid, $gid, $name) != 1) {
+XX	    printf(stderr "chown $uid $gid $name failed\n");
+XX	}
+XX    }
+XX}
+XX
+XXsub basename {
+XX    local($path) = @_;
+XX    local(@elts);
+XX
+XX    @elts = split(/\//, $path);
+XX    pop(@elts);
+XX    return(join('/', @elts));
+XX}
+XX
+XX    
+XXsub create_dirs_as_needed {
+XX    local($path) = @_;
+XX    local($base);
+XX
+XX    if (-f $path) {
+XX	printf(stderr "Yack, encountered a file named '%s' where we expected a directory.\n");
+XX	return;
+XX    }
+XX
+XX    if (-d $path) {
+XX	return;
+XX    }
+XX
+XX    $base = &basename($path);
+XX
+XX    &create_dirs_as_needed($base);
+XX
+XX    if (mkdir($path, 0755) == 0) {
+XX	printf(stderr "mkdir failed for '$path' in create_dirs_as_needed: $!\n");
+XX    }
+XX}
+XX
+XX	
+XX    
+XSHAR_EOF
+Xchmod 0600 put-cf ||
+Xecho 'restore of put-cf failed'
+XWc_c="`wc -c < 'put-cf'`"
+Xtest 1307 -eq "$Wc_c" ||
+X	echo 'put-cf: original size 1307, current size' "$Wc_c"
+Xfi
+X# ============= yagrip.pl ==============
+Xif test -f 'yagrip.pl' -a X"$1" != X"-c"; then
+X	echo 'x - skipping yagrip.pl (File already exists)'
+Xelse
+Xecho 'x - extracting yagrip.pl (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'yagrip.pl' &&
+XX#Yet Another Getopt Routine In Perl
+XX# jgreely@cis.ohio-state.edu, 89/11/1
+XX#usage:
+XX#&getopt("f:bar") ||
+XX#	die &usage("script","f:bar","oo","[files ...]");
+XX#
+XXsub getopt {
+XX	local($_,$flag,$opt,$f,$r,@temp) = @_;
+XX	@temp = split(/(.):/);
+XX	while ($#temp >= $[) {
+XX		$flag .= shift(@temp);
+XX		$opt .= shift(@temp);
+XX	}
+XX	while ($_ = $ARGV[0], /^-(.)(.*)/ && shift(@ARGV)) {
+XX		($f,$r) = ($1,$2);
+XX		last if $f eq '-';
+XX		if (index($flag,$f) >= $[) {
+XX			eval "\$opt_$f++;";
+XX			$r =~ /^(.)(.*)/,redo if $r ne '';
+XX		}elsif (index($opt,$f) >= $[) {
+XX			$r = $r eq '' ? shift(@ARGV) : $r;
+XX			eval "\$opt_$f = \$r;";
+XX		}else{
+XX			print STDERR "Unrecognized switch \"-$f\".\n";
+XX			return 0;
+XX		}
+XX	}
+XX	return 1;
+XX}
+XX
+XX#usage: usage:
+XX# &usage(progname,arglist,@names,@last);
+XX#ex:
+XX# &usage("script","f:bar","oo","[file ...]");
+XX#would return
+XX# "usage: script [-f oo] [-bar] [file ...]"
+XX#
+XXsub usage {
+XX	local($prog,$_,@list) = @_;
+XX	local($string,$flag,@string,@temp,@last) = ();
+XX	@temp = split(/(.):/);
+XX	push(@string,"usage:",$prog);
+XX	while ($#temp >= $[) {
+XX		if (($flag = shift(@temp)) ne '') {
+XX			push(@string,"[-$flag]");
+XX		}
+XX		if (($flag = shift(@temp)) ne '') {
+XX			push(@string,sprintf("[-%s %s]",$flag,shift(@list)));
+XX		}
+XX	}
+XX	push(@string,@list) if $#list >= $[;
+XX	return join(' ',@string) . "\n";
+XX}
+XX1;
+XSHAR_EOF
+Xchmod 0600 yagrip.pl ||
+Xecho 'restore of yagrip.pl failed'
+XWc_c="`wc -c < 'yagrip.pl'`"
+Xtest 1274 -eq "$Wc_c" ||
+X	echo 'yagrip.pl: original size 1274, current size' "$Wc_c"
+Xfi
+Xexit 0
+SHAR_EOF
+chmod 0755 cops_104/kuang.pl.shar ||
+echo 'restore of cops_104/kuang.pl.shar failed'
+Wc_c="`wc -c < 'cops_104/kuang.pl.shar'`"
+test 42692 -eq "$Wc_c" ||
+	echo 'cops_104/kuang.pl.shar: original size 42692, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/makefile ==============
+if test -f 'cops_104/makefile' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/makefile (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/makefile (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/makefile' &&
+X#  Simple Makefile for the COPS system; compiles, and chmods 
+X# the programs.
+X#
+X#	make all	    -- makes everything
+X#	make install	    -- puts things in their place
+X#	make <program_name> -- make a given program
+XINSTALL_DIR= sun
+X
+XEXECUTABLE = home.chk user.chk pass.chk is_writable crc crc_check \
+X	     addto clearfiles filewriters members tilde is_able
+XC_SRC      = home.chk.c user.chk.c is_able.c pass.c is_something.c \
+X	     addto.c clearfiles.c filewriters.c members.c tilde.c \
+X	     crc.c crc_check.c
+XSHELL_PROGS= chk_strings root.chk dev.chk cron.chk is_able.chk \
+X	     cops group.chk rc.chk passwd.chk ftp.chk crc.chk \
+X	     misc.chk suid.chk kuang init_kuang reconfig res_diff \
+X	     yp_pass.chk bug.chk bug.chk.aix bug.chk.apollo \
+X	     bug.chk.dec bug.chk.next bug.chk.sgi bug.chk.sun \
+X	     bug.chk.svr4 bug_cmp
+XSUPPORT    = is_able.lst suid.stop crc_list
+X
+X#
+XCFLAGS     = -O
+X# sequents need "-lseq" as well... uncomment this if you're running on one:
+X# SEQFLAGS   = -lseq
+X
+X#  Certain systems need to uncomment this to compile the pass.chk; Xenix,
+X# some SysV:
+X# BRAINDEADFLAGS = -lcrypt
+X#
+X# systems without rindex need to uncomment this:
+X# CRC_FLAG=-Dstrrchr=rindex
+X
+X#
+X# Where the programs are....
+X#
+XCHMOD=/bin/chmod
+XTEST=/bin/test
+XMKDIR=/bin/mkdir
+XCP=/bin/cp
+XCC=/bin/cc
+XRM=/bin/rm
+X
+X# make default
+Xdefault:	$(EXECUTABLE)
+X		$(CHMOD) u+x $(SHELL_PROGS)
+X
+X# make all
+Xall:	$(EXECUTABLE)
+X	cd docs; make
+X	$(CHMOD) u+x $(SHELL_PROGS)
+X
+X#  hammer the binaries and formatted docs; if compiled fcrypt stuff,
+X# will trash the *.o files, too.
+Xclean:
+X	$(RM) -f $(EXECUTABLE) pass.o crack-fcrypt.o crack-lib.o
+X	cd docs; make clean
+X
+Xman:
+X	cd docs; make
+X
+X# make a dir and shove everything in the proper place
+Xinstall:
+X	-if $(TEST) ! -d $(INSTALL_DIR) ; then mkdir $(INSTALL_DIR) ; fi
+X	$(CP) $(EXECUTABLE) $(SHELL_PROGS) $(SUPPORT) $(INSTALL_DIR)
+X
+X# make the programs
+Xaddto: src/addto.c
+X	$(CC) $(CFLAGS) -o addto src/addto.c
+X
+Xclearfiles: src/clearfiles.c
+X	$(CC) $(CFLAGS) -o clearfiles src/clearfiles.c
+X
+Xfilewriters: src/filewriters.c
+X	$(CC) $(CFLAGS) -o filewriters src/filewriters.c
+X
+Xmembers: src/members.c
+X	$(CC) $(CFLAGS) -o members src/members.c
+X
+Xhome.chk: src/home.chk.c
+X	$(CC) $(CFLAGS) -o home.chk src/home.chk.c
+X
+Xuser.chk: src/user.chk.c
+X	$(CC) $(CFLAGS) -o user.chk src/user.chk.c
+X
+Xis_able: src/is_able.c
+X	$(CC) $(CFLAGS) -o is_able src/is_able.c
+X
+Xis_writable: src/is_something.c
+X	$(CC) $(CFLAGS) -DWRITABLE -o is_writable src/is_something.c
+X
+X#   If fast crypt will work, comment the first CC line, uncomment
+X# the next two:
+Xpass.chk: src/pass.c
+X	$(CC) $(CFLAGS) -o pass.chk src/pass.c $(BRAINDEADFLAGS)
+X# 	$(CC) $(CFLAGS) -Dcrypt=fcrypt -DFCRYPT -o pass.chk src/pass.c \
+X# 	src/crack-fcrypt.c src/crack-lib.c $(BRAINDEADFLAGS)
+X
+Xtilde: src/tilde.c
+X	$(CC) $(CFLAGS) -o tilde src/tilde.c
+X
+Xcrc: src/crc.c
+X	$(CC) $(CFLAGS) -o crc src/crc.c $(SEQFLAGS)
+X
+Xcrc_check: src/crc_check.c
+X	$(CC) $(CFLAGS) $(CRC_FLAG) -o crc_check src/crc_check.c $(SEQFLAGS)
+X
+X# the end
+SHAR_EOF
+chmod 0755 cops_104/makefile ||
+echo 'restore of cops_104/makefile failed'
+Wc_c="`wc -c < 'cops_104/makefile'`"
+test 2965 -eq "$Wc_c" ||
+	echo 'cops_104/makefile: original size 2965, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/misc.chk ==============
+if test -f 'cops_104/misc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/misc.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/misc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/misc.chk' &&
+X:
+X#
+X#  Usage: misc.chk
+X#
+X#  This shell script checks a variety of miscellaneous potential
+X# security problems that really don't belong anywhere else.
+X#
+X#  Right now this looks for to see if tftp & rexd are enabled,
+X# to check if the uudecode alias is in the mail alias file and
+X# not commented out, and if uudecode can create a SUID file.
+X#
+X#  Mechanism:  tftp.chk will try to get /etc/motd from the localhost.
+X# Not much too it; just connect and try to get it.  For rexd, just
+X# look in the /etc/{inetd.conf,servers} file to see if it's enabled (e.g.,
+X# not commented out).
+X#
+X#  Warning:  it may take a minute or so to complete the test, since tftp
+X# might take a while to get the test file, or it may take a while to time
+X# out the connection (which is what usually happens if the test fails.)
+X
+X#
+X#  Location of stuff:
+XTFTP=/usr/ucb/tftp
+XGREP=/bin/grep
+XECHO=/bin/echo
+XTEST=/bin/test
+XAWK=/bin/awk
+XSED=/bin/sed
+XRM=/bin/rm
+XUUDECODE=/usr/bin/uudecode
+XCMP=/bin/cmp
+X
+X# shells to look for in inetd.conf:
+Xall_shells="/bin/sh /bin/csh /bin/ksh /usr/local/bin/tcsh /usr/local/bin/bash"
+Xfor i in $all_shells ; do
+X	if $TEST -f $i ; then
+X		shells=$shells" "$i
+X		fi
+X	done
+X
+X# look for uudecode alias in $aliases
+Xaliases=/usr/lib/aliases
+Xuu=decode
+X
+X# look for rexd in $inetd; this file could be "/etc/servers", too!
+Xif $TEST -f "/etc/inetd.conf" ; then
+X	inetd="/etc/inetd.conf"
+Xelif $TEST -f "/usr/etc/inetd.conf" ; then
+X	inetd="/usr/etc/inetd.conf"
+Xelif $TEST -f "/etc/servers" ; then
+X	inetd="/etc/servers"
+X	fi
+X# else give up!
+Xrexd=rexd
+X
+X# tmp and target file
+XTARGET=/etc/motd
+XTMP=./tmp.$$
+X
+X#  Read from $inetd to see if daemons are running.
+X# Comments are lines starting with a "#", so ignore.
+X# Checking for rexd:
+X#
+X# If sysV based
+Xif $TEST "$inetd" = "/etc/servers" ; then
+X	if $TEST -n "`$AWK '{if($1~/^#/)next;else if(\"'$rexd'\"==$3)print}' $inetd`" ; then
+X		$ECHO Warning!  $rexd is enabled in $inetd!
+X		fi
+X	# 3rd field is program?
+X	files=`$AWK '{if ($1 ~ /^#/) next; else print $3}' $inetd`
+X
+X# else BSD (e.g. the right way :-))
+Xelse
+X	if $TEST -n "`$AWK '{if ($1 ~ /^#/) next; else if (\"'$rexd'\" == $NF) print}' $inetd`" ; then
+X		$ECHO Warning!  $rexd is enabled in $inetd!
+X		fi
+X	# 6th field is program:
+X	files=`$AWK '{if ($1 ~ /^#/) next; else print $6}' $inetd`
+X	fi
+X
+X#   Check to see if anything started $inetd is writable or is
+X# the same size as a user shell:
+Xif $TEST -n "$files" ; then
+X	for i in $files ; do
+X		# use chk_strings if paranoid; e.g. "chk_strings $i"
+X		if $TEST -r $i ; then
+X			# ./is_able $i w w
+X			if ./is_writable $i ; then
+X				$ECHO "Warning!  File $i (in $inetd) is _World_ writable!"
+X				fi
+X
+X			for shell in $shells ; do
+X				if $TEST -z "`$CMP $shell $i 2> /dev/null`"
+X					then
+X					$ECHO Warning!  Shell $shell is \(hidden\?\) in $inetd as $i!
+X					fi
+X				done
+X			fi
+X		done
+X	fi
+X
+X# Checking for uudecode alias:
+Xres=`$SED -n '/^[^#]*|*"'$uu'"/p' $aliases`
+X
+Xif $TEST -n "$res"
+X	then
+X	$ECHO Warning!  $uu is enabled in $aliases!
+X	fi
+X
+Xif $TEST -f $TMP ; then
+X#	$ECHO "You've got to be kidding.  Tmp file $TMP already exists!"
+X	exit 1
+X	fi
+X
+X
+X# uucode stuff -- thanks to pete shipley...
+X$UUDECODE << EOD_
+Xbegin 4755 ./foobar.$$
+X 
+Xend
+XEOD_
+X
+Xif $TEST -n "`./is_able $UUDECODE s s`" ; then
+X    $ECHO Warning!  $UUDECODE is SUID!
+Xfi
+X
+Xif $TEST -n "`./is_able ./foobar.$$ s s`"; then
+X    $ECHO Warning!  $UUDECODE creates setuid files!
+Xfi
+X
+X$RM -f ./foobar.$$
+X
+X#  The rest is all for tftp stuff:
+X#
+X#   Get the local hostname...
+Xif $TEST -s /bin/hostname ; then
+X	HOSTNAME=`/bin/hostname`
+Xelif $TEST -s /bin/uname ; then
+X	HOSTNAME=`/bin/uname -n`
+Xelif $TEST -s /usr/bin/uuname ; then
+X	HOSTNAME=`/usr/bin/uuname -l`
+X	fi
+Xif $TEST -z "$HOSTNAME" ; then
+X	HOSTNAME="foobar"
+X	fi
+X
+Xif $TEST -z "$HOSTNAME" ; then
+X#	$ECHO "Unable to find hostname"
+X	exit 1
+X	fi
+X
+X#   Do the dirty work -- check tftp for the localhost, if it was found;
+X# this might take a bit, since tftp might have to time out.
+X{
+X$TFTP << _XXX_
+Xconnect $HOSTNAME
+Xget $TARGET $TMP
+Xquit
+X_XXX_
+X}  > /dev/null 2> /dev/null
+X
+Xif $TEST -s $TMP ; then
+X	$ECHO "Warning!  tftp is enabled on $HOSTNAME!"
+X	fi
+X
+X$RM -f $TMP
+X
+Xexit 0
+X# end of script
+SHAR_EOF
+chmod 0755 cops_104/misc.chk ||
+echo 'restore of cops_104/misc.chk failed'
+Wc_c="`wc -c < 'cops_104/misc.chk'`"
+test 4094 -eq "$Wc_c" ||
+	echo 'cops_104/misc.chk: original size 4094, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/pass.words ==============
+if test -f 'cops_104/pass.words' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/pass.words (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/pass.words (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/pass.words' &&
+Xaaa
+Xacademia
+Xaerobics
+Xairplane
+Xalbany
+Xalbatross
+Xalbert
+Xalex
+Xalexander
+Xalgebra
+Xaliases
+Xalphabet
+Xama
+Xamorphous
+Xanalog
+Xanchor
+Xandromache
+Xanimals
+Xanswer
+Xanthropogenic
+Xanvils
+Xanything
+Xaria
+Xariadne
+Xarrow
+Xarthur
+Xathena
+Xatmosphere
+Xaztecs
+Xazure
+Xbacchus
+Xbailey
+Xbanana
+Xbananas
+Xbandit
+Xbanks
+Xbarber
+Xbaritone
+Xbass
+Xbassoon
+Xbatman
+Xbeater
+Xbeauty
+Xbeethoven
+Xbeloved
+Xbenz
+Xbeowulf
+Xberkeley
+Xberliner
+Xberyl
+Xbeverly
+SHAR_EOF
+true || echo 'restore of cops_104/pass.words failed'
+fi
+echo 'End of  part 8'
+echo 'File cops_104/pass.words is continued in part 9'
+echo 9 > _shar_seq_.tmp
+exit 0
+

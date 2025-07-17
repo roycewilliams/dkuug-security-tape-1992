@@ -1,0 +1,127 @@
+From stripes@eng.umd.edu Sat Apr 21 01:42:57 1990
+Received: from eng.umd.edu (isengard.eng.umd.edu) by bacchus.eng.umd.edu (4.0/SMI-4.0)
+	id AA27156; Sat, 21 Apr 90 01:42:51 EDT
+Received: by eng.umd.edu (4.0/umdeng-0.1/04-09-90)
+	id AA07630; Sat, 21 Apr 90 01:42:48 EDT
+Date: Sat, 21 Apr 90 01:42:48 EDT
+From: stripes@eng.umd.edu (Joshua Osborne)
+To: istari@eng.umd.edu
+Subject: X-auth stuff
+Status: RO
+
+Path: mojo!mimsy!tank!ncar!zaphod.mps.ohio-state.edu!think!mintaka!bloom-beacon!EXPO.LCS.MIT.EDU!keith
+From: keith@EXPO.LCS.MIT.EDU (Keith Packard)
+Newsgroups: comp.windows.x
+Subject: Re: X11R4 Authentication Questions
+Message-ID: <9004202208.AA27836@xenon.lcs.mit.edu>
+Date: 20 Apr 90 22:08:14 GMT
+References: <34379@shemp.CS.UCLA.EDU>
+Sender: daemon@athena.mit.edu (Mr Background)
+Organization: The Internet
+Lines: 104
+
+
+> We have some NCD X terminals and I am trying to get xdm on a SUN to
+> manage them. The xdm is from X11R4 with all patches. The NCD terminals
+> use Server 2.1 and PROM 2.0. The NCD terminals support XDMCP.
+>
+> In this environment, is it practical to try to use any of these:
+> 	MIT-COOKIE-1
+> 	MIT-AUTHENTICATION-1
+> 	MIT-AUTHORIZATION-1
+
+The first of these (actually MIT-MAGIC-COOKIE-1) is an authorization protocol
+used by the MIT sample server and libraries.  It is a very simplistic protocol,
+relying on a shared key which is passed in the clear during the connection
+negotiation for each X client.  It must be supported at both ends of the wire,
+and (as far as I know) NCD terminals do not support it.
+
+The second two (actually XDM-AUTHENTICATION-1 and XDM-AUTHORIZATION-1) are
+described in detail in the XDMCP document (mit/doc/XDMCP/xdmcp.ms).  The
+authentication protocol deals with having the display manager (the remote host)
+validate itself with the display (the X terminal) so that the display user
+(that's you) can be sure that the remote host is actually who it says it is. 
+
+It does this by using a shared private key which is used to encrypt random data
+which is sent from the terminal to the remote host, decrypted, mutated in a
+well known manner, and encrypted and sent back.  The terminal can then
+determine if the remote host holds the shared private key by decrypting the
+returned data and making sure the mutation was as expected.
+
+Using this secured channel, XDMCP can now transmit other encrypted information.
+In particular, XDM-AUTHORIZATION-1 keys are sent during XDMCP using encryption
+to avoid disclosure.  This new temporary private key is then used for the
+duration of the login session to send specially constructed authorization
+information during connection setup for each client, just like
+MIT-MAGIC-COOKIE-1 authorization, except that the information is encrypted and
+non-repeatable which avoids the troubles that MIT-MAGIC-COOKIE-1 has with
+network monitors.
+
+> Is it correct to say, that the last two protocols require DES support
+> in both xdm and the terminal?
+
+Both XDM-AUTHENTICATION-1 and XDM-AUTHORIZATION-1 use DES as the basic
+encryption technology.  Therefore, both xdm and the terminal must support DES.
+
+Unfortunately, the U.S. government decided that any software which uses DES
+should not be exported from the country (even though DES is freely available
+nearly everywhere).  So, the sample implementation was left unfinished in the
+release to avoid distribution limitations.
+
+This means that you can't use the XDM- set without fixing the MIT code.
+
+> Is it correct to say, that XDMCP has hooks to support these protocols
+> (and others) but these protocols are not actually part of XDMCP?
+
+This is true; however the XDM- protocols were specified as an addendum to the
+XDMCP specification, mostly as a demonstration that the security features of
+XDMCP were valid.  But XDMCP does provide mechanism for supporting other
+authentication/authorization systems.  Some modifications were made to XDMCP in
+anticipation of using Kerberos authentication during XDMCP development.
+
+> Does anyone know if the NCD supports any of these three (the
+> documentation never mentions them) or will support them in the future?
+
+My NCD terminal doesn't support any of them; I don't know what plans they may
+have.
+
+> The example config file (in the xdm man page) sez:
+> 	DisplayManager._0.authorize:	true
+> 	DisplayManager*authorize:	false
+> Using this setup, don't all remote terminals skip authorization?
+
+Yes.  This is because I knew of no terminals supporting authorization via XDMCP
+when R4 shipped.
+
+> In X11R4, is "secret" information for these protocols passed through
+> XDMCP or through files?
+
+For local displays, the secret is passed via a file.  Remote displays using
+XDMCP have authorization sent via that instead.
+
+> What is the difference between these resources?
+> When do you use one and not the others?
+> 	DisplayManager.DISPLAY.authFile
+> 	DisplayManager.remoteAuthDir
+> 	DisplayManager.keyFile
+
+DisplayManager.DISPLAY.authFile is the file which will contain the secret
+transmitted between the manager and the display for the X authorization
+protocol.
+
+DisplayManager.remoteAuthDir is used when no authFile is specified; a
+per-display file is generated in this directory to hold the X authorization
+protocol information.
+
+DisplayManager.keyFile contains the private keys for the XDMCP authentication
+protocols.  As the sample implementation has no authentication support, this
+file is not currently useful.
+
+The implementation in R4 was not well organized in regard to these resources;
+I'd suggest using DisplayManager.DISPLAY.authFile for each local display and
+mostly ignoring the .remoteAuthDir field.  Until some XDMCP-capable device
+appears, you'll be able to ignore .keyFile as well.
+
+Keith Packard
+MIT X Consortium
+

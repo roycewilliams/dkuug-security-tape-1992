@@ -1,0 +1,48 @@
+
+
+
+			The DKUUG Security Tape.
+			========================
+
+
+
+
+   The purpose of this tape is to provide software and information, to
+help system administrators improve the security at their site.
+
+   The software includes a password-cracker "crack", a new passwd
+program "npasswd" and the general security package "cops". 
+
+   The information is a collection of papers on UNIX-security. These
+include amongs others "The Orange Book" and RFC1244. There is also a
+collection of clippings from the net, regarding different security
+issues. 
+
+Software Description:
+
+   The "crack" password-cracker weeds out passwords, that are easy to
+guess, from your system. It has two fases. First fase permutes the
+userid and infromation from the gecos field, to try and guess
+passwords. Second fase uses a dictionary to guess passwords.
+
+   The "npasswd" program prevents users from using passwords, that are
+easy to guess.
+
+   "cops" is used to find security holes, not to prevent them. You
+configure "cops" to achieve some goal, ie. to become root, and cops
+will try to find a sequenze of steps, that can be used to achieve that
+goal.
+
+   "log_tcp" is a program to monitor the TCP services like finger, ftp
+telnet and rlogin, if they are started by inetd.
+
+Information Description:
+
+   The "papers" directory contains the different security papers.
+
+   The "worm" directory contains papers relating to the Robert T. Morris
+Internet worm.
+
+   The "misc" directory contains the miscelaneous clippings from the
+net. 
+

@@ -1,0 +1,142 @@
+From sun-managers-relay@eecs.nwu.edu Fri Aug 17 12:07:11 1990
+Received: from hellcat.eng.umd.edu 
+	by bacchus.eng.umd.edu (5.64/UMDENG-0.2/04-20-90)
+	id AA21495; Fri, 17 Aug 90 12:07:08 -0400
+Received: from hub.eecs.nwu.edu 
+	by hellcat.eng.umd.edu (5.64/UMDENG-0.2/04-20-90)
+	id AA19638; Fri, 17 Aug 90 12:07:01 -0400
+Received: from rigel.econ.uga.edu by delta.eecs.nwu.edu id aa14145;
+          17 Aug 90 9:26 CDT
+Received:  by rigel.econ.uga.edu (4.0/25-eef)
+	id AA20069; Fri, 17 Aug 90 10:25:49 EDT
+Date: Fri, 17 Aug 90 10:25:49 EDT
+From: "Glenn F. Leavell" <glenn@rigel.econ.uga.edu>
+To: sun-managers@eecs.nwu.edu
+Subject: Re: shadowing password files
+Status: RO
+
+
+
+I recently asked for information about shadowing /etc/passwd without
+implementing full C2 security on my 4.0.3 systems.  I would like to thank
+all who responded.  This is a summary of those responses.
+
+Most responses suggested that I edit rc.local so that it will start 
+rpc.pwdauthd, a daemon needed for shadowing, but not start auditd, which
+is required for auditing. 
+
+William LeFebvre <phil@eecs.nwu.edu> writes:
+
+>Three things to beware of:
+>
+>	1: you must be running the daemon rpc.pwdauthd.
+>	   The standard rc.local will start one if it sees
+>	   /etc/security/passwd.adjunct.
+>
+>	2: you must NOT run auditd, unless you are prepared to create
+>	   the configuration files it needs.  MY recommendation is just
+>	   don't run it.  BUT, rc.local always starts auditd if it sees
+>	   the executable.  If auditd doesn't see the adjunct files then
+>	   it exits immediately.  What I did was "mv auditd auditd.no".
+>	   Then rc.local doesn't see it and it never gets run.
+>
+>	3: When you boot single user with adjunct files, you will have to
+>	   enter the root password immediately before getting the root
+>	   shell.  Make sure that you know it!
+>
+>I learned all of these the hard way.  I had one machine that I had to
+>literally boot from tape because I didn't heed #2 and #3!  It was the
+>only way I could fix the problem (other than moving the disk)!
+
+
+He also notes:
+
+>Someone told me that you must have group.adjunct as well or things
+>won't work.  I haven't tried it without it, so I can't confirm that.
+>
+>Get rid of "lockscreen" after you switch.  It does not know how to
+>check shadowed passwords.  The result is a lockscreen that cannot be
+>unlocked with ANY password.  There are other screen locking programs
+>available if you need that sort of functionality ("nlock" comes to
+>mind).
+
+If you don't run C2conv, you'll have to create the shadow password and group
+files, /etc/security/passwd.adjuct and /etc/security/group.adjunct, yourself.
+
+William LeFebvre forwarded me a posting from Sun-Spots (can't tell what
+issue, but dated May 7, 1990) by Jason Heirtzler that explains the format
+of these files.
+
+Jason Heirtzler <jdh@bu-pub.bu.edu> writes:
+
+>Each entry from /etc/passwd has the encrypted password text commented
+>out and replaced with the magic token "##user" (the passwd routines now
+>know how to handle this new format)
+>
+>	jdh:##jdh:3000:4940:Jason Heirtzler,x2780:/usr1/it/jdh:/bin/csh
+>
+>	There is a entry in /etc/security/passwd.adjunct that contains the
+>	actual encrypted text
+>
+>		jdh:aZw5eQq5n0o3k:::::
+>                        
+>			.
+>			.
+>			.
+>
+>The group file mirrors the way the passwd file is setup (here the magic
+>token is different "#$user").
+>
+>	seven:#$seven:7:jdh,budd
+>
+>	and each entry in group.adjunct looks like this (there is only colon
+>	per line.)
+>
+>		seven:*
+
+Hans Buurman suggests using a program, mkshadow, to create the shadow files
+for you.
+
+Hans Buurman <hans@duttnph.tudelft.nl> writes:
+
+>- get mkshadow from the sun-spots archives. Or even better, I'll include it.
+>- make sure you are logged in as root on the server, and have .rhosts per-
+>  mission to go to each machine as root.
+>- run mkshadow on each machine. It creates both password files and starts
+>  rpc.pwdauthdd. (my 4.0.3 didn't have it installed, so I run a 4.0.1 copy
+>  there).
+>- comment out auditd on each machine in rc.local
+>  (easy for the diskless clients: you can do it on the server).
+>- edit the shadow password file on each machine: add the + line for yp
+>  (ditto)
+> - I had to edit /var/yp/Makefile to add quotes around the variable in
+>   if [ ! $(NOPUSH) ] ; then 
+>   for the ahasow password and group files.  You get a test: argument expected
+>   otherwise. This may be fixed in 4.0.3.
+
+I should be noted that there IS a typo in /var/yp/Makefile. The line:
+      make NOPUSH=$(NOPUSH) passwd.adjunct.time group.adjunct.time; \
+should be changed by adding single quotes:
+      make 'NOPUSH=$(NOPUSH)' passwd.adjunct.time group.adjunct.time; \
+
+
+Also, yih%atom@cs.utah.edu suggests that I run C2conv, and then just turn
+off auditing.  That might be the way to go.
+
+Thanks again to all who responded:
+
+  Benny <yih%atom@cs.utah.edu>
+  Hans Buurman <hans@duttnph.tudelft.nl>
+  Howie Kaye <howie@columbia.edu>
+  William LeFebvre <phil@pex.eecs.nwu.edu>
+  Mike <mike@tab00.larc.nasa.gov>
+  Steve Simmons <scs@lokkur.dexter.mi.us>
+
++---------------------------------------------------------------------------+
+| Glenn F. Leavell                     | Internet: glenn@rigel.econ.uga.edu |
+| Systems Administrator                | Phone: 404-542-3488                |
+| Economics Department                 |------------------------------------|
+| University of Georgia                |                                    |
+| Athens, GA  30602                    |                                    |
++---------------------------------------------------------------------------+
+

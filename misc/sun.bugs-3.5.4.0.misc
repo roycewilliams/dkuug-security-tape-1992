@@ -1,0 +1,108 @@
+ README:
+
+ Problem descriptions for SunOS 3.5 though 4.0.1:
+
+   There is a security hole in sendmail (remote ability to turn on
+   debug mode) and with the fingerd program that allows a person to breach 
+   the system and insert a virus.  This is one of the causes of the Internet 
+   virus that attacked Sun's and Vaxen.
+
+   Anonymous ftp to all BSD 4.2 and 4.3 based ftpd has a hole that allows 
+   root access to the system.
+
+   Release versions of ypbind allow remote hosts to cause
+   rebinding of domain server which can compromise YP security.
+
+   The rpc.yppasswdd daemon will accept a passwd entry which
+   contains colons and newlines.   This allows one to create
+   additional (superuser) entries in the passwd file simply by
+   making rpc calls to the YPPASSWDPROC_UPDATE procedure with
+   a bogus yppasswd struct
+
+   Portmap accepts requests to setup port mappings from hosts other
+   than its own host
+
+   Utilizing a bug in 4.0's versions of getpwent() and putpwent(), it is
+   possible to use chfn (and chsh) to corrupt the passwd file and get
+   a root login.
+
+ Fix description:
+
+   Included are fixed versions of sendmail, sendmail.mx, in.fingerd,
+   in.ftpd, ypbind, rpc.yppasswdd, passwd, and portmap which patch the 
+   above mentioned security holes.
+
+   Also these new versions of ypbind by default will not allow the ypset 
+   command (if locally or remotely invoked) to rebind the host.  New
+   command options -ypset (global) or -ypsetme (local only) are now
+   necessary to allow ypset rebinding.
+
+   Included also are 386i versions of ypbind, rpc.yppasswdd, and portmap.
+
+   The sendmail3.5 and sendmail.mx3.5 is a 68010 binary which can 
+   run on SunOS 3.5 Sun2 and Sun3, and is the same binary offered 
+   in the ddn.tar "nameserver kit" file.
+
+ Install instructions for SunOS 4.x based:
+
+   After extracting fix tape contents into /tmp install the appropriate
+   fix version on your system:
+
+	mv /usr/etc/in.ftpd /usr/etc/in.ftpd.orig
+	mv /usr/lib/sendmail /usr/lib/sendmail.orig
+	mv /usr/lib/sendmail.mx /usr/lib/sendmail.mx.orig
+	mv /usr/etc/ypbind /usr/etc/ypbind.orig
+	mv /usr/etc/rpc.yppasswdd /usr/etc/rpc.yppasswdd.orig
+	mv /usr/etc/portmap /usr/etc/portmap.orig
+	mv /usr/bin/passwd /usr/bin/passwd.orig
+	cp /tmp/in.ftpd.{sun3,sun4} /usr/etc/in.ftpd
+	cp /tmp/sendmail.{sun3,sun4} /usr/lib/sendmail
+	cp /tmp/sendmail.mx.{sun3,sun4} /usr/lib/sendmail.mx
+	cp /tmp/ypbind.{sun2,sun3,sun4,386i} /usr/etc/ypbind
+	cp /tmp/rpc.yppasswdd.{sun2,sun3,sun4,386i} /usr/etc/rpc.yppasswdd
+	cp /tmp/portmap.{sun2,sun3,sun4,386i} /usr/etc/portmap
+	cp /tmp/passwd.{sun2,sun3,sun4} /usr/bin/passwd
+	cd /usr/etc
+	chown root in.ftpd ypbind rpc.yppasswdd portmap
+	chmod 755  in.ftpd ypbind rpc.yppasswdd portmap
+	cd /usr/bin
+	chown root passwd
+	chmod 4755 passwd
+	cd /usr/lib
+	chown root sendmail sendmail.mx
+	chmod 4555 sendmail sendmail.mx
+	rm -f /usr/bin/ch??
+	ln /usr/bin/passwd /usr/bin/chfn
+	ln /usr/bin/passwd /usr/bin/chsh
+   
+   The fingerd patch is provided via new in.finger.c code.  See the
+   included fingerd_patch file for source and build instructions.
+
+ Install instructions for SunOS 3.5 based:
+
+	mv /usr/lib/sendmail /usr/lib/sendmail.orig
+	mv /usr/lib/sendmail.mx /usr/lib/sendmail.mx.orig
+	mv /etc/ypbind /etc/ypbind.orig
+	mv /usr/etc/rpc.yppasswdd /usr/etc/rpc.yppasswdd.orig
+	mv /usr/etc/in.ftpd /usr/etc/in.ftpd.orig
+	cp /tmp/sendmail3.5 /usr/lib/sendmail
+	cp /tmp/sendmail.mx3.5 /usr/lib/sendmail.mx
+	cp /tmp/ypbind3.5_{sun2,sun3} /etc/ypbind
+	cp /tmp/rpc.yppasswdd3.5_{sun2,sun3} /usr/etc/rpc.yppasswdd
+	cp /tmp/in.ftpd3.5_{sun2,sun3} /usr/etc/in.ftpd
+	cp /tmp/portmap3.5_{sun2,sun3} /etc/portmap
+	cd /usr/etc
+	chown root rpc.yppasswdd in.ftpd
+	chmod 755  rpc.yppasswdd in.ftpd
+	cd /etc
+	chown root ypbind portmap
+	chmod 755  ypbind portmap
+	cd /usr/lib
+	chown root sendmail sendmail.mx
+	chmod 4555 sendmail sendmail.mx
+
+
+ Bug Id: 1015127, 1015111, 1016711, 1015128, 1016786, 1010710, 1016551
+ Release summary: 3.5, 3.5.2, 4.0, 4.0.1
+ Fixed in releases: 4.1
+

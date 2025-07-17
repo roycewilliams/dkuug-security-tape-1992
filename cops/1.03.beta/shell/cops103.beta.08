@@ -1,0 +1,1247 @@
+#!/bin/sh
+# this is cops103.beta.08 (part 8 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file beta/src/pass.c continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 8; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping beta/src/pass.c'
+else
+echo 'x - continuing file beta/src/pass.c'
+sed 's/^X//' << 'FOO_BAR' >> 'beta/src/pass.c' &&
+X	he later developed for use at Berkeley. Someone else
+X	distributed it outside Berkeley which explains why it's been
+X	publically distributed.
+X
+X
+X	    Modified by Seth Alford, Roger Southwick, Steve Dum, and
+X	    Rick Lindsley for Tektronix
+X
+X      Bits and pieces hacked by me and others, 1/4/91... df
+X */
+X
+/*
+X *	$Log:	pwchkr.c,v $
+X *	Revision 1.1  85/09/10  16:00:56  root
+X *	Initial revision
+X *	
+X *
+X * By default, this program only checks for accounts with passwords the same
+X * as the login name. The following options add more extensive checking. (The
+X * tradeoff is cpu time -- with all options enabled it can run into the 100's
+X * of MINUTES.) Any argument that does not begin with a "-" is assumed to be
+X * a file name. (A single '-' means stdin.) If no file name is given,
+X * /etc/passwd is used.
+X *
+X * Options:
+X *
+X *		-v:	verbose -- list all guesses on stdout
+X *		-u:	output the username on the line of the password file
+X *			currently being checked. If the program stops
+X *			abruptly you will then know how far it got.
+X *		-w file: use the list of words contained in "file" as likely
+X *			passwords. Words in the file are one to a line.
+X *		-b: 	check all guesses backwards too
+X *		-g:	use the Full Name portion of the gecos field to
+X *			generate more guesses; also check .plan, .signature
+X *			and .project files.
+X *		-s:	check the single letters a-z, A-Z, 0-9 as passwords
+X *		-c:	with each guess, check for all-lowercase and
+X *			all-uppercase versions too.
+X *		-d:     check the doubling of the username
+X *		-n:	complain about null passwords (default is to keep quiet)
+X *		-p:	print the password when guessed
+X *		-P:	use alternate password file
+X */
+X
+int verbose = 0, singles = 0, backwards = 0, checkgecos = 0, checkcase = 0,
+X    chknulls = 0, printit = 0, users = 0, chkwords = 0, checkdouble = 0;
+X
+char *my_index(), *reverse();
+long atol();
+FILE *fopen();
+char *fgets();
+X
+/* char PASSWD[] = "/etc/passwd"; */
+char PASSWD[256];
+X
+char EMPTY[] = "";
+static FILE *pwf = NULL, *wlf = NULL;
+char line[BUFSIZ+1];
+struct passwd passwd;
+char	*Curpw, *Wordlist = NULL;
+X
+main(argc, argv)
+char **argv;
+{
+X    register int i;
+X    register char *arg;
+X    int onedone = 0;
+X
+X    /*
+X    You have to decide whether or not to include these lines....
+X
+X    if (getuid()) {
+X	printf("Did you really think we would let you run this?\n");
+X	exit(1);
+X	}
+X
+X    */
+X    strcpy(PASSWD, "/etc/passwd");
+X
+X    for (i = 1; i < argc; i++)
+X	if ((arg = argv[i]) && *arg == '-')
+X	    while (*++arg) {
+X		switch (*arg) {
+X		    case 'n':
+X			/*
+X			 * complain about null passwords
+X			 */
+X			chknulls++;
+X			break;
+X		    case 'c':
+X			/*
+X			 * check cases
+X			 */
+X			checkcase++;
+X			break;
+X		    case 'g':
+X			/*
+X			 * use gecos
+X			 */
+X			checkgecos++;
+X			break;
+X		    case 'v':
+X			/*
+X			 * turn on motormouth
+X			 */
+X			verbose++;
+X			break;
+X		    case 'b':
+X			/*
+X			 * check all attempts forwards and backwards
+X			 */
+X			backwards++;
+X			break;
+X		    case 'd':
+X			/*
+X			* check the doubling of the username
+X			*/
+X			checkdouble++;
+X			break;
+X		    case 's':
+X			/*
+X			 * carry out a more intensive search, checking for
+X			 * single letter passwords
+X			 */
+X			singles++;
+X			break;
+X		    case 'p':
+X			/*
+X			 * print out the password when found
+X			 */
+X			printit++;
+X			break;
+X		    case 'u':
+X			/*
+X			 * print out users as testing
+X			 */
+X			users++;
+X			break;
+X		    case 'P':
+X			/*
+X			 * use alternate passwd file
+X			 */
+X			if (argv[i+1] == NULL) {
+X			    fprintf(stderr,
+X				"%s: No file supplied with -P option\n",
+X				argv[0]);
+X			    exit (1);
+X			    }
+X			strcpy(PASSWD, argv[i+1]);
+X			argv[i+1] = NULL;
+X			break;
+X		    case 'w':
+X			/*
+X			 * consult word list of likely passwords
+X			 */
+X			if ((Wordlist = argv[i+1]) == NULL) {
+X			    fprintf(stderr,
+X				"%s: No file supplied with -w option\n",
+X				argv[0]);
+X			    exit (1);
+X			    }
+X			argv[i+1] = NULL;
+X			break;
+X		    case '\0':
+X			/*
+X			 * read from stdin
+X			 */
+X			break;
+X		    default:
+X			fprintf(stderr,
+X			    "%s: unknown option '%c'. Options are:\n",argv[0],
+X			    *arg);
+X			/* FALL THRU */
+X		    case '-':
+X			fprintf(stderr,"-v:\t\tverbose -- list all guesses on stdout\n");
+X			fprintf(stderr,"-u:\t\toutput the username currently being checked\n");
+X			fprintf(stderr,"-w file:\tconsult the indicated file for words to check as passwords\n");
+X			fprintf(stderr,"-b:\t\tcheck all guesses forwards and backwards\n");
+X			fprintf(stderr,"-g:\t\tuse the Full name portion of the gecos field for more guesses\n");
+X			fprintf(stderr,"-s:\t\tcheck the single letters a-z, A-Z, 0-9 as passwords\n");
+X			fprintf(stderr,"-c:\t\tcheck the all-upper and all-lower case version of each guess\n");
+X			fprintf(stderr,"-d:\t\tcheck for double repetition of the username\n");
+X			fprintf(stderr,"-n:\t\tcomplain about null passwords\n");
+X			fprintf(stderr,"-p:\t\tprint the password when guessed\n");
+X			exit(1);
+X		    }
+X		argv[i] = NULL;
+X		}
+X    
+X    for (i = 1; i < argc; i++) {
+X	if (argv[i] == NULL) continue;
+X	onedone++;
+X	if (*(argv[i]) == '-') {
+X	    /*
+X	     * read from stdin; we'll cheat and set pwf directly
+X	     */
+X	    pwf = stdin;
+X	    chkpw();
+X	    /*
+X	     * don't fclose stdin!
+X	     */
+X	    clearerr(stdin);
+X	    }
+X	else {
+X	    if ((fopen(argv[i],"r")) == NULL) {
+X		perror(argv[i]);
+X		continue;
+X		}
+X	    Curpw = argv[i];
+X	    chkpw();
+X	    end2pwent();
+X	    }
+X	}
+X    if (!onedone) {
+X	Curpw = NULL;
+X	chkpw();
+X	}
+X    exit(0);
+}
+X
+/*
+X * Added by Jacob Gore, March 12, 1987.
+X *
+X * Finds the pointer of the leftmost occurance within the character string
+X * 'string' of any character found within the character string 'chars'.
+X *
+X * If none of the characters in 'chars' appear in 'string', NULL is retutned.
+X *
+X */
+char *
+indexm (string, chars)
+X    char *string, *chars;
+{
+X    while (*string) {
+X	if (my_index(chars, *string) != NULL) {
+X	    return string;
+X	}
+X	string++;
+X    }
+X    return NULL;
+}
+X
+chkpw()
+X
+{
+X    register char	*cp, *cp2;
+X    struct passwd	*pwd;
+X    struct passwd	*getpwent();
+X    char		guess[100];
+X    char		*wordarray[ARB_CONST];
+X    char		*malloc(), **wordptr, **endptr;
+X    int			done = 0;
+X
+X
+X    if (Wordlist)
+X    {
+X	if ((wlf = fopen(Wordlist,"r")) == NULL)
+X	{
+X	    perror(Wordlist);
+X	    exit(1);
+X	}
+X
+X	wordptr = wordarray;
+X	/*
+X	 * note that endptr points to space OUTSIDE of wordarray
+X	 */
+X	endptr = wordarray + (sizeof(wordarray)/sizeof(char *));
+X
+X	while (fscanf(wlf,"%[^\n]\n",guess) != EOF)
+X	{
+X
+X	    if (wordptr == endptr)
+X	    {
+X		fprintf(stderr,"Ran out of wordlist space. ARB_CONST %d must be too small.\n", ARB_CONST);
+X		exit(1);
+X	    }
+X	    if ((*wordptr = malloc(1+strlen(guess))) == NULL)
+X	    {
+X		fprintf(stderr,"malloc: no more memory for wordlist\n");
+X		exit (1);
+X	    }
+X	    strcpy(*wordptr,guess);
+X	    wordptr++;
+X  /* SunOs 4.03 on a Sun 3/80 didn't work properly, needed this one line fix */
+X	    if (feof(wlf)) break;
+X	}
+X	*wordptr = NULL;
+X	fclose(wlf);
+X    }
+X
+X    while ((pwd = getpwent()) != 0 ) {
+X
+X        done = 0;
+X
+X	if (verbose || users) {
+X	    if (Curpw == NULL)
+X		printf("\t%s \"%s\"\n", pwd->pw_name, pwd->pw_gecos);
+X	    else
+X		printf("%s -- \t%s \"%s\"\n", Curpw, pwd->pw_name,
+X		    pwd->pw_gecos);
+X	    fflush(stdout);
+X	    }
+X	if (*pwd->pw_passwd == '\0') {
+X	    if (chknulls) {
+X		if (Curpw == NULL)
+X		    printf("Warning!  Password Problem: null passwd:\t%s\tshell: %s\n",
+X			pwd->pw_name, pwd->pw_shell);
+X		else
+X		    printf("Warning!  %s -- Password Problem: null passwd:\t%s\tshell: %s\n",
+X			Curpw, pwd->pw_name, pwd->pw_shell);
+X		fflush(stdout);
+X		}
+X	    continue;
+X	}
+X	/*
+X	 * Try the user's login name
+X	 */
+X	if (uandltry(pwd,pwd->pw_name))
+X	    continue;
+X
+X	if (checkdouble) {
+X		strcpy(guess,pwd->pw_name);
+X		strcat(guess,pwd->pw_name);
+X		if (uandltry(pwd,guess))
+X			continue;
+X		}
+X
+X	/*
+X	 * Try names from the gecos field
+X	 */
+X	if (checkgecos) {
+X	    /* Check extra files as well */
+X	    if (srch_aux_files(pwd->pw_dir, pwd)) {
+X		done++;
+X		continue;
+X	    }
+X	    strcpy(guess, pwd->pw_gecos);
+X	    cp = guess;
+X	    if (*cp == '-') cp++;		/* special gecos field */
+X	    if ((cp2 = my_index(cp, ';')) != NULL)
+X		*cp2 = '\0';
+X
+X	    for (;;) {
+X		/* use both ' ' and ',' as delimiters -- Jacob */
+X		if ((cp2 = indexm(cp, " ,")) == NULL) {
+X		    if (uandltry(pwd,cp))
+X			done++;
+X		    break;
+X		    }
+X
+X		*cp2 = '\0';
+X
+X		if (uandltry(pwd,cp)) {
+X		    done++;
+X		    break;
+X		    }
+X		cp = ++cp2;
+X		}
+X	    }
+X	    
+X	if (!done && Wordlist)
+X	{
+X	    /*
+X	     * try the words in the wordlist
+X	     */
+X	    wordptr = wordarray;
+X	    while (endptr != wordptr)
+X	    {
+X		if (*wordptr == NULL)
+X		    break;
+X		if (uandltry(pwd,*wordptr++))
+X		{
+X		    done++;
+X		    break;
+X		}
+X	    }
+X	}
+X	if (!done && singles) {
+X	    /*
+X	     * Try all single letters
+X	     * (try digits too .  --Seth)
+X	     */
+X	    guess[1] = '\0';
+X	    for (guess[0]='a'; guess[0] <= 'z'; guess[0]++)
+X		if (try(pwd,guess))
+X		    break;
+X	    for (guess[0]='A'; guess[0] <= 'Z'; guess[0]++)
+X		if (try(pwd,guess))
+X		    break;
+X	    for (guess[0]='0'; guess[0] <= '9'; guess[0]++)
+X		if (try(pwd,guess))
+X		    break;
+X	    }
+X    }
+}
+X
+/*
+X * Stands for "upper and lower" try.  Calls the "real" try, below,
+X * with the supplied version of the password, and with
+X * an upper and lowercase version of the password. If the user doesn't
+X * want to try upper and lower case then we just return after the one
+X * check.
+*/
+X
+uandltry (pwd,guess)
+char *guess;
+struct passwd *pwd;
+{
+X    register char *cp;
+X    char buf[100];
+X    int alllower, allupper;
+X
+X    alllower = allupper = 1;
+X
+X    if (try(pwd,guess) || (backwards && try(pwd,reverse(guess)))) return (1);
+X
+X    if (!checkcase) return(0);
+X
+X    strcpy (buf, guess);
+X    cp = buf-1;
+X    while (*++cp) {
+X	if (isupper(*cp))
+X	    alllower = 0;
+X	if (islower(*cp))
+X	    allupper = 0;
+X	}
+X
+X    if (!allupper) {
+X	for ( cp=buf; *cp != '\0'; cp++)
+X	    if (islower (*cp))
+X		*cp += 'A' - 'a';
+X
+X	if (try(pwd,buf) || (backwards && try(pwd,reverse(buf)))) return (1);
+X	}
+X
+X    if (!alllower) {
+X	for ( cp = buf; *cp != '\0'; cp++)
+X	    if (isupper (*cp))
+X		*cp += 'a' - 'A';
+X
+X	if (try(pwd,buf) || (backwards && try(pwd,reverse(buf)))) return (1);
+X	}
+X    return (0);
+}
+X
+try(pwd,guess)
+char *guess;
+register struct passwd *pwd;
+{
+X    register char  *cp;
+X    char   *crypt ();
+X
+X    if (verbose) {
+X	if (Curpw == NULL)
+X	    printf ("Trying \"%s\" on %s\n", guess, pwd -> pw_name);
+X	else
+X	    printf ("%s -- Trying \"%s\" on %s\n", Curpw, guess,
+X		pwd -> pw_name);
+X	fflush (stdout);
+X	}
+X    if (! guess || ! *guess) return(0);
+X    cp = crypt (guess, pwd -> pw_passwd);
+X
+/* silly sun tries to fool us by adding extra chars in their passwd field! */
+/* but laddie, we're too smart for 'em, eh?!?  Kudos to Bernard Wilson */
+X    if (strncmp (cp, pwd -> pw_passwd, 13))
+X	return (0);
+X    if (Curpw == NULL)
+X	if (printit)
+X	    printf ("Warning!  Password Problem: Guessed:\t%s\tshell: %s passwd: %s\n",
+X		pwd -> pw_name, pwd -> pw_shell, guess);
+X	else
+X	    printf ("Warning!  Password Problem: Guessed:\t%s\tshell: %s\n", pwd -> pw_name,
+X		pwd -> pw_shell);
+X    else
+X	if (printit)
+X	    printf ("Warning!  %s -- Password Problem: Guessed:\t%s\tshell: %s passwd: %s\n",
+X		Curpw, pwd -> pw_name, pwd -> pw_shell, guess);
+X	else
+X	    printf ("Warning!  %s -- Password Problem: Guessed:\t%s\tshell: %s\n",
+X		Curpw, pwd -> pw_name, pwd -> pw_shell);
+X    fflush (stdout);
+X    return (1);
+}
+/* end of PW guessing program */
+X
+#define MAXUID 0x7fff	/* added by tonyb 12/29/83 */
+X			/* altered to a reasonable number - mae 8/20/84 */
+X
+end2pwent()
+{
+X    fclose(pwf);
+X    pwf = NULL;
+}
+X
+char *
+pwskip(p)
+register char *p;
+{
+X	while(*p && *p != ':' && *p != '\n')
+X		++p;
+X	if(*p == '\n')
+X		*p = '\0';
+X	else if(*p)
+X		*p++ = '\0';
+X	return(p);
+}
+X
+struct passwd *
+getpwent()
+{
+X	register char *p;
+X	long	x;
+X
+X	if(pwf == NULL)
+X	    if ((pwf = fopen(PASSWD,"r")) == NULL) {
+X		perror(PASSWD);
+X		return(NULL);
+X		}
+X	p = fgets(line, BUFSIZ, pwf);
+X	if(p == NULL)
+X		return(0);
+X	passwd.pw_name = p;
+X	p = pwskip(p);
+X	passwd.pw_passwd = p;
+X	p = pwskip(p);
+X	x = atol(p);	
+X	passwd.pw_uid = (x < 0 || x > MAXUID)? (MAXUID+1): x;
+X	p = pwskip(p);
+X	x = atol(p);
+X	passwd.pw_gid = (x < 0 || x > MAXUID)? (MAXUID+1): x;
+/*	passwd.pw_comment = EMPTY; */
+X	p = pwskip(p);
+X	passwd.pw_gecos = p;
+X	p = pwskip(p);
+X	passwd.pw_dir = p;
+X	p = pwskip(p);
+X	passwd.pw_shell = p;
+X	(void) pwskip(p);
+X
+X	p = passwd.pw_passwd;
+X 
+X	return(&passwd);
+X
+}
+X
+X
+/*
+X * reverse a string
+X */
+char *reverse(str)
+char *str;
+X
+{
+X    register char *ptr;
+X    char	*malloc();
+X    static char buf[100];
+X
+X    ptr = buf + strlen(str);
+X    *ptr = '\0';
+X    while (*str && (*--ptr = *str++))
+X	;
+X    return(ptr);
+X
+}
+X
+X
+/* Guess passwords using additional files for guesses. Returns 1 (true) if
+X * a match was found, otherwise 0 (false). The parameters to be passed to
+X * this function are a character pointer to the directory in which the files
+X * reside. This function access the "uandltry" routine from other 
+X * sections of the code.
+X */
+#define MAXWORD 15		/* Maximum word length allow for guess */
+X
+#include <stdio.h>
+#include <ctype.h>
+X
+static char *file[] = { "/.project",		/* These are the extra files */
+X			"/.plan",		/* to be searched for */
+X			"/.signature",		/* prospective passwords */
+X			"" };			/* Note the initial "/" */
+X
+int
+srch_aux_files(dir, pwd)
+X	char *dir;	/* Directory in which to search */
+X	struct passwd *pwd;	/* Encrypted password */
+{
+X	char path[100];		/* Complete path */
+X	FILE *fp;
+X	char *wp;
+X	char *getword();
+X	char **p;
+X
+X	p = file;
+X	while (**p != NULL) {
+X		strcpy(path, dir);	/* Make complete path name */
+X		strcat(path, *p++);
+X		if ((fp = fopen(path, "r")) == NULL)
+X			continue;	/* If we can't open the file, skip it */
+X		while ((wp = getword(fp)) != NULL)
+X			if (uandltry(pwd, wp))
+X				return(1);
+X		fclose(fp);
+X	}
+X	return(0);
+}
+X
+/* Get a word from a stream. Word separators are user definable in "is_sep".
+X * Maximum word size is MAXWORD characters. If a word reaches it's maximum
+X * limit, we choose not to flush the rest of the word. Returns NULL on EOF.
+X */
+char *
+getword(fp)
+X	FILE *fp;
+{
+X	static char word[MAXWORD + 1];
+X	char *p = word;
+X	int c;
+X	int is_sep();
+X
+X	while ((c = fgetc(fp)) != EOF && !isalnum(c))
+X		;		/* Skip over word separators */
+X	if (c == EOF)
+X	       return(NULL);
+X	*p++ = c;
+X	while ((c = fgetc(fp)) != EOF && isalnum(c) && p != &(word[MAXWORD])) {
+X		*p++ = c;	/* Quit when a word separator is encountered
+X				 * or we reach maximum word length
+X				 */
+X	}
+X	*p = '\0';		/* Mustn't forget that word terminator */
+X	return ((c == EOF) ? NULL : word);
+}
+/* taken from comp.binaries.ibm.pc.d:
+Some users have reported trouble compiling the freely distributable
+uudecode I posted.  It seems that Berkeley moved the "index" function
+to one of their system libraries and some systems don't have it.
+Here is the missing "index" function, excerpted from an earlier freely
+distributable uudecode.  Just add it on the end of the uudecode I posted.
+*/
+/*
+--Keith Petersen
+Maintainer of SIMTEL20's CP/M, MSDOS, & MISC archives [IP address 26.2.0.74]
+Internet: w8sdz@WSMR-SIMTEL20.Army.Mil, w8sdz@brl.arpa  BITNET: w8sdz@NDSUVM1
+Uucp: {ames,decwrl,harvard,rutgers,ucbvax,uunet}!wsmr-simtel20.army.mil!w8sdz
+*/
+X
+/*
+X * Return the ptr in sp at which the character c appears;
+X * NULL if not found
+X */
+X
+#define	NULL	0
+X
+char *
+my_index(sp, c)
+register char *sp, c;
+{
+X	do {
+X		if (*sp == c)
+X			return(sp);
+X	} while (*sp++);
+X	return(NULL);
+}
+X
+X
+FOO_BAR
+echo 'File beta/src/pass.c is complete' &&
+chmod 0600 beta/src/pass.c ||
+echo 'restore of beta/src/pass.c failed'
+Wc_c="`wc -c < 'beta/src/pass.c'`"
+test 15989 -eq "$Wc_c" ||
+	echo 'beta/src/pass.c: original size 15989, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/tilde.c ==============
+if test -f 'beta/src/tilde.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/tilde.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/tilde.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/tilde.c' &&
+#include <pwd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+X
+main(argc,argv)
+int argc;
+char **argv;
+{
+struct passwd *pp;
+X
+if (argc != 2) {
+X	printf("Usage: %s\n",argv[0]);
+X	exit(1);
+}
+X
+/* print directory of user, else "Error"  -- need to print
+X  something, or kuang won't parse dir correctly */
+if ((pp = getpwnam(argv[1])) != (struct passwd *)0)
+X	printf("%s", pp->pw_dir);
+else
+X	printf("Error");
+X
+}
+FOO_BAR
+chmod 0600 beta/src/tilde.c ||
+echo 'restore of beta/src/tilde.c failed'
+Wc_c="`wc -c < 'beta/src/tilde.c'`"
+test 401 -eq "$Wc_c" ||
+	echo 'beta/src/tilde.c: original size 401, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/user.chk.c ==============
+if test -f 'beta/src/user.chk.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/user.chk.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/user.chk.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/user.chk.c' &&
+#include <stdio.h>
+#include <pwd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+X
+/* Any file writable by all will be flagged */
+#define DMODE 002
+X
+#define MODE1 004
+#define MODE2 040
+X
+/* #define DMODE2 020 */
+X
+/* potentially dangerous files */
+char *ftable[] = {
+X	"rhosts",
+X	"profile",
+X	"login",
+X	"logout",
+X	"cshrc",
+X	"bashrc",
+X	"kshrc",
+X	"tcshrc",
+X	"netrc",
+X	"forward",
+X	"dbxinit",
+X	"distfile",
+X	"exrc",
+X	"emacsrc"
+};
+char *ft;
+char *ftr, *malloc();
+X
+char generic_file[100];
+X
+main(argc,argv)
+int argc;
+char **argv;
+{
+register int fmode;
+register int index;
+struct passwd *pp;
+static struct stat statb;
+X
+if (argc != 1) {
+X	printf("Usage: %s\n",argv[0]);
+X	exit(1);
+X	}
+X
+ft = malloc(100);
+ftr = malloc(100);
+X
+while ((pp = getpwent()) != (struct passwd *)0) {
+X	if (stat(pp->pw_dir,&statb) < 0) {
+X		continue;
+X		}
+X
+X	index = 0;
+X	/*
+X	 *   Use the home-dir, and add on each potential security threat
+X	 * file to the path one at a time.  Then check each file to see
+X	 * if it breaks with the modes established up above
+X	 *
+X	*/
+X	for (ft = ftable[index]; index < 14; ft = ftable[++index]) {
+X		if (strlen(pp->pw_dir) != 1)
+X			sprintf(generic_file, "%s/.%s", pp->pw_dir,ft);
+X		else 
+X			sprintf(generic_file, "%s.%s", pp->pw_dir,ft);
+X
+X		if (stat(generic_file,&statb) < 0)
+X			continue;
+X
+X		if (statb.st_mode & DMODE) 
+X			printf("Warning!  User %s:\t%s is mode \t0%3.3o!\n",
+X	       		pp->pw_name,generic_file,statb.st_mode&~S_IFMT);
+X
+X		/* check for mode on .netrc files; should be non-readable */
+X		if (!strcmp("netrc", ftable[index]))
+X			if (statb.st_mode & MODE1 || statb.st_mode & MODE2)
+X				printf("Warning!  User %s:\t%s is readable; mode \t0%3.3o!\n",
+X	       			pp->pw_name,generic_file,statb.st_mode&~S_IFMT);
+X		}
+X
+X	}
+X
+exit(0);
+}
+FOO_BAR
+chmod 0600 beta/src/user.chk.c ||
+echo 'restore of beta/src/user.chk.c failed'
+Wc_c="`wc -c < 'beta/src/user.chk.c'`"
+test 1721 -eq "$Wc_c" ||
+	echo 'beta/src/user.chk.c: original size 1721, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/stop.sample ==============
+if test -f 'beta/stop.sample' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/stop.sample (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/stop.sample (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/stop.sample' &&
+-rwsr-xr-x  1 root     bin         10240 Jun 13 13:13 /bin/chgrp
+-rwsr-xr-x  1 root     bin         12288 Jun 13 13:13 /bin/df
+-rws--s---  1 root     term        22528 Aug 13 13:13 /bin/login
+-rws------  1 root     bin         21504 Jun 13 13:13 /bin/login.old
+-rwsr-xr-x  1 root     bin         22528 Jun 13 13:13 /bin/mail
+-rwsr-xr-x  1 root     bin         14336 Jun 13 13:13 /bin/passwd
+-rwxr-sr-x  1 root     MEM         22528 Jun 13 13:13 /bin/ps
+-rwsr-xr-x  1 root     bin         16384 Jun 13 13:13 /bin/su
+-rwxr-sr-x  1 root     MEM         14336 Jun 13 13:13 /etc/dmesg
+-rwsr-x---  1 root     operator    29696 Jun 13 13:13 /etc/dump
+FOO_BAR
+chmod 0600 beta/stop.sample ||
+echo 'restore of beta/stop.sample failed'
+Wc_c="`wc -c < 'beta/stop.sample'`"
+test 644 -eq "$Wc_c" ||
+	echo 'beta/stop.sample: original size 644, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/suid.chk ==============
+if test -f 'beta/suid.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/suid.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/suid.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/suid.chk' &&
+:
+#
+#   Shell script intended to be run periodically by cron in order
+#   to spot changes in files with the suid or sgid bits set.
+#
+#	suid.chk	840919		Prentiss Riddle
+#
+#     This changes into the $SECURE directory first, then 
+#   uses find(1) to search the directories in $SEARCH for all
+#   files with the 4000 or 2000 permission bits set.  $STOP is a file
+#   containing "ls -lga" output for known setuid or setgid programs.
+#   Any additions or changes to this list represent potential security
+#   problems, so they are reported to the users named in $INFORM.
+#
+#  Modified 8/15/89, Dan Farmer:
+#	Just changed the program/doc names and some of the temp
+#  files to make it fit in with the rest of the programs....
+#  Modified 12/26/90, Dan Farmer:
+#       Now flags SUID shell scripts and world writeable SUID files, too.
+#
+X
+#  CHANGE THIS LINE!
+INFORM="foo@bar.edu"
+#
+X
+TEST=/bin/test
+ECHO=/bin/echo
+LS=/bin/ls
+CAT=/bin/cat
+CP=/bin/cp
+MAIL=/bin/mail
+CHMOD=/bin/chmod
+SORT=/usr/bin/sort
+COMM=/usr/bin/comm
+FIND=/usr/bin/find
+RM=/bin/rm
+AWK=/bin/awk
+SED=/bin/sed
+GREP=/bin/grep
+EGREP=/usr/bin/egrep
+YPCAT=/usr/bin/ypcat
+X
+#   Checking for non-executable SUID files;
+#
+#   simple way; just see if file says it's a script -- this is a *definite*
+# no-no, and the default:
+#	type_filter="$GREP script"
+#
+#   Safer/paranoid way; anything but an executable is flagged (may not be
+# good over NFS mounts with different binaries...
+#	type_filter="$GREP -v xecut"
+#
+#   You may want to grep out "ermission" string, too, in case NFS mount
+# stuff that you can't read gives you "permission denied", even as root:
+#	type_filter="$EGREP"' -v '"xecut|ermiss"
+#
+type_filter="$GREP script"
+X
+# Yellow Pages check further down...
+etc_passwd=/etc/passwd
+SECURE=.
+SEARCH=/
+STOP=./suid.stop
+TEMPOLD=./fsold$$
+TEMPCUR=./fscur$$
+TEMPNEW=./fsnew$$
+TEMPGON=./fsgon$$
+TEMPM=./fsm$$
+X
+umask 077
+OLDCWD=`pwd`
+X
+if $TEST ! -d "$SECURE"
+X	then
+X	$ECHO "Error -- Security directory $SECURE doesn't exist"
+X	exit 1
+fi
+X
+$CHMOD 700 $SECURE
+cd $SECURE
+X
+# find the setuid programs and sort
+$FIND $SEARCH -type f \( -perm -4000 -o -perm -2000 \) -exec $LS -ldga {} \; | \
+X	$SORT > $TEMPCUR
+X
+# compare with the sorted stop list
+if $TEST ! -f "$STOP" ; then
+X	$CP /dev/null $TEMPOLD
+X	fi
+$SORT <$STOP >$TEMPOLD
+$COMM -13 $TEMPOLD $TEMPCUR | $SORT +8 >$TEMPNEW
+$COMM -23 $TEMPOLD $TEMPCUR | $SORT +8 >$TEMPGON
+X
+# report changes
+if $TEST -s $TEMPNEW -o -f $TEMPGON; then
+X
+X	# YP?  Thanks again, to Rob Kolstad...
+X	# Scratch files for testing:
+X	yp_passwd=./ypsuid.$$
+X
+X	# generic test to check for yp use?
+X	if $TEST -f $YPCAT -a -s $YPCAT ; then
+X		$YPCAT passwd > $yp_passwd
+X		if $TEST $? -eq 0 ; then
+X			etc_passwd=$yp_passwd
+X			fi
+X		fi
+X
+X	# get the hostname:
+X	if $TEST -s /bin/hostname ; then
+X		HOSTNAME=`/bin/hostname`
+X	elif $TEST -s /bin/uname ; then
+X		HOSTNAME=`/bin/uname -n`
+X	elif $TEST -s /usr/bin/uuname ; then
+X		HOSTNAME=`/usr/bin/uuname -l`
+X		fi
+X	if $TEST -z "$HOSTNAME" ; then
+X		HOSTNAME="foobar"
+X		fi
+X
+X	$ECHO >>$TEMPM
+X        $ECHO ATTENTION:                        >> $TEMPM
+X        $ECHO "SUID Security Report for "`$DATE`>> $TEMPM
+X
+X        $ECHO "from host $HOSTNAME"             >> $TEMPM
+X	$ECHO >>$TEMPM
+X
+# NEW STUFF... $TEMPNEW holds the new SUID files; stuff the results in $TEMPM:
+X	for i in `$AWK '{print $NF}' $TEMPNEW`
+X		do
+X		# don't want SUID files to be world writable!
+X		./is_able $i w w >> $TEMPM
+X
+X		type=`file "$i" | $SED 's/.*://' | $type_filter`
+X
+X		if $TEST -n "$type" ; then
+X			owner=`$LS -ldga $i | $AWK '{print $3}'`
+X			uid=`$AWK -F: '/^'"$owner"'/{print $3}' $etc_passwd`
+X
+X			# set to nobody, if can't find 'em in the password file
+X			if $TEST -z "$uid" ; then
+X				uid="-2"
+X				fi
+X
+X			if $TEST "$uid" -eq "0" ; then
+X				$ECHO Warning!  ROOT owned SUID file $i is type: $type! >> $TEMPM
+X			else
+X				$ECHO Warning!  User: $owner SUID file $i is type: $type! >> $TEMPM
+X				fi
+X			fi
+X		done
+X
+X	if $TEST -s $TEMPNEW; then
+X		$ECHO 'These files are newly setuid/setgid:' >>$TEMPM
+X		$ECHO '' >>$TEMPM
+X		$CAT $TEMPNEW >>$TEMPM
+X		$ECHO '' >>$TEMPM
+X	fi
+X	if $TEST -s $TEMPGON; then
+X		$ECHO 'These files are no longer setuid/setgid:' >>$TEMPM
+X		$ECHO '' >>$TEMPM
+X		$CAT $TEMPGON >>$TEMPM
+X	fi
+X	$MAIL $INFORM <$TEMPM
+X	$RM -f $TEMPM
+fi
+$RM -f $TEMPOLD $TEMPCUR $TEMPNEW $TEMPGON $yp_passwd
+X
+#  end it all....
+Xexit 0
+FOO_BAR
+chmod 0700 beta/suid.chk ||
+echo 'restore of beta/suid.chk failed'
+Wc_c="`wc -c < 'beta/suid.chk'`"
+test 4285 -eq "$Wc_c" ||
+	echo 'beta/suid.chk: original size 4285, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/yp_pass.chk ==============
+if test -f 'beta/yp_pass.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/yp_pass.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/yp_pass.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/yp_pass.chk' &&
+:
+#
+#  yp_pass.chk [whatever flags you want to pass to pass.chk]
+#
+#   This shell script is a wrapper for the pass.chk password guessing
+# program for systems using Yellow Pages/NIS.  All this does is dump the
+# yppassword file into a temp file, then runs "pass.chk" with whatever
+# flags were passed to it.
+#
+#   Obviously, it doesn't make any sense to use the "-P" flag (which
+# specifies an alternate password file.)
+# 
+X
+TEST=/bin/test
+RM=/bin/rm
+YPCAT=/usr/bin/ypcat
+X
+# Important files:
+yp_pass=./yp.$$
+X
+# password guessing program:
+pass_chk=./pass.chk
+X
+# generic test to check for yp use?
+if $TEST -f $YPCAT -a -s $YPCAT ; then
+X	$YPCAT passwd > $yp_pass
+else
+X	$RM -f $yp_pass
+X	exit 1
+X	fi
+X
+#  crack them passwords
+if $TEST -s "$yp_pass" ; then	
+X	$pass_chk $* -P $yp_pass
+X	fi
+X
+# kill off the evidence
+$RM -f $yp_pass
+X
+# end
+FOO_BAR
+chmod 0700 beta/yp_pass.chk ||
+echo 'restore of beta/yp_pass.chk failed'
+Wc_c="`wc -c < 'beta/yp_pass.chk'`"
+test 827 -eq "$Wc_c" ||
+	echo 'beta/yp_pass.chk: original size 827, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/chk_strings.old ==============
+if test -f 'beta/chk_strings.old' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/chk_strings.old (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/chk_strings.old (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/chk_strings.old' &&
+:
+#
+#  Usage: chk_strings filename
+#
+#  This will check pathnames inside executable files for writability,
+# using the "strings" command and egrep.
+#
+#  I have identified three basic types of strings containing paths to files:
+# 1)
+#    /path1/path2/file			/* standard */
+# 2) 
+#    '/path1/path2/file'		/* standard, in single quotes */
+# 3)
+#    :/path1/file1:/path2/file2		/* a path for searching */
+#
+#  For the first two, I simply test the writability; for the last, I
+# parse it into seperate paths and check each one in turn.
+#
+AWK=/bin/awk
+EGREP=/usr/bin/egrep
+TEST=/bin/test
+ECHO=/bin/echo
+SORT=/usr/bin/sort
+STRINGS=/usr/ucb/strings
+X
+if test ! -s $STRINGS
+X	then
+X	exit 0
+fi
+X
+if test $# -eq 0
+X	then
+X	$ECHO "Usage: $0 file"
+X	exit 2
+fi
+X
+while test 0 -ne $#
+X	do
+X	# $ECHO Checking $1...
+X	if ./is_writable $1 ; then
+X		$ECHO "Warning!  Root executed File $1 is _World_ writable!"
+X		fi
+X	# get the first two types:
+X	test_files=`$STRINGS $1 | $EGREP "/.*/" | $AWK '{for (i=1;i<=NF;i++) 
+X	if ((res=substr($i,1,1))=="/") 
+X		printf("%s\n",$i)
+X	else if ((res!=":") && (res=substr($i,2,1))=="/")
+X		printf("%s\n",substr($i,2,length($i)-2))}'| $SORT -u`
+X
+X	# and type number three, parse into separate paths as well:
+X	paths=`$STRINGS $1|$EGREP "/.*/" |$AWK '{for (i=1;i<=NF;i++) 
+X		if ((substr($i,1,1)==":") && (substr($i,2,1))=="/")
+X			printf("%s",$i)}'`
+X	paths=`$ECHO $paths | $AWK -F: '{for (i=1;i<=NF;i++) printf("%s\n",$i)}'| $SORT -u`
+X
+X	all_files=$test_files$paths
+X
+X	for i in $all_files
+X		do
+X		if $TEST ! -f $i -o -d $i ; then
+X			continue
+X			fi
+X		if $TEST -n "`$ECHO $i | $EGREP /tmp\|/dev/null\|/dev/tty\|/dev/printer\|/dev/console`"
+X			then
+X			continue
+X			fi
+X		if ./is_writable $i
+X			then
+X			$ECHO "Warning!  File $i (inside root executed file $1) is _World_ writable!"
+X			fi
+X		done
+X	shift
+done
+X
+# end of script
+FOO_BAR
+chmod 0700 beta/chk_strings.old ||
+echo 'restore of beta/chk_strings.old failed'
+Wc_c="`wc -c < 'beta/chk_strings.old'`"
+test 1810 -eq "$Wc_c" ||
+	echo 'beta/chk_strings.old: original size 1810, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/death/1991_Jun_20 ==============
+if test ! -d 'beta/death'; then
+    echo 'x - creating directory beta/death'
+    mkdir 'beta/death'
+fi
+if test -f 'beta/death/1991_Jun_20' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/death/1991_Jun_20 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/death/1991_Jun_20 (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/death/1991_Jun_20' &&
+X
+ATTENTION:
+Security Report for Thu Jun 20 11:34:51 EDT 1991
+from host death.cert.sei.cmu.edu
+X
+X
+**** root.chk ****
+**** dev.chk ****
+**** is_able.chk ****
+Warning!  /usr/spool/mail is _World_ writable!
+Warning!  /usr/spool/uucp is _World_ writable!
+Warning!  /usr/etc/pty is _World_ writable!
+**** rc.chk ****
+**** cron.chk ****
+**** group.chk ****
+**** home.chk ****
+**** passwd.chk ****
+Warning!  Password file, line 2, user stroot has uid = 0 and is not root
+X	stroot:QXCAyBt4zMwoE:0:1:The root of all evil:/:/bin/csh
+**** user.chk ****
+**** misc.chk ****
+Warning! /usr/bin/uudecode creates setuid files!
+**** ftp.chk ****
+FOO_BAR
+chmod 0600 beta/death/1991_Jun_20 ||
+echo 'restore of beta/death/1991_Jun_20 failed'
+Wc_c="`wc -c < 'beta/death/1991_Jun_20'`"
+test 625 -eq "$Wc_c" ||
+	echo 'beta/death/1991_Jun_20: original size 625, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+rm -f _shar_seq_.tmp
+echo You have unpacked the last part
+exit 0

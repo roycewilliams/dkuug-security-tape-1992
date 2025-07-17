@@ -1,0 +1,34 @@
+From mojo!mimsy!haven!aplcen!uunet!pdn!tscs!tct!chip Fri May 18 15:48:50 EDT 1990
+Article: 22837 of comp.unix.questions:
+Xref: mojo comp.lang.c:27559 comp.unix.questions:22837
+Path: mojo!mimsy!haven!aplcen!uunet!pdn!tscs!tct!chip
+From: chip@tct.uucp (Chip Salzenberg)
+Newsgroups: comp.lang.c,comp.unix.questions
+Subject: Re: Controlling stdin and stdouts of other executables
+Message-ID: <26405616.54D3@tct.uucp>
+Date: 3 May 90 16:02:30 GMT
+References: <3967@hcx1.SSD.CSD.HARRIS.COM> <6418@star.cs.vu.nl> <1990May2.063730.5867@Neon.Stanford.EDU>
+Followup-To: comp.unix.questions
+Organization: ComDev/TCT, Sarasota, FL
+Lines: 18
+
+[Unix-specific; followups to comp.unix.questions]
+
+According to dkeisen@Gang-of-Four.Stanford.EDU (Dave Eisen):
+>system ("command > /dev/null 2>&1");
+
+Beware system().  It calls /bin/sh to do its dirty work, which is one
+reason it's so attractive to novice Unix programmers.  However, if
+anything in the command line is non-constant, then system() usally is
+a security hole.  Ignoring buffer size issues for the moment,
+consider:
+
+	sprintf(buf, "/usr/lib/sendmail -oem '%s' <%s", address, tempfile);
+	system(buf);
+
+Looks great, right?  But what if the address is "'; rm -rf $HOME; '"?
+Bzzt!  You lose the security sweepstakes.  I hope you have backups...
+-- 
+Chip Salzenberg at ComDev/TCT   <chip%tct@ateng.com>, <uunet!ateng!tct!chip>
+
+

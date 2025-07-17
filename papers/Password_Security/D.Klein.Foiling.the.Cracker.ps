@@ -1,0 +1,1247 @@
+%!PS-Adobe-2.1
+%%Creator: groff version 0.5
+%%DocumentFonts: TSymbol Troff Symbol-Slanted Times-Roman Times-Italic
+%%+ Times-Bold
+%%DocumentSuppliedFonts: TSymbol Troff Symbol-Slanted
+%%DocumentNeededFonts: Times-Roman Times-Italic Times-Bold
+%%Pages: 10
+%%EndComments
+/grops 100 dict def grops begin
+% If you add definitions here, be sure to check that MAX_PROLOGUE_DEFS
+% in ps.c is large enough.
+
+% The ASCII code of the space character.
+/SC 32 def
+
+/A /show load def
+/B { 0 SC 3 -1 roll widthshow } bind def
+/C { 0 exch ashow } bind def
+/D { 0 exch 0 SC 5 2 roll awidthshow } bind def
+/E { 0 rmoveto show } bind def
+/F { 0 rmoveto 0 SC 3 -1 roll widthshow } bind def
+/G { 0 rmoveto 0 exch ashow } bind def
+/H { 0 rmoveto 0 exch 0 SC 5 2 roll awidthshow } bind def
+/I { 0 exch rmoveto show } bind def
+/J { 0 exch rmoveto 0 SC 3 -1 roll widthshow } bind def
+/K { 0 exch rmoveto 0 exch ashow } bind def
+/L { 0 exch rmoveto 0 exch 0 SC 5 2 roll awidthshow } bind def
+/M { rmoveto show } bind def
+/N { rmoveto 0 SC 3 -1 roll widthshow } bind def
+/O { rmoveto 0 exch ashow } bind def
+/P { rmoveto 0 exch 0 SC 5 2 roll awidthshow } bind def
+/Q { moveto show } bind def 
+/R { moveto 0 SC 3 -1 roll widthshow } bind def
+/S { moveto 0 exch ashow } bind def
+/T { moveto 0 exch 0 SC 5 2 roll awidthshow } bind def
+
+% name size font SF -
+
+/SF {
+	findfont exch
+	[ exch dup 0 exch 0 exch neg 0 0 ] makefont
+	dup setfont
+	[ exch /setfont load ] cvx def
+} bind def
+
+% name a c d font MF
+
+/MF {
+	findfont
+	[ 5 2 roll
+	0 3 1 roll % b
+	neg 0 0 ] makefont
+	dup setfont
+	[ exch /setfont load ] cvx def
+} bind def
+
+	
+% BP -
+
+/BP {
+	/level0 save def
+	1 setlinecap
+	1 setlinejoin
+	72 RES div dup scale
+	LS {
+		90 rotate
+	} {
+		0 PL translate
+	} ifelse
+	1 -1 scale
+} bind def
+
+/EP {
+	level0 restore
+	showpage
+} bind def
+
+
+% centerx centery radius startangle endangle DA -
+
+/DA {
+	newpath arcn stroke
+} bind def
+
+% endx endy startx starty DL -
+% we round the endpoints of the line, so that parallel horizontal
+% and vertical lines will appear even
+
+/DL {
+	transform round exch round exch itransform
+	moveto
+	transform round exch round exch itransform
+	lineto stroke
+} bind def
+
+% centerx centery radius DC -
+
+/DC {
+	newpath 0 360 arc closepath
+} bind def
+
+
+/TM matrix def
+
+%  width height centerx centery DE -
+
+/DE {
+	TM currentmatrix pop
+	translate scale newpath 0 0 .5 0 360 arc closepath
+	TM setmatrix
+} bind def
+
+% these are for splines
+
+/RC /rcurveto load def
+/RL /rlineto load def
+/ST /stroke load def
+/MT /moveto load def
+/CL /closepath load def
+
+% fill the last path
+
+% amount FL -
+
+/FL {
+	currentgray exch setgray fill setgray
+} bind def
+
+% fill with the ``current color''
+
+/BL /fill load def
+
+/LW /setlinewidth load def
+% new_font_name encoding_vector old_font_name RE -
+
+/RE {
+	findfont
+	dup maxlength dict begin
+	{
+		1 index /FID ne { def } { pop pop } ifelse
+	} forall
+	/Encoding exch def
+	dup /FontName exch def
+	currentdict end definefont pop
+} bind def
+
+/BUF 255 string def
+
+% hpos vpos EXEC -
+% this reads the next line and executes it in a safe environment
+
+/EXEC {
+	moveto
+	currentfile BUF readline {
+		DEFS begin
+			cvx stopped {
+				handleerror
+			} if
+		end
+	} if
+} bind def
+
+% llx lly newwid wid newht ht newllx newlly -
+
+/PICTURE {
+	translate
+	div 3 1 roll div exch scale
+	neg exch neg exch translate
+	% set the graphics state to default values
+	0 setgray
+	0 setlinecap
+	1 setlinewidth
+	0 setlinejoin
+	10 setmiterlimit
+	[] 0 setdash
+	newpath
+} bind def
+/DEFS 1 dict def DEFS begin/u{.001 mul}bind def end end
+%%EndProlog
+%%BeginSetup
+grops begin/#copies 1 def/RES 72 def/PL 841.89 def/LS false def
+%%IncludeFont: Times-Roman
+%%IncludeFont: Times-Italic
+%%IncludeFont: Times-Bold
+%%BeginFont: TSymbol
+/Symbol findfont
+dup length 1 add dict /newdict exch def {
+	1 index /FID ne {
+		newdict 3 1 roll put
+	} {
+		pop pop
+	} ifelse
+} forall
+
+7 dict begin
+	/radicalex [-69 541] def
+	/parenlefttp 490 def
+	/parenleftbt 490 def
+	/parenleftex 490 def
+	/parenrighttp 490 def
+	/parenrightbt 490 def
+	/parenrightex 490 def
+	newdict /Metrics currentdict put
+end
+
+/TSymbol newdict definefont pop
+%%EndFont
+%%BeginFont: Troff
+% Troff.ps
+% a little font with some special Troff characters
+
+/Troff 12 dict dup begin
+
+/StrokeWidth 45 def
+/StrokeWidth2 StrokeWidth 2 div def
+%/UniqueID 1729 def
+/FontType 3 def
+/FontMatrix [ .001 0 0 .001 0 0 ] def
+/FontName /Troff def
+
+/FontInfo 1 dict dup begin
+	/Notice (Copyright (c) 1989 Free Software Foundation, Inc) def	
+end def
+
+/FontBBox [
+	StrokeWidth2 neg
+	StrokeWidth2 neg 250 sub
+	StrokeWidth2 600 add
+	StrokeWidth2 750 add	
+] def
+
+/CharStrings 7 dict dup begin
+	/sq [
+		600
+		0
+		50 StrokeWidth2 sub
+		StrokeWidth2 neg
+		StrokeWidth2 500 add
+		dup
+		{
+			50 0 moveto 500 0 rlineto 
+			0 500 rlineto -500 0 rlineto
+			closepath stroke
+		} bind
+	] def
+
+	/ru [ 
+		500 
+		0
+		StrokeWidth2 neg
+		dup
+		StrokeWidth2 500 add
+		StrokeWidth2
+		{ 0 0 moveto 500 0 rlineto stroke } bind
+	] def
+
+	/rn [
+		500
+		0
+		StrokeWidth2 neg
+		dup 750 add
+		StrokeWidth2 500 add
+		StrokeWidth2 750 add
+		{ 0 750 moveto 500 0 rlineto stroke } bind
+	] def
+
+	/ul [
+		500
+		0
+		StrokeWidth2 neg
+		dup 250 sub
+		StrokeWidth2 500 add
+		StrokeWidth2 250 sub
+		{ 0 -250 moveto 500 0 rlineto stroke } bind
+	] def
+
+	/br [
+		0
+		0
+		StrokeWidth2 neg
+		dup 250 sub
+		StrokeWidth2 2 div
+		dup 750 add
+		{ 0 -250 moveto 0 1000 rlineto stroke } bind
+	] def
+
+	/space [ 250 0 0 0 0 0 { } ] def
+
+	/.notdef space def
+end def
+
+/Encoding 256 array def
+0 1 255 {
+	Encoding exch /.notdef put
+} for
+Encoding
+	dup 8#040 /space put
+	dup 8#163 /sq put
+	dup 8#162 /ru put
+	dup 8#156 /rn put
+	dup 8#142 /br put
+	dup 8#165 /ul put
+pop
+
+/BuildChar {
+	exch begin
+		Encoding exch get CharStrings exch get
+		dup 0 6 getinterval aload pop setcachedevice
+		StrokeWidth setlinewidth
+		1 setlinecap
+		6 get exec
+	end
+} bind def
+
+end definefont pop
+%%EndFont
+%%BeginFont: Symbol-Slanted
+% newfontname matrix oldfontname MakeTransformedFont
+
+/MakeTransformedFont {
+	findfont dup maxlength dict begin
+		{
+			exch dup dup /FID ne exch /UniqueID ne and {
+				exch def
+			} {
+				pop pop
+			} ifelse
+		} forall
+		% first copy FontBBox
+		/FontBBox 
+		% FontBBox sometimes seems to have the executable
+		% attribute set
+		% so to get the array on the stack, we have to do this
+		currentdict /FontBBox get
+		4 array copy def
+		% now transform it
+		FontBBox aload pop
+		4 index transform 4 2 roll
+		4 index transform 4 2 roll
+		FontBBox astore pop
+		% matrix
+		% now transform FontMatrix
+		FontMatrix exch matrix concatmatrix
+		/FontMatrix exch def
+		dup /FontName exch def
+	currentdict end
+	definefont pop
+} bind def
+
+
+/Symbol-Slanted
+[.89 0.0 15.5 dup sin exch cos div .89 0.0 0.0]
+/Symbol
+MakeTransformedFont
+%%EndFont
+/ENC0[/asciicircum/asciitilde/Scaron/Zcaron/scaron/zcaron/Ydieresis/trademark
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/space/exclam/quotedbl
+/numbersign/dollar/percent/ampersand/quoteright/parenleft/parenright/asterisk
+/plus/comma/hyphen/period/slash/zero/one/two/three/four/five/six/seven/eight
+/nine/colon/semicolon/less/equal/greater/question/at/A/B/C/D/E/F/G/H/I/J/K/L/M
+/N/O/P/Q/R/S/T/U/V/W/X/Y/Z/bracketleft/backslash/bracketright/circumflex
+/underscore/quoteleft/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z
+/braceleft/bar/braceright/tilde/.notdef/quotesinglbase/guillemotleft
+/guillemotright/bullet/florin/fraction/perthousand/dagger/daggerdbl/endash
+/emdash/ff/fi/fl/ffi/ffl/dotlessi/dotlessj/grave/hungarumlaut/dotaccent/breve
+/caron/ring/ogonek/quotedblleft/quotedblright/oe/lslash/quotedblbase/OE/Lslash
+/.notdef/exclamdown/cent/sterling/currency/yen/brokenbar/section/dieresis
+/copyright/ordfeminine/guilsinglleft/logicalnot/minus/registered/macron/degree
+/plusminus/twosuperior/threesuperior/acute/mu/paragraph/periodcentered/cedilla
+/onesuperior/ordmasculine/guilsinglright/onequarter/onehalf/threequarters
+/questiondown/Agrave/Aacute/Acircumflex/Atilde/Adieresis/Aring/AE/Ccedilla
+/Egrave/Eacute/Ecircumflex/Edieresis/Igrave/Iacute/Icircumflex/Idieresis/Eth
+/Ntilde/Ograve/Oacute/Ocircumflex/Otilde/Odieresis/multiply/Oslash/Ugrave
+/Uacute/Ucircumflex/Udieresis/Yacute/Thorn/germandbls/agrave/aacute/acircumflex
+/atilde/adieresis/aring/ae/ccedilla/egrave/eacute/ecircumflex/edieresis/igrave
+/iacute/icircumflex/idieresis/eth/ntilde/ograve/oacute/ocircumflex/otilde
+/odieresis/divide/oslash/ugrave/uacute/ucircumflex/udieresis/yacute/thorn
+/ydieresis]def/Times-Roman@0 ENC0/Times-Roman RE/Times-Italic@0 ENC0
+/Times-Italic RE/Times-Bold@0 ENC0/Times-Bold RE
+%%EndSetup
+%%Page: 1 1
+BP/F0 12/Times-Bold@0 SF -.888(``)228.462 123 S(Foiling the Cracker).888 E
+-.888('').216 G(:).888 E 3(AS)146.786 138 S(urvey of, and Impr)165.122 138 Q
+(ovements to, Password Security)-.216 E/F1 10/Times-Bold@0 SF<87>424.214 132 Q
+/F2 10/Times-Italic@0 SF(Daniel V)257.395 162 Q 2.5(.K)-1.29 G(lein)303.605 162
+Q/F3 10/Times-Roman@0 SF(Software Engineering Institute)226.62 180 Q
+(Carnegie Mellon University)231.895 192 Q(Pittsbur)244.1 204 Q(gh, P)-.18 E 5
+(A1)-.92 G(5217)311.9 204 Q(dvk@sei.cmu.edu)252.01 216 Q(+1 412 268 7791)253.93
+228 Q F2(ABSTRACT)264.385 264 Q F3 -.4(Wi)133 288 S .966(th the rapid bur).4 F
+.965(geoning of national and international networks, the question of)-.18 F
+.353(system security has become one of growing importance.)108 300 R .353
+(High speed inter)5.353 F .353(-machine com-)-.2 F .006(munication and even hi\
+gher speed computational processors have made the threats of sys-)108 312 R
+1.381(tem `)108 324 R(`crackers,')-.74 E 3.881('d)-.74 G 1.381
+(ata theft, data corruption very real.)183.412 324 R 1.382
+(This paper outlines some of the)6.382 F 1.595(problems of current password se\
+curity by demonstrating the ease by which individual)108 336 R 1.094
+(accounts may be broken.)108 348 R -1.11(Va)6.094 G 1.094
+(rious techniques used by crackers are outlined, and \214nally)1.11 F 1.003
+(one solution to this point of system vulnerability)108 360 R 3.502(,ap)-.65 G
+1.002(roactive password checker)327.492 360 R 3.502(,i)-.4 G 3.502(sp)443.948
+360 S(ro-)456.34 360 Q(posed.)108 372 Q F1 2.5(1. Intr)72 408 R(oduction)-.18 E
+F3 .811(The security of accounts and passwords has always been a concern for t\
+he developers and users of Unix.)72 423.6 R 2.577(When Unix was younger)72
+435.6 R 5.077(,t)-.4 G 2.576
+(he password encryption algorithm was a simulation of the M-209 cipher)189.388
+435.6 R .245(machine used by the U.S. Army during W)72 447.6 R .245(orld W)-.8
+F .245(ar II)-.8 F 2.745([Morris1979]. This)2.5 F .246
+(was a fair encryption mechanism)2.746 F .441(in that it was dif)72 459.6 R
+.441(\214cult to invert under the proper circumstances, but suf)-.18 F .44
+(fered in that it was too fast an algo-)-.18 F 4.326(rithm. On)72 471.6 R 4.326
+(aP)4.326 G(DP-1)133.868 471.6 Q 1.827(1/70, each encryption took approximatel\
+y 1.25ms, so that it was possible to check)-.37 F .467
+(roughly 800 passwords/second.)72 483.6 R .466
+(Armed with a dictionary of 250,000 words, a cracker could compare their)5.467
+F .433(encryptions with those all stored in the password \214le in a little mo\
+re than \214ve minutes.)72 495.6 R(Clearly)5.433 E 2.934(,t)-.65 G .434
+(his was a)466.472 495.6 R(security hole worth \214lling.)72 507.6 Q .584
+(In later \(post-1976\) versions of Unix, the DES algorithm)72 523.2 R .583
+([DES1975] was used to encrypt passwords.)2.5 F(The)5.583 E -2.13(user ')72
+535.2 R 3.031(sp)-.55 G .531(assword is used as the DES key)103.731 535.2 R
+3.031(,a)-.65 G .532(nd the algorithm is used to encrypt a constant.)242.888
+535.2 R .532(The algorithm is)5.532 F 1.244
+(iterated 25 times, with the result being an 1)72 547.2 R 3.744(1c)-.37 G 1.244
+(haracter string plus a 2-character `)267.808 547.2 R(`salt.')-.74 E 6.244('T)
+-.74 G 1.244(his method is)448.172 547.2 R .314(similarly dif)72 559.2 R .315(\
+\214cult to decrypt \(further complicated through the introduction of one of 4\
+096 possible salt val-)-.18 F 1.489
+(ues\) and had the added advantage of being slow)72 571.2 R 6.488(.O)-.65 G
+3.988(na)291.086 571.2 S/F4 10/Symbol-Slanted SF(m)A F3 -1.29(VA)C 1.488
+(X-II \(a machine substantially faster than a)1.29 F(PDP-1)72 583.2 Q .553(1/7\
+0\), a single encryption takes on the order of 280ms, so that a determined cra\
+cker can only check)-.37 F .345(approximately 3.6 encryptions a second.)72
+595.2 R .345(Checking this same dictionary of 250,000 words would now take)
+5.345 F .254(over 19)72 607.2 R F2(hours)2.754 E F3 .254(of CPU time.)2.754 F
+.255(Although this is still not very much time to break a single account, ther\
+e is no)5.255 F .054
+(guarantee that this account will use one of these words as a password.)72
+619.2 R .053(Checking the passwords on a system)5.053 F .236
+(with 50 accounts would take on average 40 CPU)72 631.2 R F2(days)2.736 E F3
+.237(\(since the random selection of salt values practically)2.737 F .398
+(guarantees that each user)72 643.2 R 1.498 -.55('s p).37 H .398
+(assword will be encrypted with a dif).55 F .397
+(ferent salt\), with no guarantee of success.)-.18 F .486(If this new)72 655.2
+R 2.986(,s)-.65 G .487(low algorithm was combined with the user education need\
+ed to prevent the selection of obvi-)124.468 655.2 R
+(ous passwords, the problem seemed solved.)72 667.2 Q(Regrettably)72 682.8 Q
+3.141(,t)-.65 G .641(wo recent developments and the recurrence of an old one h\
+ave brought the problem of pass-)126.431 682.8 R
+(word security back to the fore.)72 694.8 Q/F5 8/Troff SF(rrrrrrrrrrrrrrrrrr)72
+704.8 Q/F6 8/Times-Roman@0 SF 4<8754>82 716.6 S
+(his work was sponsored in part by the U.S. Department of Defense.)94.888 716.6
+Q EP
+%%Page: 2 2
+BP/F0 10/Times-Roman@0 SF 2.5(-2-)279.67 48 S 14.17(1\) CPU)97 84 R 1.318(spee\
+ds have gotten increasingly faster since 1976, so much so that processors that\
+ are)3.817 F 1.265(25-40 times faster than the PDP-1)122 96 R 1.264
+(1/70 \(e.g., the DECstation 3100 used in this research\) are)-.37 F .191
+(readily available as desktop workstations.)122 108 R -.4(Wi)5.191 G .191
+(th inter).4 F .191(-networking, many sites have hundreds of)-.2 F .831
+(the individual workstations connected together)122 120 R 3.331(,a)-.4 G .831
+(nd enterprising crackers are discovering that)322.395 120 R .116(the `)122 132
+R .116(`divide and conquer)-.74 F 1.596 -.74('' a).37 H .116
+(lgorithm can be extended to multiple processors, especially at night).74 F
+.052(when those processors are not otherwise being used.)122 144 R .051
+(Literally thousands of times the computa-)5.051 F
+(tional power of 10 years ago can be used to break passwords.)122 156 Q 14.17
+(2\) New)97 171.6 R .585(implementations of the DES encryption algorithm have \
+been developed, so that the time)3.084 F .303(it takes to encrypt a password a\
+nd compare the encryption against the value stored in the pass-)122 183.6 R
+.867(word \214le has dropped below the 1ms mark)122 195.6 R -.834
+([Bishop1988, Feldmeier1989].)2.5 F .868(On a single work-)5.868 F .563(statio\
+n, the dictionary of 250,000 words can once again be cracked in under \214ve m\
+inutes.)122 207.6 R(By)5.563 E 2.322(dividing the work across multiple worksta\
+tions, the time required to encrypt these words)122 219.6 R 1.044
+(against all 4096 salt values could be no more than an hour or so.)122 231.6 R
+-.4(Wi)6.043 G 1.043(th a recently described).4 F .049(hardware implementation\
+ of the DES algorithm, the time for each encryption can be reduced to)122 243.6
+R .961(approximately 6)122 255.6 R/F1 10/Symbol-Slanted SF(m)3.461 E F0 2.5(s[)
+C 3.461(Leong1991]. This)206.542 255.6 R .961
+(means that this same dictionary can be be cracked in)3.461 F
+(only 1.5 seconds.)122 267.6 Q 14.17(3\) Users)97 283.2 R .497(are rarely)2.997
+F 2.997(,i)-.65 G 2.997(fe)193.921 283.2 S(ver)204.688 283.2 Q 2.997(,e)-.4 G
+.497(ducated as to what are wise choices for passwords.)226.995 283.2 R .497
+(If a password is)5.497 F .067(in a dictionary)122 295.2 R 2.567(,i)-.65 G
+2.567(ti)187.101 295.2 S 2.566(se)195.228 295.2 S .066
+(xtremely vulnerable to being cracked, and users are simply not coached as)
+206.124 295.2 R .459(to `)122 307.2 R(`safe')-.74 E 2.959('c)-.74 G .459
+(hoices for passwords.)168.078 307.2 R .459
+(Of those users who are so educated, many think that simply)5.459 F .272
+(because their password is not in)122 319.2 R/F2 10/Times-Italic@0 SF
+(/usr/dict/wor)2.771 E(ds)-.37 E F0 2.771(,i)C 2.771(ti)321.862 319.2 S 2.771
+(ss)330.193 319.2 S .271(afe from detection.)340.744 319.2 R .271
+(Many users also say)5.271 F .112(that because they do not have any private \
+\214les on-line, they are not concerned with the security)122 331.2 R .388(of \
+their account, little realizing that by providing an entry point to the system\
+ they allow dam-)122 343.2 R
+(age to be wrought on their entire system by a malicious cracker)122 355.2 Q(.)
+-.55 E .189(Because the entirety of the password \214le is readable by all use\
+rs, the encrypted passwords are vulnerable to)72 370.8 R .258
+(cracking, both on-site and of)72 382.8 R 2.758(f-site. Many)-.18 F .257
+(sites have responded to this threat with a reactive solution \255 they)2.758 F
+.205(scan their own password \214les and advise those users whose passwords th\
+ey are able to crack.)72 394.8 R .205(The problem)5.205 F .432
+(with this solution is that while the local site is testing its security)72
+406.8 R 2.931(,t)-.65 G .431(he password \214le is still vulnerable from)
+343.094 406.8 R .33(the outside.)72 418.8 R .33(The other problems, of course,\
+ are that the testing is very time consuming and only reports on)5.33 F .182
+(those passwords it is able to crack.)72 430.8 R .181
+(It does nothing to address user passwords which fall outside of the spe-)5.182
+F .244(ci\214c test cases \(e.g., it is possible for a user to use as a passwo\
+rd the letters `)72 442.8 R(`qwerty')-.74 E 2.745('\255i)-.74 G 2.745(ft)430.73
+442.8 S .245(his combination)439.585 442.8 R .523
+(is not in the in-house test dictionary)72 454.8 R 3.023(,i)-.65 G 3.023(tw)
+226.121 454.8 S .523
+(ill not be detected, but there is nothing to stop an outside cracker)239.144
+454.8 R(from having a more sophisticated dictionary!\).)72 466.8 Q(Clearly)72
+482.4 Q 3.293(,o)-.65 G .794(ne solution to this is to either make)111.583
+482.4 R F2(/etc/passwd)3.294 E F0 .794
+(unreadable, or to make the encrypted password)3.294 F .973
+(portion of the \214le unreadable.)72 494.4 R .972
+(Splitting the \214le into two pieces \255 a readable)5.972 F F2(/etc/passwd)
+3.472 E F0 .972(with all but the)3.472 F .024
+(encrypted password present, and a `)72 506.4 R .024(`shadow password')-.74 F
+2.524<278c>-.74 G .024(le that is only readable by)302.848 506.4 R/F3 10
+/Times-Bold@0 SF -.18(ro)2.524 G(ot).18 E F0 .025(is the solution pro-)2.524 F
+.263(posed by Sun Microsystems \(and others\) that appears to be gaining popul\
+arity)72 518.4 R 5.263(.I)-.65 G 2.763(ts)397.248 518.4 S .263(eems, however)
+406.681 518.4 R 2.763(,t)-.4 G .263(hat this)474.567 518.4 R .399(solution wil\
+l not reach the majority of non-Sun systems for quite a while, nor even, in fa\
+ct, many Sun sys-)72 530.4 R
+(tems, due to many sites' reluctance to install new releases of software.)72
+542.4 Q/F4 7/Times-Roman@0 SF<87>-3.5 I F0 .932
+(What I propose, therefore, is a publicly available)72 558 R F2(pr)3.432 E
+(oactive)-.37 E F0 .932(password checker)3.432 F 3.432(,w)-.4 G .932
+(hich will enable users to)403.062 558 R .407
+(change their passwords, and to check)72 570 R F2 2.908(ap)2.907 G(riori)238.7
+570 Q F0 .408(whether the new password is `)2.908 F(`safe.')-.74 E 5.408('T)
+-.74 G .408(he criteria for safety)421.976 570 R .607
+(should be tunable on a per)72 582 R .607
+(-site basis, depending on the degree of security desired.)-.2 F .607
+(For example, it should)5.607 F .039(be possible to specify a minimum length p\
+assword, a restriction that only lower case letters are not allowed,)72 594 R
+.022(that a password that looks like a license plate be illegal, and so on.)72
+606 R .021(Because this proactive checker will deal)5.021 F 1.175(with the pre\
+-encrypted passwords, it will be able to perform more sophisticated pattern ma\
+tching on the)72 618 R 2.053(password, and will be able to test the safety wit\
+hout having to go through the ef)72 630 R 2.053(fort of cracking the)-.18 F
+.183(encrypted version.)72 642 R .183
+(Because the checking will be done automatically)5.183 F 2.683(,t)-.65 G .184
+(he process of education can be trans-)355.167 642 R
+(ferred to the machine, which will instruct the user)72 654 Q F2(why)2.5 E F0
+2.5(ap)2.5 G(articular choice of password is bad.)304.18 654 Q/F5 8/Troff SF
+(rrrrrrrrrrrrrrrrrr)72 676.2 Q/F6 8/Times-Roman@0 SF 4<8754>82 688 S .037
+(he problem of lack of password security is not just endemic to Unix.)94.888
+688 R 2.036(Ar)4.036 G .036(ecent V)328.704 688 R .036
+(ax/VMS worm had great success by)-.888 F .039
+(simply trying the username as the password.)72 698 R .04(Even though the VMS \
+user authorization \214le is inaccessible to ordinary users,)4.039 F
+(the cracker simply tried a number of `)72 708 Q(`obvious')-.592 E 2('p)-.592 G
+(assword choices \255 and easily gained access.)231.224 708 Q EP
+%%Page: 3 3
+BP/F0 10/Times-Roman@0 SF 2.5(-3-)279.67 48 S/F1 10/Times-Bold@0 SF 2.5
+(2. Password)72 84 R -.92(Vu)2.5 G(lnerability).92 E F0 .17(It has long been k\
+nown that all a cracker need do to acquire access to a Unix machine is to foll\
+ow two sim-)72 99.6 R(ple steps, namely:)72 111.6 Q 14.17(1\) Acquire)97 127.2
+R 3.915(ac)3.915 G 1.415(opy of that site')170.92 127.2 R(s)-.55 E/F2 10
+/Times-Italic@0 SF(/etc/passwd)3.916 E F0 1.416
+(\214le, either through an unprotected)3.916 F F2(uucp)3.916 E F0 1.416
+(link, well)3.916 F(known holes in)122 139.2 Q F2(sendmail)2.5 E F0 2.5(,o)C
+2.5(rv)231.72 139.2 S(ia)242.55 139.2 Q F2(ftp)2.5 E F0(or)2.5 E F2(tftp)2.5 E
+F0(.)A 14.17(2\) Apply)97 154.8 R .266(the standard \(or a sped-up\) version o\
+f the password encryption algorithm to a collection)2.767 F 1.403
+(of words, typically)122 166.8 R F2(/usr/dict/wor)3.903 E(ds)-.37 E F0 1.403
+(plus some permutations on account and user names, and)3.903 F
+(compare the encrypted results to those found in the purloined)122 178.8 Q F2
+(/etc/passwd)2.5 E F0(\214le.)2.5 E .754(If a match is found \(and often at le\
+ast one will be found\), the cracker has access to the tar)72 194.4 R .753
+(geted machine.)-.18 F(Certainly)72 206.4 Q 2.915(,t)-.65 G .415
+(his mode of attack has been known for some time)116.765 206.4 R([Spaf)2.5 E
+.416(ford1988], and the defenses against this)-.18 F .023
+(attack have also long been known.)72 218.4 R .023
+(What is lacking from the literature is an accounting of just how vulnera-)
+5.023 F .992(ble sites are to this mode of attack.)72 230.4 R .992
+(In short, many people know that there is a problem, but few people)5.992 F
+(believe it applies to them.)72 242.4 Q -.74(``)72 258 S .002(There is a \214n\
+e line between helping administrators protect their systems and providing a co\
+okbook for bad).74 F(guys.')72 270 Q 2.5('[)-.74 G .281(Grampp1984] The proble\
+m here, therefore, is how to divulge useful information on the vulnerabil-)
+105.14 270 R 1.016(ity of systems, without providing too much information, sin\
+ce almost certainly this information could be)72 282 R .059
+(used by a cracker to break into some as-yet unviolated system.)72 294 R .06
+(Most of the work that I did was of a general)5.06 F .36(nature \255 I did not\
+ focus on a particular user or a particular system, and I did not use any pers\
+onal informa-)72 306 R .038
+(tion that might be at the disposal of a dedicated `)72 318 R .038(`bad guy)
+-.74 F(.')-.65 E 5.038('T)-.74 G .038
+(hus any results which I have been able to gar)320.846 318 R(-)-.2 E .704(ner \
+indicate only general trends in password usage, and cannot be used to great ad\
+vantage when breaking)72 330 R .445(into a particular system.)72 342 R .446(Th\
+is generality notwithstanding, I am sure that any self-respecting cracker woul\
+d)5.445 F .291(already have these techniques at their disposal, and so I am no\
+t bringing to light any great secret.)72 354 R(Rather)5.291 E 2.791(,I)-.4 G
+.154(hope to provide a basis for protection for systems that can guard against\
+ future attempts at system invasion.)72 366 R F1 2.5(2.1. The)72 390 R
+(Survey and Initial Results)2.5 E F0 1.497(In October and again in December of\
+ 1989, I asked a number of friends and acquaintances around the)72 405.6 R .39
+(United States and Great Britain to participate in a survey)72 417.6 R 5.391
+(.E)-.65 G .391(ssentially what I asked them to do was to mail)315.771 417.6 R
+.324(me a copy of their)72 429.6 R F2(/etc/passwd)2.824 E F0 .323(\214le, and \
+I would try to crack their passwords \(and as a side bene\214t, I would)2.824 F
+.438(send them a report of the vulnerability of their system, although at no t\
+ime would I reveal individual pass-)72 441.6 R .072
+(words nor even of their sites participation in this study\).)72 453.6 R .072
+(Not surprisingly)5.072 F 2.572(,d)-.65 G .071
+(ue to the sensitive nature of this)376.364 453.6 R .215(type of disclosure, I\
+ only received a small fraction of the replies I hoped to get, but was nonethe\
+less able to)72 465.6 R 1.03
+(acquire a database of nearly 15,000 account entries.)72 477.6 R 1.029
+(This, I hoped, would provide a representative cross)6.029 F
+(section of the passwords used by users in the community)72 489.6 Q(.)-.65 E
+.224(Each of the account entries was tested by a number of intrusion strategie\
+s, which will be covered in greater)72 505.2 R .836
+(detail in the following section.)72 517.2 R .835
+(The possible passwords that were tried were based on the user)5.836 F 1.935
+-.55('s n).37 H .835(ame or).55 F .229(account number)72 529.2 R 2.729(,t)-.4 G
+.229(aken from numerous dictionaries \(including some containing foreign words\
+, phrases, pat-)143.988 529.2 R 1.156(terns of keys on the keyboard, and enume\
+rations\), and from permutations and combinations of words in)72 541.2 R .451
+(those dictionaries.)72 553.2 R .451(All in all, after nearly 12 CPU months of\
+ rather exhaustive testing, approximately 25%)5.451 F .873
+(of the passwords had been guessed.)72 565.2 R .872
+(So that you do not develop a false sense of security too early)5.873 F 3.372
+(,Ia)-.65 G(dd)494 565.2 Q .049(that 21% \(nearly 3,000 passwords\) were guess\
+ed in the \214rst week, and that in the \214rst 15 minutes of testing,)72 577.2
+R 1.051(368 passwords \(or 2.7%\) had been cracked using what experience has s\
+hown would be the most fruitful)72 589.2 R .073
+(line of attack \(i.e., using the user or account names as passwords\).)72
+601.2 R .074(These statistics are frightening, and well)5.074 F .716
+(they should be.)72 613.2 R .716(On an average system with 50 accounts in the)
+5.716 F F2(/etc/passwd)3.215 E F0 .715(\214le, one could expect the \214rst)
+3.215 F 1.031(account to be cracked in under 2 minutes, with 5\25515 accounts \
+being cracked by the end of the \214rst day)72 625.2 R(.)-.65 E 1.314
+(Even though the)72 637.2 R F1 -.18(ro)3.814 G(ot).18 E F0 1.314(account may n\
+ot be cracked, all it takes is one account being compromised for a)3.814 F .109
+(cracker to establish a toehold in a system.)72 649.2 R .11
+(Once that is done, any of a number of other well-known security)5.109 F .282(\
+loopholes \(many of which have been published on the network\) can be used to \
+access or destroy any infor)72 661.2 R(-)-.2 E(mation on the machine.)72 673.2
+Q 1.101(It should be noted that the results of this testing do not give us any\
+ indication as to what the)72 688.8 R F2(uncracked)3.602 E F0 1.074
+(passwords are.)72 700.8 R(Rather)6.074 E 3.574(,i)-.4 G 3.574(to)173.132 700.8
+S 1.073(nly tells us what was essentially already known \255 that users are li\
+kely to use)184.486 700.8 R 1.416
+(words that are familiar to them as their passwords)72 712.8 R 3.917
+([Riddle1989]. What)2.5 F 1.417(new information it did provide,)3.917 F
+(however)72 724.8 Q 4.48(,w)-.4 G 1.98(as the)120.23 724.8 R F2(degr)4.48 E(ee)
+-.37 E F0 1.98
+(of vulnerability of the systems in question, as well as providing a basis for)
+4.48 F EP
+%%Page: 4 4
+BP/F0 10/Times-Roman@0 SF 2.5(-4-)279.67 48 S .369(developing a proactive pass\
+word changer \255 a system which pre-checks a password before it is entered in\
+to)72 84 R .389(the system, to determine whether that password will be vulnera\
+ble to this type of attack.)72 96 R .388(Passwords which)5.388 F .654
+(can be derived from a dictionary are clearly a bad idea)72 108 R .654
+([Alvare1988], and users should be prevented from)2.5 F .177(using them.)72 120
+R .176(Of course, as part of this censoring process, users should also be told)
+5.177 F/F1 10/Times-Italic@0 SF(why)2.676 E F0 .176(their proposed pass-)2.676
+F(word is not good, and what a good class of password would be.)72 132 Q .809(\
+As to those passwords which remain unbroken, I can only conclude that these ar\
+e much more secure and)72 147.6 R -.74(``)72 159.6 S(safe').74 E 2.63('t)-.74 G
+.13(han those to be found in my dictionaries.)105.35 159.6 R .129
+(One such class of passwords is word pairs, where a pass-)5.13 F .197
+(word consists of two short words, separated by a punctuation character)72
+171.6 R 5.197(.E)-.55 G .197(ven if only words of 3 to 5 lower)370.774 171.6 R
+.446(case characters are considered,)72 183.6 R F1(/usr/dict/wor)2.946 E(ds)
+-.37 E F0 .445(provides 3000 words for pairing.)2.946 F .445
+(When a single intermedi-)5.445 F .644(ary punctuation character is introduced\
+, the sample size of 90,000,000 possible passwords is rather daunt-)72 195.6 R
+2.507(ing. On)72 207.6 R 2.507(aD)2.507 G .007(ECstation 3100, testing each of\
+ these passwords against that of a single user would require over)121.181 207.6
+R .418(25 CPU)72 219.6 R F1(hours)2.918 E F0 2.918<ad61>2.918 G .418(nd even t\
+hen, no guarantee exists that this is the type of password the user chose.)
+145.982 219.6 R(Intro-)5.418 E .096(ducing one or two upper case characters in\
+to the password raises the search set size to such magnitude as to)72 231.6 R
+(make cracking untenable.)72 243.6 Q .934(Another `)72 259.2 R(`safe')-.74 E
+3.434('p)-.74 G .934(assword is one constructed from the initial letters of an\
+ easily remembered, but not too)144.578 259.2 R .112(common phrase.)72 271.2 R
+.112(For example, the phrase `)5.112 F .112
+(`Unix is a trademark of Bell Laboratories')-.74 F 2.612('c)-.74 G .111
+(ould give rise to the)424.116 271.2 R 1.182(password `)72 283.2 R(`UiatoBL.')
+-.74 E 6.182('T)-.74 G 1.182(his essentially creates a password which is a ran\
+dom string of upper and lower)175.084 283.2 R 1.749(case letters.)72 295.2 R
+1.749(Exhaustively searching this list at 1000 tests per second with only 6 ch\
+aracter passwords)6.749 F 1.033(would take nearly 230 CPU days.)72 307.2 R
+1.033(Increasing the phrase size to 7 character passwords makes the testing)
+6.033 F .461(time over 32 CPU)72 319.2 R F1(years)2.961 E F0 2.961(\255aH)2.961
+G .46
+(erculean task that even the most dedicated cracker with huge computational)
+196.687 319.2 R(resources would shy away from.)72 331.2 Q .66
+(Thus, although I don')72 346.8 R 3.16(tk)-.18 G .661(now what passwords were \
+chosen by those users I was unable to crack, I can say)171.4 346.8 R 1.426(wit\
+h some surety that it is doubtful that anyone else could crack them in a reaso\
+nable amount of time,)72 358.8 R(either)72 370.8 Q(.)-.55 E/F2 10/Times-Bold@0
+SF 2.5(2.2. Method)72 394.8 R(of Attack)2.5 E F0 3.418(An)72 410.4 S .918(umbe\
+r of techniques were used on the accounts in order to determine if the passwor\
+ds used for them)87.638 410.4 R .85(were able to be compromised.)72 422.4 R
+2.25 -.7(To s)5.85 H .849
+(peed up testing, all passwords with the same salt value were grouped).7 F
+(together)72 434.4 Q 6.014(.T)-.55 G 1.014(his way)118.844 434.4 R 3.514(,o)
+-.65 G 1.014(ne encryption per password per salt value could be performed, wit\
+h multiple string)161.052 434.4 R 1.378(comparisons to test for matches.)72
+446.4 R 1.378
+(Rather than considering 15,000 accounts, the problem was reduced to)6.378 F
+(4,000 salt values.)72 458.4 Q(The password tests were as follows:)5 E 14.17
+(1\) T)97 474 R .364(ry using the user)-.35 F 1.464 -.55('s n).37 H .364
+(ame, initials, account name, and other relevant personal information as a).55
+F .482(possible password.)122 486 R .482(All in all, up to 130 dif)5.482 F .482
+(ferent passwords were tried based on this informa-)-.18 F 2.593(tion. For)122
+498 R .093(an account name)2.593 F F2(klone)2.594 E F0 .094
+(with a user named `)2.594 F .094(`Daniel V)-.74 F 2.594(.K)-1.29 G(lein,')
+386.884 498 Q 2.594('s)-.74 G .094(ome of the passwords)416.788 498 R 2.392(th\
+at would be tried were: klone, klone0, klone1, klone123, dvk, dvkdvk, dklein, \
+DKlein,)122 510 R(leinad, nielk, dvklein, danielk, DvkkvD, DANIEL-KLEIN, \(klo\
+ne\), KleinD, etc.)122 522 Q 14.17(2\) T)97 537.6 R .461
+(ry using words from various dictionaries.)-.35 F .462
+(These included lists of men')5.461 F 2.962(sa)-.55 G .462(nd women')426.416
+537.6 R 2.962(sn)-.55 G(ames)483.45 537.6 Q 3.839
+(\(some 16,000 in all\); places \(including permutations so that `)122 549.6 R
+(`spain,')-.74 E 6.339('`)-.74 G(`spanish,')441.471 549.6 Q 6.339('a)-.74 G(nd)
+494 549.6 Q -.74(``)122 561.6 S(spaniard').74 E 3.493('w)-.74 G .993(ould all \
+be considered\); names of famous people; cartoons and cartoon charac-)178.433
+561.6 R .866(ters; titles, characters, and locations from \214lms and science \
+\214ction stories; mythical creatures)122 573.6 R 1.481
+(\(garnered from Bul\214nch')122 585.6 R 3.981(sm)-.55 G 1.481
+(ythology and dictionaries of mythical beasts\); sports \(including)240.593
+585.6 R 1.423(team names, nicknames, and specialized terms\); numbers \(both a\
+s numerals \255 `)122 597.6 R(`2001,')-.74 E 3.923('a)-.74 G(nd)494 597.6 Q
+.112(written out \255 `)122 609.6 R(`twelve')-.74 E .112
+('\); strings of letters and numbers \( `)-.74 F(`a,')-.74 E 2.612('`)-.74 G
+(`aa,')375.112 609.6 Q 2.612('`)-.74 G(`aaa,')400.944 609.6 Q 2.612('`)-.74 G
+(`aaaa,')431.216 609.6 Q 2.612('e)-.74 G .112(tc.\); Chi-)467.778 609.6 R 1.165
+(nese syllables \(from the Pinyin Romanization of Chinese, a international sta\
+ndard system of)122 621.6 R 1.372(writing Chinese on an English keyboard\); th\
+e King James Bible; biological terms; common)122 633.6 R .268
+(and vulgar phrases \(such as `)122 645.6 R(`fuckyou,')-.74 E 2.768('`)-.74 G
+(`ibmsux,')288.28 645.6 Q 2.768('a)-.74 G .268(nd `)336.688 645.6 R(`deadhead')
+-.74 E .268('\); keyboard patterns \(such)-.74 F 1.409(as `)122 657.6 R
+(`qwerty)-.74 E(,')-.65 E 3.909('`)-.74 G(`asdf,')182.198 657.6 Q 3.909('a)-.74
+G 1.409(nd `)218.957 657.6 R(`zxcvbn')-.74 E 1.409
+('\); abbreviations \(such as `)-.74 F(`roygbiv')-.74 E 3.909('\255t)-.74 G
+1.41(he colors in the)438.39 657.6 R(rainbow)122 669.6 Q 3.008(,a)-.65 G .508
+(nd `)164.068 669.6 R(`ooottafagvah')-.74 E 3.008('\255am)-.74 G .507
+(nemonic for remembering the 12 cranial nerves\); machine)268.01 669.6 R .597
+(names \(acquired from)122 681.6 R F1(/etc/hosts)3.097 E F0 .597
+(\); characters, plays, and locations from Shakespeare; common)B -.55(Yi)122
+693.6 S 2.167(ddish words;).55 F 2.166
+(the names of asteroids; and a collection of words from various technical)7.167
+F .266(papers I had previously published.)122 705.6 R .266
+(All told, more than 60,000 separate words were considered)5.266 F
+(per user \(with any inter)122 717.6 Q 2.5(-a)-.2 G
+(nd intra-dictionary duplicates being discarded\).)225.38 717.6 Q EP
+%%Page: 5 5
+BP/F0 10/Times-Roman@0 SF 2.5(-5-)279.67 48 S 14.17(3\) T)97 84 R .215
+(ry various permutations on the words from step 2.)-.35 F .214
+(This included making the \214rst letter upper)5.215 F .926
+(case or a control character)122 96 R 3.426(,m)-.4 G .927
+(aking the entire word upper case, reversing the word \(with and)243.96 96 R
+.801(without the aforementioned capitalization\), changing the letter `o' to t\
+he digit `0' \(so that the)122 108 R .044(word `)122 120 R -2.13(`scholar ')
+-.74 F 2.544('w)-.74 G .044(ould also be checked as `)195.948 120 R -2.13
+(`sch0lar ')-.74 F .045('\), changing the letter `l' to the digit `1' \(so)-.74
+F .714(that `)122 132 R -2.13(`scholar ')-.74 F 3.214('w)-.74 G .714
+(ould also be checked as `)191.738 132 R(`scho1ar)-.74 E(,')-.4 E 3.214('a)-.74
+G .714(nd also as `)344.922 132 R -2.13(`sch01ar ')-.74 F .713
+('\), and performing)-.74 F .642(similar manipulations to change the letter `z\
+' into the digit `2', and the letter `s' into the digit)122 144 R 3.672
+(`5'. Another)122 156 R 1.172(test was to make the word into a plural \(irresp\
+ective of whether the word was)3.672 F .181
+(actually a noun\), with enough intelligence built in so that `)122 168 R
+(`dress')-.74 E 2.682('b)-.74 G .182(ecame `)394.706 168 R(`dresses,')-.74 E
+2.682('`)-.74 G(`house')471.42 168 Q(')-.74 E 1.628(became `)122 180 R
+(`houses,')-.74 E 4.128('a)-.74 G 1.628(nd `)206.796 180 R(`daisy')-.74 E 4.127
+('b)-.74 G 1.627(ecame `)263.001 180 R(`daisies.')-.74 E 6.627('W)-.74 G 4.127
+(ed)349.495 180 S 1.627(id not consider pluralization rules)363.062 180 R
+(exhaustively)122 192 Q 5.318(,t)-.65 G 2.818(hough, so that `)182.498 192 R
+(`datum')-.74 E 5.318('f)-.74 G(or)295.33 192 Q 2.818(givably became `)-.18 F
+(`datums')-.74 E 5.318('\()-.74 G 2.818(not `)424.034 192 R(`data')-.74 E 2.818
+('\), while)-.74 F -.74(``)122 204 S(sphynx').74 E 2.669('b)-.74 G .169
+(ecame `)170.399 204 R(`sphynxs')-.74 E 2.668('\()-.74 G .168(and not `)249.226
+204 R(`sphynges')-.74 E 2.668('\). Similarly)-.74 F 2.668(,t)-.65 G .168
+(he suf)386.368 204 R .168(\214xes `)-.18 F(`-ed,')-.74 E 2.668('`)-.74 G(`-er)
+464.442 204 Q(,')-.4 E 2.668('a)-.74 G(nd)494 204 Q -.74(``)122 216 S(-ing').74
+E 2.702('w)-.74 G .202(ere added to transform words like `)159.872 216 R
+(`phase')-.74 E 2.703('i)-.74 G .203(nto `)338.368 216 R(`phased,')-.74 E 2.703
+('`)-.74 G(`phaser)401.254 216 Q(,')-.4 E 2.703('a)-.74 G .203(nd `)445.847 216
+R(`phasing.')-.74 E(')-.74 E .474(These 14 to 17 additional tests per word add\
+ed another 1,000,000 words to the list of possible)122 228 R
+(passwords that were tested for each user)122 240 Q(.)-.55 E 14.17(4\) T)97
+255.6 R .846(ry various capitalization permutations on the words from step 2 t\
+hat were not considered in)-.35 F 1.451(step 3.)122 267.6 R 1.451
+(This included all single letter capitalization permutations \(so that `)6.451
+F(`michael')-.74 E 3.95('w)-.74 G(ould)486.22 267.6 Q .757
+(also be checked as `)122 279.6 R(`mIchael,')-.74 E 3.257('`)-.74 G(`miChael,')
+254.065 279.6 Q 3.257('`)-.74 G(`micHael,')305.552 279.6 Q 3.257('`)-.74 G
+(`michAel,')357.029 279.6 Q 3.257('e)-.74 G .758(tc.\), double letter capi-)
+410.916 279.6 R 1.919(talization permutations \(`)122 291.6 R(`MIchael,')-.74 E
+4.419('`)-.74 G(`MiChael,')278.277 291.6 Q 4.419('`)-.74 G(`MicHael,')332.036
+291.6 Q 4.419('.)-.74 G 1.919(.. , `)385.695 291.6 R(`mIChael,')-.74 E 4.418
+('`)-.74 G(`mIcHael,')457.82 291.6 Q(')-.74 E 2.508
+(etc.\), triple letter permutations, and so on.)122 303.6 R 2.509
+(The single letter permutations added roughly)7.508 F 1.75
+(another 400,000 words to be checked per user)122 315.6 R 4.25(,w)-.4 G 1.75
+(hile the double letter permutations added)331.66 315.6 R 3.243
+(another 1,500,000 words.)122 327.6 R 3.244
+(Three letter permutations would have added at least another)8.243 F .375
+(3,000,000 words)122 339.6 R/F1 10/Times-Italic@0 SF .374(per user)2.875 F F0
+.374(had there been enough time to complete the tests.)2.874 F -.7(Te)5.374 G
+.374(sts of 4, 5, and).7 F 4.681(6l)122 351.6 S 2.182(etter permutations were \
+deemed to be impracticable without much more computational)134.461 351.6 R
+(horsepower to carry them out.)122 363.6 Q 14.17(5\) T)97 379.2 R .662
+(ry foreign language words on foreign users.)-.35 F .662
+(The speci\214c test that was performed was to try)5.662 F .586
+(Chinese language passwords on users with Chinese names.)122 391.2 R .586
+(The Pinyin Romanization of Chi-)5.586 F .563(nese syllables was used, combini\
+ng syllables together into one, two, and three syllable words.)122 403.2 R .05
+(Because no tests were done to determine whether the words actually made sense\
+, an exhaustive)122 415.2 R 1.635(search was initiated.)122 427.2 R 1.635
+(Since there are 398 Chinese syllables in the Pinyin system, there are)6.635 F
+.015(158,404 two syllable words, and slightly more than 16,000,000 three sylla\
+ble words.)122 439.2 R/F2 7/Times-Roman@0 SF<87>-3.5 I F0 2.515(As)2.515 3.5 O
+(imilar)480.11 439.2 Q 1.079(mode of attack could as easily be used with Engli\
+sh, using rules for building pronounceable)122 451.2 R(nonsense words.)122
+463.2 Q 14.17(6\) T)97 478.8 R .558(ry word pairs.)-.35 F .558
+(The magnitude of an exhaustive test of this nature is staggering.)5.558 F
+1.958 -.7(To s)5.558 H(implify).7 E .915
+(this test, only words of 3 or 4 characters in length from)122 490.8 R F1
+(/usr/dict/wor)3.414 E(ds)-.37 E F0 .914(were used.)3.414 F .914(Even so,)5.914
+F 1.14(the number of word pairs is)122 502.8 R/F3 10/Times-Bold@0 SF(O)3.64 E
+F0(\(10)A F2(7)-3.5 I F0 3.641(\)\()3.5 K 1.141
+(multiplied by 4096 possible salt values\), and as of this)276.511 502.8 R
+(writing, the test is only 10% complete.)122 514.8 Q 1.092(For this study)72
+530.4 R 3.592(,Ih)-.65 G 1.092(ad access to four DECstation 3100')146.558 530.4
+R 1.092(s, each of which was capable of checking approxi-)-.55 F .39
+(mately 750 passwords per second.)72 542.4 R .39
+(Even with this total peak processing horsepower of 3,000 tests per sec-)5.39 F
+.182(ond \(some machines were only intermittently available\), testing the)72
+554.4 R F3(O)2.682 E F0(\(10)A F2(10)-3.5 I F0 2.682(\)p)3.5 K .182
+(assword/salt pairs for the \214rst)384.952 554.4 R .144
+(four tests required on the order of 12 CPU)72 566.4 R F1(months)2.644 E F0
+.145(of computations.)2.644 F .145(The remaining two tests are still ongo-)
+5.145 F .44(ing after an additional 18 CPU months of computation.)72 578.4 R
+.439(Although for research purposes this is well within)5.439 F(acceptable ran\
+ges, it is a bit out of line for any but the most dedicated and resource-rich \
+cracker)72 590.4 Q(.)-.55 E F3 2.5(2.3. Summary)72 614.4 R(of Results)2.5 E F0
+.431(The problem with using passwords that are derived directly from obvious w\
+ords is that when a user thinks)72 630 R -.74(``)72 642 S .013
+(Hah, no one will guess this permutation,').74 F 2.513('t)-.74 G .013
+(hey are almost invariably wrong.)250.873 642 R .013
+(Who would ever suspect that)5.013 F 2.664(Iw)72 654 S .164
+(ould \214nd their passwords when they chose `)85.214 654 R(`fylgjas')-.74 E
+2.664('\()-.74 G .164(guardian creatures from Norse mythology\), or the)303.896
+654 R .24(Chinese word for `)72 666 R .24(`hen-pecked husband')-.74 F 2.74
+('? No)-.74 F .24(matter what words or permutations thereon are chosen for a)
+2.74 F .903(password, if they exist in some dictionary)72 678 R 3.403(,t)-.65 G
+.903(hey are susceptible to directed cracking.)252.381 678 R .904
+(The following table)5.904 F/F4 8/Troff SF(rrrrrrrrrrrrrrrrrr)72 688 Q/F5 8
+/Times-Roman@0 SF 4<8754>82 699.8 S .48(he astute reader will notice that 398)
+94.888 699.8 R/F6 6/Times-Roman@0 SF(3)-3 I F5 .48(is in fact 63,044,972.)2.48
+3 N .48(Since Unix passwords are truncated after 8 characters,)4.48 F(however)
+72 709.8 Q 2.31(,t)-.32 G .309
+(he number of unique polysyllabic Chinese passwords is only around 16,000,000.)
+105.758 709.8 R .309(Even this reduced set was too)4.309 F(lar)72 719.8 Q
+(ge to complete under the imposed time constraints.)-.144 E EP
+%%Page: 6 6
+BP/F0 10/Times-Roman@0 SF 2.5(-6-)279.67 48 S(give an overview of the types of\
+ passwords which were found through this research.)72 84 Q 2.798(An)72 99.6 S
+.298(ote on the table is in order)87.018 99.6 R 5.298(.T)-.55 G .297
+(he number of matches given from a particular dictionary is the total num-)
+206.594 99.6 R 1.658(ber of matches, irrespective of the permutations that a u\
+ser may have applied to it.)72 111.6 R 1.659(Thus, if the word)6.659 F -.74(``)
+72 123.6 S(wombat').74 E 3.296('w)-.74 G .796
+(ere a particularly popular password from the biology dictionary)126.576 123.6
+R 3.296(,t)-.65 G .795(he following table will not)394.71 123.6 R .794
+(indicate whether it was entered as `)72 135.6 R(`wombat,')-.74 E 3.294('`)-.74
+G(`W)266.948 135.6 Q(ombat,')-.8 E 3.294('`)-.74 G(`T)318.222 135.6 Q(ABMOW)-.8
+E(,')-.92 E 3.294('`)-.74 G(`w0mbat,')379.686 135.6 Q 3.294('o)-.74 G 3.295(ra)
+431.95 135.6 S .795(ny of the other)443.015 135.6 R .491(71 possible dif)72
+147.6 R .491(ferences that this research checked.)-.18 F .491(In this way)5.491
+F 2.991(,d)-.65 G .49(etailed information can be divulged with-)335.74 147.6 R
+(out providing much knowledge to potential `)72 159.6 Q(`bad guys.')-.74 E(')
+-.74 E(Additionally)72 175.2 Q 3.364(,i)-.65 G 3.364(no)130.554 175.2 S .864(r\
+der to reduce the total search time that was needed for this research, the che\
+cking pro-)143.918 175.2 R 1.075(gram eliminated both inter)72 187.2 R 3.575
+(-a)-.2 G 1.075(nd intra-dictionary duplicate words.)192.75 187.2 R 1.075
+(The dictionaries are listed in the order)6.075 F .429(tested, and the total s\
+ize of the dictionary is given in addition to the number of words that were el\
+iminated)72 199.2 R .563(due to duplication.)72 211.2 R .563
+(For example, the word `)5.563 F(`geor)-.74 E(gia')-.18 E 3.063('i)-.74 G 3.063
+(sb)296.194 211.2 S .562(oth a female name and a place, and is only con-)
+308.147 211.2 R .579(sidered once.)72 223.2 R 3.079(Ap)5.579 G .579(assword wh\
+ich is identi\214ed as being found in the common names dictionary might very)
+146.217 223.2 R 1.745(well appear in other dictionaries.)72 235.2 R
+(Additionally)6.745 E 4.245(,a)-.65 G 1.745(lthough `)278.18 235.2 R
+(`duplicate,')-.74 E 4.245('`)-.74 G(`duplicated,')370.82 235.2 Q 4.245('`)-.74
+G(`duplicating')431.065 235.2 Q 4.245('a)-.74 G(nd)494 235.2 Q -.74(``)72 247.2
+S(duplicative').74 E 2.526('a)-.74 G .026(re all distinct words, only the \214\
+rst eight characters of a password are used in Unix, so all but)135.246 247.2 R
+(the \214rst word are discarded as redundant.)72 259.2 Q .4 LW 501.88 269.7
+74.12 269.7 DL/F1 12/Times-Bold@0 SF(Passwords cracked fr)144.294 279.2 Q
+(om a sample set of 13,797 accounts)-.216 E 501.88 283.7 74.12 283.7 DL/F2 10
+/Times-Bold@0 SF -.74(Ty)105.595 293.2 S(pe of).74 E(Size of)187.58 293.2 Q
+13.615(Duplicates Sear)240.495 293.2 R 22.635(ch #)-.18 F 30.79(of Pct.)2.5 F
+(Cost/Bene\214t)444.66 293.2 Q 34.3(Password Dictionary)100.92 305.2 R 18.52
+(Eliminated Size Matches)239.38 305.2 R(of T)396.97 305.2 Q 24.945(otal Ratio)
+-.92 F/F3 8/Times-Bold@0 SF(*)480.435 301.2 Q 501.88 309.7 74.12 309.7 DL
+501.88 311.7 74.12 311.7 DL F0(User/account name)79.12 321.2 Q(130)195.605
+321.2 Q/F4 7/Times-Roman@0 SF<87>-3.5 I F0 47.925<ad31>260.175 321.2 S 27.68
+(30 368)318.74 321.2 R 32.54(2.7% 2.830)403.65 321.2 R(Character sequences)
+79.12 333.2 Q 53.89(866 0)199.105 333.2 R 32.68(866 22)313.74 333.2 R 32.54
+(0.2% 0.025)403.65 333.2 R 80.825(Numbers 450)79.12 345.2 R 35.745(23 427)
+265.495 345.2 R 29.73(90)368.92 345.2 S 32.54(.1% 0.021)408.65 345.2 R 85.265
+(Chinese 398)79.12 357.2 R 38.245(63)270.495 357.2 S 32.68(92 56)318.74 357.2 R
+(0.4%)403.65 357.2 Q F4<88>-3.5 I F0(0.143)459.52 357.2 Q(Place names)79.12
+369.2 Q 48.89(665 37)199.105 369.2 R 32.68(628 82)313.74 369.2 R 32.54
+(0.6% 0.131)403.65 369.2 R(Common names)79.12 381.2 Q 48.89(2268 29)194.105
+381.2 R 27.68(2239 548)308.74 381.2 R 32.54(4.0% 0.245)403.65 381.2 R
+(Female names)79.12 393.2 Q 43.89(4955 675)194.105 393.2 R 27.68(4280 161)
+308.74 393.2 R 32.54(1.2% 0.038)403.65 393.2 R(Male names)79.12 405.2 Q 38.89
+(3901 1035)194.105 405.2 R 27.68(2866 140)308.74 405.2 R 32.54(1.0% 0.049)
+403.65 405.2 R(Uncommon names)79.12 417.2 Q 43.89(5559 604)194.105 417.2 R
+27.68(4955 130)308.74 417.2 R 32.54(0.9% 0.026)403.65 417.2 R(Myths & legends)
+79.12 429.2 Q 44.63(1357 1)194.105 429.2 R 31.485 -.37(11 1)-.37 H 32.68
+(246 66).37 F 32.54(0.5% 0.053)403.65 429.2 R 58.065(Shakespearean 650)79.12
+441.2 R 35.745(177 473)260.495 441.2 R 27.97 -.37(11 0)364.29 441.2 T 32.54
+(.1% 0.023).37 F(Sports terms)79.12 453.2 Q 53.89(247 9)199.105 453.2 R 32.68
+(238 32)313.74 453.2 R 32.54(0.2% 0.134)403.65 453.2 R(Science \214ction)79.12
+465.2 Q 48.89(772 81)199.105 465.2 R 32.68(691 59)313.74 465.2 R 32.54
+(0.4% 0.085)403.65 465.2 R(Movies and actors)79.12 477.2 Q -.37(11)199.475
+477.2 S 51.39(81).37 G 43.245(99)270.495 477.2 S 35.18(91)323.74 477.2 S 29.73
+(20)368.92 477.2 S 32.54(.1% 0.121)408.65 477.2 R 81.375(Cartoons 133)79.12
+489.2 R 40.745(41 92)265.495 489.2 R 29.73(90)368.92 489.2 S 32.54(.1% 0.098)
+408.65 489.2 R(Famous people)79.12 501.2 Q 43.89(509 219)199.105 501.2 R 32.68
+(290 55)313.74 501.2 R 32.54(0.4% 0.190)403.65 501.2 R(Phrases and patterns)
+79.12 513.2 Q 48.89(998 65)199.105 513.2 R 27.68(933 253)313.74 513.2 R 32.54
+(1.8% 0.271)403.65 513.2 R 78.045(Surnames 160)79.12 525.2 R 40.745(127 33)
+260.495 525.2 R 29.73(90)368.92 525.2 S 32.54(.1% 0.273)408.65 525.2 R 90.255
+(Biology 59)79.12 537.2 R 43.245(15)270.495 537.2 S 40.18(81)323.74 537.2 S
+32.54(0.0% 0.017)403.65 537.2 R/F5 10/Times-Italic@0 SF(/usr/dict/wor)79.12
+549.2 Q(ds)-.37 E F0 38.89(24474 4791)189.105 549.2 R 22.68(19683 1027)303.74
+549.2 R 32.54(7.4% 0.052)403.65 549.2 R(Machine names)79.12 561.2 Q 38.89
+(12983 3965)189.105 561.2 R 27.68(9018 132)308.74 561.2 R 32.54(1.0% 0.015)
+403.65 561.2 R 75.265(Mnemonics 14)79.12 573.2 R 43.245(01)270.495 573.2 S
+40.18(42)323.74 573.2 S 32.54(0.0% 0.143)403.65 573.2 R(King James bible)79.12
+585.2 Q 38.89(13062 5537)189.105 585.2 R 32.68(7525 83)308.74 585.2 R 32.54
+(0.6% 0.01)403.65 585.2 R(1)-.37 E(Miscellaneous words)79.12 597.2 Q 38.89
+(8146 4934)194.105 597.2 R 32.68(3212 54)308.74 597.2 R 32.54(0.4% 0.017)403.65
+597.2 R -.55(Yi)79.12 609.2 S(ddish words).55 E 48.89(69 13)204.105 609.2 R
+37.68(56 0)318.74 609.2 R 32.54(0.0% 0.000)403.65 609.2 R 74.155
+(Asteroids 3459)79.12 621.2 R 30.745(1052 2407)255.495 621.2 R 27.23(19 0.1%)
+363.92 621.2 R(0.007)459.52 621.2 Q 501.88 625.7 74.12 625.7 DL F5 -.92(To)
+79.12 635.2 S(tal).92 E F0 33.89(86280 23553)189.105 635.2 R(62727)303.74 635.2
+Q F2 22.23(3340 24.2%)353.92 635.2 R F0(0.053)459.52 635.2 Q 501.88 639.7 74.12
+639.7 DL 501.88 269.7 501.88 639.7 DL 74.12 269.7 74.12 639.7 DL/F6 8/Troff SF
+(rrrrrrrrrrrrrrrrrr)72 663.2 Q/F7 8/Times-Roman@0 SF 4(*I)82 675 S 2.036(na)
+92.664 675 S .035(ll cases, the cost/bene\214t ratio is the number of matches \
+divided by the search size.)102.252 675 R .035(The more words that needed to)
+4.035 F(be tested for a match, the lower the cost/bene\214t ratio.)72 685 Q 4
+<8754>82 696.8 S .278(he dictionary used for user/account name checks naturall\
+y changed for each user)94.888 696.8 R 4.279(.U)-.44 G 2.279(pt)367.484 696.8 S
+2.279(o1)375.987 696.8 S .279(30 dif)386.266 696.8 R .279(ferent permutations)
+-.144 F(were tried for each.)72 706.8 Q 4<8857>82 718.6 S .575(hile monosyllab\
+lic Chinese passwords were tried for all users \(with 12 matches\), polysyllab\
+ic Chinese passwords)97.552 718.6 R .087
+(were tried only for users with Chinese names.)72 728.6 R .088(The percentage \
+of matches for this subset of users is 8% \255 a greater hit ratio)4.087 F EP
+%%Page: 7 7
+BP/F0 10/Times-Roman@0 SF 2.5(-7-)279.67 48 S .806
+(The results are quite disheartening.)72 84 R .805
+(The total size of the dictionary was only 62,727 words \(not counting)5.806 F
+.522(various permutations\).)72 96 R .522(This is much smaller than the 250,00\
+0 word dictionary postulated at the beginning)5.522 F(of this paper)72 108 Q
+2.5(,y)-.4 G(et armed even with this small dictionary)131.59 108 Q 2.5(,n)-.65
+G(early 25% of the passwords were cracked!)301.48 108 Q .4 LW 369.829 118.5
+206.171 118.5 DL/F1 12/Times-Bold@0 SF(Length of Cracked Passwords)211.17 128 Q
+369.829 132.5 206.171 132.5 DL/F2 10/Times-Bold@0 SF 21.881(Length Count)
+220.229 142 R(Per)317.486 142 Q(centage)-.18 E 369.829 146.5 206.171 146.5 DL
+369.829 148.5 206.171 148.5 DL F0 2.5(1c)211.171 158 S 35.509(haracter 4)
+223.111 158 R(0.1%)333.081 158 Q 2.5(2c)211.171 170 S 31.619(haracters 5)
+223.111 170 R(0.2%)333.081 170 Q 2.5(3c)211.171 182 S 26.619(haracters 66)
+223.111 182 R(2.0%)333.081 182 Q 2.5(4c)211.171 194 S 21.619(haracters 188)
+223.111 194 R(5.7%)333.081 194 Q 2.5(5c)211.171 206 S 21.619(haracters 317)
+223.111 206 R(9.5%)333.081 206 Q 2.5(6c)211.171 218 S 16.989(haracters 1)
+223.111 218 R 27.261(160 34.7%)-.37 F 2.5(7c)211.171 230 S 21.619
+(haracters 813)223.111 230 R(24.4%)328.081 230 Q 2.5(8c)211.171 242 S 21.619
+(haracters 780)223.111 242 R(23.4%)328.081 242 Q 369.829 246.5 206.171 246.5 DL
+369.829 118.5 369.829 246.5 DL 206.171 118.5 206.171 246.5 DL .499(The results\
+ of the word-pair tests are not included in either of the two tables.)72 263.6
+R(However)5.498 E 2.998(,a)-.4 G 2.998(tt)436.448 263.6 S .498(he time of this)
+445.006 263.6 R .692(writing, the test was approximately 10% completed, having\
+ found an additional 0.4% of the passwords in)72 275.6 R .382(the sample set.)
+72 287.6 R .381(It is probably reasonable to guess that a total of 4% of the p\
+asswords would be cracked by)5.382 F(using word pairs.)72 299.6 Q F2 2.5
+(3. Action,)72 323.6 R(Reaction, and Pr)2.5 E(oaction)-.18 E F0 .815
+(What then, are we to do with the results presented in this paper?)72 339.2 R
+(Clearly)5.815 E 3.315(,s)-.65 G .816(omething needs to be done to)382.43 339.2
+R 1.379(safeguard the security of our systems from attack.)72 351.2 R 1.379
+(It was with intention of enhancing security that this)6.379 F .873
+(study was undertaken.)72 363.2 R .874
+(By knowing what kind of passwords users use, we are able to prevent them from)
+5.873 F(using those that are easily guessable \(and thus thwart the cracker\).)
+72 375.2 Q 1.078(One approach to eliminating easy-to-guess passwords is to per\
+iodically run a password checker \255 a pro-)72 390.8 R .285(gram which scans)
+72 402.8 R/F3 10/Times-Italic@0 SF(/etc/passwd)2.785 E F0 .285
+(and tries to break the passwords in it)2.785 F 2.786([Raleigh1988]. This)2.5 F
+.286(approach has two)2.786 F 1.346(major drawbacks.)72 414.8 R 1.345
+(The \214rst is that the checking is very time consuming.)6.346 F 1.345
+(Even a system with only 100)6.345 F .063
+(accounts can take over a month to diligently check.)72 426.8 R 2.563(Ah)5.063
+G .063(alfhearted check is almost as bad as no check at all,)297.59 426.8 R
+.204(since users will \214nd it easy to circumvent the easy checks and still h\
+ave vulnerable passwords.)72 438.8 R .203(The second)5.203 F .171
+(drawback is that it is very resource consuming.)72 450.8 R .171
+(The machine which is being used for password checking is)5.171 F(not likely t\
+o be very useful for much else, since a fast password checker is also extremel\
+y CPU intensive.)72 462.8 Q 1.301(Another popular approach to eradicating easy\
+-to-guess passwords is to force users to change their pass-)72 478.4 R .28
+(words with some frequency)72 490.4 R 5.28(.I)-.65 G 2.78(nt)194.11 490.4 S
+(heory)204.67 490.4 Q 2.78(,w)-.65 G .28
+(hile this does not actually eliminate any easy-to-guess passwords,)239.29
+490.4 R .128(it prevents the cracker from dissecting)72 502.4 R F3(/etc/passwd)
+2.628 E F0 -.74(``)2.628 G .128(at leisure,').74 F 2.628('s)-.74 G .127
+(ince once an account is broken, it is likely)334.952 502.4 R .78
+(that that account will have had it')72 514.4 R 3.28(sp)-.55 G .78
+(assword changed.)222.17 514.4 R .78(This is of course, only theory)5.78 F 5.78
+(.T)-.65 G .78(he biggest disad-)434.67 514.4 R .814(vantage is that there is \
+usually nothing to prevent a user from changing their password from `)72 526.4
+R(`Daniel')-.74 E 3.313('t)-.74 G(o)499 526.4 Q -.74(``)72 538.4 S -.6(Vi).74 G
+-2.13(ctor ').6 F 3.257('t)-.74 G 3.257(o`)115.197 538.4 S(`Klein')126.044
+538.4 Q 3.257('a)-.74 G .757(nd back again \(to use myself as an example\) eac\
+h time the system demands a new)165.211 538.4 R 4.047(password. Experience)72
+550.4 R 1.547(has shown that even when this type of password cycling is preclu\
+ded, users are)4.047 F .527(easily able to circumvent simple tests by using ea\
+sily remembered \(and easily guessed\) passwords such as)72 562.4 R -.74(``)72
+574.4 S(dvkJanuary).74 E(,')-.65 E 3.91('`)-.74 G(`dvkFebruary)138.29 574.4 Q
+(,')-.65 E 3.91('e)-.74 G(tc [Reid1989].)208.84 574.4 Q 3.909(Ag)6.409 G 1.409
+(ood password is one that is easily remembered, yet)289.148 574.4 R(dif)72
+586.4 Q .28(\214cult to guess.)-.18 F .281(When confronted with a choice betwe\
+en remembering a password or creating one that is)5.28 F(hard to guess, users \
+will almost always opt for the easy way out, and throw security to the wind.)72
+598.4 Q 1.188(Which brings us to the third popular option, namely that of assi\
+gned passwords.)72 614 R 1.187(These are often words)6.187 F .475
+(from a dictionary)72 626 R 2.975(,p)-.65 G .475
+(ronounceable nonsense words, or random strings of characters.)152.205 626 R
+.475(The problems here are)5.475 F .12(numerous and manifest.)72 638 R -.8(Wo)
+5.12 G .119(rds from a dictionary are easily guessed, as we have seen.).8 F
+.119(Pronounceable non-)5.119 F .945(sense words \(such as `)72 650 R -2.13
+(`trobacar ')-.74 F 3.445('o)-.74 G 3.445(r`)215.285 650 S(`myclepate')224.65
+650 Q .945('\) are often dif)-.74 F .945(\214cult to remember)-.18 F 3.446(,a)
+-.4 G .946(nd random strings of)418.112 650 R .186(characters \(such as `)72
+662 R(`h3rT+aQz')-.74 E .186('\) are even harder to commit to memory)-.74 F
+5.186(.B)-.65 G .186(ecause these passwords have no)375.516 662 R 1.031(person\
+al mnemonic association to the users, they will often write them down to aid i\
+n their recollection.)72 674 R 1.197(This immediately discards any security th\
+at might exist, because now the password is visibly associated)72 686 R .281
+(with the system in question.)72 698 R .282(It is akin to leaving the key unde\
+r the door mat, or writing the combination to)5.281 F/F4 8/Troff SF
+(rrrrrrrrrrrrrrrrrr)72 708 Q/F5 8/Times-Roman@0 SF(than any other method.)72
+718 Q(Because the dictionary size is over 16)4 E/F6 8/TSymbol SF<b4>A F5(10)A
+/F7 6/Times-Roman@0 SF(6)-3 I F5 2(,t)3 K
+(hough, the cost/bene\214t ratio is in\214nitesimal.)292.248 718 Q EP
+%%Page: 8 8
+BP/F0 10/Times-Roman@0 SF 2.5(-8-)279.67 48 S 2.5(as)72 84 S
+(afe behind the picture that hides it.)82.83 84 Q 2.577(Af)72 99.6 S .076
+(ourth method is the use of `)85.127 99.6 R .076(`smart cards.')-.74 F 5.076
+('T)-.74 G .076(hese credit card sized devices contain some form of encryp-)
+263.666 99.6 R .245(tion \214rmware which will `)72 111.6 R(`respond')-.74 E
+2.745('t)-.74 G 2.745(oa)223.665 111.6 S 2.746(ne)235.85 111.6 S .246
+(lectronic `)248.036 111.6 R(`challenge')-.74 E 2.746('i)-.74 G .246
+(ssued by the system onto which the user)341.458 111.6 R .131
+(is attempting to gain acccess.)72 123.6 R -.4(Wi)5.131 G .131(thout the smart\
+ card, the user \(or cracker\) is unable to respond to the chal-).4 F .242
+(lenge, and is denied access to the system.)72 135.6 R .243
+(The problems with smart cards have nothing to do with security)5.243 F(,)-.65
+E .419(for in fact they are very good warders for your system.)72 147.6 R .419
+(The drawbacks are that they can be expensive and)5.419 F .324
+(must be carried at all times that access to the system is desired.)72 159.6 R
+.325(They are also a bit of overkill for research)5.324 F
+(or educational systems, or systems with a high degree of user turnover)72
+171.6 Q(.)-.55 E(Clearly)72 187.2 Q 2.965(,t)-.65 G .464(hen, since all of the\
+se systems have drawbacks in some environments, an additional way must be)
+109.035 187.2 R(found to aid in password security)72 199.2 Q(.)-.65 E/F1 10
+/Times-Bold@0 SF 2.5(3.1. A)72 223.2 R(Pr)2.5 E(oactive Password Checker)-.18 E
+F0 .638(The best solution to the problem of having easily guessed passwords on\
+ a system is to prevent them from)72 238.8 R .202
+(getting on the system in the \214rst place.)72 250.8 R .202
+(If a program such as a password checker)5.202 F/F2 10/Times-Italic@0 SF -.37
+(re)2.702 G(acts).37 E F0 .202(by detecting guess-)2.702 F .533(able passwords\
+ already in place, then although the security hole is found, the hole existed \
+for as long as it)72 262.8 R 1.096(took the program to detect it \(and for the\
+ user to again change the password\).)72 274.8 R 1.095(If, however)6.095 F
+3.595(,t)-.4 G 1.095(he program)457.085 274.8 R .564(which changes user)72
+286.8 R 1.664 -.55('s p).37 H .564(asswords \(i.e.,).55 F F2(/bin/passwd)3.064
+E F0 3.064(\)c)C .564(hecks for the safety and guessability)286.004 286.8 R F2
+(befor)3.065 E(e)-.37 E F0 .565(that pass-)3.065 F
+(word is associated with the user)72 298.8 Q 1.1 -.55('s a).37 H
+(ccount, then the security hole is never put in place.).55 E .08(In an ideal w\
+orld, the proactive password changer would require eight character passwords w\
+hich are not in)72 314.4 R .093(any dictionary)72 326.4 R 2.593(,w)-.65 G .094
+(ith at least one control character or punctuation character)141.246 326.4 R
+2.594(,a)-.4 G .094(nd mixed upper and lower case)378.84 326.4 R 2.705
+(letters. Such)72 338.4 R 2.705(ad)2.705 G .205(egree of security \(and of acc\
+ompanying inconvenience to the users\) might be too much for)138.995 338.4 R
+1.022(some sites, though.)72 350.4 R 1.022
+(Therefore, the proactive checker should be tuneable on a per)6.022 F 1.022
+(-site basis.)-.2 F 1.022(This tuning)6.022 F .512
+(could be accomplished either through recompilation of the)72 362.4 R F2
+(passwd)3.012 E F0 .512(program, or more preferably)3.012 F 3.012(,t)-.65 G
+.512(hrough a)468.218 362.4 R(site con\214guration \214le.)72 374.4 Q .545(As \
+distributed, the behavior of the proactive checker should be that of attaining\
+ maximum password secu-)72 390 R .275
+(rity \255 with the system administrator being able to turn of)72 402 R 2.775
+(fc)-.18 G .275(ertain checks.)311.855 402 R .274
+(It would be desireable to be able)5.275 F(to test for and reject all password\
+ permutations that were detected in this research \(and others\), including:)72
+414 Q 195.6<8383>97 432 S 2.218(Passwords based on the user)115.5 432 R 3.318
+-.55('s a).37 H(ccount).55 E(name)115.5 444 Q .689(Passwords based on the user)
+314.6 432 R 1.788 -.55('s i).37 H .688(nitials or).55 F(given name)314.6 444 Q
+195.6<8383>97 456 S 1.626(Passwords which exactly match a word)115.5 456 R
+(in a dictionary \(not just)115.5 468 Q F2(/usr/dict/wor)2.5 E(ds)-.37 E F0(\))
+A 2.418(Passwords which match a word in the)314.6 456 R 1.4
+(dictionary with some or all letters capi-)314.6 468 R(talized)314.6 480 Q
+195.6<8383>97 492 S .628(Passwords which match a reversed word)115.5 492 R
+(in the dictionary)115.5 504 Q .628(Passwords which match a reversed word)314.6
+492 R .841(in the dictionary with some or all letters)314.6 504 R(capitalized)
+314.6 516 Q 195.6<8383>97 528 S .606(Passwords which match a word in a dic-)
+115.5 528 R 3.404(tionary with an arbitrary letter turned)115.5 540 R
+(into a control character)115.5 552 Q 4.877(Passwords which match a dictionary)
+314.6 528 R .884(word with the numbers `0', `1', `2', and)314.6 540 R .726
+(`5' substituted for the letters `o', 'l', 'z',)314.6 552 R(and ')314.6 564 Q
+(s')-.55 E 195.6<8383>97 576 S 3.768(Passwords which are simple conjuga-)115.5
+576 R 1.585(tions of a dictionary word \(i.e., plurals,)115.5 588 R 1.145
+(adding `)115.5 600 R(`ing')-.74 E 3.645('o)-.74 G 3.645(r`)179.63 600 S(`ed')
+189.195 600 Q 3.645('t)-.74 G 3.645(ot)214.31 600 S 1.145(he end of the)225.735
+600 R(word, etc.\))115.5 612 Q 2.182(Passwords which are patterns from the)
+314.6 576 R(keyboard \(i.e., `)314.6 588 Q(`aaaaaa')-.74 E 2.5('o)-.74 G 2.5
+(r`)420.84 588 S(`qwerty')429.26 588 Q('\))-.74 E 195.6<8383>97 624 S .94
+(Passwords which are shorter than a spe-)115.5 624 R .518
+(ci\214c length \(i.e., nothing shorter than six)115.5 636 R(characters\))115.5
+648 Q 7.235(Passwords which consist solely of)314.6 624 R 1.48
+(numeric characters \(i.e., Social Security)314.6 636 R 7.337
+(numbers, telephone numbers, house)314.6 648 R(addresses or of)314.6 660 Q
+(\214ce numbers\))-.18 E 195.6<8383>97 672 S 1.844
+(Passwords which do not contain mixed)115.5 672 R 2.19
+(upper and lower case, or mixed letters)115.5 684 R .707
+(and numbers, or mixed letters and punc-)115.5 696 R(tuation)115.5 708 Q .512
+(Passwords which look like a state-issued)314.6 672 R(license plate number)
+314.6 684 Q EP
+%%Page: 9 9
+BP/F0 10/Times-Roman@0 SF 2.5(-9-)279.67 48 S .384(The con\214guration \214le \
+which speci\214es the level of checking need not be readable by users.)72 84 R
+.385(In fact, making)5.384 F 1.565(this \214le unreadable by users \(and by po\
+tential crackers\) enhances system security by hiding a valuable)72 96 R .04
+(guide to what passwords)72 108 R/F1 10/Times-Italic@0 SF(ar)2.54 E(e)-.37 E F0
+.04(acceptable \(and conversely)2.54 F 2.54(,w)-.65 G .04
+(hich kind of passwords simply cannot be found\).)308.74 108 R .456
+(Of course, to make this proactive checker more ef)72 123.6 R .455
+(fective, it woule be necessary to provide the dictionaries)-.18 F .165
+(that were used in this research \(perhaps augmented on a per)72 135.6 R .166
+(-site basis\).)-.2 F .166(Even more importantly)5.166 F 2.666(,i)-.65 G 2.666
+(na)463.554 135.6 S(ddition)475.66 135.6 Q .657(to rejecting passwords which c\
+ould be easily guessed, the proactive password changer would also have to)72
+147.6 R 1.691(tell the user)72 159.6 R F1(why)4.191 E F0 4.191(ap)4.191 G 1.691
+(articular password was unacceptable, and give the user suggestions as to what\
+ an)160.165 159.6 R(acceptable password looks like.)72 171.6 Q/F2 10
+/Times-Bold@0 SF 2.5(4. Conclusion)72 195.6 R(\(and Sermon\))2.5 E F0 .8
+(It has often been said that `)72 211.2 R .8
+(`good fences make good neighbors.')-.74 F 5.799('O)-.74 G 3.299(naU)348.977
+211.2 S .799(nix system, many users also say)372.235 211.2 R .625(that `)72
+223.2 R .625(`I don')-.74 F 3.125(tc)-.18 G .625
+(are who reads my \214les, so I don')130.995 223.2 R 3.125(tn)-.18 G .625
+(eed a good password.')276.625 223.2 R 5.625('R)-.74 G(egrettably)382.805 223.2
+Q 3.125(,l)-.65 G .625(eaving an account)430.55 223.2 R .23
+(vulnerable to attack is not the same thing as leaving \214les unprotected.)72
+235.2 R .23(In the latter case, all that is at risk is)5.23 F 1
+(the data contained in the unprotected \214les, while in the former)72 247.2 R
+3.501(,t)-.4 G 1.001(he whole system is at risk.)338.953 247.2 R 1.001
+(Leaving the)6.001 F .157(front door to your house open, or even putting a \
+\215imsy lock on it, is an invitation to the unfortunately ubiq-)72 259.2 R
+.886(uitous people with poor morals.)72 271.2 R .886
+(The same holds true for an account that is vulnerable to attack by pass-)5.886
+F(word cracking techniques.)72 283.2 Q .636(While it may not be actually true \
+that good fences make good neighbors, a good fence at least helps keep)72 298.8
+R .155(out the bad neighbors.)72 310.8 R .156(Good passwords are equivalent to\
+ those good fences, and a proactive checker is one)5.156 F
+(way to ensure that those fences are in place)72 322.8 Q F1(befor)2.5 E(e)-.37
+E F0 2.5(ab)2.5 G(reakin problem occurs.)287.4 322.8 Q F2(Refer)72 346.8 Q
+(ences)-.18 E F0(Morris1979.)72 366 Q .25(Robert T)97 378 R 2.75(.M)-.74 G .249
+(orris and Ken Thompson, `)146.48 378 R .249
+(`Password Security: A Case History)-.74 F(,')-.65 E(')-.74 E F1 .249
+(Communications of the)2.749 F(ACM)97 390 Q F0 2.5(,v)C(ol. 22, no. 1)128.11
+390 Q(1, pp. 594-597, November 1979.)-.37 E(DES1975.)72 405.6 Q -.74(``)97
+417.6 S 6.311
+(Proposed Federal Information Processing Data Encryption Standard,').74 F(')
+-.74 E F1 6.312(Federal Register)8.812 F(\(40FR12134\))97 429.6 Q F0 2.5(,M)C
+(arch 17, 1975.)164.77 429.6 Q(Bishop1988.)72 445.2 Q 1.81(Matt Bishop, `)97
+457.2 R 1.809
+(`An Application of a Fast Data Encryption Standard Implementation,')-.74 F(')
+-.74 E F1(Computing)4.309 E(Systems)97 469.2 Q F0 2.5(,v)C
+(ol. 1, no. 3, pp. 221-254, Summer 1988.)138.66 469.2 Q(Feldmeier1989.)72 484.8
+Q 1.176(David C. Feldmeier and Philip R. Karn, `)97 496.8 R 1.177
+(`UNIX Password Security \255 T)-.74 F 1.177(en Y)-.7 F 1.177(ears Later)-1 F
+(,')-.4 E(')-.74 E F1(CR)3.677 E(YPT)-.18 E(O)-.18 E(Pr)97 508.8 Q(oceedings)
+-.37 E F0 2.5(,S)C(ummer 1989.)157.18 508.8 Q(Leong1991.)72 524.4 Q .498
+(Philip Leong and Chris Tham, `)97 536.4 R .498
+(`UNIX Password Encryption Considered Insecure,')-.74 F(')-.74 E F1 .498
+(USENIX W)2.998 F(inter)-.55 E(Confer)97 548.4 Q(ence Pr)-.37 E(oceedings)-.37
+E F0 2.5(,J)C(anuary 1991.)203.74 548.4 Q(Spaf)72 564 Q(ford1988.)-.18 E 3.456
+(Eugene H. Spaf)97 576 R 3.456(ford, `)-.18 F 3.456(`The Internet W)-.74 F
+3.456(orm Program: An Analysis,')-.8 F 5.957('P)-.74 G 3.457(urdue T)403.366
+576 R 3.457(echnical Report)-.7 F
+(CSD-TR-823, Purdue University, November 29, 1988.)97 588 Q(Grampp1984.)72
+603.6 Q 2.55 -.8(F. G)97 615.6 T .95(rampp and R. Morris, `).8 F .95
+(`Unix Operating System Security)-.74 F(,')-.65 E(')-.74 E F1 -.37(AT)3.45 G
+.95(&T Bell Labs T).37 F .95(echnical Journal)-.92 F F0(,)A
+(vol. 63, no. 8, pp. 1649-1672, October 1984.)97 627.6 Q(Riddle1989.)72 643.2 Q
+.994(Bruce L. Riddle, Murray S. Miron, and Judith A. Semo, `)97 655.2 R .994
+(`Passwords in Use in a University T)-.74 F(ime-)-.35 E(sharing Environment,')
+97 667.2 Q(')-.74 E F1(Computers & Security)2.5 E F0 2.5(,v)C
+(ol. 8, no. 7, pp. 569-579, November 1989.)291.52 667.2 Q(Alvare1988.)72 682.8
+Q .434(Ana Marie De Alvare and E. Eugene Schultz, Jr)97 694.8 R .433(., `)-.55
+F .433(`A Framework for Password Selection,')-.74 F(')-.74 E F1(USENIX)2.933 E
+(UNIX Security W)97 706.8 Q(orkshop Pr)-.92 E(oceedings)-.37 E F0 2.5(,A)C
+(ugust 1988.)262.07 706.8 Q EP
+%%Page: 10 10
+BP/F0 10/Times-Roman@0 SF 2.5(-1)277.17 48 S 2.5(0-)288 48 S(Raleigh1988.)72 84
+Q 1.498 -.74(T. R)97 96 T .018(aleigh and R. Underwood, `).74 F .018
+(`CRACK: A Distributed Password Advisor)-.74 F(,')-.4 E(')-.74 E/F1 10
+/Times-Italic@0 SF .019(USENIX UNIX Security)2.519 F -.92(Wo)97 108 S
+(rkshop Pr).92 E(oceedings)-.37 E F0 2.5(,A)C(ugust 1988.)200.97 108 Q
+(Reid1989.)72 123.6 Q(Dr)97 135.6 Q 2.5(.B)-.55 G(rian K Reid, DEC W)118.67
+135.6 Q(estern Research Laboratory, 1989.)-.8 E(Personal communication.)5 E EP
+%%Trailer
+end

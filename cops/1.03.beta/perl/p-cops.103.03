@@ -1,0 +1,1335 @@
+#!/bin/sh
+# this is p-cops.103.03 (part 3 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file beta/pass.chk continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 3; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping beta/pass.chk'
+else
+echo 'x - continuing file beta/pass.chk'
+sed 's/^X//' << 'SHAR_EOF' >> 'beta/pass.chk' &&
+}
+X
+# testpwd checks a word to see if it matches the encrpted password
+# if the word is capitalized, the lowercase version is tried as well
+X
+sub testpwd {
+local ($try,$pass) = @_;
+local (@total_guesses);
+X
+push(@total_guesses, $try);
+X
+# free (lower case) check if first letter is uppercase
+&p_lc($try);
+# reverse?
+if ($opt_r) { &p_rev($try); }
+# uppercase?
+if ($opt_U) { &p_up($try); }
+X
+# single digit tacked on to beginning and end
+if ($opt_d) {
+X	if (length ($try) < 8) {
+X		foreach $i ('0'..'9') {
+X			$ntry = $i.$try;
+X			push(@total_guesses, $ntry);
+X			if ($opt_r) { &p_rev($ntry); }
+X			if ($opt_U) { &p_up($ntry); }
+X			}
+X		foreach $i ('0'..'9') {
+X			$ntry = $try.$i;
+X			push(@total_guesses, $ntry);
+X			if ($opt_r) { &p_rev($ntry); }
+X			if ($opt_U) { &p_up($ntry); }
+X			}
+X		}
+X	}
+X
+# change o's to 0's ("oh"'s to zeros)
+if ($opt_0) {
+X	if (($ntry = $try) =~ s/o/0/g) { push(@total_guesses, $ntry); }
+X	}
+X
+# misspell words -- truncate first and last letter, if > 3 chars
+# thanks to  William Vajk, learn@ddsw1.MCS.COM, who posted this idea.
+if ($opt_m) {
+X	$len = length($try);
+X	if ($len > 3) {
+X		($ntry = $try) =~ s/^.//; push(@total_guesses, $ntry);
+X		if ($len < 9) {
+X			($ntry = $try) =~ s/.$//; push(@total_guesses, $ntry);
+X			}
+X		}
+X	}
+X
+# weird things!  Tacked on to beginning and end
+if ($opt_x) {
+X	if (length ($try) < 8) {
+X		foreach $i (@strange_things) {
+X			$ntry = $i.$try;
+X			push(@total_guesses, $ntry);
+X			if ($opt_r) { &p_rev($ntry); }
+X			if ($opt_U) { &p_up($ntry); }
+X			}
+X		foreach $i (@strange_things) {
+X			$ntry = $try.$i;
+X			push(@total_guesses, $ntry);
+X			if ($opt_r) { &p_rev($ntry); }
+X			if ($opt_U) { &p_up($ntry); }
+X			}
+X		}
+X	}
+X
+# do single letters, #'s, if needed
+if ($opt_s && $uid ne $last_user) {
+X	$last_user = $uid;
+X	foreach $i (@strange_things) { push(@total_guesses,$i); }
+X	foreach $i (0..9) { push(@total_guesses, $i); }
+X	foreach $i (A..Z) { push(@total_guesses, $i); }
+X	foreach $i (a..z) { push(@total_guesses, $i); }
+X	}
+X
+foreach $i (@total_guesses) {
+#	print "Trying \"$try\" on $uid\n" if $opt_v;
+X	print "Trying \"$i\" on $uid\n" if $opt_v;
+X	$epw = crypt($try,$pass);
+X	($epw eq $pass) && return $i;
+X	}
+undef @total_guesses;
+X
+return 0;
+}
+SHAR_EOF
+echo 'File beta/pass.chk is complete' &&
+chmod 0700 beta/pass.chk ||
+echo 'restore of beta/pass.chk failed'
+Wc_c="`wc -c < 'beta/pass.chk'`"
+test 7034 -eq "$Wc_c" ||
+	echo 'beta/pass.chk: original size 7034, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/passwd.chk ==============
+if test -f 'beta/passwd.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/passwd.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/passwd.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/passwd.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#   passwd.chk
+#
+# composer@chem.bu.edu
+#
+# Check password file -- /etc/passwd -- for incorrect number of fields,
+# duplicate uid's, non-alphanumeric uids, and non-numeric group id's.
+# 
+# Mechanism:  This script ensures that each line of the passwd file (in
+# $etc, line 47) has 7 fields and is non-blank, as well as examining the
+# file for any duplicate users.  It then checks to ensure that the first
+# character of the login name is alphanumeric, and that all uid and gid
+# numbers are indeed numeric and non-negative.  It also checks the
+# validity of the home directory.
+# 
+# For yellow pages passwords, it does the same checking, but in order to
+# get a listing of all members of the password file, it does a "ypcat
+# passwd" and uses the output from that as a passwd file.
+# 
+# The /etc/passwd file has a very specific format, making the task fairly
+# simple.  Normally it has lines with 7 fields, each field separated by a
+# colon (:).  The first field is the user id, the second field is the
+# encrypted password (an asterix (*) means the group has no password,
+# otherwise the first two characters are the salt), the third field is the
+# user id number, the fourth field is the group id number, the fifth field
+# is the GECOS field (basically holds miscellaneous information, varying
+# from site to site), the sixth field is the home directory of the user,
+# and lastly the seventh field is the login shell of the user.  No blank
+# lines should be present.  Uid's will be flagged if over 8 chars, unless
+# the $OVER_8 variable (line 45) is set to "YES".
+# 
+# If a line begins with a plus sign (+), it is a yellow pages entry.  See
+# passwd(5) for more information, if this applies to your site.
+# 
+X
+require 'pathconf.pl';
+require 'pass.cache.pl';
+#   Used for Sun C2 security group file. 'FALSE' (default) will flag
+# valid C2 passwd syntax as an error, 'TRUE' attempts to validate it.
+# Thanks to Pete Troxell for pointing this out.
+$C2='FALSE' if undef($C2);
+X
+#  Some systems allow long uids; set this to 'TRUE', if so (thanks
+# to Pete Shipley (lot of petes around here, eh?)):
+$OVER_8='NO' if undef($OVER_8);
+X
+package passwd_chk;
+X
+#
+# Important files:
+$etc_passwd = $'PASSWD || '/etc/passwd';
+X
+#   Check $etc_passwd for potential problems, or use the alternate method
+# set in cops.cf:
+if (!"$'GET_PASSWD") {
+X	open(Passwd, $etc_passwd) ||
+X		warn "$0: Can't open $etc_passwd: $!\n";
+X	}
+else {
+X	open(Passwd, "$'GET_PASSWD|") ||
+X		warn "$0: Can't open $etc_passwd: $!\n";
+X	}
+&chk_passwd_file_format('Passwd');
+close Passwd;
+X
+# check ypcat passwd for potential problems... (same checks)
+if (-s $'YPCAT && -x _) {
+X    open(YPasswd, "$'YPCAT passwd 2>/dev/null |")
+X	|| die "$0: Can't popen $'YPCAT: $!\n";
+X    &chk_passwd_file_format('YPasswd');
+X    close YPasswd;
+}
+X  
+sub chk_passwd_file_format {
+X    local($file) = @_;
+X    local($W) = "Warning!  $file file,";
+X    undef %users;
+X  
+X    while (<$file>) {
+X	# should really check for correct YP syntax
+X	next if /^[-+]/;    # skipping YP lines for now
+X
+X	print "$W line $., is blank\n", next if /^\s*$/;
+X
+X	# make code a little more readable .. use names.. 
+X	($user,$pass,$uid,$gid,$gcos,$home,$shell) = split(?:?);
+X	$users{$user}++;    # keep track of dups
+X	print "$W line $., does not have 7 fields:\n\t$_" if (@_ != 7);
+X	print "$W line $., nonalphanumeric username:\n\t$_"
+X	    if $user !~ /^[A-Za-z0-9]+$/;
+X	print "$W line $., numeric username:\n\t$_"
+X	    if $user =~ /^\d+$/;
+X	print "$W line $., login name > 8 characters:\n\t$_"
+X	    if ( ! $OVER_8 && length($user) > 8);
+X	print "$W line $., no password:\n\t$_" unless $pass;
+X	print "$W line $., invalid password field for C2:\n\t$_"
+X	    if ($C2 && $pass =~ /^##/ && "##$user" ne $pass);
+X	if ($uid !~ /^\d+$/) {
+X	    if ($uid < 0) {
+X		print "$W line $., negative user id (uid):\n\t$_";
+X	    } else {
+X		print "$W line $., nonnumeric user id (uid):\n\t$_";
+X	    }
+X	}
+X	# what about checks for certain ranges of UIDs .. -composer
+X	print "$W line $., user $user has uid == 0 and is not root\n\t$_"
+X	    if $uid == 0 && $user ne "root";
+X	print "$W line $., nonnumeric group id (gid):\n\t$_"
+X	    unless $gid =~ /^\d+$/;
+X	print "$W line $., invalid home directory:\n\t$_"
+X	    unless $home =~ m:^/:;
+X
+X    }
+X    # find duplicate usernames
+X    # not the best way, but it works ...
+X    $dup_warned = 0;
+X    for (sort keys %users) {
+X	(print "Warning!  Duplicate username(s) found in $file:\n"),
+X	    $dup_warned++ if !$dup_warned && $users{$_} > 1;
+X	print "$_ " if $users{$_} > 1;
+X    }
+X    print "\n" if $dup_warned;
+}
+X  
+1;
+# end of passwd.chk file
+SHAR_EOF
+chmod 0700 beta/passwd.chk ||
+echo 'restore of beta/passwd.chk failed'
+Wc_c="`wc -c < 'beta/passwd.chk'`"
+test 4773 -eq "$Wc_c" ||
+	echo 'beta/passwd.chk: original size 4773, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/pathconf.pl ==============
+if test -f 'beta/pathconf.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/pathconf.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/pathconf.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/pathconf.pl' &&
+$YPCAT = '/usr/bin/ypcat';
+$STRINGS = '/usr/ucb/strings';
+$TFTP = '/usr/ucb/tftp';
+$UUDECODE = '/usr/bin/uudecode';
+$CMP = '/bin/cmp';
+$LS = '/bin/ls';
+X
+# end of perl needed programs
+X
+$AWK = '/bin/awk';
+$CAT = '/bin/cat';
+$CC = '/bin/cc';
+$CHMOD = '/bin/chmod';
+$COMM = '/usr/bin/comm';
+$CP = '/bin/cp';
+$DATE = '/bin/date';
+$DIFF = '/bin/diff';
+$ECHO = '/bin/echo';
+$EGREP = '/usr/bin/egrep';
+$EXPR = '/bin/expr';
+$FIND = '/usr/bin/find';
+$GREP = '/bin/grep';
+$MAIL = '/bin/mail';
+$MKDIR = '/bin/mkdir';
+$MV = '/bin/mv';
+$RM = '/bin/rm';
+$SED = '/bin/sed';
+$SH = '/bin/sh';
+$SORT = '/usr/bin/sort';
+$TEST = '/bin/test';
+$TOUCH = '/usr/bin/touch';
+$UNIQ = '/usr/bin/uniq';
+X
+1;
+SHAR_EOF
+chmod 0700 beta/pathconf.pl ||
+echo 'restore of beta/pathconf.pl failed'
+Wc_c="`wc -c < 'beta/pathconf.pl'`"
+test 677 -eq "$Wc_c" ||
+	echo 'beta/pathconf.pl: original size 677, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/pathconf.sh ==============
+if test -f 'beta/pathconf.sh' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/pathconf.sh (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/pathconf.sh (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/pathconf.sh' &&
+YPCAT = '/usr/bin/ypcat';
+STRINGS = '/usr/ucb/strings';
+TFTP = '/usr/ucb/tftp';
+UUDECODE = '/usr/bin/uudecode';
+X
+# end of perl needed programs
+X
+AWK = '/bin/awk';
+CAT = '/bin/cat';
+CC = '/bin/cc';
+CHMOD = '/bin/chmod';
+CMP = '/bin/cmp';
+COMM = '/usr/bin/comm';
+CP = '/bin/cp';
+DATE = '/bin/date';
+DIFF = '/bin/diff';
+ECHO = '/bin/echo';
+EGREP = '/usr/bin/egrep';
+EXPR = '/bin/expr';
+FIND = '/usr/bin/find';
+GREP = '/bin/grep';
+LS = '/bin/ls';
+MAIL = '/bin/mail';
+MKDIR = '/bin/mkdir';
+MV = '/bin/mv';
+RM = '/bin/rm';
+SED = '/bin/sed';
+SH = '/bin/sh';
+SORT = '/usr/bin/sort';
+TEST = '/bin/test';
+TOUCH = '/usr/bin/touch';
+UNIQ = '/usr/bin/uniq';
+SHAR_EOF
+chmod 0700 beta/pathconf.sh ||
+echo 'restore of beta/pathconf.sh failed'
+Wc_c="`wc -c < 'beta/pathconf.sh'`"
+test 644 -eq "$Wc_c" ||
+	echo 'beta/pathconf.sh: original size 644, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/rc.chk ==============
+if test -f 'beta/rc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/rc.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/rc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/rc.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#  Usage: rc.chk
+#
+#  This checks pathnames and files inside the shell script files /etc/rc*
+# for writability.  The commands inside the files /etc/rc* are executed when
+# the machine is booted, so are of special interest.
+#
+# Made easy by chk_strings :-)
+#
+# Name: Martin Foord	Username: maf  Date: Thu Jan 17 15:11:09 EST 1991 
+# Email: maf%dbsm.oz.au@munnari.oz.au
+#
+X
+require 'chk_strings.pl';
+X
+# probably don't need to, but might want to do &'glob("/etc/rc*") instead.. ;-)
+@all_rc_files = ("/etc/rc*", "/etc/*rc", "/etc/rc*.d/*",
+X		 "/etc/shutdown.d/*", "/etc/inittab");
+X
+for $file (@all_rc_files) {
+X	while (<${file}>) {
+X		if (-r $_) {
+X			&chk_strings($_);
+X			}
+X		}
+X	}
+X
+1;
+SHAR_EOF
+chmod 0700 beta/rc.chk ||
+echo 'restore of beta/rc.chk failed'
+Wc_c="`wc -c < 'beta/rc.chk'`"
+test 897 -eq "$Wc_c" ||
+	echo 'beta/rc.chk: original size 897, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/reconfig.pl ==============
+if test -f 'beta/reconfig.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/reconfig.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/reconfig.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/reconfig.pl' &&
+#!/bin/sh  # need to mention perl here to avoid recursion
+# NOTE:
+#   If you know where perl is and your system groks #!, put its
+# pathname at the top to make this a tad faster.
+#
+# the following magic is from the perl man page
+# and should work to get us to run with perl 
+# even if invoked as an sh or csh or foosh script.
+# notice we don't use full path cause we don't
+# know where the user has perl on their system.
+#
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' 
+& eval 'exec perl -S $0 $argv:q'
+X    if $running_under_some_stupid_shell_instead_of_perl;
+X
+#  Target shell scripts in question:
+$COPS_CONFIG="pathconf.pl";
+X
+#  Potential directories to find commands:
+@all_dirs=("/bin",
+X	   "/usr/bin",
+X	   "/usr/ucb",
+X	   "/usr/local/bin",  # scary
+X	   "/usr/bsd");
+X
+# uncomment next line if you want your own current path used instead
+#
+# @all_dirs = split(/:/, $ENV{'PATH'});
+X
+#  Target commands in question, sans those checked above:
+@all_commands= ("cc", "awk", "cat",
+X		"chmod", "cmp", "comm", "cp",
+X		"date", "diff", "echo", "egrep", "expr",
+X		"find", "grep", "ls", "mail",
+X		"mkdir", "mv", "rm", "sed",
+X		"sh", "sort", "test", "tftp", "touch",
+X		"uudecode", "uniq", "ypcat");
+X
+@want{@all_commands} = ();
+X
+%exceptions=   ('strings', 'chk_strings',
+X                'tftp', 'misc.chk',
+X		'cmp', 'ftp.chk',
+X                'uudecode', 'misc.chk');
+X
+# grab the current values:
+open COPS_CONFIG || die "Can't open $COPS_CONFIG: $!\n";
+X
+$new = "$COPS_CONFIG.$$";
+open(NEW_CONFIG, ">$new") || die "Can't open $new: $!\n";
+X
+while (<COPS_CONFIG>) {
+X    unless (/\$(\w+)\s*=\s*(['"])(\S*)\2/) {
+X	print NEW_CONFIG;
+X	next;
+X    } 
+X    ($cap_command, $path) = ($1, $3);
+X    ($command = $cap_command) =~ tr/A-Z/a-z/;
+X    unless (($newpath = &getpath($command)) || $command =~ /^yp/) {
+X	warn "Warning!  no path for $command!\n";
+X	warn "          $exceptions{$command} will not work as planned!\n"
+X		     if $exceptions{$command};
+X	$errors++;
+X    } else {
+X	delete $want{$command};
+X    } 
+X    print "old $path now in $newpath\n" if $newpath ne $path;
+X    print NEW_CONFIG "\$$cap_command = '$newpath';\n";
+X
+}
+X
+for (sort keys %want) {
+X    delete $want{$_} if $path = &getpath($_);
+X    tr/a-z/A-Z/;
+X    print NEW_CONFIG '$', $_, " = '", $path, "';\n";
+} 
+X
+close(COPS_CONFIG) || die "can't close $COPS_CONFIG: $!\n";
+close(NEW_CONFIG) || die "can't close $new: $!\n";
+X
+if (@missing = keys %want) {
+X     warn "Warning!   missing paths for @missing!\n";
+X     warn "The shell version may not work right!\n";
+} 
+X
+X
+if ($errors) {
+X    print STDERR "Not all paths were found: write anyway? ";
+X    # what about removing NEW_CONFIG, $new ??
+X    exit 1 if <STDIN> !~ /^\s*y/i;
+X    print STDERR "Ok, but this might not be right...\n";
+} 
+X
+$old = "$COPS_CONFIG.old";
+X
+rename($COPS_CONFIG, $old)
+X    || die "can't rename $COPS_CONFIG to $old: $!\n";
+X
+rename($new, $COPS_CONFIG)
+X    || die "can't rename $new to $COPS_CONFIG: $!\n";
+X
+X
+open COPS_CONFIG || die "can't re-open $COPS_CONFIG: $!\n";
+($SH_CONF = $COPS_CONFIG) =~ s/\.pl$/.sh/;
+open (SH_CONF, ">$SH_CONF") || die "can't create $SH_CONF: $!\n";
+X
+while (<COPS_CONFIG>) {
+X    s/^\$//;
+X    print SH_CONF;
+} 
+close SH_CONF || die "can't close $SH_CONF: $!\n";
+X
+Xexit 0;
+X
+#############
+X
+sub getpath {
+X    local($cmd) = @_;
+X    local($path);
+X
+X    for (@all_dirs) {
+X	return $path if -x ($path = "$_/$cmd");
+X    } 
+X    '';
+} 
+SHAR_EOF
+chmod 0700 beta/reconfig.pl ||
+echo 'restore of beta/reconfig.pl failed'
+Wc_c="`wc -c < 'beta/reconfig.pl'`"
+test 3358 -eq "$Wc_c" ||
+	echo 'beta/reconfig.pl: original size 3358, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/root.chk ==============
+if test -f 'beta/root.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/root.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/root.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/root.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#  Usage: root.chk
+#
+#  This script checks pathnames inside root's startup files for 
+# writability, improper umask settings (world writable), non-root
+# entries in /.rhosts, writable binaries in root's path,
+# and to ensure that root is in /etc/ftpuser.
+#
+# Also check for a single "+" in /etc/hosts.equiv (world is trusted),
+# and that /bin, /etc and certain key files are root owned, so that you
+# can't, say, rcp from a host.equived machine and blow over the password
+# file... this may or may not be bad, decide for yourself.
+# Startup files are /.login /.cshrc /.profile
+#
+#  Mechanism:  These files contain paths and filenames that are stripped
+# out using "grep".  These strings are then processed by the "is_able"
+# program to see if they are world writable.  Strings of the form:
+#
+#	path=(/bin /usr/bin .)
+#		and
+#	PATH=/bin:/usr/bin:.:
+#
+# are checked  to ensure that "." is not in the path.  All
+# results are echoed to standard output.  In addition, some effort was
+# put into parsing out paths with multiple lines; e.g. ending in "\",
+# and continuing on the next line.  Also, all executable files and 
+# directories in there are checked for writability as well.
+#
+#  For umask stuff, simply grep for umask in startup files, and check
+# umask value.  For /etc/ftpuser, simple grep to check if root is in
+# the file.  For /etc/hosts.equiv, just check to see if "+" is alone
+# on a line by awking it.
+#
+X
+# rewritten in perl by tchrist@convex.com
+# 
+X
+# root startup/important files
+X
+require 'file_owner.pl';
+require 'fgrep.pl';
+require 'suckline.pl';
+require 'is_able.pl';
+require 'chk_strings.pl';
+require 'glob.pl';
+X
+package root_chk;
+X
+# use -a true if you care about non-executables
+# in root's path
+X
+$ARGV[0] eq '-a' && ($all_files++, shift);
+X
+die "usage: root.chk [-a]\n" if @ARGV;
+X
+$W = 'Warning! ';
+X
+$cshrc	= '/.cshrc';
+$profile= '/.profile';
+$rhosts = '/.rhosts';
+X
+$| = 1;
+X
+@big_files= ('/.login', '/.cshrc', '/.profile', '/.logout' );
+X
+# root should own *at least* these, + $big_files; you can check for all files
+# in /bin & /etc, or just the directories (the default.)
+# root_files="/bin /bin/* /etc /etc/* $big_files $rhosts"
+@root_files= ('/bin','/etc',@big_files,$rhosts,'/etc/passwd','/etc/group');
+X
+# misc important stuff
+$ftp='/etc/ftpusers';
+$equiv='/etc/hosts.equiv';
+X
+#   should't have anyone but root owning /bin or /etc files/directories
+# In case some of the critical files don't exist (/.rhost), toss away error
+# messages
+X
+if (@bad_files = grep (-e && &'Owner($_), @root_files)) {
+X    print "$W  Root does not own the following file(s):\n";
+X    print "\t@bad_files\n";
+} 
+X
+local($chk_strings'recurse) = 1 unless defined $chk_strings'recurse;
+X
+for $file (@big_files) {
+X    open file || next;
+X
+X    &'chk_strings($file);
+X
+X    # check for group or other writable umask
+X    while (<file>) {
+X	next if /^\s*#/;
+X	next unless /umask\s*(\d+)/;
+X	next unless ~oct($1) & 022;
+X	print "$W root's umask set to $1 in $file\n";
+X    } 
+} 
+X
+print "$W $ftp exists and root is not in it\n" 
+X    if -e $ftp && !&'fgrep($ftp,'root');
+X
+print "$W A \"+\" entry exists in $equiv!\n" if &'fgrep($equiv, '^\+$');
+X
+if (open rhosts) {
+X    while (<rhosts>) {
+X	next unless /\S+\s+(\S+)/ && $1 ne 'root';
+X	print "$W Non-root entry in $rhosts! $1\n";
+X    }
+} 
+close(rhosts);
+X
+undef @rootpath;
+X
+# checking paths...
+#
+# Get the root paths from $csh.
+X
+if (open(CSHRC, $cshrc)) {
+X    $path = '';
+X    while (<CSHRC>) {
+X	next if /^\s*#/;
+X	chop unless /\\$/;
+X	if (/set\s+path\s*=/) {
+X	    $_ = &'suckline($cshrc, $_);
+X	    s/.*set\s+path\s*=\s*//;
+X	    s/\((.*)\)/$1/;
+X	    s/#.*/./;
+X	    @tmppath = grep($_ ne '', split(' '));
+X	    for (@tmppath) { $whence{$_} .= " " . $cshrc; } 
+X	    push(@rootpath, @tmppath);
+X	} 
+X    } 
+X    close(CSHRC);
+} 
+X
+if (open login) {
+X    $path = '';
+X    while (<cshrc>) {
+X	next if /^\s*#/;
+X	chop unless /\\$/;
+X	if (/set\s+path\s*=/) {
+X	    $_ = &'suckline('login', $_);
+X	    s/.*set\s+path\s*=\s*//;
+X	    s/\((.*)\)/$1/;
+X	    s/#.*/./;
+X	    @tmppath = grep($_ ne '', split(' '));
+X	    for (@tmppath) { $whence{$_} .= " " . $login; } 
+X	    push(@rootpath, @tmppath);
+X	} 
+X    } 
+X    close(login);
+}
+X
+if (open profile) {
+X    $path = '';
+X    while (<profile>) {
+X	next if /^\s*#/;
+X	chop unless /\\$/;
+X	if (/PATH=/) {
+X	    $_ = &'suckline('profile', $_);
+X	    s/.*PATH=//;
+X	    s/#.*//;
+X	    @tmppath = split(/:/);
+X	    for (@tmppath) { $whence{$_} .= " " . $profile; } 
+X	    push(@rootpath, @tmppath);
+X	} 
+X    } 
+X    close(profile);
+} 
+X
+for (keys %whence) {
+X    $whence{$_} =~ s/^ //;
+X    $whence{$_} =~ s/ / and /g;
+} 
+X
+undef %seen;
+grep($seen{$_}++, @rootpath);
+X
+$is_able'silent = 1;
+for (keys %seen) {
+X    if (!-e && $_ ne ".") {
+X	print "$W path component $_ in $whence{$_} doesn't exist!\n";
+X	next;
+X    } 
+X
+X    if (/^\.?$/) {  # null -> dot
+X	print "$W \".\" (or current directory) is in root's path in $whence{$_}!\n";
+X    } elsif (&'is_writable($_)) {
+X	print "$W Directory $_ is _World_ writable and in root's path in $whence{$_}!\n";
+X	next;
+X    }
+X
+X    foreach $file (&'glob("$_/*")) {
+X	# can't just check -x here, as that depends on current user
+X	$is_executable = -f $file && (&'Mode($file) & 0111);
+X	if (($all_files || $is_executable) && 
+X		    ($how = &'is_writable($file, 'w', 'w'))) {
+X	    print "$W _World_ $how ",
+X		    $is_executable ? 'executable' : 'file',
+X		" $file in root path component $_ from $whence{$_}!\n";
+X	} 
+X    }
+} 
+X
+$is_able'silent = 0;
+X
+1;
+SHAR_EOF
+chmod 0700 beta/root.chk ||
+echo 'restore of beta/root.chk failed'
+Wc_c="`wc -c < 'beta/root.chk'`"
+test 5609 -eq "$Wc_c" ||
+	echo 'beta/root.chk: original size 5609, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/rules.pl ==============
+if test -f 'beta/rules.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/rules.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/rules.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/rules.pl' &&
+sub apply_rules {
+X    local($op, $value, @plan) = @_;
+X
+X    printf("eval($op $value): %s\n", &ascii_plan(@plan)) if $opt_d;
+X
+X    #
+X    # apply UID attack rules...
+X    #
+X    if ($op eq "u") {
+X	#
+X	# If we can replace /etc/passwd or /usr/lib/aliases, we can grant 
+X	# any uid. 
+X	#
+X	&addto("r", "/etc/passwd", @plan);
+X        &addto("r", "/usr/lib/aliases", @plan);
+X        &addto("r", "/etc/aliases", @plan);
+X
+X	#
+X	# Check CF's for all usernames with this uid.
+X	#
+uname_loop:
+X    foreach $uname (split(/ /, $uid2names{$value})) {
+X	    $home = $uname2dir{$uname};
+X
+X	    next uname_loop unless $home;
+X
+X	    if ($home eq "/") {
+X		$home = "";
+X	    }
+X	    &addto("r", "$home/.rhosts", @plan);
+X	    &addto("r", "$home/.login", @plan);
+X	    &addto("r", "$home/.logout", @plan);
+X	    &addto("r", "$home/.cshrc", @plan);
+X	    &addto("r", "$home/.profile", @plan);
+X	}
+X
+X	#
+X	# Controlling files for root...
+X	#
+X	@rootlist = ( 
+X		"/etc/rc", "/etc/rc.boot", "/etc/rc.single", 
+X		"/etc/rc.config", "/etc/rc.local", "/usr/lib/crontab",
+X		"/usr/spool/cron/crontabs",
+X		);
+X
+X	if ($value eq "0") {
+X	    foreach $file (@rootlist) {
+X		    &addto("r", $file, @plan);
+X	    }
+X	    # Experimental!
+X	    # you can remove this if desired - tjt
+X	    #do "rc.prog";
+X	}
+X
+X	#
+X	# Other CFs for non-root folks...
+X	#
+X	if ($value ne "0") {
+X	    &addto("r", "/etc/hosts.equiv", @plan);
+X	    if (-s "/etc/hosts.equiv") {
+X		&addto("r", "/etc/hosts", @plan);
+X	    }
+X	}
+X
+X    #
+X    # Plans for attacking GIDs...
+X    #
+X    } elsif ($op eq "g") {	# apply gid attack rules
+X
+X	#
+X	# If we can replace /etc/group we can become any group
+X	#				  
+X        &addto("r", "/etc/group", @plan);
+X
+X	#
+X	# If we can grant any member of a group we can grant that group
+X	#
+member_loop:
+X	foreach $uname (split(/ /, $gid2members{$value})) {
+X	    if (! defined($uname2uid{$uname})) {
+X		printf(stderr "group '%s' member '%s' doesn't exist.\n",
+X			$value,
+X			$uname);
+X		next member_loop;
+X	    }
+X
+X	    &addto("u", $uname2uid{$uname}, @plan);
+X	}
+X
+X    #
+X    # Plans for attacking files...
+X    #
+X
+X    } elsif ($op eq "r" || $op eq "w") {
+X
+X        ($owner, $group, $other) = &filewriters($value);
+X
+X	&addto("u", $owner, @plan) if ($owner ne "");
+X	&addto("g", $group, @plan) if ($group ne "");
+X	&addto("u", "-1", @plan) if ($other);
+X
+X	#
+X	# If the goal is to replace the file, check the parent directory...
+X	#
+X	if ($op eq "r") {
+X	    $parent = $value;
+X	    $parent =~ s#/[^/]*$##;     # strip last / and remaining stuff
+X
+X	    if ($parent eq "") {
+X		$parent = "/";
+X	    }
+X
+X	    if ($parent ne $value) {
+X		&addto("r", $parent, @plan);
+X	    }
+X	}
+X
+X    } else {			# wow, bad $type of object!
+X	printf(stderr "kuang: bad op in apply_rules!\n");
+X	printf(stderr "op '%s' value '%s' plan '%s'\n",
+X		$op,
+X		$value,
+X		&ascii_plan(@plan));
+X	exit(1);
+X    }
+}
+X
+1;
+X
+SHAR_EOF
+chmod 0600 beta/rules.pl ||
+echo 'restore of beta/rules.pl failed'
+Wc_c="`wc -c < 'beta/rules.pl'`"
+test 2768 -eq "$Wc_c" ||
+	echo 'beta/rules.pl: original size 2768, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/stat.pl ==============
+if test -f 'beta/stat.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/stat.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/stat.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/stat.pl' &&
+;# $Header: stat.pl,v 3.0.1.1 90/08/09 04:01:34 lwall Locked $
+;# Usage:
+;#	require 'stat.pl';
+;#	@ary = stat(foo);
+;#	$st_dev = @ary[$ST_DEV];
+;#
+$ST_DEV =	0 + $[;
+$ST_INO =	1 + $[;
+$ST_MODE =	2 + $[;
+$ST_NLINK =	3 + $[;
+$ST_UID =	4 + $[;
+$ST_GID =	5 + $[;
+$ST_RDEV =	6 + $[;
+$ST_SIZE =	7 + $[;
+$ST_ATIME =	8 + $[;
+$ST_MTIME =	9 + $[;
+$ST_CTIME =	10 + $[;
+$ST_BLKSIZE =	11 + $[;
+$ST_BLOCKS =	12 + $[;
+X
+;# Usage:
+;#	require 'stat.pl';
+;#	do Stat('foo');		# sets st_* as a side effect
+;#
+sub Stat {
+X    ($st_dev,$st_ino,$st_mode,$st_nlink,$st_uid,$st_gid,$st_rdev,$st_size,
+X	$st_atime,$st_mtime,$st_ctime,$st_blksize,$st_blocks) = stat(shift(@_));
+}
+X
+1;
+SHAR_EOF
+chmod 0700 beta/stat.pl ||
+echo 'restore of beta/stat.pl failed'
+Wc_c="`wc -c < 'beta/stat.pl'`"
+test 653 -eq "$Wc_c" ||
+	echo 'beta/stat.pl: original size 653, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/suckline.pl ==============
+if test -f 'beta/suckline.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/suckline.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/suckline.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/suckline.pl' &&
+#
+#  As title implies... :-)
+#
+sub main'suckline {
+X    local($file, $_) = @_;
+#   local($package) = caller;
+X
+#   $file =~ s/^([^']+)$/$package'$1/; 
+X    {
+X	if (s/\\\n?$//) {
+X	    $_ .= <$file>;
+X	    redo;
+X	}
+X    } 
+X    $_;
+}
+X
+1;
+SHAR_EOF
+chmod 0700 beta/suckline.pl ||
+echo 'restore of beta/suckline.pl failed'
+Wc_c="`wc -c < 'beta/suckline.pl'`"
+test 229 -eq "$Wc_c" ||
+	echo 'beta/suckline.pl: original size 229, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/suid.chk ==============
+if test -f 'beta/suid.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/suid.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/suid.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/suid.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#  Usage: suid.chk [-n] [-s secure_dir] [search_starting_directory]
+#
+#   Shell script intended to be run periodically by cron in order
+#   to spot changes in files with the suid or sgid bits set.
+#
+#	suid.chk	840919		Prentiss Riddle
+#
+#     This changes into the $SECURE directory first, then 
+#   uses find(1) to search the directories in $SEARCH for all
+#   files with the 4000 or 2000 permission bits set.  $STOP is a file
+#   containing "ls -gildsa" output for known setuid or setgid programs.
+#   Any additions or changes to this list represent potential security
+#   problems, so they are reported.
+#
+#  Modified 8/15/89, Dan Farmer:
+#	Just changed the program/doc names and some of the temp
+#  files to make it fit in with the rest of the programs....
+#  Modified 12/26/90, df
+#       Now flags SUID shell scripts and world writeable SUID files, too.
+#
+#  Rewritten in perl, 1/17/91, df
+#  Major hacks by tchrist 5/14/91
+#
+X
+require "hostname.pl";
+require "is_able.pl";
+require "file_owner.pl";
+require "pathconf.pl";
+require "chk_strings.pl";
+require "pass.cache.pl";
+package suid_chk; # name space protection
+$debug=0;
+X
+#
+# Getopts stuff
+$usage = "Usage: $0 [-n] [-s secure_dir] [starting_directory]\n";
+require 'getopts.pl';
+# Process the command args; Either specify verbose or an alternate config file:
+die $usage unless &`Getopts('ns:');
+X
+$suid_dir = $'SECURE || '.';
+if (defined($opt_s)) { $suid_dir = $opt_s; }
+X
+# Do NFS stuff?  Yes unless opt:
+if (defined($opt_n)) { $skip_nfs = $opt_n; }
+else { $skip_nfs = 0; }
+X
+$STOP="$suid_dir/suid.stop";
+$TEMPOLD="$suid_dir/fsold$$";
+$TEMPCUR="$suid_dir/fscur$$";
+$TEMPNEW="$suid_dir/fsnew$$";
+$TEMPGON="$suid_dir/fsgon$$";
+$TEMPM="$suid_dir/fsm$$";
+X
+if (@ARGV > 1) { die $usage; }
+elsif (@ARGV == 1) { $start_dir = shift; }
+X
+# these may be terribly rash assumptions....
+$start_dir="/" unless defined $start_dir;
+$find_can_ls = 1 unless defined $find_can_ls;
+X
+$NONFS = '-type d \( -fstype nfs -prune \) -o' if $skip_nfs;  
+$find_ls = $find_can_ls ? '-ls' : "-exec $'LS -gilds {} \\;";
+X
+die "Error -- Security directory $suid_dir doesn't exist\n"
+X    unless -d $suid_dir;
+unless (-d $suid_dir) {
+X    mkdir($suid_dir, 0700) || die "can't mkdir $suid_dir: $!";
+} 
+chdir $suid_dir || die "can't chdir $suid_dir: $!\n";
+X
+# find the setuid programs and sort
+&run("$'FIND $start_dir $NONFS -type f \\( -perm -4000 -o -perm -2000 \\) $find_ls | $'SORT > $TEMPCUR");
+X
+# compare with the sorted stop list
+# create stop file if needed
+if (! -f $STOP) { open(S,">$STOP"); close(S); }
+X
+&run("$'SORT <$STOP >$TEMPOLD");
+&run("$'COMM -13 $TEMPOLD $TEMPCUR | $'SORT +8 >$TEMPNEW");
+&run("$'COMM -23 $TEMPOLD $TEMPCUR | $'SORT +8 >$TEMPGON");
+X
+local($is_able'silent) = 1;
+local($chk_strings'recurse) = 0 unless defined $chk_strings'recurse;
+X
+# report changes
+if (-s $TEMPNEW || -s $TEMPGON) {
+X    if (-s $TEMPNEW) {
+X	open TEMPNEW || die "Can't open $TEMPNEW: $!\n";
+X	while (<TEMPNEW>) {
+X	    ($file) = /(\S+)$/;
+X
+X	    # don't want SUID files to be world writable!
+X	    # although *reasonable* systems clear the bit on write
+X	    print "Warning!  SUID file $file is _World_ writable!\n" 
+X		if &'is_able ($file, "w", "w"); 
+X		    
+X	    if (-r $file && -f _ && -T $file) {
+X		print "Warning!  ", &'Owner($file) ? '' : 'ROOT-owned ', 
+X		    "SUID file $file is a non-binary, executable file!\n";
+X	    }
+X
+X	    &'chk_strings($file) if -r _;
+X	}
+X	close TEMPNEW;
+X    }
+X
+X    if (-s $TEMPNEW) {
+X	open TEMPNEW || die "Can't reopen $TEMPNEW: $!\n";
+X	print "\nThese files are newly setuid/setgid:\n\n";
+X	print while <TEMPNEW>;
+X    }
+X
+X    if (-s $TEMPGON) {
+X	open TEMPGON || die "Can't reopen $TEMPGON: $!\n";
+X	print "\nThese files are no longer setuid/setgid:\n\n";
+X	print while <TEMPGON>;
+X    }
+X
+}
+X
+unlink $TEMPOLD, $TEMPCUR, $TEMPNEW, $TEMPGON;
+X
+sub run {
+X    print "running: $_[0]\n" if $debug;
+X    system $_[0];
+X    warn "command $_[0] returned $?" if $?;
+} 
+X
+#  end it all....
+X
+1;
+SHAR_EOF
+chmod 0700 beta/suid.chk ||
+echo 'restore of beta/suid.chk failed'
+Wc_c="`wc -c < 'beta/suid.chk'`"
+test 4128 -eq "$Wc_c" ||
+	echo 'beta/suid.chk: original size 4128, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/suid.stop ==============
+if test -f 'beta/suid.stop' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/suid.stop (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/suid.stop (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/suid.stop' &&
+SHAR_EOF
+chmod 0700 beta/suid.stop ||
+echo 'restore of beta/suid.stop failed'
+Wc_c="`wc -c < 'beta/suid.stop'`"
+test 0 -eq "$Wc_c" ||
+	echo 'beta/suid.stop: original size 0, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/user.chk ==============
+if test -f 'beta/user.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/user.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/user.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/user.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#  This combines user.chk and home.chk.  It searches for home directories
+# and various user startup files for world writability, as well as flagging
+# any .rhosts and .netrc files that are readable.  You can change the
+# files checked by changing @ftable and @readables, respectively.
+# 
+X
+#
+# check for writable files in all user's homes
+#
+require "pass.cache.pl";
+require "is_able.pl";
+X
+# files checked for:
+@ftable = ("rhosts", "profile", "login", "logout", "cshrc",
+X	   "bashrc", "bash_profile", "inputrc", "screenrc",
+X	   "kshrc", "tcshrc", "netrc", "forward", "dbxinit",
+X	   "distfile", "exrc", "emacsrc", "remote", "mh_profile",
+X	   "xinitrc", "xsession", "Xdefaults", "Xresources", "rninit");
+X
+@readables = ("netrc", "rhosts");
+X
+local(%done);
+X
+# what's the point of doing a keys and using $i ??
+# why not just do "for $dir (values %uname2dir) {" ????
+for $i (keys %uname2dir) {
+X    $dir = $uname2dir{$i};
+X    #   I don't want to hear about every file in their home dir, if 
+X    # is WW, but still need to check the .netrc file for readability...
+X    next unless $dir;
+X    next if $done{$dir}++;
+X    if (-e $dir) { 
+X        if (&is_able($dir, "w", "w")) {
+X            for $r (@readables) {
+X                if (-s "$dir/.$r") {
+X                    &is_able("$dir/.$r", "w", "r");
+X		}
+X	    }
+X            next;
+X	}
+X        for $file (@ftable) {
+X            $foo_file = $dir . "/.$file";
+X            if (-e $foo_file) {
+X                &is_able($foo_file, "w", "w");
+X                for $r (@readables) {
+X                    if ($file eq $r && -s $foo_file) {
+X                        &is_able($foo_file, "w", "r");
+X		    }
+X		}
+X	    }
+X	}
+X    }
+}
+X
+1;
+SHAR_EOF
+chmod 0700 beta/user.chk ||
+echo 'restore of beta/user.chk failed'
+Wc_c="`wc -c < 'beta/user.chk'`"
+test 1870 -eq "$Wc_c" ||
+	echo 'beta/user.chk: original size 1870, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/yagrip.pl ==============
+if test -f 'beta/yagrip.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/yagrip.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/yagrip.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/yagrip.pl' &&
+#Yet Another Getopt Routine In Perl
+# jgreely@cis.ohio-state.edu, 89/11/1
+#usage:
+#&getopt("f:bar") ||
+#	die &usage("script","f:bar","oo","[files ...]");
+#
+sub getopt {
+X	local($_,$flag,$opt,$f,$r,@temp) = @_;
+X	@temp = split(/(.):/);
+X	while ($#temp >= $[) {
+X		$flag .= shift(@temp);
+X		$opt .= shift(@temp);
+X	}
+X	while ($_ = $ARGV[0], /^-(.)(.*)/ && shift(@ARGV)) {
+X		($f,$r) = ($1,$2);
+X		last if $f eq '-';
+X		if (index($flag,$f) >= $[) {
+X			eval "\$opt_$f++;";
+X			$r =~ /^(.)(.*)/,redo if $r ne '';
+X		}elsif (index($opt,$f) >= $[) {
+X			$r = $r eq '' ? shift(@ARGV) : $r;
+X			eval "\$opt_$f = \$r;";
+X		}else{
+X			print STDERR "Unrecognized switch \"-$f\".\n";
+X			return 0;
+X		}
+X	}
+X	return 1;
+}
+X
+#usage: usage:
+# &usage(progname,arglist,@names,@last);
+#ex:
+# &usage("script","f:bar","oo","[file ...]");
+#would return
+# "usage: script [-f oo] [-bar] [file ...]"
+#
+sub usage {
+X	local($prog,$_,@list) = @_;
+X	local($string,$flag,@string,@temp,@last) = ();
+X	@temp = split(/(.):/);
+X	push(@string,"usage:",$prog);
+X	while ($#temp >= $[) {
+X		if (($flag = shift(@temp)) ne '') {
+X			push(@string,"[-$flag]");
+X		}
+X		if (($flag = shift(@temp)) ne '') {
+X			push(@string,sprintf("[-%s %s]",$flag,shift(@list)));
+X		}
+X	}
+X	push(@string,@list) if $#list >= $[;
+X	return join(' ',@string) . "\n";
+}
+1;
+SHAR_EOF
+chmod 0600 beta/yagrip.pl ||
+echo 'restore of beta/yagrip.pl failed'
+Wc_c="`wc -c < 'beta/yagrip.pl'`"
+test 1274 -eq "$Wc_c" ||
+	echo 'beta/yagrip.pl: original size 1274, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+rm -f _shar_seq_.tmp
+echo You have unpacked the last part
+exit 0

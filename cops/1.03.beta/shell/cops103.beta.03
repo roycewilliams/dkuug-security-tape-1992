@@ -1,0 +1,1519 @@
+#!/bin/sh
+# this is cops103.beta.03 (part 3 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file beta/docs/COPS.report continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 3; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping beta/docs/COPS.report'
+else
+echo 'x - continuing file beta/docs/COPS.report'
+sed 's/^X//' << 'FOO_BAR' >> 'beta/docs/COPS.report' &&
+the best weapon against this is education.  An educated user will simply
+not make as many mistakes; and while it may seem impractical to teach
+_all_ users about (even) the fundamentals of computer security, think of
+all the time and resources wasted tracking down the mistakes that keep
+recurring time and time again.
+.PP
+6)  Unauthorized permissions or privileges.  Are users given _too much_
+freedom?  Do new computer accounts have any default security at all, or
+are the new users expected to know what to do to protect their programs,
+data, and other files.  System files, programs, and data are sometimes
+shipped with minimal or no protection when gotten straight from the
+manufacturer; someone at the installation site must have enough
+knowledge to \*Qtune\*U the system to be effective and safe.  Password,
+memory, and log files especially should all be carefully monitored,
+but unfortunately an experienced user can often still find out any information
+they want with perseverance and a little luck.  This is
+where a system such as COPS can really shine.  After a new system is
+configured, some basic flaws can be uncovered with just a small amount
+of effort.  New system problems that somehow slip through the cracks of
+the site installers can be caught and modified before any serious
+problems result.  The key here is to prevent your system users from
+getting a denial of computer service that they need and deserve.  Service
+could mean anything from CPU time, response time, file space, or any
+other commodity that a computer has to offer.
+.PP
+7)  Crackers/Hackers/Evil twin brothers.  Not much is needed on this
+subject, save to say that they are often not the main problem.
+Professional evil-users are a rarity; often harmful acts are done 
+by users who \*Qjust wanted to see what would happen\*U or had no idea
+of the ramifications of their acts.  Someone who is truly experienced is 
+very difficult to stop, and is certainly outside the realm of any
+software security tool as discussed in this paper.  Fortunately, most
+evil-doers are fairly inexperienced and ignorant, and when they make a
+mistake, a watchful administrator can deal with a problem before it gets
+out of hand.  Sometimes they can even reveal security problems that 
+were previously undiscovered.  COPS can help here mostly by reducing an
+attacker's options; the less holes to exploit, the better.
+.PP
+The COPS system attempts to help protect as many of the above
+items as possible for a generic UNIX system.  In the proper UNIX spirit,
+instead of having a large program that attempts to solve every possible
+problem, it is composed of several small programs that each check one
+or more potential UNIX security holes.
+The COPS system uses a variety of these problems to see if there are any
+cracks in a given UNIX security wall.  These methods correspond to some
+of the problems discussed above; specifically to administrators, system
+programmers, and computer operators; authentication; ignorance;
+unauthorized permissions or privileges; and finally crackers/hackers/evil
+twin brothers (numbers 1,3,5, and 6.)  It is very difficult, almost a
+practical impossibility to give software assistance to problems in
+physical security, and finally bugs or features that are present in a
+given UNIX system are possible to detect, but are not covered in this
+system (yet).  The design of most of the the programs were at least
+described if not outlined from the following sources:
+.sp
+Aho, Kernighan, and Weinberger 88
+.sp
+Baldwin 87
+.sp
+Fiedler and Hunter 86
+.sp
+Grampp and Morris 84
+.sp
+Wood and Kochran 86
+.sp
+.PP
+Of course with all of the problems listed below, looking at the actual
+source code of the program is very instructive -- each numbered section
+lists the corresponding program that is used to perform the check.  COPS
+checks:
+.PP
+1)  \*Qvital\*U system files and directories to see if they
+have dangerous permissions (usually either world-writable, or world-readable.)
+Files and directories thought to be critical are in a configuration
+file
+.ul
+is_able.lst.
+Wildcards are useable like in UNIX; indeed, COPS
+passes everything to the shell for expansion.
+.sp
+The program that performs this task is
+.ul
+is_able.chk
+.PP
+2)  Check devices for file systems to see if they are world-readable/writable,
+plus check for any exported NFS file systems with no restrictions.
+The file systems are normally found in /etc/fstab.
+.sp
+The program that performs this task is
+.ul
+dev.chk
+.PP
+3)  Check all files in system for SUID status, notifying the COPS user
+of any changes in SUID status, and if any SUID files are world-writable,
+shell scripts, or non-executable (program) files.
+.sp
+The program that performs this task is
+.ul
+suid.chk
+and was written by Prentiss Riddle.
+.PP
+4)  Check the /etc/passwd file (and the yellow pages password database, if
+applicable) for null passwords, improper # of fields, non-unique user-id's,
+non-numeric group id's, blank lines, and non-alphanumeric user-id's.
+.sp
+The program that performs this task is
+.ul
+passwd.chk
+.PP
+5)  Check the /etc/group file (and the yellow pages database, if
+applicable) for groups with passwords, improper # of fields,
+duplicate users in groups, blank lines, and non-unique group-id's.
+.sp
+The program that performs this task is
+.ul
+group.chk
+.PP
+6)  Check passwords of users on system.
+.sp
+Method -- using the stock \*Qcrypt\*U command, compare the encrypted
+password found in the /etc/passwd file against the following
+(encrypted) guesses:
+.sp
+The login id (uid), information in the gecos field, and all single
+letter passwords.
+.sp
+The program that performs this task is
+.ul
+pass.chk
+and was written by Craig Leres and was modified by Seth Alford,
+Roger Southwick, Steve Dum, and Rick Lindsley.  Bugs have been reported
+and fixed by numerous people.
+.PP
+7)  Check the root path, umask, also if root is in /etc/ftpuser and
+owns /bin, /etc, /etc/passwd, /.login, /.profile and /.rhosts, and
+finally if a \*Q+\*U is in /etc/hosts.equiv.
+.sp
+The program that performs this task is
+.ul
+root.chk
+.PP
+8)  Examine the commands in /etc/rc* to ensure that none of the
+files or paths used are world-writable.
+.sp
+The program that performs this task is
+.ul
+rc.chk
+.PP
+9)  Examine the commands in /usr/lib/crontab to ensure that none of the
+files or paths used are world-writable.
+.sp
+The program that performs this task is
+.ul
+cron.chk
+.PP
+10)  Check all of the user home directories to ensure they are not
+world writable.
+.sp
+The program that performs this task is
+.ul
+home.chk
+and was written by John Owens.
+.PP
+11) Check important user files in user's home directories to ensure
+they are not world writable, plus checks netrc files to see if they
+are readable.  The files checked (all in the individual
+users' home directory, all with the prefix \*Q.\*U):
+.sp
+rhosts profile login cshrc kshrc tcshr crhost
+.sp
+netrc forward dbxinit distfile exrc emacsrc logout
+.sp
+The program that performs this task is
+.ul
+user.chk
+.PP
+12) Checks ftp setup; anononymous ftp setup, if you support it.  This
+seems to be fairly site specific; it tries to check for correct ownership,
+file/directory permissions, etc.; for a complete description, check the
+man page for ftp.chk.
+.sp
+The program that performs this task is
+.ul
+ftp.chk [-a]
+.PP
+13) Check for unexpected file system corruption or security breaches,
+using CRC values that are generated from your system files, then
+compared against previously calculated values.  As the author says:
+\*QIt's nice to be able to say that you know all your files
+are as they should be.\*U
+.sp
+The program that performs this task is
+.ul
+crc.chk.
+Mark Mendel wrote most of
+.ul
+crc.c
+and Jon Zeef wrote
+.ul
+crc_check.c
+.PP
+14) Checks a few miscellaneous potential security problems that really
+don't belong anywhere else.  This includes looking to see if tftp &
+rexecd are enabled, to check if the uudecode alias is in the mail
+alias file and not commented out, if uudecode is either SUID or can
+create SUID files, and if the programs inside the /etc/inetd.conf
+or /etc/servers aren't world-writable.
+.sp
+The program that performs this task is
+.ul
+misc.chk
+.PP
+15) Given a goal to compromise, such as user root, and a list of user
+and group id's that can be used in an attempt to achieve the goal, this
+security tool will search through the system until it verifies that the
+goal is compromisible or not.  The program that performs this tricky task
+is part of the
+.ul
+U-Kuang
+(rhymes with \*Qtwang\*U)
+system.  Robert Baldwin was kind enough to allow me to include this
+security checker (a fine security machine in it's own right)
+within this distribution.  For more information on this fascinating
+security checker, see kuang.man.ms and [Baldwin 87].  I have rewritten
+it in Bourne shell (it was in C-Shell) for further portability; Steve
+Romig rewrote it in Perl for speed.
+.PP
+.PP
+None of programs listed above certain cover all of the possible areas
+that can harm a system, but if run together they can aid an overworked
+administrator to locate some of the potential trouble spots.  The COPS
+system is not meant to be a panacea against all UNIX security woes,
+but an administrator who examines the security toolbox programs and 
+this research paper might reduce the danger of their UNIX system being
+compromised -- and that's all any security tool can ever hope to do.
+The COPS system could never replace a vigilant administration
+staffed with knowledgeable people, but hopefully, as administrators look
+into the package, more comprehensive programs will come into being,
+covering more of the problems that will continue as the latest versions
+of UNIX continue to grow.
+.PP
+Design Notes:
+.PP
+The programs that are described here were designed to address the
+problems discussed above, but still be usable on as many UNIX
+\*Qflavors\*U as possible.  Speed was sacrificed for
+simplicity/portability; hopefully the tools here will either be
+replaced or modified, as by no means are they the final word or
+solution to _any_ of these problems; indeed, it is my hope that
+after other programmers/administrators see this report, they will
+create newer, better, and more general tools that can be
+re-distributed periodically.  None of the programs need to be run by
+root to be effective, with the exception of the SUID checker (to
+ensure that all files are checked.) Some of the tools were written by
+myself, the others were written by other programmers on the network
+and (with their permission) presented here.  All of the programs in
+this report are in the public domain, with the exception of Robert
+Baldwin's U-Kuang system; they all exist solely to be used and
+modified to fit your needs.  If they are re-distributed, please 
+keep them in their original form unless it is clearly stated that
+they were modified.  Any improvements (that might not be too hard :-)),
+suggestions, or other security programs that
+you would like to see get further distribution can be sent to:
+.PP
+df@medusa.cs.purdue.edu
+.PP
+(That's me)
+.PP
+or
+.PP
+spaf@uther.cs.purdue.edu
+.PP
+(Dr. Eugene Spafford)
+.PP
+.PP
+Enhancements I envision include:
+.sp
+i) Improved speed and portability without sacrificing functionality
+(pretty obvious, I guess....)
+.sp
+ii) A level of severity assigned to each warning; anything that could 
+compromise root instantly (root having no password, for example) might
+have a level 0 priority, while simply having a user with a writable home
+directory might only be level 3.  This way the system could be run at
+a certain threshold level, or simply have the set of warnings
+prioritized for a less sophisticated administrator.
+.sp
+iii) The eradication of any design flaws or coding errors that are in
+the COPS system.
+.PP
+The main purpose of creating the COPS system was twofold; the first was
+to foster an understanding of the security problems common to most UNIX
+systems, and the second was to try to create and apply software tools
+that, when run, will inform system administrators of potential problems
+present in their system.  No attempt is made by the tools to correct any
+problems because a potential security problem at one site may be
+standard policy/practice at another.  An emphasis on furthering
+education and knowledge about UNIX in general is the key to good
+security practices, not following blindly what an unintelligent tool
+might say.
+.PP
+Some of the advantages to using a system such as COPS are:
+.sp
+i) Nearly Continuous monitoring of traditional problem areas.
+.sp
+ii) A new system can be checked before being put into production.
+.sp
+iii) New or inexperienced administrators can not only stop some of their
+problems in security they may have, but can also raise their
+consciousness about the potential for security dilemmas.
+.PP
+And a couple of disadvantages:
+.sp
+i) An administrator could get a false sense of security from running
+these programs.  Caveat emptor (ok, they are free, but still beware.)
+.sp
+ii) A specific path to the elimination of the problem is not presented.
+This could also be construed as an advantage, when considering the third
+point.
+.sp
+iii) Badguys can get these tools.  You know -- the guys with black hats.
+What happens when they get a copy of this package?  With any sensitive
+subject like security, knowledge is zealously guarded.  People are
+afraid that absolute knowledge corrupts -- who knows, they may be right.
+But I staunchly stand by the tree of knowledge.  Let the bad guys taste
+the fruit, and they may see the light, so to speak.  In addition, the
+system does not say how to exploit the hole, just that it exists.
+.PP
+.ul
+Results of Running COPS:
+.PP
+Not surprisingly, the results when COPS was run varied significantly
+depending on what system and site it was run on.  Here at Purdue, it was
+run on a Sequent Symmetry running DYNIX 3.0.12, on a pair of Suns (a
+3/280 and 3/50) running UNIX 4.2 release 3.4, a VAX 11/780 running 4.3
+BSD UNIX, a VAX 8600 running Ultrix 2.2, and finally a NeXT machine
+running their 0.9 O/S version of UNIX.  The results of the COPS
+system showed a reasonable amount of security concern on all of the
+machines; the faculty only machines showed the weakest security, followed
+by the machines used by the graduate students, and finally the undergraduate
+machines had the strongest security (our administrators _know_ that you
+can't trust those (us?) young folks.)  Whether this was showing that
+Purdue has a good administration, or that the UNIX vendors have a fairly
+good grasp on potential security problems, or if it was merely 
+showcasing the shortcomings of this system wasn't clear to me from the
+results.
+.PP
+The security results probably will vary significantly from machine to
+machine -- this
+is not a fault of UNIX; merely having the same machine and software
+does not mean that two sites will not have completely different security
+concerns.  In addition, different vendors and administrators have
+significantly varying opinions on how a machine should be set up.  There
+is no fundamental reason why any system cannot pass all or nearly all of
+these tests, but what is standard policy at one sites may be an
+unthinkable risk at another, depending upon the nature of the work being
+done, the information stored on the computer, and the users of the
+system.
+.PP
+When I first started researching this report, I thought it would be a
+fairly easy task.  Go to a few computing sites, read some theoretical
+papers, gather all the programs everyone had written, and write a
+brief summary paper.  But what I found was an
+tremendous lack of communication and concerted effort towards the
+subject of security.  AT&T had written a couple of programs ([Kaplilow
+and Cherepov 88], as had Hewlett Packard ([Spence 89]), but they were
+proprietary.  I heard rumors that the
+government was either working on or had such a security system, but they
+certainly weren't going to give it to me.
+The one book devoted to UNIX security ([Kochran and Wood 86]) was good,
+but the programs that they presented were not expansive enough for what
+I had in mind, plus the fact that they had written their programs
+mostly based on System V.  And while most system administrators I talked
+to had written at least a shell script or two that performed a minor
+security task (SUID programs seemed the most popular), no one seemed to
+exchange ideas or any
+their problems with other sites -- possibly afraid that the admission of
+a weakness in their site might be an invitation to disaster.  There is
+an excellent security discussion group on the network ([Various Authors
+84-]), from which I received some excellent ideas for this project, but
+it is very restrictive to whom it allows to participate.  I hope that
+with the release of this security system it will not only help stamp
+out problems with UNIX security, but would encourage people to exchange
+ideas, programs, problems and solutions to the computer community at large.
+X
+Dan Farmer
+September 29, 1989
+(latest changes on January 7, 1991)
+.PP
+.ul
+Acknowledgements:
+I would like to thank Eugene Spafford for his invaluable help in
+the researching, planning, and development of this project.  Without
+the writings and programs created by Robert Morris, Matt Bishop, and
+other capable UNIX programmers, this project could never have gotten
+off the ground.  Thanks also go to Brian Kernighan, Dennis Ritchie,
+Donald Knuth, and Ken Thompson, for such inspirational computer work.
+And of course without Peg, none of this would have come into being.
+Thanks again to all of you.
+.bp
+.ce
+.ul
+BIBLIOGRAPHY
+X
+.sp
+_, UNIX Programmers Manual, 4.2 Berkeley Software Distribution,
+Computer Science Division, Department of Electrical
+Engineering and Computer Science University of California,
+Berkeley, CA, August 1983.
+.sp
+_, DYNIX(R) V3.0.12 System Manuals, Sequent Computer Systems, Inc., 1984.
+.sp
+Aho, Alfred V., Brian W. Kernighan, and Peter J. Weinberger, The
+AWK Programming Language, Addison-Wesley Publishing Company, 1988.
+.sp
+Authors, Various, UNIX Security Mailing List/Security Digest,
+December 1984 -.
+.sp
+Baldwin, Robert W., Crypt Breakers Workbench, Usenet, October
+1986.
+.sp
+Baldwin, Robert W., Rule Based Analysis of Computer Security,
+Massachusetts Institute of Technology, June 1987.
+.sp
+Bauer, David S. and Michael E. Koblentz, NIDX - A Real-Time
+Intrusion Detection Expert System, Proceedings of the Summer
+1988 USENIX Conference, Summer, 1988.
+.sp
+Bishop, Matt, Security Problems with the UNIX Operating System,
+Department of Computer Sciences, Purdue University, January
+31, 1983.
+.sp
+Bishop, Matt, How to Write a Setuid Program, April 18, 1985.
+.sp
+Denning, Dorothy, Cryptography and Data Security, Addison-Wesley
+Publishing Company, Inc, 1983.
+.sp
+Duff, Tom, Viral Attacks On UNIX System Security, Proceedings of
+the Winter 1988 USENIX Conference, Winter, 1988.
+.sp
+Fiedler, David and Bruce Hunter, UNIX System Administration,
+Hayden Book Company, 1986.
+.sp
+Grampp, F. T. and R. H. Morris, "UNIX Operating System Security,"
+AT&T Bell Laboratories Technical Journal, October 1984.
+.sp
+Kaplilow, Sharon A. and Mikhail Cherepov, "Quest -- A Security
+Auditing Tool," AT&T Bell Laboratories Technical Journal,
+AT&T Bell Laboratories Technical Journal, May/June 1988.
+.sp
+Morris, Robert and Ken Thompson, "Password Security : A Case
+History," Communications of the ACM, November 1979.
+.sp
+Reed, Brian, "Reflections on Some Recent Widespread Computer
+Break-ins," Communications of the ACM, vol. Vol 30, No. 2,
+February 1987.
+.sp
+Reed, J.A. and P.J. Weinberger, File Security and the UNIX System
+Crypt Command, Vol 63, No. 8, AT&T Bell Laboratories
+Technical Journal, October 1984.
+.sp
+Smith, Kirk, Tales of the Damned, UNIX Review, February 1988.
+.sp
+Spafford, Eugene H., The Internet Worm Program: An Analysis,
+Purdue Technical Report CSD-TR-823, Nov 28, 1988.
+.sp
+Spafford, Eugene H., 1989.  Private Communications
+.sp
+Bruce Spence, spy: A UNIX File System Security Monitor, Workshop
+Proceedings of the Large Installation Systems Administration III,
+September, 1988.
+.sp
+Stoll, Clifford, Stalking the Wily Hacker, Volume 31, Number 5,
+Communications of the ACM, May 1988.
+.sp
+Thompson, Ken, Reflections on Trusting Trust, Volume 27, Number
+8, Communications of the ACM, August 1984.
+.sp
+Wood, Patrick and Stephen Kochran, UNIX System Security, Hayden
+Books, 1986.
+.sp
+Wood, Patrick, A Loss of Innocence, UNIX Review, February 1988.
+FOO_BAR
+echo 'File beta/docs/COPS.report is complete' &&
+chmod 0600 beta/docs/COPS.report ||
+echo 'restore of beta/docs/COPS.report failed'
+Wc_c="`wc -c < 'beta/docs/COPS.report'`"
+test 31849 -eq "$Wc_c" ||
+	echo 'beta/docs/COPS.report: original size 31849, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/KUANG.README ==============
+if test -f 'beta/docs/KUANG.README' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/KUANG.README (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/KUANG.README (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/KUANG.README' &&
+X
+X  The U-Kuang system is currently setup in a minimum configuration; e.g.
+it assumes only that world modes/permissions are to be used.  To fully
+use the system, if the password checkers and the home-directory checker
+come back with any positive results (i.e. with an account that can be
+broken), modify the init_kuang file to reflect this.
+X  To use this system to it's full capabilities, be sure to read the
+manual, kuang.man.ms.
+X
+This directory contains the various programs and shell scripts
+that make up the Kuang security checking system.
+X
+The file, kuang.man.1, documents the system in the style of a UNIX
+manual page.  The file, kuang.mss, is a draft of a paper on
+this system.
+X
+X
+To run the system:
+X
+0. Execute 'make' to build the programs.
+1. Read kuang.man.1
+2. Modify the file, init_kuang, to set the initial set of privileges.
+3. Execute "sh kuang" (or run the COPS system.)
+X
+FOO_BAR
+chmod 0600 beta/docs/KUANG.README ||
+echo 'restore of beta/docs/KUANG.README failed'
+Wc_c="`wc -c < 'beta/docs/KUANG.README'`"
+test 886 -eq "$Wc_c" ||
+	echo 'beta/docs/KUANG.README: original size 886, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/SUID.README ==============
+if test -f 'beta/docs/SUID.README' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/SUID.README (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/SUID.README (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/SUID.README' &&
+Findsuid is a little utility we dreamt up to watch for potential Trojan horse
+programs by keeping an eye on our suid and sgid files and telling us when
+they change unexpectedly.
+X
+We run it using the following line in crontab:
+X
+X	40 3 * * * /etc/findsuid/findsuid >/etc/findsuid/fserror 2>&1
+X
+Included here is the findsuid shell script, a man page, a makefile, and a
+sample "stop" file.
+X
+--- Prentiss Riddle ("Aprendiz de todo, maestro de nada.")
+--- {ihnp4,harvard,seismo,gatech,ctvax}!ut-sally!riddle
+FOO_BAR
+chmod 0600 beta/docs/SUID.README ||
+echo 'restore of beta/docs/SUID.README failed'
+Wc_c="`wc -c < 'beta/docs/SUID.README'`"
+test 501 -eq "$Wc_c" ||
+	echo 'beta/docs/SUID.README: original size 501, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/cops ==============
+if test -f 'beta/docs/cops' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/cops (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/cops (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/cops' &&
+.TH COPS 1 "Jan 4, 1991"
+.UC 4
+.SH NAME
+cops \- Checks security of system for potential danger areas.
+.SH SYNOPSIS
+.B cops
+.SH DESCRIPTION
+.I cops
+runs a set of programs that each check a different aspect of security
+on a Unix system.  If any potential security holes do exist, the results
+are either mailed or saved to a report file.
+.PP
+The following programs are currently executed by
+.I cops
+\-\- see the appropriate man page or other documentation for 
+more information on each of the following:
+.Ps
+root.chk    dev.chk       group.chk
+home.chk    rc.chk        passwd.chk
+pass.chk    user.chk      cron.chk
+misc.chk    is_able.chk   crc.chk
+.Pe
+In addition, it runs the U-kuang expert system, which runs these
+additional programs:
+.Ps
+init_kuang  kuang         addto
+clearfiles  filewriters   members
+.Pe
+.PP
+.I cops
+uses three internal variables that may be changed to determine where
+who gets any reports generated, if it is to mailed or saved to a file.
+The variable $SECURE_USERS is used to determine who gets mailed any
+results.  $SECURE is the directory that
+.I cops
+is in.  And finally, if the variable $MMAIL is set to be NO, then
+.I cops
+will save the report in a subdirectory with the same name as the host
+it is being run on, in a file called
+.I year_month_date
+, where these stand for the actual values, not that string :-).
+Otherwise,
+.I cops
+will mail the report to the whomever is listed in $SECURE_USERS.
+.PP
+If the variables $ONLY_DIFF and $MMAIL are set to be "YES", then cops
+will examine the last report saved to a file, and compare it with the
+current one.  If any differences do exist, then it will be mailed; else,
+the report will be discarded.
+.PP
+For the curious, or those that are gluttons for punishment, you can
+set the variable $BIT_BUCKET to be a file, or null, for stdout, to see
+all the error messages and such.  Some of the programs in cops print
+out an error message if a file isn't found (for instance, if you put
+a file to be checked in the
+.I is_able.lst
+configuration file, and it doesn't exist, it will not complain to the
+final report, only here; by default, this is our friend /dev/null.
+.SH FILES
+.EX 0
+root.chk    dev.chk      group.chk
+home.chk    rc.chk       passwd.chk
+pass.chk    user.chk     cron.chk
+misc.chk    init_kuang   kuang
+addto       clearfiles   filewriters
+members     crc.chk
+.EE
+.SH "SEE ALSO"
+.EX 0
+root.chk(1)    dev.chk(1)      file.chk(1)
+group.chk(1)   home.chk(1)     rc.chk(1)
+passwd.chk(1)  pass.chk(1)     user.chk(1)
+cron.chk(1)    misc.chk(1)     kuang(1)
+CRC.README     KUANG.README
+.EE
+FOO_BAR
+chmod 0600 beta/docs/cops ||
+echo 'restore of beta/docs/cops failed'
+Wc_c="`wc -c < 'beta/docs/cops'`"
+test 2568 -eq "$Wc_c" ||
+	echo 'beta/docs/cops: original size 2568, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/dev.chk ==============
+if test -f 'beta/docs/dev.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/dev.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/dev.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/dev.chk' &&
+.TH DEV.CHK 1 "December 31, 1989"
+.UC 4
+.SH NAME
+dev.chk  \- Checks writability of devices and special files.
+.SH SYNOPSIS
+.B dev.chk
+[
+\-g
+]
+.SH DESCRIPTION
+.I dev.chk
+checks the permissions of /dev/mem, /dev/kmem, and
+all devs listed in the file /etc/fstab (the
+.I mount
+command would be
+a preferable way of getting the file system name, but the syntax of the
+output is variable from machine to machine), and flags them if they are
+readable by using the
+.I is_readable
+command, unless they are NFS mounted,
+in which case they are ignored.  It also checks for unrestricted NFS
+mountings in /etc/exports, and finally checks a small number of key files
+that should not be world readable.
+.PP
+options are:
+.TP
+.B \-g
+Check for group writability as well as world.
+.SH FILES
+.EX 0
+/usr/adm/sulog
+/etc/btmp
+/.netrc 
+/etc/fstab
+/etc/exports
+L.sys
+.EE
+.SH "SEE ALSO"
+is_writable(1)
+FOO_BAR
+chmod 0600 beta/docs/dev.chk ||
+echo 'restore of beta/docs/dev.chk failed'
+Wc_c="`wc -c < 'beta/docs/dev.chk'`"
+test 875 -eq "$Wc_c" ||
+	echo 'beta/docs/dev.chk: original size 875, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/CRC.README ==============
+if test -f 'beta/docs/CRC.README' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/CRC.README (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/CRC.README (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/CRC.README' &&
+X
+X  This README.suid and everything but the C programs has been hacked up be
+me, so all problems you have are probably due to me, unless you can't compile
+the files.  Then blame Jon :-)
+X
+X  This checks for unexpected file system corruption or security breaches.
+It's nice to be able to say that you know all your files are as they should
+be.  Mark Mendel wrote most of crc.c and Jon Zeef wrote crc_check.c.  Seems
+to work fine on BSD or SYS V.
+X
+To use it:
+X
+1) You first create a crc list with the script "crc.chk", which takes one
+argument, the seed for the crc generator.  It reads the file "crc_list"
+for a list of files to check; what I have are some of the more interesting
+binaries, but you can add or delete from this list to your hearts content.
+Wildcards or specific file names are fine.  The first time you run it,
+it will create a file called "crc.files", which contains all the crc
+values you generated.  Optionally, you can do a:
+X
+find / -mount -print | sort | xargs ./crc -v > crc.tmp
+X
+X  However, "xargs" is a security problem, when combined with find.  Use
+this judiciously, if at all, unless your vendor puts some "safe" options
+to find in.
+X
+2) You can now use "crc.chk" to compare this "crc.files" file to a crc list
+created each time you run the shell program.  If everything is ok, nothing
+is outputted, otherwise, the results are either mailed to the user INFORM,
+on line xxx, or saved to a file "crc.results".  You *MUST* use the same
+seed each time you run the program, or the numbers generated will be
+different each time you run the program, which kind of makes it useless.
+X
+IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT
+IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT
+IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT
+X
+X  Have I got your attention?  Good.  There are some fundamental problems
+with using a crc program like this.  *If* you use a seed that is hardcoded
+in the program, or no seed at all, this is *bad*.  That means to really
+use this program usefully, you can't run it in crontab, like the rest
+of COPS.  Even worse, you should really store the results offline, since
+anyone who breaks into your machine can modify a binary file, run the
+crc checker again, then put the new values in your file.  That's the
+right way.  But I know that most of you won't do this, so by default,
+"crc.chk" just stores everything like everything else, in the COPS secure
+directory.  It can still help you, if the attacker doesn't know where
+you keep stuff, or doesn't know enough to trash your database of old
+crc values.  If nothing else, be sure that you keep your older values
+on tape or secondary medium, so when your system gets kicked around a
+bit, you can grab the crc program off the tape (the intruder could modify
+that, too, you know), run it on your binaries, and finally compare it
+to your old values.  Believe me, this is a lot easier, though still not
+perfect, than reloading everything on your system from tape, then still
+not knowing.  I've put it in the "cops" shell script, but left it commented
+out, on line 123, so if you want to use it this way, just uncomment this
+line.
+X  One thing you can do, if you keep the numbers online, is do a crc on the
+file of values you keep; write it down, or memorize it, then if it is ever
+tampered with, you can detect it.
+X
+X  Jon goes on about the initial crc value, and other stuff:
+X
+=========================================================================
+X  ... don't tell anyone what this is, you can 
+X  make it nearly impossible for anyone to modify a file in such a way 
+X  that it has the same crc value as the old one (primarily because they 
+X  don't know what the old one was).  If anyone does discover a way to 
+X  make files of the same size that produce the same unknown crc value 
+X  for any unknown -i value, let me know.  
+X
+X  To really do it right, you need to 
+X
+X  1) Run find_crc in single user mode (unless you modify the crc source).
+X  2) Store all crc results offline.
+X  3) Don't let anyone see your -i value or the crc results.
+X
+X  Please send me any modifications you make.
+X
+X  Jon Zeeff
+X  zeeff@b-tech.ann-arbor.mi.us
+=========================================================================
+X
+X  Send 'em to me, too!
+X
+X -- dan
+FOO_BAR
+chmod 0600 beta/docs/CRC.README ||
+echo 'restore of beta/docs/CRC.README failed'
+Wc_c="`wc -c < 'beta/docs/CRC.README'`"
+test 4278 -eq "$Wc_c" ||
+	echo 'beta/docs/CRC.README: original size 4278, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/home.chk ==============
+if test -f 'beta/docs/home.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/home.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/home.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/home.chk' &&
+.TH HOME.CHK 1 "December 31, 1989"
+.UC 4
+.SH NAME
+home.chk  \- Checks user home directories for world writability.
+.SH SYNOPSIS
+.B home.chk
+.SH DESCRIPTION
+This checks all of the user home directories (it calls getpwent() to
+get user directories) for world writability.
+FOO_BAR
+chmod 0600 beta/docs/home.chk ||
+echo 'restore of beta/docs/home.chk failed'
+Wc_c="`wc -c < 'beta/docs/home.chk'`"
+test 270 -eq "$Wc_c" ||
+	echo 'beta/docs/home.chk: original size 270, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/pass.chk ==============
+if test -f 'beta/docs/pass.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/pass.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/pass.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/pass.chk' &&
+.TH PASS.CHK 1 "Jan 4, 1991"
+.UC 4
+.SH NAME
+pass.chk  \- Checks for poor passwords in a password file.
+.SH SYNOPSIS
+.B pass.chk
+[
+options
+]
+.SH DESCRIPTION
+By default
+.I pass.chk
+only checks for accounts with passwords the same
+as the login name. The following options add more extensive checking. (The
+tradeoff is cpu time -- with all options enabled it can run into the 100's
+of MINUTES.) Any argument that does not begin with a "-" is assumed to be
+a file name. (A single '-' means stdin.) If no file name is given, /etc/passwd
+is used.
+.PP
+Options are:
+.TP
+.B \-v
+verbose -- list all guesses on stdout
+.TP
+.B \-u
+output the username on the line of the password file
+currently being checked. If the program stops
+abruptly you will then know how far it got.
+.TP
+.B \-w file
+use the list of words contained in "file" as likely
+passwords. Words in the file are one to a line.
+A variable, "ARB_CONST", on line 6 of the source file, "pass.c",
+determines how many words can be in the dictionary file.  Default is 32000.
+.TP
+.B \-b
+check all guesses backwards too
+.TP
+.B \-g
+use the Full Name portion of the gecos field, the user's .plan, .forward,
+and .signature files to generate more guesses
+.TP
+.B \-s
+check the single letters a-z, A-Z, 0-9 as passwords
+.TP
+.B \-c
+with each guess, check for all lower case and
+all upper case versions too.
+.TP
+.B \-n
+complain about null passwords (default is to keep quiet)
+.TP
+.B \-p
+print the password when guessed
+.B \-P file
+use an alternate password file
+.SH FILES
+.Ps
+/etc/passwd
+.Pe
+FOO_BAR
+chmod 0600 beta/docs/pass.chk ||
+echo 'restore of beta/docs/pass.chk failed'
+Wc_c="`wc -c < 'beta/docs/pass.chk'`"
+test 1524 -eq "$Wc_c" ||
+	echo 'beta/docs/pass.chk: original size 1524, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/is_able ==============
+if test -f 'beta/docs/is_able' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/is_able (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/is_able (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/is_able' &&
+.TH IS_ABLE 1 "Jan 4, 1991"
+.UC 4
+.SH NAME
+is_able \- Check for write/read\-ability of a file.
+.SH SYNOPSIS
+.B is_able
+file {w|g|S|s} {r|w|s|B|b}
+.SH DESCRIPTION
+.I is_able
+can check a file to see if a file is either write/read-able by group or by
+all, or if it is setuid/setgid, or a combination of these.  A first argument
+of "w" or "g" determines whether it is to be world or group writable,
+respectively, a "s" or "S" allows checking of SUID or SGID files, respectively.
+A second argument of "r", "w", or "s", stands for readability, writeability,
+or set[ug]id-ness, respectively; a "B" and a "b" stand for read and write,
+and set[ug]id and write, respectively.
+.I is_able
+with a write option Also checks the parent directories, if a complete path is
+given, for writeability.
+.SH BUGS
+The Andrew File System, or Mach, or the combination of the two, apparently
+plays games with stat(), the way I get the file info, so it can report things
+as writable, when they aren't.  Sigh.
+FOO_BAR
+chmod 0600 beta/docs/is_able ||
+echo 'restore of beta/docs/is_able failed'
+Wc_c="`wc -c < 'beta/docs/is_able'`"
+test 980 -eq "$Wc_c" ||
+	echo 'beta/docs/is_able: original size 980, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/kuang.1 ==============
+if test -f 'beta/docs/kuang.1' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/kuang.1 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/kuang.1 (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/kuang.1' &&
+NAME
+X	kuang -	rule based system to find inconsistencies in the security
+X		configuration of a BSD 4.2 Unix.
+X
+SYSNOPSIS
+X	edit init_kuang to reflect attackers initial goals
+X	sh kuang > tracelog
+X
+DESCRIPTION
+X	Kuang is a rule based system that searches for a path from an
+initial set of privileges to a desired set.  Given a goal, kuang uses
+rules to determine a set of subgoals which are sufficient to achieve the
+initial goal.  The rules are then applied to the subgoals to determine a
+set of sub-subgoals, etc.  This process repeats until there are no new
+goals to examine.  If a subgoal can be directly achieved using the
+attacker's initial privileges, then a line is added to the file
+'Success' that describes how the attacker can achieve the top level goal.
+X	The rules for Unix can be divided into three categories
+depending on whether they deal with files, users, or groups.  Kuang
+embodies these rules in three shell scripts, dofiles, douids, and
+dogids.  Goals that have been examined are recorded in the files
+files.p, uids.p, and gids.p.  The files files.n, uids.n, and gids.n
+record the goals that will be examined next.  The shell script, kuang,
+applies the goals in each .n file to the corresponding rule file.
+X	The initial privileges and ultimate goal are set up in the shell
+script, init_kuang.  If the program finds a sequence of rules that
+connects the initial privileges to the ultimate goal, that sequence will
+be recorded in the file Success.  Each step in the sequence is recorded
+as a pair of words.  For example, the line "gids users, write
+/usr/bob/.login, trojan baldwin, grant staff, write /etc, replace
+/etc/passwd" means that the password file can be replaced because the
+group staff has write access to the directory /etc, and you can get
+access to the staff group because the .login file for the user bob can
+be written by members of the group users, which is one of your initial
+privileges.
+X
+FILES
+X	*.n		- goals to process in the next round.
+X	*.x		- goals currently being processed.
+X	*.p		- goals that have been examined.
+X	uids.*		- goals related to user IDs.
+X	gids.*		- goals related to group IDs.
+X	files.*		- goals related to files.
+X	Success		- log of holes that are found.
+X	tracelog	- step by step trace of search.
+X
+AUTHOR
+X	Bob Baldwin, MIT Lab for Computer Science, Programming and
+Systems Group.  
+E-Mail Address   :
+X
+baldwin@xx.lcs.mit.edu
+...!mit-eddie!baldwin
+X
+Kuang was inspired by William Gibson's book, Neuromancer, which won the
+1984 Hugo award.  In honor of Gibon's book, systems that use rule based
+searching to find security holes should be called a kuang-type systems.
+X
+BUGS
+X	Needs to be smarter about command files (e.g., it should look
+for writeable files executed via crontab).
+X	Doesn't include rules for all the programs that run with
+their user id set to root.
+FOO_BAR
+chmod 0600 beta/docs/kuang.1 ||
+echo 'restore of beta/docs/kuang.1 failed'
+Wc_c="`wc -c < 'beta/docs/kuang.1'`"
+test 2809 -eq "$Wc_c" ||
+	echo 'beta/docs/kuang.1: original size 2809, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/kuang.man ==============
+if test -f 'beta/docs/kuang.man' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/kuang.man (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/kuang.man (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/kuang.man' &&
+.ps 12
+.vs 12
+.PH ````
+.nr W 80
+.in 0
+.ce 3
+\fBKuang: Rule-Based Security Checking\fP
+Robert W. Baldwin
+MIT, Lab for Computer Science Programming Systems Research Group
+X
+.PP
+The security of data in a particular computer depends both on the
+integrity of the computer's protection mechanism and on the consistent
+uses of those mechanisms by the users of that computer.  Software
+verification and specification technology addresses the integrity
+problem, but very little has been done to insure that the protection
+mechanisms are being used consistently.  This paper describes a
+rule-based system that finds inconsistencies in the set of protection
+decisions made by the users of an information system.
+X
+.PP
+\fBIntroduction\fP
+.PP
+The trend in commercial computer systems has been to increase the the
+number of mechanisms that allow users to execute commands and to
+increase the number of mechanisms that allow users to share
+information.  All of these mechanisms must be considered to be part of
+the protection system.  For example, if users can specify a set of
+commands that will be executed automatically every night, then the
+database that contains these commands, and the program that processes
+the database must be considered part of the protection system.  Even
+if the program has been certified to work correctly, the access list
+for the command database and the set of privileges available to the
+processing program must be considered to be part of the protection
+configuration \**
+.FS
+The protection configuration is a subset of the
+access matrix.  The access matrix specifies how each user can access
+each object.  I use the term
+.ul
+protection configuration
+to refer to the portion of the access matrix concerning the objects 
+used by any piece of the protection system.
+.FE
+of that computer.  The problem
+considered in this paper is ensuring that the protection configuration
+is consistent with the user's security goals.
+.PP
+The goal of flexible information processing and sharing makes
+computers more useful, but that goal also makes protection systems
+larger and more complex.  The large number of interactions between the
+pieces of the protection system makes it hard for the users to make
+protection decisions correctly.  This is particularly true when parts
+of an information system are managed by novices (e.g., personal work
+stations).  Users need automated tools for analyzing the interactions
+between the pieces of a large protection system.
+.PP
+This paper describes a class of systems, called Kuang-type \**
+.FS
+This
+project was inspired by William Gibson's book
+.ul
+Neuromancer
+, which won the 1984 Nebula award for best science fiction novel.
+Gibson's book describes innovative ways to visualize the structure of
+information systems.  In particular, it describes a program called a
+Kuang Grade Mark 11 Ice Breaker (
+.ul
+ice
+refers to the mechanisms used
+to protect access to information).  The program described in this memo
+is a greatly simplified version of that ice breaker program.
+.FE
+systems, for analyzing large protection configurations.  
+This class of systems is illustrated by a Simple Unix Kuang program
+(SU-Kuang) that answers a question about a Unix protection
+configuration.  The question is "what if an attacker had access to a
+given set of privileges (groups), could that attacker become
+super-user?".  SU-Kuang allows a system manager to perform a simple
+what-if analysis of a protection configuration, and in this mode it
+helps the manager make protection decisions.  A typical use of SU-Kuang
+is to run it periodically to see if access to the group, World, (i.e.,
+minimum privileges) is sufficient to become super-user.  In this mode
+Kuang functions as an automatic security checker.  SU-Kuang is just one
+possible tool for helping users cope with the complexity of a large
+protection system.  Some other desirable tools are mentioned at the
+end of this paper.
+.PP
+The heart of the SU-Kuang program is a set of rules that describe the
+Unix (BSD4.2) protection system from the point of view of an
+attacker.  For example, one rule says that if an attacker can write
+the file /etc/passwd (the authentication database), then that attacker
+can become super-user.  To decide whether to use this rule, an
+attacker would examine the protection configuration of the target
+machine to see what privileges are required to write the file
+/etc/passwd.  Using similar rules, SU-Kuang can answers the what-if
+question by performing a backward chaining search of the protection
+configuration (see figure
+.ul
+goal-tree
+).  Given a goal, like become
+super-user, SU-Kuang examines all the rules to produce a list of
+subgoals that would be sufficient to meet its goal.  Recursively, each
+of the subgoals can be processed to produce a list of sub-subgoals.
+The process continues until there are no new goals.  At each step, if
+a goal can be achieved using the initial privileges of the attacker,
+SU-Kuang prints out a message that describes the sequence of steps
+that leads from the initial goals to the target goal.
+.sp
+.sp
+.nf
+X             Become Super-User
+X             /                     \\
+X            /                       \\
+X   Replace /etc/passwd      Write /.rhosts
+X        /        \\                      .
+X       /          \\                    . .
+X Become Staff   Write /etc
+X     .                                   .
+X    . .                                 . .
+X   .   .                               .   .
+X
+X
+.fi
+(Example of a goal-tree used by SU-Kuang.  The nodes of the tree
+are goals desired by an attacker.
+The children of each node are the subgoals that are sufficient to
+achieve the parent goal.  The goal-tree used by SU-Kuang is a pure
+OR-tree.  Any one of the subgoals is sufficient to grant the parent goal.)
+X
+.PP
+Notice that SU-Kuang does not find holes in the Unix operating system.
+It finds mistakes in the protection configuration.  For example,
+SU-Kuang found a security hole on an MIT machine that resulted from
+two incorrect decisions about who should have write access to start-up
+command files.  SU-Kuang points out holes by describing the sequence
+of steps used to exploit the hole.  The sequence SU-Kuang printed was:
+"member MIT, write ~tom/.cshrc, member A_STAFF, write ~dick/.login,
+member STAFF, write /etc, replace /etc/passwd, become ROOT".  This
+means that the attacker had access to the group MIT, which all users
+are in.  The MIT group had write access to one of the start-up command
+files executed automatically when the user Tom (not his real
+name) logged in.  Anyone in the MIT group could add commands to Tom's
+start-up command file, and have these commands executed with Tom's
+privileges next time Tom logged into the machine.  Tom is a member of
+the Athena Staff group, which is not particularly privileged.  However,
+the A_STAFF group does have write access to one of Dick's start-up
+command files, and Dick is a member of the Staff group, which is one
+of the most privileged groups.  In fact, members of the staff group
+can write the directory that contains the password database.  Write
+access to the directory allows staff members to delete and recreate
+the password database.  By creating a password database that has a
+known password for the super-user account, members of the staff group
+can acquire super-user privileges.
+.PP
+My experience running SU-Kuang is that these mistakes are created
+periodically because the users do not understand the interactions
+between the numerous pieces of the Unix protection system.  However,
+it is not complicated to write a program that can explore all the
+possible interactions.  SU-Kuang itself is a simple program, and
+generating the rules that describe the pieces of the protection system
+is also easy (see section
+.ul
+rules
+).  The simplifying idea is to
+describe the protection system in terms of how an attacker can
+manipulate it.  Using this framework, performing the analysis is easy.
+.PP
+I consider any system that uses attacker-oriented rules to be a
+Kuang-type system.  The remainder of this paper describes the Unix
+Kuang system I built to determine whether a given set of privileges is
+sufficient to become super-user.  The nature of the rules and the
+process used to deduce them is illustrated in section
+.ul
+rules
+, which lists the set of rules used to model Unix.  The model used by
+SU-Kuang was incomplete in several ways, so section
+.ul
+extensions
+describes some of the features of Unix that were not
+modeled.  The incomplete model turned out to be very effective at
+finding security holes, so section
+.ul
+experience
+presents the
+lessons learned from running SU-Kuang on the computers at MIT.  The last
+section discusses other kinds of Kuang systems and their benefits.
+.PP
+\fBRules to model Unix\fP
+.PP
+The first step in generating attacker-oriented rules is to determine
+the types of goals that are relevant to an attacker of the target
+system.  These goal types can be deduced from the basic protection
+model of the operating system, so before presenting the rules, the
+Unix protection model is summarized.  The second step is to make a
+list of the pieces of the protection system and to examine each one in
+terms of the goals an attacker could achieve using each piece.
+The pieces of the Unix protection system that were included in the
+prototype's model are listed below along with the rules used to
+describe each piece.
+.PP
+\fBSummary of the Unix protection model\fP
+.PP
+The Unix protection model concerns processes and files.  Associated
+with each process is one user identifier UID, and one or more group
+identifiers (GIDs).  The UID and GIDs are generally inherited when one
+process forks another.  One exception is that the super-user (UID =
+0) can change the UID and GIDs of his current process.  The other
+exception is that a user can associate a UID and GID with a program
+stored in the file system.  When anyone runs such a program, the
+process executing that program will run with the stored user and/or
+group IDs.
+.PP
+Associated with each file is one UID, one GID, and nine permission
+bits.  The nine permission bits are divided into three groups to
+specify the read, write, and execute rights for the file's owner
+(specified by the UID), for the members of the file's group (specified
+by the GID), and for all others (the World group).  Directories are a
+special case of files.  For a directory, read permission allows a
+process to list a directory, write permission allows a process to
+create or delete files in that directory, and execute permission
+allows a process to resolve names in that directory even if the
+directory is unreadable.
+.PP
+When a process accesses a file or directory it is given either owner,
+group, or world access permissions, but only one of those three.
+Owner access is granted if the process and file UIDs match; Group
+access is granted if the process and file UIDs are different but the
+file's GID is in the list of GIDs for the process; otherwise, World
+access is granted.  The super-user has full access to all files and
+directories.  Only the owner or the super-user can change the access
+permissions of a file.
+.PP
+\fBThree types of attacker goals\fP
+.PP
+The Unix protection model deals with users, groups, and files, so
+those are the three types of goals that will concern an attacker.  The
+canonical user goal is "execute one of the attacker's programs with a
+particular UID".  For example, the top level goal is "execute a
+program chosen by the attacker under UID zero (i.e., as
+super-user)".  It is important that the attacker be able to specify
+the program to be executed with super-user privileges.  The login
+program runs as super-user, and anyone can run it.  The attacker wants
+to specify the computation performed with super-user privileges.  One
+scheme for getting access to super-user privileges is to write the
+command file that is executed automatically when the super-user logs
+in.
+.PP
+Group ID goals are similar.  The canonical form of a GID goal is
+"execute an arbitrary program with a particular group ID".  One
+possible way to achieve this goal is to add the attacker's UID to the
+list of users allowed to access the desired group.  This authorization
+database is stored in the file /etc/group.
+.PP
+The canonical file goal is "obtain read/write/replace access to a particular
+file".  Achieving a file goal usually involves getting access to a
+particular group or user ID.  However, if the attacker wants to replace
+a file, one way to do that is to delete the old file and create a new
+one.  That can be done if the attacker has write or replace access to
+the directory that contains the target file.
+.PP
+In summary, SU-Kuang considers three types of goals for an attacker of
+Unix: user, group, and file.  Each type of goal can lead to subgoals
+of the same or different type.
+.PP
+\fBSome pieces of the Unix protection system\fP
+.PP
+This section presents the rules that describe many of the pieces of the
+Unix protection system.  Section
+.ul
+extensions
+describes the
+significant pieces that were left out of the prototype's model.  The
+pieces of the Unix protection system include all programs, like 
+.ul
+login,
+that have the set user/group ID property.  It also  includes programs
+like 
+.ul
+cron
+(cron executes commands in the future) that
+are forked off by processes that run with special user or group IDs.
+Finally, programs like 
+.ul
+sh
+(a command interpreter) must be included
+in the protection system because when they are started they execute
+commands from a file using the privileges of the user invoking them.
+.PP
+Each rule describes how a piece of the protection system can be
+used by an attacker to achieve a desired goal in terms of the ability
+to achieve a subgoal.  The method used to achieve a goal given the
+subgoal may require that some condition be true.  For that reason the
+rules include a condition that can be tested to decide if the subgoal
+should be pursued.  The conditions are general predicates on the state
+of the protection configuration.  For example, the rule that says that
+an attacker can become the super-user by writing the password file,
+has the condition that the password file is writable by someone other
+than the super-user.
+.PP
+In the rules listed below, the notation \*Q/d/f\*U means a
+pathname for the file \*Qf\*U in the directory with pathname \*Q/d\*U.
+The goal, \*Qbecome U\*U, means to execute an arbitrary command under the
+user ID \*QU\*U.  The goal, \*Qmember G\*U, means the same thing for
+group \*QG\*U.  The goal, \*Qwrite /d/f\*U, means being able to write the
+file \*Q/d/f\*U.  Finally, \*Qreplace /d/f\*U, means being able to write
+\*Q/d/f\*U or being able to delete \*Q/d/f\*U and recreate it.
+.PP
+\fBThe file system\fP
+.PP
+Most programs in the protection system use the file hierarchy to
+locate their databases.  If the file hierarchy can be modified, then
+the protection system can be tricked into using the wrong database
+files.  The file hierarchy itself must be treated as one of the
+main databases in the protection configuration.
+.PP
+The notation \*QOwner(/d/f)\*U refers to the UID associated with the
+file \*Q/d/f\*U.  Similarly \*QGroup(/d/f)\*U refers to the file's GID.
+The expression \*QGroupWrite(/d/f)\*U is true if the file \*Q/d/f\*U can
+be written by the members of \*QGroup(/d/f)\*U.  The expression
+\*QWorldWrite(/d/f)\*U is true if the file can be written by members of
+the World group (i.e., all users).
+.sp
+Rules{
+.sp
+.ul
+<Goal/Condition/Subgoal/Note>
+.PP
+Replace /d/f Write /d/f
+.PP
+Replace /d/f Replace /d\**
+.FS
+The condition stops the
+recursion at the root directory of the file system.
+.FE
+.PP
+Write /d/f Become Owner(/d/f)\**
+.FS
+The owner of a file can
+always change the access permissions to allow owner write access.
+.FE
+.PP
+Write /d/f GroupWrite(/d/f) Member Group(/d/f)
+.PP
+Write /d/f WorldWrite(/d/f) Member World\**
+.FS
+This subgoal is
+is achievable by all users provided they can get to the file.  The
+notable exceptions are users logged in via anonymous ftp or uucp
+connections.  These users have restricted access to the file
+hierarchy.
+.FE
+.sp
+}
+.PP
+\fBlogin\fP
+.PP
+The login program uses two database to set the UID and GIDs of the
+user's command interpreter.  The contents of
+these databases and the protection of the databases themselves
+must be considered part of the protection configuration.
+.PP
+The user name \*Qroot\*U refers to the super-user.  The label, \*QU\*U, stands
+for an arbitrary UID including \*Qroot\*U.  The label, \*QG\*U, stands for
+an arbitrary GID.  The expression \*QUIDS(G)\*U expands to all the
+UIDs authorized to use the group \*QG\*U according to the files
+/etc/group or /etc/passwd.
+X
+.sp
+Rules{
+.sp
+.ul
+<Goal/Condition/Subgoal/Note>
+X
+Become U Replace /etc/passwd\**
+.FS
+This rule matches the goal \*QBecome root\*U.
+.FE
+X
+Member G Replace /etc/group
+X
+Member G Become UIDS(G)\**
+.FS
+The subgoal means to try to become any member of the group \*QG\*U.
+.FE
+.sp
+}
+.PP
+\fBrsh, rlogin, rcp\fP
+.PP
+Berkeley Unix includes several remote execution commands that greatly
+improve the usability of multiple Unix hosts connected by a network.
+The underlying authentication protocol does not resist an attacker
+that can transmit arbitrary messages on the network, but even if that
+problem was fixed, the databases used by these programs would have to
+be considered as part of the protection system.
+.PP
+The file /etc/hosts.equiv lists the names of the hosts that are
+trusted by the target machine's administrators.  If a user has an
+account on the target machine, and on one of the trusted hosts, then
+that user can log into the target machine from the trusted machine
+without supplying a password.  Users can list additional hosts (or
+other users) that they trust in a file (.rhosts) in their home
+directory.
+.PP
+The expression \*QNotEmpty(/d/f)\*U is true if the file /d/f exists and
+it is not empty.  The label, \*Q~U\*U, refers to the home directory of user
+\*QU\*U.
+.sp
+Rules{
+.sp
+.ul
+<Goal/Condition/Subgoal/Note>
+.PP
+Become U (~U/.rhosts) /etc/hosts\**
+.FS
+If there is
+a host listed in the user's remote access database and the host name
+table is replaceable, then an attacker can make his host appear to be
+the host listed in the user's database.  This assumes that the
+attacker has super-user privileges on some host that can talk to the
+target host, because the attacker will need to create an account with
+the target's user name.  This attack will become obsolete when hosts
+start using a distributed name server rather than a fix hostname
+database.  However, the name server will open other avenues of attack.
+.FE
+.PP
+Become U Write ~U/.rhosts\**
+.FS
+The remote execution routines insist that the target user be the owner
+of the database file, so replace access is not sufficient to use this
+attack.
+.FE
+.PP
+Become U root Replace /etc/hosts.equiv\**
+.FS
+Remote execution with super-user privileges is only accepted from
+the hosts listed in ~root/.rhosts, so replacing the hosts.equiv file
+cannot be used to directly gain access to super-user privileges.
+.FE
+.sp
+}
+.PP
+\fBshells\fP
+.PP
+Several command interpreters, called shells, have been written for
+Unix.  Different users can use different shells, but all shell have
+some mechanism for executing a list of commands when a user logs in.
+The files that specify these initialization commands are a part of the
+protection configuration that each user can change.
+.PP
+The expression \*QExists(/d/f)\*U is true if the file /d/f exists.
+.sp
+Rules{
+.sp
+FOO_BAR
+true || echo 'restore of beta/docs/kuang.man failed'
+fi
+echo 'End of  part 3'
+echo 'File beta/docs/kuang.man is continued in part 4'
+echo 4 > _shar_seq_.tmp
+exit 0

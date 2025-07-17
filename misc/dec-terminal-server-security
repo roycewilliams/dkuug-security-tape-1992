@@ -1,0 +1,31 @@
+From mojo!mimsy!cvl!haven!udel!wuarchive!cs.utexas.edu!news-server.csri.toronto.edu!utgpu!watserv1!watcgl!idallen Fri Jul 13 01:28:56 EDT 1990
+Article: 3708 of comp.unix.ultrix:
+Path: mojo!mimsy!cvl!haven!udel!wuarchive!cs.utexas.edu!news-server.csri.toronto.edu!utgpu!watserv1!watcgl!idallen
+>From: idallen@watcgl.waterloo.edu (Ian! D. Allen [CGL])
+Newsgroups: comp.unix.ultrix
+Subject: password security on Ultrix LAT entries in /dev/?
+Message-ID: <1990Jul13.005526.22320@watcgl.waterloo.edu>
+Date: 13 Jul 90 00:55:26 GMT
+Sender: idallen@watcgl.waterloo.edu (Ian! D. Allen [CGL])
+Organization: Computer Graphics Laboratory, University of Waterloo, Ontario, Canada
+Lines: 17
+
+I set up port 1 on my terminal server, gave it a service name, and
+passworded that service.  This protects the service from unauthorized
+users getting into it from other terminal servers.  But I seem to be able
+to use "lcp -h /dev/tty10:MYSERVER:PORT_1" and tip on Ultrix to get
+direct access to the port and bypass the password.  So, too, could anyone
+else out there in Ethernet land.  I guess the password is only on the
+"service", not on the port itself?  I can set a password on the incoming
+port right at the terminal server, but that's not what I want.  How can I
+password the port and service so that access from Ultrix via /dev/ is
+passworded the same way as is access from other terminal servers?
+
+If Ultrix can get at the port without a password, this leads me to
+believe that someone could write terminal server software that ignored
+passwords too.  How secure is LAT?
+-- 
+-IAN! (Ian! D. Allen) idallen@watcgl.uwaterloo.ca idallen@watcgl.waterloo.edu
+ [129.97.128.64]  Computer Graphics Lab/University of Waterloo/Ontario/Canada
+
+

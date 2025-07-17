@@ -1,0 +1,37 @@
+
+
+IP Authentication (ipauth)
+
+Charter_
+
+Chair(s):
+     Jeffrey Schiller, jis@mit.edu
+Mailing Lists:
+     General Discussion:  awg@bitsy.mit.edu
+     To Subscribe:  awg-request@bitsy.mit.edu
+Description of Working Group:
+
+     To brainstorm issues related to providing for the security and
+     integrity of information on the Internet, with emphasis on
+     those protocols used to operate and control the network.  To
+     propose open standard solutions to problems in network
+     authentication.
+
+
+Goals and Milestones:
+
+
+TBD           RFC specifying an authentication format which supports
+              multiple authentication systems.
+TBD           Document discussing the cost/benefit tradeoffs of various
+              generic approaches to solving the authentication problem
+              in the Internet context.
+TBD           Document to act as a protocol designers guide to
+              authentication.
+TBD           RFC proposing A Key Distribution System (emphasis on
+              ``A'' as opposed to ``THE''). MIT's Kerberos seems the
+              most likely candidate here.
+
+
+
+                                   1

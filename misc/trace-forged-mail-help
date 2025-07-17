@@ -1,0 +1,180 @@
+From istari@eng.umd.edu Thu Apr 26 01:16:10 1990
+Received: from eng.umd.edu (frob.eng.umd.edu) by bacchus.eng.umd.edu (4.0/SMI-4.0)
+	id AA18471; Thu, 26 Apr 90 01:16:06 EDT
+Received: by eng.umd.edu (4.1/UMIACS-0.9/04-05-88)
+	id AA06285; Thu, 26 Apr 90 01:16:04 EDT
+Date: Thu, 26 Apr 90 01:16:04 EDT
+From: istari@eng.umd.edu (Brad Passwaters : istari)
+To: istari@eng.umd.edu
+Subject: mail-trace
+Status: RO
+
+Path: mojo!mimsy!haven!uflorida!rex!samsung!usc!ucsd!ucbvax!hoptoad!gnu
+From: gnu@hoptoad.uucp (John Gilmore)
+Newsgroups: alt.security
+Subject: How to trace forged mail
+Message-ID: <11201@hoptoad.uucp>
+Date: 25 Apr 90 23:29:01 GMT
+References: <22952@uflorida.cis.ufl.EDU> <1990Apr20.063526.7390@athena.mit.edu> <22754@eerie.acsu.Buffalo.EDU>
+Organization: Cygnus Support, Palo Alto
+Lines: 158
+
+Phil Goetz asked how to trace forged mail.  The short answer is:  use
+log files and talk to other sysadmins so they'll do the same.
+
+A forged messages is injected into the mail system at some point, with
+a particular set of header lines.  The header lines inserted after that
+point will be real.  You can verify that the lines are real by checking
+the logs on each system to see that they match what's in the message.
+When you find a discrepancy, you are close to the insertion point.
+Then you can poke around there to determine how the forged message was
+inserted into the mail system, and by who.  As you'll see, there are
+lots of places where it could've come in.
+
+The long answer is specific to the programs involved.  My description
+covers sendmail and uucp.  I encourage people to clean up this
+description and add their own ideas, suggestions, and mailer programs.
+
+Look in the message for its message-ID and Received: lines.  These will
+tell you what systems the message has gone through.  Start with the
+last system (the recipient's system).  Check the sendmail log (or
+equivalent) for that message-ID.  This will let you map the message-ID
+to a queue-ID (generally AAxxxxx or ABxxxxx) which is in every log line
+that refers to this message.  The log will show the message-ID, a from=
+line, and a set of to= lines indicating how it was delivered.  If the
+log entries are there, you can probably believe the Received: line for
+that time, which indicates where the message came from.  If it came
+from an Internet site, go back to that site and check its logs.  If it
+came from uucp, sendmail won't know its origin, but you can check the
+uucp logs for a line at that time indicating "XQT (...rmail...)".  [If
+you don't find one, the message was probably inserted onto your system
+by running sendmail or /bin/mail manually.]
+
+The system name in the uucp log "XQT" line will tell you part of the
+file name of the incoming mail.  Probably the message came from that
+system, but uucp doesn't check for this, so somebody could've sent you
+uucp files containing somebody else's system name.  Look back in the
+log for files coming in with this system name in the filename.  You can
+also look in the uucp SYSLOG file, which contains the size of each file
+transferred, to help figure out which file contained the message.  In
+some cases there is no way to unambiguously track the message here
+(until uux and uuxqt logging is improved to show the queue ID that it's
+executing).  But in most cases you'll find where the message came in
+from.  Contact the site admin for that site, indicate that you received
+the message at such and such a time, and have them check their uucp
+logs.  They should find that the message was transferring at the same
+time.  If not, it means somebody called your system and claimed to be
+them doing uucp; if you have a separate uucp login/password per site,
+you'll know that either you or they let the password get out.  Change
+it.  (Note that anyone who is root on their system can read this
+password out of their L.sys file.)  If you don't have a separate uucp
+login/password for each site, fix this!  You can't tell when your
+password is leaked, which site it leaked through!  Also, don't put
+phone numbers and uucp logins in email; tell the remote site by phone.
+If you don't know their phone number, find it out -- how are you going
+to tell them about troubles on your uucp link when your link is broken?
+
+If the other site finds that the same files were moving in their logs
+as in your logs, then have them scan back through the log to find an
+XQT QUE'D entry for this message.  You should know what's in the rmail
+command's arguments (since they're in your XQT log message) and the
+same arguments will appear in the XQT QUE'D message.  That shows you
+the date and time when the message entered the uucp queue on their
+system.  Then their site admin can cross-reference to the sendmail log
+to verify that the message exited sendmail at the same time it entered
+uucp (if not, the message was inserted manually by someone running a
+"uux" command on their system), and trace the sendmail log back.  They
+can also check the Received: lines in the message to help find it in
+the sendmail log, or simply grep for the message-ID.
+
+If the message had come into sendmail via an SMTP connection rather
+than via uucp, the Received: line should say "Received: from xxxxx".
+If there are two addresses in XXXXX then check both of them; one is how
+that site identified itself in the SMTP protocol; the other is what the
+host table said about the Internet address where the connection is
+coming from.  Have the site admin on that/those sites check their logs
+and work back from there.  If there is no record of sendmail handling
+the message on that site, but your sendmail says it was received from
+that site, either someone on that site inserted the message (e.g. by
+doing "telnet yoursite smtp") or some other site impersonated their IP
+address.  (A third possibility is that your host table or domain name
+cache has been hacked to make the site-they-connected-from appear to
+have the name of some other site).  Start poking around with what
+users and processes were running on their system, and double-check
+the name server or hosts file on your system.
+
+Checking the "last" and "lastcomm" and cron logs may also be quite
+helpful to find sendmail and uucico and uux runs, either to
+disambiguate other log entries or if you lose the trail.  It would help
+a lot to have an inetd log, too; has anyone hacked this into inetd?
+(Inetd is the master daemon that handles incoming connections for a
+whole mess of protocols, including telnet, rlogin, ftp, etc -- but not
+smtp).
+
+It's harder to trace a forgery that occurs by changing the contents of
+an existing message.  E.g. the sender sent one version, the recipient
+got another.  It could have been modified at each site along the way as
+it sat in a queue.  It may be possible to track this down by checking
+the mesasge sizes at each site, but you have to account for the header
+lines changing.  You could send a second message through the same path,
+with the same initial byte count, see what transformations happen
+to it along the way, and compare its logged byte counts to the counts
+of the forged message.
+
+If you can trace the message all the way back to the sender's site, but
+they claim they didn't send it, then the last and lastcomm and cron
+logs are useful for seeing who was on the system and what processes
+were running.  Lastcomm (Unix process accounting) really should be
+logging the PID of each process so that its log can be backtraced into
+the other log files (sendmail and uucp both log the PID).  Perhaps some
+other user sent the mail while su'd to that user, or injected it into
+the local sendmail daemon by connecting to the SMTP port on the local
+machine.  Perhaps they used the TIOCSTI ioctl to insert fake 'typing'
+into one of the user's windows (perhaps even an iconified window) that
+caused the message to be sent "by them".  This can be done when nobody
+else is logged in, but requires a process left around from some earlier
+time -- which should show up in lastcomm logs.  Or perhaps someone just
+walked by their terminal, popped up a shell window, sent the message,
+and destroyed the window.  This can be done in seconds if the message
+is in a prepared file (e.g. in /tmp), but again you'll find it in the
+process logs.
+
+If the user logs into that system via TCP, the TCP connection can be
+compromised (e.g. by forging a packet to appear to be from their
+workstation or x terminal).  The next packet that is sent from the real
+TCP connection will cause the connection to reset, but that could
+happen hours later, and will just look like temporary network trouble
+(the window disappears or the rlogin says "Connection closed").  This
+is harder to spot since neither end of the link won't see anything odd
+until much later (except that the terminal may get some output
+resulting from the mail being sent, like another shell prompt; this
+could be disguised by clever use of terminal escape codes so it
+overprints the previous shell prompt).  Lastcomm showing that the last
+thing to run on that pty was the mailer, even if the end of the pty
+(its shell terminating) happens much later, is probably your best clue
+there.  An SMTP tcp connection can also be altered in this way.  I have
+heard that someone at MIT is logging the first 50 bytes of every packet
+that goes through their Internet gateways, and keeping it for days.  If
+you were really desperate, and the breakin happened at MIT, you could
+try locating the person doing the logging.  (Needless to say the log is
+not available to everyone, since it includes all the login names and
+passwords used through the gateway!!!)
+
+Also don't forget that a claimed forgery may be a real message that the
+sender wishes to repudiate.
+
+As you can see, tracking a message back through five or ten sites this
+way would involve a lot of work and coordination, as well as requiring
+quick action so that that the forgery is noticed and traced before each
+of those sites' logs are removed.  I encourage sites to keep a few
+weeks' worth of uucp and sendmail logs so that this kind of forgery can
+be more easily traced.  Compress them to save space.  Suns come with
+shell scripts that keep the log files for N days; you can hack these to
+alter N, move logs to places where there's more space, compress, or
+whatever.
+-- 
+John Gilmore      {sun,pacbell,uunet,pyramid}!hoptoad!gnu      gnu@toad.com
+ Boycott the census!  In 1942, the Census Bureau told the Army which block
+every Japanese-American lived on, so they could be hustled to internment camps.
+         Maximum penalty for refusing to answer:  $100, no jail.
+

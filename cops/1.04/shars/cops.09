@@ -1,0 +1,2187 @@
+#!/bin/sh
+# this is p4.shar.09 (part 9 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/pass.words continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 9; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/pass.words'
+else
+echo 'x - continuing file cops_104/pass.words'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/pass.words' &&
+Xbicameral
+Xbob
+Xbrenda
+Xbrian
+Xbridget
+Xbroadway
+Xbumbling
+Xburgess
+Xcampanile
+Xcantor
+Xcardinal
+Xcarmen
+Xcarolina
+Xcaroline
+Xcascades
+Xcastle
+Xcat
+Xcayuga
+Xceltics
+Xcerulean
+Xchange
+Xcharles
+Xcharming
+Xcharon
+Xchester
+Xcigar
+Xclassic
+Xclusters
+Xcoffee
+Xcoke
+Xcollins
+Xcommrades
+Xcomputer
+Xcondo
+Xcookie
+Xcooper
+Xcornelius
+Xcouscous
+Xcreation
+Xcreosote
+Xcretin
+Xdaemon
+Xdancer
+Xdaniel
+Xdanny
+Xdave
+Xdecember
+Xdefoe
+Xdeluge
+Xdesperate
+Xdevelop
+Xdieter
+Xdigital
+Xdiscovery
+Xdisney
+Xdog
+Xdrought
+Xduncan
+Xeager
+Xeasier
+Xedges
+Xedinburgh
+Xedwin
+Xedwina
+Xegghead
+Xeiderdown
+Xeileen
+Xeinstein
+Xelephant
+Xelizabeth
+Xellen
+Xemerald
+Xengine
+Xengineer
+Xenterprise
+Xenzyme
+Xersatz
+Xestablish
+Xestate
+Xeuclid
+Xevelyn
+Xextension
+Xfairway
+Xfelicia
+Xfender
+Xfermat
+Xfidelity
+Xfinite
+Xfishers
+Xflakes
+Xfloat
+Xflower
+Xflowers
+Xfoolproof
+Xfootball
+Xforesight
+Xformat
+Xforsythe
+Xfourier
+Xfred
+Xfriend
+Xfrighten
+Xfun
+Xfungible
+Xgabriel
+Xgardner
+Xgarfield
+Xgauss
+Xgeorge
+Xgertrude
+Xginger
+Xglacier
+Xgnu
+Xgolfer
+Xgorgeous
+Xgorges
+Xgosling
+Xgouge
+Xgraham
+Xgryphon
+Xguest
+Xguitar
+Xgumption
+Xguntis
+Xhacker
+Xhamlet
+Xhandily
+Xhappening
+Xharmony
+Xharold
+Xharvey
+Xhebrides
+Xheinlein
+Xhello
+Xhelp
+Xherbert
+Xhiawatha
+Xhibernia
+Xhoney
+Xhorse
+Xhorus
+Xhutchins
+Ximbroglio
+Ximperial
+Xinclude
+Xingres
+Xinna
+Xinnocuous
+Xirishman
+Xisis
+Xjapan
+Xjessica
+Xjester
+Xjixian
+Xjohnny
+Xjoseph
+Xjoshua
+Xjudith
+Xjuggle
+Xjulia
+Xkathleen
+Xkermit
+Xkernel
+Xkirkland
+Xknight
+Xladle
+Xlambda
+Xlamination
+Xlarkin
+Xlarry
+Xlazarus
+Xlebesgue
+Xlee
+Xleland
+Xleroy
+Xlewis
+Xlight
+Xlisa
+Xlouis
+Xlynne
+Xmacintosh
+Xmack
+Xmaggot
+Xmagic
+Xmalcolm
+Xmark
+Xmarkus
+Xmarty
+Xmarvin
+Xmaster
+Xmaurice
+Xmellon
+Xmerlin
+Xmets
+Xmichael
+Xmichelle
+Xmike
+Xminimum
+Xminsky
+Xmoguls
+Xmoose
+Xmorley
+Xmozart
+Xnancy
+Xnapoleon
+Xnepenthe
+Xness
+Xnetwork
+Xnewton
+Xnext
+Xnoxious
+Xnutrition
+Xnyquist
+Xoceanography
+Xocelot
+Xolivetti
+Xolivia
+Xoracle
+Xorca
+Xorwell
+Xosiris
+Xoutlaw
+Xoxford
+Xpacific
+Xpainless
+Xpakistan
+Xpam
+Xpapers
+Xpassword
+Xpatricia
+Xpenguin
+Xpeoria
+Xpercolate
+Xpersimmon
+Xpersona
+Xpete
+Xpeter
+Xphilip
+Xphoenix
+Xpierre
+Xpizza
+Xplover
+Xplymouth
+Xpolynomial
+Xpondering
+Xpork
+Xposter
+Xpraise
+Xprecious
+Xprelude
+Xprince
+Xprinceton
+Xprotect
+Xprotozoa
+Xpumpkin
+Xpuneet
+Xpuppet
+Xrabbit
+Xrachmaninoff
+Xrainbow
+Xraindrop
+Xraleigh
+Xrandom
+Xrascal
+Xreally
+Xrebecca
+Xremote
+Xrick
+Xripple
+Xrobotics
+Xrochester
+Xrolex
+Xromano
+Xronald
+Xrosebud
+Xrosemary
+Xroses
+Xruben
+Xrules
+Xruth
+Xsal
+Xsaxon
+Xscamper
+Xscheme
+Xscott
+Xscotty
+Xsecret
+Xsensor
+Xserenity
+Xsharks
+Xsharon
+Xsheffield
+Xsheldon
+Xshiva
+Xshivers
+Xshuttle
+Xsignature
+Xsimon
+Xsimple
+Xsinger
+Xsingle
+Xsmile
+Xsmiles
+Xsmooch
+Xsmother
+Xsnatch
+Xsnoopy
+Xsoap
+Xsocrates
+Xsossina
+Xsparrows
+Xspit
+Xspring
+Xspringer
+Xsquires
+Xstrangle
+Xstratford
+Xstuttgart
+Xsubway
+Xsuccess
+Xsummer
+Xsuper
+Xsuperstage
+Xsupport
+Xsupported
+Xsurfer
+Xsuzanne
+Xswearer
+Xsymmetry
+Xtangerine
+Xtape
+Xtarget
+Xtarragon
+Xtaylor
+Xtelephone
+Xtemptation
+Xthailand
+Xtiger
+Xtoggle
+Xtomato
+Xtopography
+Xtortoise
+Xtoyota
+Xtrails
+Xtrivial
+Xtrombone
+Xtubas
+Xtuttle
+Xumesh
+Xunhappy
+Xunicorn
+Xunknown
+Xurchin
+Xutility
+Xvasant
+Xvertigo
+Xvicky
+Xvillage
+Xvirginia
+Xwarren
+Xwater
+Xweenie
+Xwhatnot
+Xwhiting
+Xwhitney
+Xwill
+Xwilliam
+Xwilliamsburg
+Xwillie
+Xwinston
+Xwisconsin
+Xwizard
+Xwombat
+Xwoodwind
+Xwormwood
+Xyacov
+Xyang
+Xyellowstone
+Xyosemite
+Xzap
+Xzimmerman
+SHAR_EOF
+echo 'File cops_104/pass.words is complete' &&
+chmod 0755 cops_104/pass.words ||
+echo 'restore of cops_104/pass.words failed'
+Wc_c="`wc -c < 'cops_104/pass.words'`"
+test 3278 -eq "$Wc_c" ||
+	echo 'cops_104/pass.words: original size 3278, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/pass_diff.chk ==============
+if test -f 'cops_104/pass_diff.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/pass_diff.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/pass_diff.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/pass_diff.chk' &&
+X:
+X#
+X#  pass_diff.chk
+X#
+X#   This shell script is a wrapper for the pass.chk password guessing
+X# program.  What this does is save the password file from the last time
+X# passwords were guessed, and then do a "diff" on this file and the
+X# current password file.  This will prevent accounts being checked over
+X# and over again for the same passwords, assuming the password has not
+X# been changed.  If you have a fairly stable passwd environment, this
+X# can save you quite a bit of CPU time...
+X#
+X#   Mechanism:  As explained above, it just diff's the password file
+X# with the password file used last time you checked passwords, and then
+X# calls pass.chk with any flags pass_diff.chk was called with on the
+X# difference of the two files.
+X#
+X#  If the variable $YP is set to "YES", then it will use the the
+X# yppassword file; it is not used automatically, because the idea is
+X# that this can be, used on any password file, by changing the $etc_passwd
+X# var.  See the next paragraph:
+X#
+X#   Warning!  This only checks for changes in the password file itself --
+X# if you change the flags to pass.chk, or if you increase the size of
+X# your dictionary, or whatever, this will not detect the change...
+X# Also, if you want to use this wrapper with to check alternate pasword
+X# files, don't use the "-P" flag (which normally specifies an alternate
+X# password file); instead, change the $etc_passwd variable to whatever
+X# passwd file you want to check.  Otherwise, this wrapper will force
+X# /etc/passwd.
+X# 
+X#  Yellow Pages/NIS?
+XYP=NO
+X
+X# Locations of commands
+XDIFF=/bin/diff
+XCMP=/bin/cmp
+XAWK=/bin/awk
+XTEST=/bin/test
+XCP=/bin/cp
+XMV=/bin/mv
+XRM=/bin/rm
+XYPCAT=/usr/bin/ypcat
+XTOUCH=/bin/touch
+X
+X#
+X# Important files:
+Xetc_passwd=/etc/passwd
+Xold_passwd=./old_passwd
+Xyp_pass=./yp.$$
+Xpasswd_diff=passwd.diff
+X
+X# password guessing program:
+Xpass_chk=./pass.chk
+X
+X# make a dummy password file if it doesn't exist; changed touch to
+X# echo, thanks to the sharp eye of jms@tardis.Tymnet.COM (Joe Smith)
+Xif $TEST ! -f $old_passwd ; then
+X	$ECHO "dummy password file" > $old_passwd
+X	fi
+X
+X# if you use YP:
+Xif $TEST "$YP" = "YES" ; then
+X	$YPCAT passwd > $yp_pass
+X	etc_passwd=$yp_pass
+X	fi
+X
+X# has anything changed?  If so, check passwords, if not, leave quietly.
+Xif $TEST -n "`$CMP $etc_passwd $old_passwd`" ; then
+X	#  If old_passwd file exists, use it, else just use the
+X	# existing passwd file.
+X	$DIFF $etc_passwd $old_passwd | $AWK -F: '/^[<]/{
+X		split($1, user, " "); printf("%s",user[2]); \
+X		for (i=2;i<=NF;i++){
+X			printf(":%s", $i)}; print ""}' > $passwd_diff
+X	$CP $etc_passwd $old_passwd
+X
+X	#  Finally, crack them passwords and get rid of the diff file,
+X	# but only if the file is !0 length.
+X	if $TEST -s $passwd_diff ; then	
+X		$pass_chk $* -P $passwd_diff
+X	fi
+X	$RM -f $passwd_diff
+Xfi
+X
+X# kill off the evidence
+X$RM -f $yp_pass
+X
+X# end
+SHAR_EOF
+chmod 0755 cops_104/pass_diff.chk ||
+echo 'restore of cops_104/pass_diff.chk failed'
+Wc_c="`wc -c < 'cops_104/pass_diff.chk'`"
+test 2794 -eq "$Wc_c" ||
+	echo 'cops_104/pass_diff.chk: original size 2794, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/bug.chk.sun ==============
+if test -f 'cops_104/bug.chk.sun' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/bug.chk.sun (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/bug.chk.sun (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/bug.chk.sun' &&
+X#!/bin/sh
+X#
+X#  Sun module for bug/vulnerability checking
+X#
+XECHO=/bin/echo
+XTEST=/bin/test
+XLS=/bin/ls
+XLS_OPTS="-slagL"
+XARCH=/bin/arch
+XGREP=/bin/grep
+XEGREP=/usr/bin/grep
+XDMESG=/etc/dmesg
+XAWK=/bin/awk
+XSORT=/bin/sort
+XUNIQ=/bin/uniq
+X
+X# uncomment this if you don't do any kernel hacking... this will check
+X# this as well as the object files that modify it.
+X# KERNEL=/vmunix
+X
+XBUG="$AWK -f ./bug_cmp"
+Xword_smithing="could have a hole/bug"
+X
+Xif $TEST ! -f ./bug_cmp ; then
+X	$ECHO "Must have bug compare module, ./bug_cmp, to run..."
+X	exit 2
+X	fi
+X
+X# what is the date?  We just need the month and year...
+X# Format: Fri Feb  7 14:16:55 PST 1992
+Xif $TEST $# -eq "2" ; then
+X	real_date="$1 $2"
+Xelse
+X	real_date=`$DATE | $AWK '{print $2, $NF}'`
+X	fi
+X
+X# try to find OS version... thanks brad (powell)!
+Xrelease_level=`$DMESG | $GREP SunOS | $AWK '{print $3}' | $SORT | $UNIQ`
+Xif $TEST -z "$release_level" ; then
+X	release_level=`$EGREP '[3-4]\.[0-5]' /etc/motd | \
+X		$AWK '{for (i=1;i<=NF;i++) if ($i ~ /[3-4]\.[0-5]/) print $i}'`
+X	fi
+X
+X# sendmail
+X#
+X# Patch ID# 100099-01 for SunOS 4.1
+X# Patch ID# 100100-01 for SunOS 4.0, 4.0.1, 4.0.3
+X# Patch ID# 100108-01 for Sun386i (sunOS 4.0.2)
+Xsendmail="/usr/lib/sendmail"
+Xfix_date="30 Jul 1990"
+Xcert_advis="CA-90:01"
+Xif $TEST -f "$sendmail" ; then
+X	cur_date=`$LS $LS_OPTS $sendmail | $AWK '{print $8, $7, $9}'`
+X	$ECHO $sendmail $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# restore
+X#
+X# This problem affects
+X# SunOS 4.0, 4.0.1, and 4.0.3 systems.  It does not appear in SunOS 3.5.
+X# FIX: 1) Make restore non-setuid by becoming root and doing a 
+X# chmod 750 /usr/etc/restore
+Xrestore="/usr/etc/restore"
+Xcert_advis="CA-89:02"
+Xfix_date="26 Jul 1989"
+Xif $TEST -f "$restore" ; then
+X	cur_date=`$LS $LS_OPTS $restore | $AWK '{print $8, $7, $9}'`
+X	$ECHO $restore $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# TIOCCONS
+X#
+X# Sun Patch ID : for SunOS 4.1, SunOS 4.1_PSR_A 100187-01
+X# Sun Patch ID : for SunOS 4.1.1 100188-01
+Xfix_date="17 Dec 1990"
+Xcert_advis="CA-90:12"
+Xfor TIOCCONS in /sys/sun*/OBJ/cons.o $KERNEL ; do
+X	if $TEST -f "$TIOCCONS" ; then
+X		date=`$LS $LS_OPTS $TIOCCONS | $AWK '{print $8, $7, $9}'`
+X		$ECHO $TIOCCONS $fix_date $cur_date $cert_advis $real_date | $BUG
+X		fi
+X	done
+X
+X# selection_svc
+X#
+X# Patch ID# 100085-03
+Xsel_svc="/bin/sunview1/selection_svc"
+Xfix_date="5 Sep 1990"
+Xcert_advis="CA-90:05"
+Xif $TEST -f "$sel_svc" ; then
+X	cur_date=`$LS $LS_OPTS $sel_svc | $AWK '{print $8, $7, $9}'`
+X	$ECHO $sel_svc $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# lpd
+X#
+X# Patch ID# 100305-06
+Xlpd="/usr/lib/lpd"
+Xfix_date="12 Sep 1991"
+Xcert_advis="CA-91:10a"
+Xif $TEST -f "$lpd" ; then
+X	cur_date=`$LS $LS_OPTS $lpd | $AWK '{print $8, $7, $9}'`
+X	$ECHO $sel_svc $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# /bin/mail
+X#
+X# Patch ID# 100224-01 - date in README is off by one year.
+Xbin_mail="/bin/mail"
+Xfix_date="15 Jan 1991"
+Xcert_advis="CA-91:01a"
+Xif $TEST -f "$bin_mail" ; then
+X	cur_date=`$LS $LS_OPTS $bin_mail | $AWK '{print $8, $7, $9}'`
+X	$ECHO $bin_mail $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# telnetd and rlogind
+X#
+X# Patch ID# 100125-03
+Xfix_date="27 Mar 1991"
+Xcert_advis="CA-91:02a"
+Xtelnetd="/usr/etc/in.telnetd"
+Xrlogind="/usr/etc/in.rlogind"
+Xif $TEST -f "$telnetd" ; then
+X	cur_date=`$LS $LS_OPTS $telnetd | $AWK '{print $8, $7, $9}'`
+X	$ECHO $telnetd $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X$ECHO $release_level | $GREP 4.1.1 > /dev/null
+Xif $TEST $? -ne "0" -a -f "$rlogind" ; then
+X	cur_date=`$LS $LS_OPTS $rlogind | $AWK '{print $8, $7, $9}'`
+X	$ECHO $rlogind $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# makeinstall and winstall
+X#
+X# 20 May 1991
+X# SunOS Source Tape Installation Vulnerability
+X# fix is to: chmod ug-s /usr/release/bin/{makeinstall, winstall}
+Xcert_advis="CA-91:07"
+Xmakeinstall=/usr/release/bin/makeinstall
+Xwinstall=/usr/release/bin/winstall
+X(./is_able $makeinstall s s | $GREP SUID) > /dev/null 2>/dev/null
+Xif $TEST $? -eq "0" ; then
+X	$ECHO "Warning!  $makeinstall $word_smithing!  ($cert_advis)"
+X	fi
+X(./is_able $winstall s s | $GREP SUID )> /dev/null 2>/dev/null
+Xif $TEST $? -eq "0" ; then
+X	$ECHO "Warning!  $winstall $word_smithing!  ($cert_advis)"
+X	fi
+X
+X
+X# mountd
+X#
+X# Patch for SunOS /usr/etc/rpc.mountd
+X# Patch ID# 100296-01
+Xfix_date="15 Jul 1991"
+Xcert_advis="CA-91:09"
+Xmountd="/usr/etc/rpc.mountd"
+Xif $TEST -f "$mountd" ; then
+X	cur_date=`$LS $LS_OPTS $mountd | $AWK '{print $8, $7, $9}'`
+X	$ECHO $mountd $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# divide and conquer, er, multiply...
+X#
+X# 18 September 1991
+X# SunOS SPARC Integer Division Vulnerability
+X# Patch ID# 100376-01
+Xfix_date="18 Sep 1991"
+Xcert_advis="CA-91:16"
+Xfor divide in /sys/sun4*/OBJ/crt.o $KERNEL ; do
+X	if $TEST -f "$divide" ; then
+X		cur_date=`$LS $LS_OPTS $divide | $AWK '{print $8, $7, $9}'`
+X		$ECHO $divide $fix_date $cur_date $cert_advis $real_date | $BUG
+X		fi
+X	done
+X
+X# NFS stuff
+X#
+X# Patch ID's# 100173-07, 100121-08, 100424-01
+X# NFS Jumbo 4.1.1, NFS Jumbo 4.1, fsirand 4.1.1
+Xfix_date="6 Dec 1991"
+Xcert_advis="CA-91:21"
+Xfor i in /sys/sun*/OBJ/nfs_subr.o $KERNEL ; do
+X	if $TEST -f "$nfs" ; then
+X		cur_date=`$LS $LS_OPTS $nfs | $AWK '{print $8, $7, $9}'`
+X		$ECHO $nfs $fix_date $cur_date $cert_advis $real_date | $BUG
+X		fi
+X	done
+X
+X# loadmodule
+X#
+X# SunOS OpenWindows V3.0 Patch
+X# all sun4 and sun4c architectures running SunOS 4.1.1.
+X# Patch ID# 1076118
+Xloadmodule="$OPENWINHOME/bin/loadmodule"
+Xfix_date="16 Dec 1991"
+Xcert_advis="CA-91:22"
+Xif $TEST -f "$loadmodule" ; then
+X	host=`$ARCH`
+X	if $TEST "$host" = "sun4" -o "$host" = "sun4c" ; then
+X		cur_date=`$LS $LS_OPTS $loadmodule | $AWK '{print $8, $7, $9}'`
+X		$ECHO $loadmodule $fix_date $cur_date $cert_advis $real_date | $BUG
+X		fi
+X	fi
+X
+X# finis
+SHAR_EOF
+chmod 0700 cops_104/bug.chk.sun ||
+echo 'restore of cops_104/bug.chk.sun failed'
+Wc_c="`wc -c < 'cops_104/bug.chk.sun'`"
+test 5683 -eq "$Wc_c" ||
+	echo 'cops_104/bug.chk.sun: original size 5683, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/patchlevel.h ==============
+if test -f 'cops_104/patchlevel.h' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/patchlevel.h (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/patchlevel.h (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/patchlevel.h' &&
+X#define PATCHLEVEL 4
+SHAR_EOF
+chmod 0755 cops_104/patchlevel.h ||
+echo 'restore of cops_104/patchlevel.h failed'
+Wc_c="`wc -c < 'cops_104/patchlevel.h'`"
+test 21 -eq "$Wc_c" ||
+	echo 'cops_104/patchlevel.h: original size 21, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/quick_start ==============
+if test -f 'cops_104/quick_start' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/quick_start (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/quick_start (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/quick_start' &&
+X
+X  Here's what I do to start COPS (I always ftp it and run it on any 
+Xnew system I'm on, being the paranoid chap that I am.)  Do the following:
+X
+X0) type "./reconfig"
+X
+X1) type "make"
+X
+X2) type "./cops -v -s . -b cops.err"
+X
+X(Or "./cops -v -s . -m user" if you want it mailed to "user", or whomever.)
+X
+X3) Wait, or toss the sucker in the background and keep peeking at the result
+Xfile as it's growing (result.pid#) :-)   The result will either be mailed to
+Xyou (-m flag), or be placed in a directory of your machine name, with
+Xthe current date as the file name.)
+X
+SHAR_EOF
+chmod 0755 cops_104/quick_start ||
+echo 'restore of cops_104/quick_start failed'
+Wc_c="`wc -c < 'cops_104/quick_start'`"
+test 559 -eq "$Wc_c" ||
+	echo 'cops_104/quick_start: original size 559, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/rc.chk ==============
+if test -f 'cops_104/rc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/rc.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/rc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/rc.chk' &&
+X:
+X#
+X#  Usage: rc.chk
+X#
+X#  This checks pathnames and files inside the shell script files /etc/rc*
+X# for writability.
+X#
+X#  Mechanism:  The commands inside the files /etc/rc* are executed when
+X# the machine is booted.  This shell script greps for commands/paths that
+X# are of these forms:
+X#
+X#	/path/command			# or whatever
+X#		or
+X#	PATH=:/bin:/usr/bin:.		# or whatever
+X#		or
+X#	MYVAR=`/path/command`		# or whatever
+X#	
+X#  It then takes each potential problem-string and uses the program
+X# "is_writable" to determine if it is world writable.  All results are
+X# echoed to standard output.
+X#
+X# 12 Apr 90, Mark Plumbly made it ignore lines starting with rm -f
+X# (popular in rc files) and fixed my code so it would ignore everything
+X# after a ">".
+X#
+XSED=/bin/sed
+XCAT=/bin/cat
+XRM=/bin/rm
+XAWK=/bin/awk
+XLS=/bin/ls
+XTEST=/bin/test
+XEGREP=/usr/bin/egrep
+XECHO=/bin/echo
+XSORT=/usr/bin/sort
+XFIND=/bin/find
+X
+X# temp file for stuff:
+XFOO_RC="./rc.foo.$$"
+XFOO_RC2="./rc.foo2.$$"
+X
+X# CHANGE THIS LINE OR PUT IN FILE NAMES IF/AS NEEDED!
+X#    (for example: init_files="/etc/rc /etc/rc.local")
+X#
+X# init_files=`$LS /etc/*rc /etc/rc* /etc/rc*.d/* /etc/shutdown.d/* /etc/inittab | $SORT -u`
+X
+Xpotential_files="/etc/*rc /etc/rc*"
+Xif $TEST -d /etc/shutdown.d ; then
+X	potential_files=$potential_files" /etc/shutdown.d"
+X	fi
+Xif $TEST -f /etc/inittab ; then
+X	potential_files=$potential_files" /etc/inittab"
+X	fi
+Xinit_files=`$FIND $potential_files -print | $SORT -u`
+X
+X#
+X#  This should get all paths in /etc/rc* files; at least two types here.
+X# First type starts with a "/", the second is either in the form :
+X#
+X#	PATH=:/bin:/usr/bin:.		# or whatever
+X# or
+X#	MYVAR=`/bin/echo "hello"`	# or whatever
+X#
+X#   Notice also I strip out any references to /tmp, /usr/tmp,
+X# /dev/*ty's, and /dev/null.
+X#
+X# 12 Apr mdp: 	Modified to remove "> file" as well as ">file"
+X#		and remove "rm -f file" (this removes a few bogus ones).
+X#		(i.e. things which are written to or removed only are ignored).
+X#
+X
+X#  You can try this, or use the old method...
+X# for file in $init_files
+X#  	do
+X# 	if $TEST -s $file ; then
+X#  		./chk_strings $file
+X# 		fi
+X#   	done
+X# exit
+X
+Xfor file in $init_files
+X	do
+X	if $TEST -f "$file" ; then
+X		$AWK '{ if (substr($1,1,1)== "#") next; \
+X		for (i=1;i<=NF;i++) \
+X			{ first=substr($i,1,1);		\
+X				if (first==">"||first=="#"||first=="$")	\
+X					break;			\
+X				else if ($i == "rm")		\
+X					break;			\
+X				else if (first == "/")		\
+X					print "\"'$file'\"", $i;\
+X				}				\
+X			}' $file |
+X		$SED -e s/\"//g -e s/\'//g -e s/\`//g -e s/\;// |
+X		$EGREP -v "/dev/.*ty|/tmp|/usr/tmp|/dev/null"
+X		fi
+X		done | sort -u >> $FOO_RC2
+X
+X#
+X#  Ok -- $FOO_RC has a format like thus:
+X# /etc/rc.local /bin/foofile
+X#
+X#  We want to kill off all dups in the second field:
+X$AWK '{dup[$2] = $1}
+X	END { for (i in dup) print dup[i], i;}' $FOO_RC2 | $SORT > $FOO_RC
+X
+X#  First, get the ones starting with "/":
+X#
+X#   DANGER!  DANGER!  DANGER Will Robinson! Awk runs out of room ("bails
+X# out") if too many files are here....
+X# for i in `$CAT $FOO_RC`
+Xcat $FOO_RC | while read i
+X	do
+X	target=`$ECHO $i | $SED 's/.* //'`
+X	if $TEST -f "$target" ; then
+X		blame=`$ECHO $i | $SED 's/ .*$//'`
+X		if ./is_writable $target
+X			then
+X			$ECHO "Warning!  File $target (in $blame) is _World_ writable!"
+X			fi
+X		fi
+X	done
+X
+X$RM -f $FOO_RC $FOO_RC2
+X# end of script
+SHAR_EOF
+chmod 0755 cops_104/rc.chk ||
+echo 'restore of cops_104/rc.chk failed'
+Wc_c="`wc -c < 'cops_104/rc.chk'`"
+test 3273 -eq "$Wc_c" ||
+	echo 'cops_104/rc.chk: original size 3273, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/bug.chk.apollo ==============
+if test -f 'cops_104/bug.chk.apollo' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/bug.chk.apollo (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/bug.chk.apollo (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/bug.chk.apollo' &&
+X#!/bin/sh
+X#
+X#  Apollo module for bug/vulnerability checking
+X#
+XECHO=/bin/echo
+XTEST=/bin/test
+XLS=/bin/ls
+XLS_OPTS="-slagL"
+XARCH=/bin/arch
+XGREP=/bin/grep
+XAWK=/bin/awk
+XUNIQ=/usr/bin/uniq
+XBUG="$AWK -f ./bug_cmp"
+X
+Xif $TEST ! -f ./bug_cmp ; then
+X	$ECHO "Must have bug compare module, ./bug_cmp, to run..."
+X	exit 2
+X	fi
+X
+X# try to find out OS version:
+Xif $TEST -f /com/bldt ; then
+X	bldt=/com/bldt
+Xelif $TEST -f /usr/apollo/bin/bldt ; then
+X	bldt=/usr/apollo/bin/bldt
+X	fi
+Xif $TEST -f "$bldt" ; then
+X	release_level=`$bldt | $AWK '{ for (i = 1; i <= NF; i++) 
+X		if ($i == "revision") print $(i+1) }' | $UNIQ`
+X	fi
+X
+X# what is the date?  We just need the month and year...
+X# Format: Fri Feb  7 14:16:55 PST 1992
+Xif $TEST $# -eq "2" ; then
+X        real_date="$1 $2"
+Xelse
+X        real_date=`$DATE | $AWK '{print $2, $NF}'`
+X        fi
+X
+X# crp
+X#
+X# Was this ever officially fixed?
+Xcrp="/usr/apollo/bin/crp"
+Xfix_date="18 Dec 1991"
+Xcert_advis="CA-91:23"
+Xif $TEST -f "$crp" ; then
+X	cur_date=`$LS $LS_OPTS $crp | $AWK '{print $8, $7, $9}'`
+X	$ECHO $crp $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# finis
+SHAR_EOF
+chmod 0700 cops_104/bug.chk.apollo ||
+echo 'restore of cops_104/bug.chk.apollo failed'
+Wc_c="`wc -c < 'cops_104/bug.chk.apollo'`"
+test 1087 -eq "$Wc_c" ||
+	echo 'cops_104/bug.chk.apollo: original size 1087, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/bug.chk.next ==============
+if test -f 'cops_104/bug.chk.next' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/bug.chk.next (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/bug.chk.next (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/bug.chk.next' &&
+X#!/bin/sh
+X#
+X#  NeXT module for bug/vulnerability checking
+X#
+XECHO=/bin/echo
+XTEST=test
+XLS=/bin/ls
+XLS_OPTS="-slagL"
+XARCH=/bin/arch
+XGREP=/bin/grep
+XAWK=/bin/awk
+XBUG="$AWK -f ./bug_cmp"
+Xword_smithing="could have a hole/bug"
+X
+Xif $TEST ! -f ./bug_cmp ; then
+X	$ECHO "Must have bug compare module, ./bug_cmp, to run..."
+X	exit 2
+X	fi
+X# what is the date?  We just need the month and year...
+X# Format: Fri Feb  7 14:16:55 PST 1992
+Xif $TEST $# -eq "2" ; then
+X        real_date="$1 $2"
+Xelse
+X        real_date=`$DATE | $AWK '{print $2, $NF}'`
+X        fi
+X
+X# /usr/etc/restore0.9
+X#
+Xrestore=/usr/etc/restore0.9
+X(./is_able $restore s s | $GREP SUID )> /dev/null 2>/dev/null
+Xif $TEST $? -eq "0" ; then
+X	$ECHO "Warning!  $restore $word_smithing!  (CA-90:06a)"
+X	fi
+X
+X# npd (printer problem)
+X#
+X# NeXT machines running 1.0 and 1.0a
+Xnpd="/usr/lib/NextPrinter/npd"
+Xfix_date="3 Oct 1990"
+Xcert_advis="CA-90:06a"
+Xif $TEST -f "$npd" ; then
+X	cur_date=`$LS $LS_OPTS $npd | $AWK '{print $8, $7, $9}'`
+X	$ECHO $npd $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# /NextApps/BuildDisk
+X#
+X# NeXT machines running 1.0 and 1.0a
+X#
+X# FIX -- "chmod 4700 /NextApps/BuildDisk"
+X#
+Xbuild_disk="/NextApps/BuildDisk"
+Xfix_date="3 Oct 1990"
+Xcert_advis="CA-90:06a"
+X#
+X# Can anyone execute it?
+X($LS $LS_OPTS $build_disk | $GREP ...x..x..x ) > /dev/null 2>/dev/null
+X
+X# if so, check date, etc...
+Xif $TEST $? -eq "0" ; then
+X	cur_date=`$LS $LS_OPTS $build_disk | $AWK '{print $8, $7, $9}'`
+X        $ECHO "Warning!  $build_dist $word_smithing! ($cert_advis)"
+X        fi
+X
+X# /private/etc
+X#
+X# NeXT machines running 2.0 and 2.1
+X#
+X# FIX -- chmod g-w /private/etc
+X#
+Xprivate="/private/etc"
+Xfix_date="14 May 1991"
+Xcert_advis="CA-91:06"
+X#
+X# Can group write to it?
+X($LS $LS_OPTS $private | $GREP drwx..w... ) > /dev/null 2>/dev/null
+X
+X# if so, check date, etc...
+Xif $TEST $? -eq "0" ; then
+X        $ECHO "Warning!  $private $word_smithing! ($cert_advis)"
+X	fi
+X
+X# finis
+SHAR_EOF
+chmod 0700 cops_104/bug.chk.next ||
+echo 'restore of cops_104/bug.chk.next failed'
+Wc_c="`wc -c < 'cops_104/bug.chk.next'`"
+test 1901 -eq "$Wc_c" ||
+	echo 'cops_104/bug.chk.next: original size 1901, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/bug.chk.svr4 ==============
+if test -f 'cops_104/bug.chk.svr4' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/bug.chk.svr4 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/bug.chk.svr4 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/bug.chk.svr4' &&
+X#!/bin/sh
+X#
+X#  SVR4 module for bug/vulnerability checking
+X#
+XECHO=/bin/echo
+XTEST=/bin/test
+XLS=/bin/ls
+XLS_OPTS="-slagL"
+XARCH=/bin/arch
+XGREP=/bin/grep
+XAWK=/bin/awk
+XBUG="$AWK -f ./bug_cmp"
+X
+Xif $TEST ! -f ./bug_cmp ; then
+X	$ECHO "Must have bug compare module, ./bug_cmp, to run..."
+X	exit 2
+X	fi
+X# what is the date?  We just need the month and year...
+X# Format: Fri Feb  7 14:16:55 PST 1992
+Xif $TEST $# -eq "2" ; then
+X        real_date="$1 $2"
+Xelse
+X        real_date=`$DATE | $AWK '{print $2, $NF}'`
+X        fi
+X
+X# /bin/login
+X#
+X# AT&T SVR4
+X#
+X# FIX -- "chmod 500 /bin/login
+X#
+Xlogin="/bin/login"
+Xfix_date="23 May 1991"
+Xcert_advis="CA-91:08"
+X#
+X# Can anyone execute it?
+X($LS $LS_OPTS $login | $GREP ...x..x..x ) > /dev/null 2>/dev/null
+X
+X# if so, check date, etc...
+Xif $TEST $? -eq "0" ; then
+X	cur_date=`$LS $LS_OPTS $login | $AWK '{print $8, $7, $9}'`
+X	$ECHO $login $fix_date $cur_date $cert_advis | $BUG
+X	fi
+X
+X
+X# /usr/etc/rexecd
+X#
+X# AT&T TCP/IP release 4.0, SVR4, on 386/486 and 3B2 RISC platforms
+X# (how can you tell if it's one of those two platforms?)
+X#
+Xrexecd="/usr/etc/rexecd"
+Xfix_date="25 Feb 1992"
+Xcert_advis="CA-92:04"
+X#
+X# Can anyone execute it?
+X($LS $LS_OPTS $rexecd | $GREP ...x..x..x ) > /dev/null 2>/dev/null
+X
+X# if so, check date, etc...
+Xif $TEST $? -eq "0" ; then
+X	cur_date=`$LS $LS_OPTS $rexecd | $AWK '{print $8, $7, $9}'`
+X	$ECHO $rexecd $fix_date $cur_date $cert_advis | $BUG
+X	fi
+X
+X# finis
+SHAR_EOF
+chmod 0700 cops_104/bug.chk.svr4 ||
+echo 'restore of cops_104/bug.chk.svr4 failed'
+Wc_c="`wc -c < 'cops_104/bug.chk.svr4'`"
+test 1393 -eq "$Wc_c" ||
+	echo 'cops_104/bug.chk.svr4: original size 1393, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/platform ==============
+if test -f 'cops_104/platform' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/platform (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/platform (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/platform' &&
+X#!/bin/sh
+X#
+X# platx
+X#   Attemps, in vain, to determine the platform -- great if we could get
+X# hardware and software (OS) base.  First shot at this -- wanted to do this
+X# for a while, then re-stolen from Todd Merriman's "platform".
+X#
+X# *might* work on Xenix/386, CTIX, 386/ix, DG/UX, SunOS, DYNIX, eta10's,
+X# ibm risc boxes, pyramids, decstations, etc.  Uses the arch, file, and
+X# uname commands to try to figure things out.  Vaxen and such will
+X# definitely not work.
+X#
+X
+Xif test -s "/bin/arch" ; then
+X    # this gives strange results on some machines...
+X    # /bin/arch -k
+X    /bin/arch
+X    exit 0
+X    fi
+X
+Xif test -s "/bin/uname" ; then
+X    type=`uname -m`
+X        # Convergent S640
+X    if test "$type" = "miti2" ; then
+X	echo "CTIX"; exit 0
+X	fi
+X        # Sequent Interactive 386/ix and DYNIX
+X    if test "$type" = "i386" ; then
+X        if test "`uname -v`" = "DYNIX" ; then 
+X		echo "DYNIX"
+X		exit 0
+X        else 
+X		echo "386_ix"
+X		exit 0
+X		fi
+X	fi
+X        # DG/UX 88000
+X    if test "$type" = "AViiON" ; then 
+X	echo "DG_UX"; exit 0;
+X	fi
+X        # IBM's RISC/AIX
+X    if test "$type" = "AIX" ; then 
+X     	echo "aix"; exit 0;
+X	fi
+X        # SCO Xenix
+X    if test "$type" = "3" ; then 
+X   	echo "Xenix_386"; exit 0;
+X	fi
+X#     else    { print "$type???\n"; exit 0;}
+X    fi
+X
+X# locations of "file" executable?
+Xdirs="/bin /usr/bin"
+Xtypical_executable="/bin/ls"
+Xfor dir in $dirs ; do
+X     if test -r "$dir/file" ; then
+X         output=`$dir/file $typical_executable`
+X 	 type=`echo $output | awk '{print $2}'`
+X         if test "$type" = "mipsel" ; then
+X 		echo "DECstation"; exit 0
+X 		fi
+X         if test "$type" = "90x" ; then 
+X 		echo "dec"; exit 0
+X 		fi
+X         if test "$type" = "SYMMETRY" ; then 
+X 		echo "Sequent_Symmetry" ; exit 0
+X 		fi
+X 	fi
+X     done
+X
+X# also stolen from the net...
+X#
+X# rt_bsd:	4.3 BSD on RT
+X# aix_22:	AIX 2.* on RT
+X# aix_11: AIX 1.1 or AIX 1.2 on PS/2
+X# aix_31: AIX 3.1 on RISC 6000
+X
+Xif test -f "/unix" ; then
+X 	if test -d "/vrm" ; then
+X 		# echo "aix_22"
+X 		echo "aix"
+X		exit 1;
+X 	else
+X 		if test -d "/etc/security" ; then
+X 			# echo "aix_31" ; exit 1;
+X 			echo "aix" ; exit 1;
+X 		else
+X 			# echo "aix_11" ; exit 1;
+X 			echo "aix" ; exit 1;
+X 			fi
+X 		fi
+X	fi
+X
+X# apollo stuff; thanks to the apollo mailing list!
+Xif test -d /sys/node_data ; then
+X	echo "apollo" ; exit 1
+X	fi
+X
+Xexit 1;
+SHAR_EOF
+chmod 0700 cops_104/platform ||
+echo 'restore of cops_104/platform failed'
+Wc_c="`wc -c < 'cops_104/platform'`"
+test 2296 -eq "$Wc_c" ||
+	echo 'cops_104/platform: original size 2296, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/cops_filter ==============
+if test -f 'cops_104/cops_filter' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/cops_filter (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/cops_filter (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/cops_filter' &&
+X#
+X#  cops_filter
+X#
+X#  An awk program to help filter out spurious warning messages.  Similar
+X# to "carp.anlz", but instead of filtering out things on a network
+X# level (or at least multi-host), as carp does, it filters out individual
+X# host warnings.  Also, carp.anlz filters post facto and doesn't modify
+X# the report files; this filters before the report is printed and influences
+X# the final cops report.  See readme.cops_filter for more information.
+X#
+X
+X#
+X#  EXCEPTION LIST:
+X/Warning!/ {
+X	# if (warning) print "FIRST:", warning_msg
+X	if (warning) print warning_msg
+X	warning = skip_next = 0
+X
+X#
+X#  You can clump all the warnings together, which can be a pain
+X# to keep track of matching parens, backslashes, and curly braces
+X# (especially if you're changing the first or last entry in the long
+X# if statement...):
+X#
+X#	if (($0 ~ /Warning!  \/usr\/spool\/mail is _World_ writable!/) || \
+X#	    ($0 ~ /Warning!  \/etc\/mtab is _World_ writable!/) || \
+X#	    ($0 ~ /Warning!  YPassword/) || \
+X#	    ($0 ~ /Warning!  \/etc\/tmp is _World_ writable!/) || \
+X#	    ($0 ~ /Warning!  \/etc\/utmp is _World_ writable!/) || \
+X#	    ($0 ~ /Warning!  \/usr\/adm\/snm is _World_ writable!/)) {
+X#		skip_next = 1
+X#		next
+X#		}
+X
+X#  Alternately, you can do each one separately:
+X#
+X#	if ($0 ~ /Warning!  \/usr\/spool\/mail is _World_ writable!/) {
+X#		skip_next = 1
+X#		next
+X#		}
+X#	if ($0 ~ /Warning!  \/etc\/sm.* is _World_ writable!/) {
+X#		skip_next = 1
+X#		next
+X#		}
+X#	if ($0 ~ /Warning! ypadmin should be in \/etc\/ftpusers!/) {
+X#		skip_next = 1
+X#		next
+X#		}
+X
+X	warning = 1
+X	warning_msg = $0
+X	}
+X
+X#  this catches the second line of multi line warnings
+X! /Warning!/ {
+X	# if it's the second line, print the first line (caught above)
+X	if (warning)
+X		print warning_msg
+X	warning = 0
+X
+X	# print the second line or just normal lines
+X	if (!skip_next && $0 !~ /\*\*\*\*/)
+X		print $0
+X	}
+X
+X# don't want to blow away verbose information headers
+X/\*\*\*\*/ {
+X	print $0
+X	}
+SHAR_EOF
+chmod 0600 cops_104/cops_filter ||
+echo 'restore of cops_104/cops_filter failed'
+Wc_c="`wc -c < 'cops_104/cops_filter'`"
+test 1933 -eq "$Wc_c" ||
+	echo 'cops_104/cops_filter: original size 1933, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/reconfig ==============
+if test -f 'cops_104/reconfig' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/reconfig (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/reconfig (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/reconfig' &&
+X:
+X#
+X#  Usage: reconfig [file]
+X#
+X#   This replaces the program paths (e.g. /bin/awk) in COPS with an
+X# alternate path that is found in the file "file.paths".  Alternately,
+X# you can specify a single file to reconfig.
+X#   All programs are renamed "name.old", and the new version replaces
+X# the original name.  It then uses sed to replace all occurances of
+X# the target strings.
+X#   Basically, the program looks through all directories listed in
+X# $all_dirs for the list of programs in $all_commands and when it finds
+X# them, puts them in a sed source file.  It then goes to all of the
+X# shell files COPS uses ($shell_scripts) and replaces all occurances of
+X# the variables found with the new value.  It goes through some
+X# contortions trying to look for test (it has to find test without
+X# using test), and does some other not so smart things, but it seems
+X# to get the job done.
+X
+X# shell is always here, isn't it?
+XSH=/bin/sh
+X
+X# need these later
+XTEST=
+XAWK=
+XSED=
+XTR=
+X
+X# various types of awks; I'd really like to get gawk or mawk,
+X# but even nawk would be great.  In order:
+Xall_awks="gawk mawk nawk awk"
+X
+X#  Potential directories to find commands:
+Xall_dirs='/bin /usr/bin /usr/ucb /usr/local/bin /usr/bsd'
+X
+X#   First things first; are test and echo built-in shell commands?
+X# Theory.  If test is executed correctly and not found in the path
+X# I set, then they should be built into the shell, right?
+XPATH=/bin:/usr/bin
+Xfor dir in $all_dirs
+X	do
+X	if test -f $dir/test
+X		then
+X		TEST=$dir/test
+X		break
+X	fi
+X	done
+X# if not set, then set to default
+Xif test -z "$TEST"
+X	then
+X	TEST=test
+X	fi
+X
+Xfor dir in $all_dirs
+X	do
+X	if $TEST -f "$dir/echo"
+X		then
+X		ECHO=$dir/echo
+X		break
+X	fi
+X	done
+X
+X# if not set, then set to default
+Xif $TEST -z "$ECHO"
+X	then
+X	ECHO=echo
+X	fi
+X
+X# The sed filter file
+Xlocation=./file.paths
+X
+X#  Target shell scripts in question:
+Xif $TEST $# -ne 0 ; then
+X	shell_scripts="$*"
+Xelse
+X	doc_make=docs/makefile
+X	shell_scripts="makefile $doc_make chk_strings cops crc.chk \
+X		misc.chk dev.chk ftp.chk is_able.chk cron.chk group.chk \
+X		passwd.chk rc.chk root.chk suid.chk kuang init_kuang \
+X		res_diff pass_diff.chk yp_pass.chk"
+X	fi
+X
+X#  Target commands in question, sans those checked above:
+Xall_commands='cc nroff cat chmod cmp comm cp date diff egrep expr find grep ls mail mkdir mv rm sed sh sort tftp touch uniq uudecode ypcat strings'
+X
+X$ECHO checking to make sure all the target\(s\) are here...
+X#  make sure everything is here:
+Xfor i in $shell_scripts
+X	do
+X	if $TEST ! -s $i
+X		then
+X		$ECHO  ERROR -- $i not found!
+X		exit
+X	fi
+Xdone
+X
+X#   This finds the paths to any program used in COPS, then prints out
+X# a sed filter to the file "file.paths" that is used by this shell
+X# script to change all occurances of that command in the COPS system.
+X#
+X#   For example, if sed is in /usr/bin, it will create a line that looks
+X# like this:
+X#
+X# s.SED=*$.SED=/usr/bin/sed.
+X#
+X#  This corresponds to the sed command substitute ("-" is used as a
+X# delineator instead of "/" because the strings will be containing
+X# "/"'s) /usr/bin/sed in place of whatever was to the right of the
+X# equal sign.  This works because all commands are accessed by the
+X# variable "$XYZ", where "XYZ" corresponds to the lowercase command
+X# "xyz".  And, of course, all command variables are set at the top
+X# of each command file.
+X#
+X
+X# First we need awk and sed if this shell script will work....
+Xfor dir in $all_dirs ; do
+X	if $TEST -f $dir/sed ; then
+X		SED=$dir/sed
+X		fi
+X	for awk in $all_awks ; do
+X		if $TEST -z "$AWK" ; then
+X			if $TEST -x $dir/$awk ; then
+X				AWK=$dir/$awk
+X				break
+X				fi
+X			fi
+X		done
+X	if $TEST -f $dir/tr ; then
+X		TR=$dir/tr
+X		fi
+X	done
+X
+Xif $TEST -z "$AWK" ; then
+X	$ECHO "Cannot find awk; awk is needed to run this shell script"
+X	exit 1
+X	fi
+X
+Xif $TEST -z "$SED" ; then
+X	$ECHO "Cannot find sed; sed is needed to run this shell script"
+X	exit 1
+X	fi
+X
+Xif $TEST -z "$TR" ; then
+X	$ECHO "Cannot find tr; tr is needed to run this shell script"
+X	exit 1
+X	fi
+X
+X# zero out the file, then put in the real locations...
+X$ECHO > $location
+X
+X$ECHO So far so good...
+X$ECHO Looking for all the commands now...
+X
+Xfor command in $all_commands ; do
+X	found=false
+X	for dir in $all_dirs ; do
+X		# if find the command in one of the directories, print string
+X		if $TEST -f $dir/$command ; then
+X			# this converts to upper case
+X			upper=`$ECHO $command | $TR '[a-z]' '[A-Z]'`
+X		$ECHO "s-^$upper=.*\$-$upper=$dir/$command-" >> $location
+X			found=true
+X			break
+X			fi
+X		done
+X	if $TEST "$found" = "false" ; then
+X		if $TEST $command = "strings" ; then
+X			$ECHO Warning!  $command not found!  chk_strings will not work as planned.
+X		elif $TEST $command = tftp ; then
+X			$ECHO Warning!  $command not found!  misc.chk will not work as planned.
+X		elif $TEST $command = uudecode ; then
+X			$ECHO Warning!  $command not found!  misc.chk will not work as planned.
+X		elif $TEST $command = ypcat ; then
+X			:
+X		elif $TEST $command = nroff ; then
+X			$ECHO Warning!  $command not found!  docs cannot be formatted.
+X		else
+X			$ECHO ERROR!  $command not found!  Change or delete command!
+X			exit
+X			fi
+X		fi
+X	done
+X
+X$ECHO "s-^AWK=.*\$-AWK=$AWK-" >> $location
+X$ECHO "s-^ECHO=.*\$-ECHO=$ECHO-" >> $location
+X$ECHO "s-^TEST=.*\$-TEST=$TEST-" >> $location
+X
+X# almost forgot -- we need chmod & mv to make this reconfig work, too:
+Xfor dir in $all_dirs
+X	do
+X	if $TEST -f $dir/mv ; then
+X		MV=$dir/mv
+X		fi
+X	if $TEST -f $dir/chmod ; then
+X		CHMOD=$dir/chmod
+X		fi
+X	done
+X
+X$ECHO Ok, now doing substitutions on the shell scripts...
+Xfor i in $shell_scripts
+X	do
+X	$ECHO "Changing paths in $i..."
+X	$SED -f $location $i > $i.new
+X	$MV $i $i.old
+X	$MV $i.new $i
+X	# finally, make sure everything is back to executable status
+X	$CHMOD u+x $i
+X
+Xdone
+SHAR_EOF
+chmod 0700 cops_104/reconfig ||
+echo 'restore of cops_104/reconfig failed'
+Wc_c="`wc -c < 'cops_104/reconfig'`"
+test 5636 -eq "$Wc_c" ||
+	echo 'cops_104/reconfig: original size 5636, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/res_diff ==============
+if test -f 'cops_104/res_diff' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/res_diff (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/res_diff (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/res_diff' &&
+X:
+X#
+X#  res_diff /path/to/secure_directory current_report
+X#
+X#   This shell script just looks to see if anything has changed since
+X# the last time... it just cuts out the first line (the date) and does
+X# a diff... returns a 0 if it has changed, a 1 otherwise...
+X#
+X#  Started to use head and tail, but some SysV doesn't have 'em.  Bah!  Who
+X# needs 'em anyway, when you have awk :-)
+X#
+X#
+X# Explicitly specified pattern to match only report files
+X# (yyyy_Mon_dd), so as to allow us to store other sorts of things
+X# in the hostname subdirectories as well.  -- PASR 11/01/91
+X# 
+XDIFF=/bin/diff
+XTEST=/bin/test
+XAWK=/bin/awk
+XLS=/bin/ls
+XRM=/bin/rm
+XECHO=/bin/echo
+XTOUCH=/bin/touch
+X
+X#
+X# Important files:
+Xif $TEST -d "$1" ; then
+X	old_file=`$LS -t $1/[0-9][0-9][0-9][0-9]_[A-Z][a-z][a-z]_[0-9]* | $AWK 'NR==1'`
+Xelse
+X	$ECHO Error -- directory $1 does not exist for $0
+X	exit 2
+X	fi
+X
+Xif $TEST x"$old_file" = x ; then
+X	# No previous file exists -- make an empty one.
+X	old_file=$1/1776_Jul_4
+X	$TOUCH $old_file
+X	fi
+X	
+X# has anything changed?
+X$AWK 'NR > 5' $old_file > /tmp/tmp.$$.foo
+X$AWK 'NR > 5' $2 > /tmp/tmp.$$.bar
+X
+Xif $TEST -n "`$DIFF /tmp/tmp.$$.foo /tmp/tmp.$$.bar`" ; then
+X	$RM -f /tmp/tmp.$$.foo /tmp/tmp.$$.bar
+X	$ECHO There is a difference....
+X	exit 1
+X	fi
+X
+X$RM -f /tmp/tmp.$$.foo /tmp/tmp.$$.bar
+X# echo There is no difference....
+Xexit 0
+X# end
+SHAR_EOF
+chmod 0755 cops_104/res_diff ||
+echo 'restore of cops_104/res_diff failed'
+Wc_c="`wc -c < 'cops_104/res_diff'`"
+test 1329 -eq "$Wc_c" ||
+	echo 'cops_104/res_diff: original size 1329, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/root.chk ==============
+if test -f 'cops_104/root.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/root.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/root.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/root.chk' &&
+X:
+X#
+X#  Usage: root.chk
+X#
+X#  This shell script checks pathnames inside root's startup files for 
+X# writability, improper umask settings (world writable), non-root
+X# entries in /.rhosts, and to ensure that root is in /etc/ftpusers.
+X# Also check for a single "+" in /etc/hosts.equiv (world is trusted),
+X# and that /bin, /etc and certain key files are root owned, so that you
+X# can't, say, rcp from a host.equived machine and blow over the password
+X# file... this may or may not be bad, decide for yourself.
+X# Startup files are /.login /.cshrc /.profile
+X#
+X#  Mechanism:  These files contain paths and filenames that are stripped
+X# out using "grep".  These strings are then processed by the "is_able"
+X# program to see if they are world writable.  Strings of the form:
+X#
+X#	path=(/bin /usr/bin .)
+X#		and
+X#	PATH=/bin:/usr/bin:.:
+X#
+X# are checked (using grep) to ensure that "." is not in the path.  All
+X# results are echoed to standard output.  In addition, some effort was
+X# put into parsing out paths with multiple lines; e.g. ending in "\",
+X# and continuing on the next line.
+X#  For umask stuff, simply grep for umask in startup files, and check
+X# umask value.  For /etc/ftpuser, simple grep to check if root is in
+X# the file.  For /etc/hosts.equiv, just check to see if "+" is alone
+X# on a line by awking it.
+X#
+X#
+XAWK=/bin/awk
+XSED=/bin/sed
+XTEST=/bin/test
+XECHO=/bin/echo
+XGREP=/bin/grep
+XSORT=/usr/bin/sort
+XEXPR=/bin/expr
+XLS=/bin/ls
+X
+X# root startup/important files
+Xcsh=/.cshrc
+Xsh=/.profile
+Xrhosts=/.rhosts
+Xbig_files="/.login /.cshrc /.profile"
+X
+X# root should own *at least* these, + $big_files; you can check for all files
+X# in /bin & /etc, or just the directories (the default.)
+X# root_files="/bin /bin/* /etc /etc/* $big_files $rhosts"
+Xroot_files="/dev /usr/etc /bin /etc $big_files $rhosts /etc/passwd /etc/group"
+X
+X# misc important stuff
+Xftp=/etc/ftpusers
+Xequiv=/etc/hosts.equiv
+X
+X#   should't have anyone but root owning /bin or /etc files/directories
+X# In case some of the critical files don't exist (/.rhost), toss away error
+X# messages
+Xnon_root=`$LS -ld $root_files | $AWK '{if ($3 != "root") print $NF}'`
+Xif $TEST -n "$non_root" ; then
+X	$ECHO "Warning!  Root does not own the following file(s):"
+X	$ECHO $non_root
+X	fi
+X
+X# parse into separate paths:
+Xfor i in $big_files
+X	do
+X	if $TEST -s $i
+X		then
+X		./chk_strings $i
+X
+X		# check for umask stuff (thanks to Bruce Spence):
+X		if umsk=`$GREP umask $i ` 2>/dev/null
+X			then
+X			mask=`$ECHO $umsk|$AWK '{if($2!=""){if(length($2)==1) print "00"$2; \
+X				else if (length($2)==2) print "0"$2; \
+X				else print $2} else print "000"}'`
+X#			perm=`$EXPR substr $mask 3 1`
+X			perm=`$ECHO $mask | $SED 's/[0-9][0-9]//'`
+X			if $TEST "$perm" -lt 2 -o "$perm" = 4
+X				then
+X				if $TEST "$umsk"
+X					then
+X					$ECHO "Warning!  Root's umask set to $umsk in $i"
+X					fi
+X				fi
+X			fi
+X		fi
+X	done
+X
+X# check to see if root is in ftpusers file
+Xif $TEST -s $ftp
+X	then
+X	if $TEST ! "`$GREP "root" $ftp`"
+X		then
+X		$ECHO Warning!  $ftp exists and root is not in it
+X		fi
+X	fi
+X
+X# check for a "+" in hosts.equiv.  Bad.  Bad dog.
+Xif $TEST -f $equiv ; then
+X	$AWK '{if (NF==1 && $1=="+") printf("Warning!  A \"+\" entry in %s!\n", "'$equiv'")}' $equiv
+X	fi
+X
+X# check for non-root entries in /.rhosts
+X#$AWK '{if ((NF==1&&!($1=="localhost" || $1=="root"))||(NR!=1&&$2!="root")) printf("Warning!  Non root entry in %s! %s\n", $rhosts, $0)}' $rhosts
+X
+X
+X# checking paths...
+X#
+X#  For both the .profile and .cshrc, the methods are similar.  Awk for
+X# lines with "path" or "PATH", rip out the guts, then check with is_writable 
+X# Trying to pull out the multi line stuff was a pain...  no thanks to
+X# Jay Batson for telling me this was broken :-)
+X#
+X{
+X#
+X# Get the root paths from $csh.
+Xif $TEST -f $csh; then
+X	$AWK '{foo=substr($NF,1,length($NF)); \
+X	if (bar && foo=="\\" )
+X		foobar[i++] = $0; \
+X	if (bar && foo==")") {
+X		bar = 0; \
+X		foobar[i++] = $0;}}
+X/path/	{ foobar[i++] = $0; \
+X	foo=substr($NF,1,length($NF)); \
+X	if (foo=="\\" )
+X		bar = NR \
+X	}
+XEND { for (j=0; j<=i; j++)
+X	print foobar[j] } ' $csh |
+X	$SED -e 's/#.*$//' -e 's/(//' -e 's/)//' -e 's/.*=//' |
+X  	$AWK '{for (i=1;i<=NF;i++) print $i}'
+Xfi
+X
+X#
+X# Get the root paths from $sh.
+Xif $TEST -f $sh; then
+X	$AWK -F: '{foo=substr($NF,1,length($NF)); \
+X	if (bar && foo=="\\" )
+X		foobar[i++] = $0; \
+X	if (bar) {
+X		bar = 0; \
+X		foobar[i++] = $0;}}
+X	/PATH/	{ foobar[i++] = $0; \
+X		foo=substr($NF,1,length($NF)); \
+X		if (foo=="\\" )
+X			bar = NR \
+X		}
+X	END { for (j=0; j<=i; j++)
+X		print foobar[j] }' $sh |
+X	$SED -e 's/#.*$//' -e 's/^export.*$//' -e 's/PATH=//' -e 's/;.*$//' |
+X 	$AWK '{ split($0,temp,":"); for (i in temp) \
+X 			if (temp[i] == "") print "."; \
+X 			else print temp[i]}'
+Xfi
+X} |
+X $SORT -u |
+X  while read i
+X  do
+X	# check to see if "." is in path
+X	if $TEST "." = "$i"
+X	then
+X		$ECHO "Warning!  \".\" (or current directory) is in roots path!"
+X	fi
+X
+X	if ./is_writable $i
+X	then
+X		$ECHO "Warning!  Directory $i is _World_ writable and in roots path!"
+X	fi
+X  done
+X
+X# end of script
+SHAR_EOF
+chmod 0755 cops_104/root.chk ||
+echo 'restore of cops_104/root.chk failed'
+Wc_c="`wc -c < 'cops_104/root.chk'`"
+test 4926 -eq "$Wc_c" ||
+	echo 'cops_104/root.chk: original size 4926, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/src/addto.c ==============
+if test ! -d 'cops_104/src'; then
+    echo 'x - creating directory cops_104/src'
+    mkdir 'cops_104/src'
+fi
+if test -f 'cops_104/src/addto.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/src/addto.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/src/addto.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/src/addto.c' &&
+X/* Copyright 1985 Robert W. Baldwin */
+X/* Copyright 1986 Robert W. Baldwin */
+Xstatic	char	*notice85 = "Copyright 1985 Robert W. Baldwin";
+Xstatic	char	*notice86 = "Copyright 1986 Robert W. Baldwin";
+X
+X/*
+X  August 15, added "Warning!"  To prepend warning messages.
+X    -- dan farmer
+X*/
+X
+X
+X/* 
+X * Add a goal, check for duplicates and completions.
+X * Trace messages written to stdout, success messages written to stderr.
+X * Usage: addto fileroot key comments
+X * Files are arranged in families based on a root name; for example,
+X *    uids.k  -- uids we Know how to access
+X *    uids.n  -- uids to process Next
+X *    uids.p  -- uids Pending results (for duplicate detection)
+X *    uids.x  -- uids being eXamined currently
+X */
+X
+X
+X#include	<stdio.h>
+X
+X#define	LINELEN	600		/* Max chars in a line. */
+X#define	SUCCESS	"Success"	/* Filename to put success messages. */
+X
+Xmain(argc, argv)
+Xint	argc;
+Xchar	*argv[];
+X{
+X	char	*type = argv[1];
+X	char	*key = argv[2];
+X	int	i;
+X	char	linebuf[LINELEN];
+X 	char	keypending[150];
+X	char	filename[150];
+X	FILE	*tmpfile;
+X
+X	if (argc < 3)  {
+X		fprintf(stderr, "addto: missing arguments\n");
+X		exit(1);
+X		}
+X		
+X	tmpfile = NULL;
+X		
+X 	keypending[0] = NULL;
+X	strcat(keypending, key);
+X	strcat(keypending, " ");
+X/*
+X * If the uid is known, print out the comments and exit.
+X */
+X	filename[0] = NULL;
+X	strcat(filename, type);
+X	strcat(filename, ".k");
+X	if ((tmpfile = fopen(filename, "r")) == NULL)  {
+X		fprintf(stderr, "addto: can't open %s.\n", filename);
+X		exit(1);
+X		}
+X	while (fgets(linebuf, LINELEN, tmpfile) != NULL)  {
+X		if (strncmp(linebuf, key, strlen(key)) == 0)  {
+X			if ((tmpfile = freopen(SUCCESS,"a",tmpfile)) == NULL) {
+X				fprintf(stderr, "addto: can't open %s.\n",
+X					SUCCESS);
+X				exit(1);
+X				}
+X			fprintf(stderr, "Success^G^G\t");
+X			fprintf(tmpfile, "Warning!  ");
+X			for (i = 1 ; i < argc ; i++)  {
+X				fprintf(tmpfile, argv[i]);
+X				fprintf(tmpfile, " ");
+X				fprintf(stderr, argv[i]);
+X				fprintf(stderr, " ");
+X				}
+X			fprintf(tmpfile, "\n");
+X			fprintf(stderr, "\n");
+X			
+X			exit(0);
+X			}
+X		}
+X/*
+X * If a duplicate, don't add it.
+X */
+X	filename[0] = NULL;
+X	strcat(filename, type);
+X	strcat(filename, ".p");
+X	if (freopen(filename, "r", tmpfile) == NULL)  {
+X		fprintf(stderr, "addto: can't open %s.\n", filename);
+X		exit(1);
+X		}
+X	while (fgets(linebuf, LINELEN, tmpfile) != NULL)  {
+X		if (strncmp(linebuf, keypending, strlen(keypending)) == 0)  {
+X			exit(0);	/* Its a duplicate. */
+X			}
+X		}
+X/*
+X * Add the goal to the pending file. 
+X */
+X	filename[0] = NULL;
+X	strcat(filename, type);
+X	strcat(filename, ".p");
+X	if (freopen(filename, "a", tmpfile) == NULL)  {
+X		fprintf(stderr,"addto: can't open %s for append.\n", filename);
+X		exit(1);
+X		}
+X	fprintf(tmpfile, keypending);
+X	fprintf(tmpfile, "\n");
+X/*
+X * Add the goal to the next goal (type) file.
+X */
+X	filename[0] = NULL;
+X	strcat(filename, type);
+X	strcat(filename, ".n");
+X	if (freopen(filename, "a", tmpfile) == NULL)  {
+X		fprintf(stderr,"addto: can't open %s for append.\n", filename);
+X		exit(1);
+X		}
+X	fprintf(stdout, "        ");
+X	fprintf(stdout, "%s %s ", argv[0], argv[1]);
+X	for (i = 2 ; i < argc ; i++)  {
+X		fprintf(tmpfile, argv[i]);
+X		fprintf(tmpfile, " ");
+X		fprintf(stdout, argv[i]);
+X		fprintf(stdout, " ");
+X		}
+X	fprintf(tmpfile, "\n");
+X	fprintf(stdout, "\n");
+X	exit(0);
+X}
+X
+X
+X
+SHAR_EOF
+chmod 0600 cops_104/src/addto.c ||
+echo 'restore of cops_104/src/addto.c failed'
+Wc_c="`wc -c < 'cops_104/src/addto.c'`"
+test 3254 -eq "$Wc_c" ||
+	echo 'cops_104/src/addto.c: original size 3254, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/src/clearfiles.c ==============
+if test -f 'cops_104/src/clearfiles.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/src/clearfiles.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/src/clearfiles.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/src/clearfiles.c' &&
+X/* Copyright 1985 Robert W. Baldwin */
+X/* Copyright 1986 Robert W. Baldwin */
+Xstatic	char	*notice85 = "Copyright 1985 Robert W. Baldwin";
+Xstatic	char	*notice86 = "Copyright 1986 Robert W. Baldwin";
+X
+X/*
+X * Reset the info files used by Kuang.
+X */
+X
+X
+X#include	<stdio.h>
+X
+Xchar	*filelist[] = {
+X	"uids.k",
+X	"Success",
+X	"uids.k",
+X	"uids.p",
+X	"uids.n",
+X	"uids.x",
+X	"gids.k",
+X	"gids.p",
+X	"gids.n",
+X	"gids.x",
+X	"files.k",
+X	"files.p",
+X	"files.n",
+X	"files.x",
+X	"",
+X	};
+X
+Xmain(argc, argv)
+Xint	argc;
+Xchar	*argv[];
+X{
+X	int	i;
+X
+X	for (i = 0 ; filelist[i][0] != NULL ; i++)  {
+X		if (freopen(filelist[i], "w", stdout) == NULL)  {
+X			fprintf(stderr, "%s: can't open %s.\n",
+X				argv[0], filelist[i]);
+X			exit(1);
+X			}
+X		}
+X}
+X
+SHAR_EOF
+chmod 0600 cops_104/src/clearfiles.c ||
+echo 'restore of cops_104/src/clearfiles.c failed'
+Wc_c="`wc -c < 'cops_104/src/clearfiles.c'`"
+test 702 -eq "$Wc_c" ||
+	echo 'cops_104/src/clearfiles.c: original size 702, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/src/crc.c ==============
+if test -f 'cops_104/src/crc.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/src/crc.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/src/crc.c (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/src/crc.c' &&
+X
+X/* updcrc(3), crc(1) - calculate crc polynomials
+X *
+X * Calculate, intelligently, the CRC of a dataset incrementally given a 
+X * buffer full at a time.
+X * 
+X * Usage:
+X * 	newcrc = updcrc( oldcrc, bufadr, buflen )
+X * 		unsigned int oldcrc, buflen;
+X * 		char *bufadr;
+X *
+X * Compiling with -DTEST creates a program to print the CRC of stdin to stdout.
+X * Compile with -DMAKETAB to print values for crctab to stdout.  If you change
+X *	the CRC polynomial parameters, be sure to do this and change
+X *	crctab's initial value.
+X *
+X * Notes:
+X *  Regards the data stream as an integer whose MSB is the MSB of the first
+X *  byte recieved.  This number is 'divided' (using xor instead of subtraction)
+X *  by the crc-polynomial P.
+X *  XMODEM does things a little differently, essentially treating the LSB of
+X * the first data byte as the MSB of the integer. Define SWAPPED to make
+X * things behave in this manner.
+X *
+X * Author:	Mark G. Mendel, 7/86
+X *		UUCP: ihnp4!umn-cs!hyper!mark, GEnie: mgm
+X */
+X
+X#define TEST
+X
+X/* The CRC polynomial.
+X * These 4 values define the crc-polynomial.
+X * If you change them, you must change crctab[]'s initial value to what is
+X * printed by initcrctab() [see 'compile with -DMAKETAB' above].
+X */
+X
+X/* Value used by:	    		CITT	XMODEM	ARC  	*/
+X#define	P	 0xA001	 /* the poly:	0x1021	0x1021	A001	*/
+X#define INIT_CRC 0L	 /* init value:	-1	0	0	*/
+X#define SWAPPED		 /* bit order:	undef	defined	defined */
+X#define W	16	 /* bits in CRC:16	16	16	*/
+X
+X/* data type that holds a W-bit unsigned integer */
+X#if W <= 16
+X#  define WTYPE	unsigned short
+X#else
+X#  define WTYPE   unsigned long
+X#endif
+X
+X/* the number of bits per char: don't change it. */
+X#define B	8
+X
+Xstatic WTYPE crctab[1<<B] = /* as calculated by initcrctab() */ {
+X   0x0,  0xc0c1,  0xc181,  0x140,  0xc301,  0x3c0,  0x280,  0xc241,
+X   0xc601,  0x6c0,  0x780,  0xc741,  0x500,  0xc5c1,  0xc481,  0x440,
+X   0xcc01,  0xcc0,  0xd80,  0xcd41,  0xf00,  0xcfc1,  0xce81,  0xe40,
+X   0xa00,  0xcac1,  0xcb81,  0xb40,  0xc901,  0x9c0,  0x880,  0xc841,
+X   0xd801,  0x18c0,  0x1980,  0xd941,  0x1b00,  0xdbc1,  0xda81,  0x1a40,
+X   0x1e00,  0xdec1,  0xdf81,  0x1f40,  0xdd01,  0x1dc0,  0x1c80,  0xdc41,
+X   0x1400,  0xd4c1,  0xd581,  0x1540,  0xd701,  0x17c0,  0x1680,  0xd641,
+X   0xd201,  0x12c0,  0x1380,  0xd341,  0x1100,  0xd1c1,  0xd081,  0x1040,
+X   0xf001,  0x30c0,  0x3180,  0xf141,  0x3300,  0xf3c1,  0xf281,  0x3240,
+X   0x3600,  0xf6c1,  0xf781,  0x3740,  0xf501,  0x35c0,  0x3480,  0xf441,
+X   0x3c00,  0xfcc1,  0xfd81,  0x3d40,  0xff01,  0x3fc0,  0x3e80,  0xfe41,
+X   0xfa01,  0x3ac0,  0x3b80,  0xfb41,  0x3900,  0xf9c1,  0xf881,  0x3840,
+X   0x2800,  0xe8c1,  0xe981,  0x2940,  0xeb01,  0x2bc0,  0x2a80,  0xea41,
+X   0xee01,  0x2ec0,  0x2f80,  0xef41,  0x2d00,  0xedc1,  0xec81,  0x2c40,
+X   0xe401,  0x24c0,  0x2580,  0xe541,  0x2700,  0xe7c1,  0xe681,  0x2640,
+X   0x2200,  0xe2c1,  0xe381,  0x2340,  0xe101,  0x21c0,  0x2080,  0xe041,
+X   0xa001,  0x60c0,  0x6180,  0xa141,  0x6300,  0xa3c1,  0xa281,  0x6240,
+X   0x6600,  0xa6c1,  0xa781,  0x6740,  0xa501,  0x65c0,  0x6480,  0xa441,
+X   0x6c00,  0xacc1,  0xad81,  0x6d40,  0xaf01,  0x6fc0,  0x6e80,  0xae41,
+X   0xaa01,  0x6ac0,  0x6b80,  0xab41,  0x6900,  0xa9c1,  0xa881,  0x6840,
+X   0x7800,  0xb8c1,  0xb981,  0x7940,  0xbb01,  0x7bc0,  0x7a80,  0xba41,
+X   0xbe01,  0x7ec0,  0x7f80,  0xbf41,  0x7d00,  0xbdc1,  0xbc81,  0x7c40,
+X   0xb401,  0x74c0,  0x7580,  0xb541,  0x7700,  0xb7c1,  0xb681,  0x7640,
+X   0x7200,  0xb2c1,  0xb381,  0x7340,  0xb101,  0x71c0,  0x7080,  0xb041,
+X   0x5000,  0x90c1,  0x9181,  0x5140,  0x9301,  0x53c0,  0x5280,  0x9241,
+X   0x9601,  0x56c0,  0x5780,  0x9741,  0x5500,  0x95c1,  0x9481,  0x5440,
+X   0x9c01,  0x5cc0,  0x5d80,  0x9d41,  0x5f00,  0x9fc1,  0x9e81,  0x5e40,
+X   0x5a00,  0x9ac1,  0x9b81,  0x5b40,  0x9901,  0x59c0,  0x5880,  0x9841,
+X   0x8801,  0x48c0,  0x4980,  0x8941,  0x4b00,  0x8bc1,  0x8a81,  0x4a40,
+X   0x4e00,  0x8ec1,  0x8f81,  0x4f40,  0x8d01,  0x4dc0,  0x4c80,  0x8c41,
+X   0x4400,  0x84c1,  0x8581,  0x4540,  0x8701,  0x47c0,  0x4680,  0x8641,
+X   0x8201,  0x42c0,  0x4380,  0x8341,  0x4100,  0x81c1,  0x8081,  0x4040,
+X};
+X
+X
+Xvoid perror();
+Xchar *strcpy(); 
+Xvoid exit();
+X
+XWTYPE
+Xupdcrc( icrc, icp, icnt )
+XWTYPE icrc;
+Xunsigned char	*icp;
+Xint	icnt;
+SHAR_EOF
+true || echo 'restore of cops_104/src/crc.c failed'
+fi
+echo 'End of  part 9'
+echo 'File cops_104/src/crc.c is continued in part 10'
+echo 10 > _shar_seq_.tmp
+exit 0
+

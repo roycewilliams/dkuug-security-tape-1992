@@ -1,0 +1,52 @@
+
+
+CURRENT_MEETING_REPORT_
+
+
+Reported by James Galvin/TIS
+
+PEM I BOF Minutes
+
+RFCs 1113, 1114 and 1115 are currently being revised.  During this
+meeting, two new requirements that will be specified in the revised RFCs
+were discussed.
+
+
+   o Construction of distinguished names
+   o Implementation requirements
+
+
+The revised RFCs, more precisely RFC 1114, will be specifying the use of
+mandatory, optional and prohibited attributes to be used in the
+construction of distinguished names.  The reasons both for and against
+the rules were discussed.  The principal reason in favor of the explicit
+rules was enhancement of the assurance of the proper operation of the
+certificate infrastructure.  The ability to recognize and distinguish
+individual certificates from the those of a certification authority is a
+desirable feature.  The principal reason against the explicit rules was
+the concern about interoperability with directory services pilots and
+the migration of PEM to use these services.  However, the discussion did
+not yield a technical basis for the concern.
+
+The revised RFCs, more precisely RFC 1114, will be specifying
+requirements on implementations that directly affect the user interface.
+Although it was agreed that security is enhanced if the requirements are
+implemented, it was unanimously agreed there are other mechanisms by
+which the ``concepts'' could be met.  There was a good deal of concern
+about this issue.  The Chair was tasked with bringing the issue to the
+attention of the Security Area Director and forwarding comments as
+appropriate.
+
+Attendees
+
+James Galvin             galvin@tis.com
+Anthony Lauck            lauck@tl.enet.dec.com
+John Linn                ULTRA::LINN
+E. Paul Love             loveep@sdsc.edu
+Michael Reilly           reilly@pa.dec.com
+Jeffrey Schiller         jis@mit.edu
+Sam Sjogren              sjogren@tgv.com
+
+
+
+                                   1

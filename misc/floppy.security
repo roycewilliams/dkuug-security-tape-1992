@@ -1,0 +1,67 @@
+From mojo!mimsy!haven!aplcen!uunet!cs.utexas.edu!rice!sun-spots-request Fri May 25 16:25:24 EDT 1990
+Article: 9174 of comp.sys.sun:
+Path: mojo!mimsy!haven!aplcen!uunet!cs.utexas.edu!rice!sun-spots-request
+From: alen@crash.cts.com (Alen Shapiro)
+Newsgroups: comp.sys.sun
+Subject: Re: SPARC Station Diskettes
+Keywords: Miscellaneous
+Message-ID: <8090@brazos.Rice.edu>
+Date: 24 May 90 00:13:42 GMT
+Sender: root@rice.edu
+Organization: Sun-Spots
+Lines: 49
+Approved: Sun-Spots@rice.edu
+X-Refs:  Original: v9n162, Replies: v9n168 v9n173 v9n180
+X-Sun-Spots-Digest: Volume 9, Issue 178, message 13
+
+>>/* Written  1:45 pm  May 18, 1990 by alen@crash.cts.com */
+>>
+>>Allowing [mounted floppy filesystems]  leaves a big security hole for
+>>someone to come along with their own disk containing a suid-root version
+>>of /bin/sh.  Once mounted, such a disk would allow root privs to mere
+>>mortals.  
+>>
+>In article <7947@brazos.Rice.edu> carey@cs.uiuc.edu (John Carey) writes:
+>You can turn off suid programs when you use NFS to mount remote
+>filesystems, why couldn't you do that with mounting a floppy disk
+>filesystem?
+
+OK well try this then
+
+a) on your favourite root permissions machine, create a diskette with a
+   mountable filestore containing a device node corresponding to the
+   major-minor pair for a raw character disk device on your target machine
+b) chown the device node to your uid on the target machine and then
+c) chmod 666 the-device-node
+
+Once mounted on the target machine, this disk will allow you to open the
+diskdevice on your target machine for writing and/or trash the disk and/or
+modify a copy of /bin/sh on the targetted filestore to give you suid root
+perms.  (I just tried the above on my SS1 under SunOS4.1 - adb opened
+rsd1b (my aux-swap for writing with no problems ... even though the floppy
+containing the device node was mounted nosuid!!)
+
+Or how about just having the mounting prog (itself suid-root) mount your
+disk on someone else's home directory (or worse, on a place containing an
+"rc" file for some utility that root may run).
+
+I wonder if I could mount the floppy on say, /etc and use my own copy of
+/etc/passwd? (I tried this also on my SS1 and although "init" has been
+relocated to /sbin, the mount-point is still busy, I'm not sure who has an
+active inode on that directory but the concept stands).  (The suid-root
+mounter could restrict the mount points and deal with the last 2 points).
+
+Another point is... how robust is the OS to corrupt filestores or someone
+typeing "eject" to the mounted floppy (will sync still try to write
+there?) Fsck is not foolproof and given a bit of time I'm pretty sure I
+could create a self-worsening filestore problem, invisible to fsck, that
+the OS could not handle
+
+Thanks to the (many) senders of mail informing me about the "-o nosuid"
+mount option, any solutions to the above would be welcome (honest!!)
+
+--alen the Lisa slayer (trying to turn a SPARC into a Flame)
+  ...alen%shappy.uucp@crash.cts.com (a mac+ uucp host - what a concept!!)
+  ...alen@crash.cts.com
+
+

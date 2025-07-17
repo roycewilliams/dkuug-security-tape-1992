@@ -1,0 +1,1965 @@
+#!/bin/sh
+# this is p4.shar.17 (part 17 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/perl/kuang.1 continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 17; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/perl/kuang.1'
+else
+echo 'x - continuing file cops_104/perl/kuang.1'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/perl/kuang.1' &&
+Xto reason backward from a desired goal (such as "grant u.root"),
+Xgenerating potential "attack" plans from the rules and file system
+Xstate and then evaluating them to see whether they are reachable
+Xaccording to the state recorded in the password and group files and in
+Xthe ownership and modes of the file systems.
+X
+XBy default, 
+X.B kuang 
+Xuses "grant u.root" as its initial goal.  You can change that by
+Xspecifying a username (u.username) or groupname (g.groupname) on the
+Xcommand line.  Normally 
+X.B kuang
+Xdetermines a plan to be successful if it determines that anyone
+X(u.other) can become the initial goal.  
+X
+XThe 
+X.B \-v
+Xoption causes 
+X.B kuang
+Xto print a message about every plan added to the evaluation list.
+XThis can help one to understand how 
+X.B kuang 
+Xworks.  The 
+X.B \-d 
+Xoption causes 
+X.B kuang
+Xto print a message when it evaluates a plan to determine whether to
+Xretain it and add onto it or ignore it.  Beware - these options will often
+Xproduce lots of output.
+X
+XNormally 
+X.B kuang
+Xonly registers success when it finds that everyone on the system can
+Xbecome the target uid or gid.  With the 
+X.B \-l
+Xoption, 
+X.B kuang
+Xwill list every uid that can access the goal.  This provides a more
+Xcomplete picture of the state of security - you might deem it a
+Xproblem if several users can become root, even if u.other cannot.  
+XWith the
+X.B \-k
+Xoption, it reads users that are known to be compromised (guessed
+Xpassword, writeable startup files, or whatever) into a file, like:
+X
+Xu 216
+Xu romig
+Xdf
+Xg staff
+X
+Xand so on.  Then start kuang as "kuang -k known".  If you omit the u
+Xor g, it defaults to uid.  You can give names or IDs for uids and
+Xgroups.  You can also list files.  This gets put on a list that is 
+Xused to decide whether a plan is successful or not.  If a plan 
+Xreaches an step that is in the known list, it succeeds.
+X
+XOne might adopt the view that each uid should only be accessible by
+Xitself and root, and that each gid should be accessible only by the
+Xmembers of that group and root.  One can then compare the expected
+Xaccess list for a given uid or gid against the 
+X.B kuang
+Xgenerated list to find security problems that 
+X.B kuang
+Xwouldn't ordinarily tell you about.
+X
+XThe goals that 
+X.B kuang
+Xuse seem cryptic, but are really pretty straightforward.  Each goal
+Xconsists of a list of <action> <object> pairs.  Typical actions are
+Xuser, group, write and replace.  Typical objects are user names,
+Xgroup names and file names.  The goal
+X"user root" (or u.root) means to have access to the root UID (0), or
+Xin other words, to be able to run any program using that uid.  
+XSimilarly,
+X"group staff" (or g.staff) means to have access to group staff.
+XThe long goal
+X"user bill  group graphics replace /n/shoe/0/fred replace
+X/n/shoe/0/fred/.profile user fred group staff" means become
+Xuser bill, get access to the graphics group, replace the file
+X/n/shoe/0/fred, replace /n/shoe/0/fred/.profile, become fred,
+Xgrant access to the staff group.  The problem that allows this to
+Xhappen is that the /n/shoe/0 directory is writeable by the graphics
+Xgroup, meaning that anyone in that group can replace the .profile file
+Xfor the fred user and gain access to that account and the groups it
+Xbelongs to when fred next logs in.  Ooops.
+X
+XTo do a thorough job, 
+X.B kuang 
+Xreally needs to be able to access all of
+Xthe controlling files of all users.  In some environments, home
+Xdirectories are located in NFS mounted file systems where the client
+Xdoesn't have root access.  
+X
+XThe problem is that some home directories may be
+Xprotected so that group foo can read/write them, but OTHER can't.
+X.B kuang 
+Xrunning as some user not in group foo won't be able to read or
+Xsearch the directory, creating a blind spot that may hide security
+Xproblems (for example, if group foo can write that user's .login and
+Xgain access to some other important priv...)  Running 
+X.B kuang
+Xas root
+Xwon't help unless we are running on the server that exports that
+Xfile system, since root==nobody through NFS here.  Of course, then
+Xyou'll find other blind spots on other servers, meaning that you'll
+Xnever be able to see a complete picture of how things are from any
+Xspot on the net.  Running 
+X.B kuang
+Xon every machine might not even
+Xhelp, since the blind spots might prevent them from seeing viable
+Xpaths to Success on any of the machines.  Sigh.
+X
+XSoooo we've added a 
+X.B -f 
+Xoption that causes 
+X.B kuang 
+Xto preload owner, group and mode information for a list of files.
+XEach line of the file should be of the form "type uid gid mode name".
+X.B type
+Xis ignored by 
+X.B kuang.
+X.B uid 
+Xand 
+X.B gid
+Xare the user and group ID numbers, in decimal.
+X.B mode
+Xis the permissions for the file, in octal.  And 
+X.B name
+Xis the name of the file.  We've also added a program called
+X.B get-cf
+Xthat can be run as root on a server to create a file of the above form
+Xfor the control files for the user's with home directories on that
+Xserver.  Then you can run 
+X.B get-cf 
+Xon every server as root, concatenate all the data together, and
+Xpreload it into Perl.  This will fix the shadow problems mentioned
+Xabove and should also speed things up since you won't need to do all
+Xthe file system references.
+X.B kuang -f file
+Xwill use a DBM database in place of a text file if file.dir exists.
+X
+X.B Kuang
+Xneeds to read the entire password and group databases before it
+Xstarts, so that it has a complete idea of what users are in what groups
+Xand so on.  This can be somewhat slow on systems using YP, since by
+Xdefault 
+X.B kuang
+Xuses the getpwent and getgrent routines to get the information (which
+Xis tedious on a YP client).  
+XThe 
+X.B -P
+Xand 
+X.B -G
+Xoptions cause 
+X.B kuang
+Xto read /etc/passwd (/etc/group) and to use ypcat to read the rest of
+Xthe passwd (group) YP maps, which can be much faster.  In addition, 
+Xthe 
+X.B -p 
+Xand 
+X.B -g 
+Xoptions cause 
+X.B kuang 
+Xto read the named files instead of /etc/passwd.
+X
+X.SH "SEE ALSO"
+X"Rule Based Analysis of Computer Security", Robert W. Baldwin, MIT,
+XJune 1987.
+X
+XThe README file that comes with 
+X.B kuang
+Xdescribes many of the design considerations, problems and future
+Xplans.
+X
+X.SH NOTES
+X.LP
+XThis version of 
+X.B kuang
+Xis based on the shell script versions that Dan Farmer included with
+Xthe 
+X.B COPS 
+Xsecurity package, which in turn were based on code written by  Robert
+XBaldwin himself.
+X
+XYou should read the other documentation that should come with this
+Xversion and modify the rules in 
+X.B kuang
+Xto suite your site.
+X
+X.SH BUGS
+X.LP
+XProbably many.
+X
+XThe 
+X.B -P
+Xand 
+X.B -G 
+Xoptions don't work right if you use +@ constructions with YP.  They do
+Xwork right if you use a simple "+:" entry, however.
+X
+SHAR_EOF
+echo 'File cops_104/perl/kuang.1 is complete' &&
+chmod 0600 cops_104/perl/kuang.1 ||
+echo 'restore of cops_104/perl/kuang.1 failed'
+Wc_c="`wc -c < 'cops_104/perl/kuang.1'`"
+test 7253 -eq "$Wc_c" ||
+	echo 'cops_104/perl/kuang.1: original size 7253, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/misc.chk ==============
+if test -f 'cops_104/perl/misc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/misc.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/misc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/misc.chk' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#
+X#  Usage: misc.chk.pl [-d]
+X#
+X# composer@chem.bu.edu
+X# based on original shell script
+X#
+X#  This shell script checks a variety of miscellaneous potential
+X# security problems that really don't belong anywhere else.
+X#
+X#  Right now this looks for to see if tftp & rexd are enabled,
+X# to check if the uudecode alias is in the mail alias file and
+X# not commented out, and if uudecode can create a SUID file.
+X#
+X#  Mechanism:  tftp.chk will try to get /etc/motd from the localhost.
+X# Not much too it; just connect and try to get it.  For rexd, just
+X# look in the /etc/inetd.conf file to see if it's enabled (e.g., not
+X# commented out).
+X#
+X#  Warning:  it may take a minute or so to complete the test, since tftp
+X# might take a while to get the test file, or it may take a while to time
+X# out the connection (which is what usually happens if the test fails.)
+X
+Xpackage main;
+Xrequire 'chk_strings.pl';
+Xrequire 'fgrep.pl';
+Xrequire 'hostname.pl';
+X
+Xif ($ARGV[0] eq '-d') {
+X    #$chk_strings'debug = 1;  # verbose debugging
+X    $misc_chk'debug = 1;
+X    shift;
+X}
+X
+Xdie "Usage: $0 [-d]\n" if @ARGV > 0;
+X
+X
+X$TFTP="/usr/ucb/tftp" unless defined $TFTP;
+X$UUDECODE="/usr/bin/uudecode" unless defined $UUDECODE; 
+X
+Xpackage misc_chk;
+X
+X# look for uudecode alias in $aliases
+X#$aliases="/usr/lib/aliases" if -f "/usr/lib/aliases";
+X$aliases = ( -f '/usr/lib/aliases' && '/usr/lib/aliases' )
+X	|| ( -f '/etc/aliases'	   && '/etc/aliases' )
+X	|| 'BOGUS';
+X$uu="decode";
+X
+X# look for rexd in $inetd; this file could be "/etc/servers", too!
+Xif (!defined($inetd)) {
+X	$inetd = ( -f '/etc/inetd.conf' && '/etc/inetd.conf') ||
+X		 ( -f '/etc/servers' && '/etc/servers') ||
+X		 'BOGUS';
+X	}
+X$rexd="rexd";
+X
+X# tmp and target file (for tftp test)
+X$target="/etc/motd";
+X$tmp="./tmp.$$";
+X
+X# should probably generalize routine for chking for pats in file at some point
+X
+X#  Read from $inetd to see if daemons are running.
+X# Comments are lines starting with a "#", so ignore.
+X# Checking for rexd:
+X#
+Xprint "Checking for $rexd in $inetd\n" if $debug;
+Xif (@matches = grep(!/^\s*#/, &'fgrep($inetd, $rexd))) {
+X    print "Warning!  $rexd is enabled in $inetd!\n";
+X}
+X
+X# Check to see if anything started inetd.conf is writable;
+Xprint "Checking for writable dirs in $inetd\n" if $debug;
+X&'chk_strings($inetd);
+X
+X# Checking for uudecode alias:
+Xprint "Checking for $uu alias in $aliases\n" if $debug;
+Xprint "Warning!  $uu is enabled in $aliases!\n"
+X    if &'fgrep($aliases, "^\s*$uu:");
+X
+X# uucode stuff -- thanks to pete shipley...
+Xprint "Checking uudecode out\n" if $debug;
+Xif (-x $'UUDECODE) {
+X    open(UU, "| $'UUDECODE");
+X    print UU <<EOD_;
+Xbegin 4755 ./foobar.$$
+X 
+Xend
+XEOD_
+X    close(UU);
+X}
+X
+X&'is_able($'UUDECODE,'s','s');	# check if uudecode is SUID
+X$is_able'silent = 1;
+Xprint "Warning!  $'UUDECODE creates setuid files!\n"
+X   if &'is_able("./foobar.$$",'s','s');
+X$is_able'silent = 0;
+Xunlink("./foobar.$$");
+X
+X#  The rest is all for tftp stuff:
+X#
+X#   Get the local hostname...
+X$hostname = &'hostname;
+X
+X#   Do the dirty work -- check tftp for the localhost, if it was found;
+X# this might take a bit, since tftp might have to time out.
+X
+Xprint "Checking out tftp on $hostname\n" if $debug;
+Xif (-x $'TFTP) {
+X    open(SAVOUT, ">&STDOUT");	# suppress file not found
+X    open(SAVERR, ">&STDERR");	# it's not as bad as it looks..
+X    open(STDOUT, ">/dev/null") || die "Can't redirect stdout: $!\n";
+X    open(STDERR, ">&STDOUT") || die "Can't dup stdout: $!\n";
+X    close(STDOUT); close(STDERR);
+X    open(TFTP, "| $'TFTP");
+Xprint TFTP <<_XXX_;
+Xconnect $hostname
+Xget $target $tmp
+Xquit
+X_XXX_
+X    close(TFTP);
+X    open(STDERR, ">&SAVERR"); close(SAVERR);
+X    open(STDOUT, ">&SAVOUT"); close(SAVOUT);
+X} # > /dev/null 2> /dev/null
+X
+Xprint "Warning!  tftp is enabled on $hostname!\n" if -s $tmp;
+Xunlink $tmp;
+X
+X# end of script
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/misc.chk ||
+echo 'restore of cops_104/perl/misc.chk failed'
+Wc_c="`wc -c < 'cops_104/perl/misc.chk'`"
+test 3965 -eq "$Wc_c" ||
+	echo 'cops_104/perl/misc.chk: original size 3965, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/pass.cache.pl ==============
+if test -f 'cops_104/perl/pass.cache.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/pass.cache.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/pass.cache.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/pass.cache.pl' &&
+X#
+X#   Routines for reading and caching user and group information.  These
+X# are used in multiple programs... it caches the info once, then hopefully
+X# won't be used again.
+X#
+X#  Steve Romig, May 1991.
+X#
+X# Provides a bunch of routines and a bunch of arrays.  Routines 
+X# (and their usage):
+X#
+X#    load_passwd_info($use_getent, $file_name)
+X#
+X#	loads user information into the %uname* and %uid* arrays 
+X#	(see below).  
+X#
+X#	If $use_getent is non-zero:
+X#	    get the info via repeated 'getpwent' calls.  This can be
+X#	    *slow* on some hosts, especially if they are running as a
+X#	    YP (NIS) client.
+X#	If $use_getent is 0:
+X#	    if $file_name is "", then get the info from reading the 
+X#	    results of "ypcat passwd" and from /etc/passwd.  Otherwise, 
+X#	    read the named file.  The file should be in passwd(5) 
+X#	    format.
+X#
+X#    load_group_info($use_gentent, $file_name)
+X#
+X#	is similar to load_passwd_info.
+X#
+X# Information is stored in several convenient associative arrays:
+X#
+X#   %uname2shell	Assoc array, indexed by user name, value is 
+X#			shell for that user name.
+X#
+X#   %uname2dir		Assoc array, indexed by user name, value is
+X#			home directory for that user name.
+X#
+X#   %uname2uid		Assoc array, indexed by name, value is uid for 
+X#			that uid.
+X#			
+X#   %uname2passwd	Assoc array, indexed by name, value is password
+X#			for that user name.
+X#
+X#   %uid2names		Assoc array, indexed by uid, value is list of
+X#			user names with that uid, in form "name name
+X#			name...". 
+X#
+X#   %gid2members	Assoc array, indexed by gid, value is list of
+X#			group members in form "name name name..."
+X#
+X#   %gname2gid		Assoc array, indexed by group name, value is
+X#			matching gid.
+X#
+X#   %gid2names		Assoc array, indexed by gid, value is the
+X#			list of group names with that gid in form 
+X#			"name name name...".
+X#
+X# You can also use routines named the same as the arrays - pass the index 
+X# as the arg, get back the value.  If you use this, get{gr|pw}{uid|gid|nam} 
+X# will be used to lookup entries that aren't found in the cache.
+X#
+X# To be done:
+X#    probably ought to add routines to deal with full names.
+X#    maybe there ought to be some anal-retentive checking of password 
+X#	and group entries.
+X#    probably ought to cache get{pw|gr}{nam|uid|gid} lookups also.
+X#    probably ought to avoid overwriting existing entries (eg, duplicate 
+X#       names in password file would collide in the tables that are 
+X#	indexed by name).
+X#
+X# Disclaimer:
+X#    If you use YP and you use netgroup entries such as 
+X#	+@servers::::::
+X#	+:*:::::/usr/local/utils/messages
+X#    then loading the password file in with &load_passwd_info(0) will get 
+X#    you mostly correct YP stuff *except* that it won't do the password and 
+X#    shell substitutions as you'd expect.  You might want to use 
+X#    &load_passwd_info(1) instead to use getpwent calls to do the lookups, 
+X#    which would be more correct.
+X#
+X
+Xpackage main;
+X
+X$PASSWD = '/etc/passwd' unless defined $PASSWD;
+X
+Xrequire 'pathconf.pl';
+X
+X%uname2shell = ();
+X%uname2dir = ();
+X%uname2uid = ();
+X%uname2passwd = ();
+X%uid2names = ();
+X%gid2members = ();
+X%gname2gid = ();
+X%gid2names = ();
+X
+X$DOMAINNAME = "/bin/domainname" unless defined $DOMAINNAME;
+X$YPCAT = "/bin/ypcat" unless defined $YPCAT;
+X
+X$yptmp = "./yptmp.$$";
+X
+X$passwd_loaded = 0;		# flags to use to avoid reloading everything
+X$group_loaded = 0;		# unnecessarily...
+X
+X#
+X# We provide routines for getting values from the data structures as well.
+X# These are named after the data structures they cache their data in.  Note 
+X# that they will all generate password and group file lookups via getpw* 
+X# and getgr* if they can't find info in the cache, so they will work
+X# "right" even if load_passwd_info and load_group_info aren't called to 
+X# preload the caches.
+X#
+X# I should point out, however, that if you don't call load_*_info to preload
+X# the cache, uid2names, gid2names and gid2members *will not* be complete, since 
+X# you must read the entire password and group files to get a complete picture.
+X# This might be acceptable in some cases, so you can skip the load_*_info
+X# calls if you know what you are doing...
+X#
+Xsub uname2shell {
+X    local($key) = @_;
+X
+X    if (! defined($uname2shell{$key})) {
+X	&add_pw_info(getpwnam($key));
+X    }
+X
+X    return($uname2shell{$key});
+X}
+X
+Xsub uname2dir {
+X    local($key) = @_;
+X    local(@pw_info);
+X
+X    if (! defined($uname2dir{$key})) {
+X	&add_pw_info(getpwnam($key));
+X    }
+X
+X    return($uname2dir{$key});
+X}
+X
+Xsub uname2uid {
+X    local($key) = @_;
+X    local(@pw_info);
+X
+X    if (! defined($uname2uid{$key})) {
+X	&add_pw_info(getpwnam($key));
+X    }
+X
+X    return($uname2uid{$key});
+X}
+X
+Xsub uname2passwd {
+X    local($key) = @_;
+X    local(@pw_info);
+X
+X    if (! defined($uname2passwd{$key})) {
+X	&add_pw_info(getpwnam($key));
+X    }
+X
+X    return($uname2passwd{$key});
+X}
+X
+Xsub uid2names {
+X    local($key) = @_;
+X    local(@pw_info);
+X
+X    if (! defined($uid2names{$key})) {
+X	&add_pw_info(getpwuid($key));
+X    }
+X
+X    return($uid2names{$key});
+X}
+X
+Xsub gid2members {
+X    local($key) = @_;
+X    local(@gr_info);
+X
+X    if (! defined($gid2members{$key})) {
+X	&add_gr_info(getgrgid($key));
+X    }
+X
+X    return($gid2members{$key});
+X}
+X
+Xsub gname2gid {
+X    local($key) = @_;
+X    local(@gr_info);
+X
+X    if (! defined($gname2gid{$key})) {
+X	&add_gr_info(getgrnam($key));
+X    }
+X
+X    return($gname2gid{$key});
+X}
+X
+Xsub gid2names {
+X    local($key) = @_;
+X    local(@gr_info);
+X
+X    if (! defined($gid2names{$key})) {
+X	&add_gr_info(getgrgid($key));
+X    }
+X
+X    return($gid2names{$key});
+X}
+X
+X#
+X# Update user information for the user named $name.  We cache the password, 
+X# uid, login group, home directory and shell.
+X#
+X
+Xsub add_pw_info {
+X    local($name, $passwd, $uid, $gid) = @_;
+X    local($dir, $shell);
+X
+X#
+X# Ugh!  argh...yech...sigh.  If we use getpwent, we get back 9 elts, 
+X# if we parse /etc/passwd directly we get 7.  Pick off the last 2 and 
+X# assume that they are the $directory and $shell.  
+X#
+X    $num = ( $#_ >= 7 ? 8 : 6 );
+X    $dir = $_[$num - 1];
+X    $shell = $_[$num] || '/bin/sh';
+X
+X
+X    if ($name ne "") {
+X	$uname2shell{$name} = $shell;
+X	$uname2dir{$name} = $dir;
+X	$uname2uid{$name} = $uid;
+X	$uname2passwd{$name} = $passwd;
+X
+X	if ($gid ne "") {
+X	    # fixme: should probably check for duplicates...sigh
+X
+X	    if (defined($gid2members{$gid})) {
+X		$gid2members{$gid} .= " $name";
+X	    } else {
+X		$gid2members{$gid} = $name;
+X	    }
+X	}
+X
+X	if ($uid ne "") {
+X	    if (defined($uid2names{$uid})) {
+X		$uid2names{$uid} .= " $name";
+X	    } else {
+X		$uid2names{$uid} = $name;
+X	    }
+X	}
+X    }
+X}
+X
+X#
+X# Update group information for the group named $name.  We cache the gid 
+X# and the list of group members.
+X#
+X
+Xsub add_gr_info {
+X    local($name, $passwd, $gid, $members) = @_;
+X
+X    if ($name ne "") {
+X	$gname2gid{$name} = $gid;
+X
+X	if ($gid ne "") {
+X	    if (defined($gid2names{$gid})) {
+X		$gid2names{$gid} .= " $name";
+X	    } else {
+X		$gid2names{$gid} = $name;
+X	    }
+X
+X	    # fixme: should probably check for duplicates
+X
+X	    $members = join(' ', split(/[, \t]+/, $members));
+X
+X	    if (defined($gid2members{$gid})) {
+X		$gid2members{$gid} .= " " . $members;
+X	    } else {
+X		$gid2members{$gid} = $members;
+X	    }
+X	}
+X    }
+X}
+X
+X#
+X# We need to suck in the entire group and password files so that we can 
+X# make the %uid2names, %gid2members and %gid2names lists complete.  Otherwise,
+X# we would just read the entries as needed with getpw* and cache the results.
+X# Sigh.
+X#
+X# There are several ways that we might find the info.  If $use_getent is 1, 
+X# then we just use getpwent and getgrent calls to read the info in.
+X#
+X# That isn't real efficient if you are using YP (especially on a YP client), so
+X# if $use_getent is 0, we can use ypcat to get a copy of the passwd and
+X# group maps in a fairly efficient manner.  If we do this we have to also read
+X# the local /etc/{passwd,group} files to complete our information.  If we aren't 
+X# using YP, we just read the local pasword and group files.
+X#
+Xsub load_passwd_info {
+X    local($use_getent, $file_name) = @_;
+X    local(@pw_info);
+X
+X    if ($passwd_loaded) {
+X	return;
+X    }
+X
+X    $passwd_loaded = 1;
+X
+X    if ($'GET_PASSWD) {
+X	open(GFILE, "$'GET_PASSWD|") || die "can't $'GET_PASSWD";
+X	while (<GFILE>) {
+X		chop;
+X		&add_pw_info(split(/:/));
+X		}
+X	close(GFILE);
+X	}
+X    else {
+X
+X    if ($use_getent) {
+X	#
+X	# Use getpwent to get the info from the system, and add_pw_info to 
+X	# cache it.
+X	#
+X	while (@pw_info = getpwent) {
+X	    &add_pw_info(@pw_info);
+X	}
+X
+X	endpwent;
+X
+X	return;
+X    } elsif ($file_name eq "") {
+X	chop($has_yp = `$DOMAINNAME`);
+X	if ($has_yp) {
+X	    #
+X	    # If we have YP (NIS), then use ypcat to get the stuff from the 
+X	    # map.@
+X	    #
+X	    system("$YPCAT passwd > $yptmp 2> /dev/null");
+X	    if (-s $yptmp) {
+X	    	open(FILE, "$YPCAT passwd|") ||
+X	      	die "can't 'ypcat passwd'";
+X	    	while (<FILE>) {
+X			chop;
+X			&add_pw_info(split(/:/));
+X	    		}
+X	    	}
+X	    close(FILE);
+X	}
+X
+X	#
+X	# We have to read /etc/passwd no matter what...
+X	#
+X	$file_name = "/etc/passwd";
+X    }
+X
+X    open(FILE, $file_name) ||
+X      die "can't open $file_name";
+X
+X    while (<FILE>) {
+X	chop;
+X	    
+X	if ($_ !~ /^\+/) {
+X	    &add_pw_info(split(/:/));
+X	}
+X
+X	# fixme: if the name matches +@name, then this is a wierd 
+X	# netgroup thing, and we aren't dealing with it right.  might want
+X	# to warn the poor user...suggest that he use the use_getent 
+X	# method instead.
+X    }
+X    }
+X
+X    close(FILE);
+X}
+X
+Xsub load_group_info {
+X    local($use_getent, $file_name) = @_;
+X    local(@gr_info);
+X
+X    if ($group_loaded) {
+X	return;
+X    }
+X
+X    $group_loaded = 1;
+X
+X    if ($use_getent) {
+X	#
+X	# Use getgrent to get the info from the system, and add_gr_info to 
+X	# cache it.
+X	#
+X	while ((@gr_info = getgrent()) != 0) {
+X	    &add_gr_info(@gr_info);
+X	}
+X
+X	endgrent();
+X
+X	return();
+X    } elsif ($file_name eq "") {
+X	chop($has_yp = `$DOMAINNAME`);
+X	if ($has_yp) {
+X	    #
+X	    # If we have YP (NIS), then use ypcat to get the stuff from the 
+X	    # map.
+X	    #
+X	    system("$YPCAT passwd > $yptmp 2> /dev/null");
+X	    if (-s $yptmp) {
+X	    	open(FILE, "$YPCAT group|") ||
+X	      	die "can't 'ypcat group'";
+X	    	while (<FILE>) {
+X			chop;
+X			&add_gr_info(split(/:/));
+X	    		}
+X	    	close(FILE);
+X		}
+X	}
+X
+X	#
+X	# We have to read /etc/group no matter what...
+X	#
+X	$file_name = "/etc/group";
+X    }
+X
+X    open(FILE, $file_name) ||
+X      die "can't open $file_name";
+X
+X    while (<FILE>) {
+X	chop;
+X	if ($_ !~ /^\+/) {
+X	    &add_gr_info(split(/:/));
+X	}
+X
+X	# fixme: if the name matches +@name, then this is a wierd 
+X	# netgroup thing, and we aren't dealing with it right.  might want
+X	# to warn the poor user...suggest that he use the use_getent 
+X	# method instead.
+X    }
+X
+X    close(FILE);
+X}
+X
+X# Load the password stuff -- Do NOT take this out!
+X&'load_passwd_info(0,$PASSWD);
+X
+Xunlink $yptmp;
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/pass.cache.pl ||
+echo 'restore of cops_104/perl/pass.cache.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/pass.cache.pl'`"
+test 10640 -eq "$Wc_c" ||
+	echo 'cops_104/perl/pass.cache.pl: original size 10640, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/pass.chk ==============
+if test -f 'cops_104/perl/pass.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/pass.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/pass.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/pass.chk' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#
+X#  Pass.chk -- a password guesser.  Functionally equivalent to the original
+X# cops password guesser.  The -P option doesn't work right now (alpha release,
+X# don't you know :-), since we're doing funky things with password caching,
+X# but this will change soon.
+X#
+X#  Usage: $0 [options] dictionary
+X#
+X#	-P pfile	password file (not working)
+X#	-p		print found passwords (incompatible with -M)
+X#       -d		check prefix/suffix of digits [0-9]
+X#       -g		check all words in gcos, plan, project, signature files
+X#	-r 		reverse the word tests
+X#	-s 		check all single chars as passwords
+X#	-u 		output the current user being checked
+X#	-U 		try uppercase word tests
+X#	-v		verbose, print advisory information
+X#	-x 		check guess+prefix/suffix with strange chars added on
+X#	-0 (zero)	change all o's ("oh"'s) to 0 (zeros)
+X#	-1 (one)	change all i's to 1 (ones)
+X#	-m 		misspell words -- chop off first and last chars,
+X#			if > 3 chars.  E.g. "dinner" ==> "inner" and "dinne"
+X#
+X# Originally written by Tim Tessin with lots more features, etc., etc., etc.
+X# I ripped out all of his extra functionality that duplicated some of the
+X# other cops stuff, and some things that just didn't fit, and added some
+X# code to finish the simulation of the old checker. -- dan
+X# 
+X
+Xrequire "getopts.pl";
+X# can probably just do "|| &usage;" since &usage is only used once. ;-)
+X&Getopts("p0dgrsuUv1P:mx") || print STDERR "Usage: $0 -p0xdgrsuUPvm\n";
+X
+X# diff password file?
+Xif (defined($opt_P)) { $'GET_PASSWD = "/bin/cat $opt_P"; }
+Xrequire "pass.cache.pl";
+X
+X$Passwd = "/etc/passwd";
+X@strange_things = (" ", ";", ",", ".", "!", "@", "#", "$",
+X                     "%", "^", "&", "*", "(", ")", "-", "_", 
+X                     "=", "+", "[", "]", "{", "}", "'", "\"",
+X                     "|", "`", "~", ">", "<");
+X
+X# unbuffer output
+Xselect (STDOUT); $| = 1;
+X
+X$dups = 0;		# duplicate name entries
+X$new = 0;		# new entries
+X$changed = 0;		# password (and other data) changed
+X$deleted = 0;		# deleted entries
+X$updated = 0;		# data other than password changed
+X$nlog = 0;		# number of log entries, used for print decisions
+X$ntest = 0;
+X$ndone = 0;
+X
+Xfor $uid (keys %uname2passwd) {
+X	next if length($pass = $uname2passwd{$uid}) != 13;
+X	next unless $pass; # shall we report null passwd's, too?  ;-)
+X	if ($try = &dopwd()) {
+X		$pwd = ($opt_p) ? $try : "";
+X		# printf "Username: %-8s  <password guessed>  $pwd\n",$P[0];
+X		printf "Warning!  $uid password Problem: Guessed: %s\t\t$pwd\n",$P[0];
+X		}
+X	$ndone++;
+X	}
+X
+X1;
+X# end of program
+X
+X
+X######################## Support Subroutines ###########################
+X# dopwd tests each password entry against several simple checks and all
+X# the words in the dictionaries specified.  The simple checks consists
+X# of trying the username as the password ('joe' accounts), words derived
+X# from the gecos fields (usually first and last names).
+X
+Xsub dopwd {
+X    $tries = 0;
+X
+X    print "$uid\n" if ($opt_u);
+X
+X    # try user name
+X    ($try = &testpwd($uid,$pass)) && return $try;
+X    # try uiduid
+X    if (length($uid) < 8) {
+X	($try = &testpwd($uid . $uid,$pass)) && return $try;
+X	}
+X
+X    # do gcos field?
+X    if ($opt_g) {
+X	@gcos = split(/[.,& -]/,$uname2gcos{$uid});
+X	foreach $i (@gcos) {
+X	    next unless $i;		# skip null split values
+X	    ($try = &testpwd($i,$pass)) && return $try;
+X	}
+X
+X	# Try names from misc files
+X	#
+X	undef %words;
+X	# files to check
+X	@files2chk = ("/.project", "/.plan", "/.signature");
+X	$home = $uname2dir{$uid};
+X	for $i (@files2chk) {
+X	    open (FOOFILE, $home . $i);
+X	    while (<FOOFILE>) {
+X		chop;
+X		@line = split(/([.,;\s])/);
+X		for $j (@line) {
+X		    $words{$j}=$j unless $j=~/[\s]/;
+X		}
+X	    }
+X	    close FOOFILE;
+X	}
+X	for $k (values %words) {
+X	    # print "word $k\n";
+X	    ($try = &testpwd($k,$pass)) && return $try;
+X	}
+X    }
+X
+X# do dictionaries
+X# save state of upper/reverse so individual dicts can temporarily
+X# override.
+Xforeach $i (@ARGV) {
+X	if (open (DICT,$i)) {
+X		while (<DICT>) {
+X			chop;
+X			if ($try = &testpwd($_,$pass)) {
+X				close DICT;
+X				return $try;
+X				}
+X			}
+X		close DICT;
+X		}
+X	}
+Xreturn 0;
+X}
+X
+X
+X# small subroutines to help the main password cracker.  All are labeled
+X# p_xxx, where xxx is the identifying name.
+X#
+X
+X# if leading character is upper-case, also try lower case version
+Xsub p_lc {
+X    local($try) = @_;
+X    local($ntry);
+X    if ( $try =~ /^[A-Z]/ ) {
+X	($ntry = $try) =~ y/A-Z/a-z/;
+X	push(@total_guesses, $ntry);
+X    }
+X}
+X
+X# reverse check
+Xsub p_rev {
+X    local($try) = @_;
+X    local($ntry);
+X    $ntry = reverse $try;
+X    if ($ntry ne $try) {
+X	push(@total_guesses, $ntry);
+X    }
+X}
+X
+X# uppercase check
+Xsub p_up {
+X    local($try) = @_;
+X    local($ntry);
+X    ($ntry = $try) =~ y/a-z/A-Z/;
+X    if ($ntry ne $try) { push(@total_guesses, $ntry); }
+X}
+X
+X# testpwd checks a word to see if it matches the encrpted password
+X# if the word is capitalized, the lowercase version is tried as well
+X
+Xsub testpwd {
+Xlocal ($try,$pass) = @_;
+Xlocal (@total_guesses);
+X
+Xpush(@total_guesses, $try);
+X
+X# free (lower case) check if first letter is uppercase
+X&p_lc($try);
+X# reverse?
+Xif ($opt_r) { &p_rev($try); }
+X# uppercase?
+Xif ($opt_U) { &p_up($try); }
+X
+X# single digit tacked on to beginning and end
+Xif ($opt_d) {
+X	if (length ($try) < 8) {
+X		foreach $i ('0'..'9') {
+X			$ntry = $i.$try;
+X			push(@total_guesses, $ntry);
+X			if ($opt_r) { &p_rev($ntry); }
+X			if ($opt_U) { &p_up($ntry); }
+X			}
+X		foreach $i ('0'..'9') {
+X			$ntry = $try.$i;
+X			push(@total_guesses, $ntry);
+X			if ($opt_r) { &p_rev($ntry); }
+X			if ($opt_U) { &p_up($ntry); }
+X			}
+X		}
+X	}
+X
+X# change o's to 0's ("oh"'s to zeros)
+Xif ($opt_0) {
+X	if (($ntry = $try) =~ s/o/0/g) { push(@total_guesses, $ntry); }
+X	}
+Xif ($opt_1) {
+X	if (($ntry = $try) =~ s/i/1/g) { push(@total_guesses, $ntry); }
+X	}
+X
+X# misspell words -- truncate first and last letter, if > 3 chars
+X# thanks to  William Vajk, learn@ddsw1.MCS.COM, who posted this idea.
+Xif ($opt_m) {
+X	$len = length($try);
+X	if ($len > 3) {
+X		($ntry = $try) =~ s/^.//; push(@total_guesses, $ntry);
+X		if ($len < 9) {
+X			($ntry = $try) =~ s/.$//; push(@total_guesses, $ntry);
+X			}
+X		}
+X	}
+X
+X# weird things!  Tacked on to beginning and end
+Xif ($opt_x) {
+X	if (length ($try) < 8) {
+X		foreach $i (@strange_things) {
+X			$ntry = $i.$try;
+X			push(@total_guesses, $ntry);
+X			if ($opt_r) { &p_rev($ntry); }
+X			if ($opt_U) { &p_up($ntry); }
+X			}
+X		foreach $i (@strange_things) {
+X			$ntry = $try.$i;
+X			push(@total_guesses, $ntry);
+X			if ($opt_r) { &p_rev($ntry); }
+X			if ($opt_U) { &p_up($ntry); }
+X			}
+X		}
+X	}
+X
+X# do single letters, #'s, if needed
+Xif ($opt_s && $uid ne $last_user) {
+X	$last_user = $uid;
+X	foreach $i (@strange_things) { push(@total_guesses,$i); }
+X	foreach $i (0..9) { push(@total_guesses, $i); }
+X	foreach $i (A..Z) { push(@total_guesses, $i); }
+X	foreach $i (a..z) { push(@total_guesses, $i); }
+X	}
+X
+Xif ($opt_v) {
+X	foreach $i (@total_guesses) {
+X		print "Trying \"$i\" on $uid\n";
+X		$epw = crypt($i,$pass);
+X		($epw eq $pass) && return $i;
+X		}
+X	}
+Xelse {
+X	foreach $i (@total_guesses) {
+X		$epw = crypt($i,$pass);
+X		($epw eq $pass) && return $i;
+X		}
+X	}
+Xundef @total_guesses;
+X
+Xreturn 0;
+X}
+SHAR_EOF
+chmod 0700 cops_104/perl/pass.chk ||
+echo 'restore of cops_104/perl/pass.chk failed'
+Wc_c="`wc -c < 'cops_104/perl/pass.chk'`"
+test 7203 -eq "$Wc_c" ||
+	echo 'cops_104/perl/pass.chk: original size 7203, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/passwd.chk ==============
+if test -f 'cops_104/perl/passwd.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/passwd.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/passwd.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/passwd.chk' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#
+X#   passwd.chk
+X#
+X# composer@chem.bu.edu
+X#
+X# Check password file -- /etc/passwd -- for incorrect number of fields,
+X# duplicate uid's, non-alphanumeric uids, and non-numeric group id's.
+X# 
+X# Mechanism:  This script ensures that each line of the passwd file (in
+X# $etc, line 47) has 7 fields and is non-blank, as well as examining the
+X# file for any duplicate users.  It then checks to ensure that the first
+X# character of the login name is alphanumeric, and that all uid and gid
+X# numbers are indeed numeric and non-negative.  It also checks the
+X# validity of the home directory.
+X# 
+X# For yellow pages passwords, it does the same checking, but in order to
+X# get a listing of all members of the password file, it does a "ypcat
+X# passwd" and uses the output from that as a passwd file.
+X# 
+X# The /etc/passwd file has a very specific format, making the task fairly
+X# simple.  Normally it has lines with 7 fields, each field separated by a
+X# colon (:).  The first field is the user id, the second field is the
+X# encrypted password (an asterix (*) means the group has no password,
+X# otherwise the first two characters are the salt), the third field is the
+X# user id number, the fourth field is the group id number, the fifth field
+X# is the GECOS field (basically holds miscellaneous information, varying
+X# from site to site), the sixth field is the home directory of the user,
+X# and lastly the seventh field is the login shell of the user.  No blank
+X# lines should be present.  Uid's will be flagged if over 8 chars, unless
+X# the $OVER_8 variable (line 45) is set to "YES".
+X# 
+X# If a line begins with a plus sign (+), it is a yellow pages entry.  See
+X# passwd(5) for more information, if this applies to your site.
+X# 
+X
+Xrequire 'pathconf.pl';
+Xrequire 'pass.cache.pl';
+X
+Xpackage passwd_chk;
+X
+X#   Used for Sun C2 security group file. 'FALSE' (default) will flag
+X# valid C2 passwd syntax as an error, 'TRUE' attempts to validate it.
+X# Thanks to Pete Troxell for pointing this out.
+X$C2='FALSE' if ! defined($C2);
+X
+X#  Some systems allow long uids; set this to 'TRUE', if so (thanks
+X# to Pete Shipley (lot of petes around here, eh?)):
+X$OVER_8='NO' if ! defined($OVER_8);
+X
+X#
+X# Important files:
+X$etc_passwd = $'PASSWD || '/etc/passwd';
+X
+X#   Check $etc_passwd for potential problems, or use the alternate method
+X# set in cops.cf:
+Xif (!"$'GET_PASSWD") {
+X	open(Passwd, $etc_passwd) ||
+X		warn "$0: Can't open $etc_passwd: $!\n";
+X	}
+Xelse {
+X	open(Passwd, "$'GET_PASSWD|") ||
+X		warn "$0: Can't open $etc_passwd: $!\n";
+X	}
+X&chk_passwd_file_format('Passwd');
+Xclose Passwd;
+X
+X# check ypcat passwd for potential problems... (same checks)
+Xif (-s $'YPCAT && -x _) {
+X    open(YPasswd, "$'YPCAT passwd 2>/dev/null |")
+X	|| die "$0: Can't popen $'YPCAT: $!\n";
+X    &chk_passwd_file_format('YPasswd');
+X    close YPasswd;
+X}
+X  
+Xsub chk_passwd_file_format {
+X    local($file) = @_;
+X    local($W) = "Warning!  $file file,";
+X    undef %users;
+X  
+X    while (<$file>) {
+X	# should really check for correct YP syntax
+X	next if /^[-+]/;    # skipping YP lines for now
+X
+X	print "$W line $., is blank\n", next if /^\s*$/;
+X
+X	# make code a little more readable .. use names.. 
+X	($user,$pass,$uid,$gid,$gcos,$home,$shell) = split(?:?);
+X	$users{$user}++;    # keep track of dups
+X	print "$W line $., does not have 7 fields:\n\t$_" if (@_ != 7);
+X	print "$W line $., nonalphanumeric username:\n\t$_"
+X	    if $user !~ /^[_A-Za-z0-9-]+$/;
+X	print "$W line $., numeric username:\n\t$_"
+X	    if $user =~ /^\d+$/;
+X	print "$W line $., login name > 8 characters:\n\t$_"
+X	    if ( ! $OVER_8 && length($user) > 8);
+X	print "$W line $., no password:\n\t$_" unless $pass;
+X	print "$W line $., invalid password field for C2:\n\t$_"
+X	    if ($C2 && $pass =~ /^##/ && "##$user" ne $pass);
+X	if ($uid !~ /^\d+$/) {
+X	    if ($uid < 0) {
+X		print "$W line $., negative user id (uid):\n\t$_";
+X	    } else {
+X		print "$W line $., nonnumeric user id (uid):\n\t$_";
+X	    }
+X	}
+X	# what about checks for certain ranges of UIDs .. -composer
+X	print "$W line $., user $user has uid == 0 and is not root\n\t$_"
+X	    if $uid == 0 && $user ne "root";
+X	print "$W line $., nonnumeric group id (gid):\n\t$_"
+X	    unless $gid =~ /^\d+$/;
+X	print "$W line $., invalid home directory:\n\t$_"
+X	    unless $home =~ m:^/:;
+X
+X    }
+X    # find duplicate usernames
+X    # not the best way, but it works ...
+X    $dup_warned = 0;
+X    for (sort keys %users) {
+X	(print "Warning!  Duplicate username(s) found in $file:\n"),
+X	    $dup_warned++ if !$dup_warned && $users{$_} > 1;
+X	print "$_ " if $users{$_} > 1;
+X    }
+X    print "\n" if $dup_warned;
+X}
+X  
+X1;
+X# end of passwd.chk file
+SHAR_EOF
+chmod 0700 cops_104/perl/passwd.chk ||
+echo 'restore of cops_104/perl/passwd.chk failed'
+Wc_c="`wc -c < 'cops_104/perl/passwd.chk'`"
+test 4784 -eq "$Wc_c" ||
+	echo 'cops_104/perl/passwd.chk: original size 4784, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/pathconf.pl ==============
+if test -f 'cops_104/perl/pathconf.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/pathconf.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/pathconf.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/pathconf.pl' &&
+X$YPCAT = '/usr/bin/ypcat';
+X$STRINGS = '/usr/ucb/strings';
+X$TFTP = '/usr/ucb/tftp';
+X$UUDECODE = '/usr/bin/uudecode';
+X$CMP = '/bin/cmp';
+X$LS = '/bin/ls';
+X
+X# end of perl needed programs
+X
+X$AWK = '/bin/awk';
+X$CAT = '/bin/cat';
+X$CC = '/bin/cc';
+X$CHMOD = '/bin/chmod';
+X$COMM = '/usr/bin/comm';
+X$CP = '/bin/cp';
+X$DATE = '/bin/date';
+X$DIFF = '/bin/diff';
+X$ECHO = '/bin/echo';
+X$EGREP = '/usr/bin/egrep';
+X$EXPR = '/bin/expr';
+X$FIND = '/usr/bin/find';
+X$GREP = '/bin/grep';
+X$MAIL = '/bin/mail';
+X$MKDIR = '/bin/mkdir';
+X$MV = '/bin/mv';
+X$RM = '/bin/rm';
+X$SED = '/bin/sed';
+X$SH = '/bin/sh';
+X$SORT = '/usr/bin/sort';
+X$TEST = '/bin/test';
+X$TOUCH = '/usr/bin/touch';
+X$UNIQ = '/usr/bin/uniq';
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/pathconf.pl ||
+echo 'restore of cops_104/perl/pathconf.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/pathconf.pl'`"
+test 677 -eq "$Wc_c" ||
+	echo 'cops_104/perl/pathconf.pl: original size 677, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/pathconf.sh ==============
+if test -f 'cops_104/perl/pathconf.sh' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/pathconf.sh (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/pathconf.sh (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/pathconf.sh' &&
+XYPCAT = '/usr/bin/ypcat';
+XSTRINGS = '/usr/ucb/strings';
+XTFTP = '/usr/ucb/tftp';
+XUUDECODE = '/usr/bin/uudecode';
+X
+X# end of perl needed programs
+X
+XAWK = '/bin/awk';
+XCAT = '/bin/cat';
+XCC = '/bin/cc';
+XCHMOD = '/bin/chmod';
+XCMP = '/bin/cmp';
+XCOMM = '/usr/bin/comm';
+XCP = '/bin/cp';
+XDATE = '/bin/date';
+XDIFF = '/bin/diff';
+XECHO = '/bin/echo';
+XEGREP = '/usr/bin/egrep';
+XEXPR = '/bin/expr';
+XFIND = '/usr/bin/find';
+XGREP = '/bin/grep';
+XLS = '/bin/ls';
+XMAIL = '/bin/mail';
+XMKDIR = '/bin/mkdir';
+XMV = '/bin/mv';
+XRM = '/bin/rm';
+XSED = '/bin/sed';
+XSH = '/bin/sh';
+XSORT = '/usr/bin/sort';
+XTEST = '/bin/test';
+XTOUCH = '/usr/bin/touch';
+XUNIQ = '/usr/bin/uniq';
+SHAR_EOF
+chmod 0700 cops_104/perl/pathconf.sh ||
+echo 'restore of cops_104/perl/pathconf.sh failed'
+Wc_c="`wc -c < 'cops_104/perl/pathconf.sh'`"
+test 644 -eq "$Wc_c" ||
+	echo 'cops_104/perl/pathconf.sh: original size 644, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/rc.chk ==============
+if test -f 'cops_104/perl/rc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/rc.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/rc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/rc.chk' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#
+X#  Usage: rc.chk
+X#
+X#  This checks pathnames and files inside the shell script files /etc/rc*
+X# for writability.  The commands inside the files /etc/rc* are executed when
+X# the machine is booted, so are of special interest.
+X#
+X# Made easy by chk_strings :-)
+X#
+X# Name: Martin Foord	Username: maf  Date: Thu Jan 17 15:11:09 EST 1991 
+X# Email: maf%dbsm.oz.au@munnari.oz.au
+X#
+X
+Xrequire 'chk_strings.pl';
+X
+X# probably don't need to, but might want to do &'glob("/etc/rc*") instead.. ;-)
+X@all_rc_files = ("/etc/rc*", "/etc/*rc", "/etc/rc*.d/*",
+X		 "/etc/shutdown.*d/*", "/etc/inittab");
+X
+Xfor $file (@all_rc_files) {
+X	while (<${file}>) {
+X		if (-r $_) {
+X			&chk_strings($_);
+X			}
+X		}
+X	}
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/rc.chk ||
+echo 'restore of cops_104/perl/rc.chk failed'
+Wc_c="`wc -c < 'cops_104/perl/rc.chk'`"
+test 898 -eq "$Wc_c" ||
+	echo 'cops_104/perl/rc.chk: original size 898, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/reconfig.pl ==============
+if test -f 'cops_104/perl/reconfig.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/reconfig.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/reconfig.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/reconfig.pl' &&
+X#!/bin/sh  # need to mention perl here to avoid recursion
+X# NOTE:
+X#   If you know where perl is and your system groks #!, put its
+X# pathname at the top to make this a tad faster.
+X#
+X# the following magic is from the perl man page
+X# and should work to get us to run with perl 
+X# even if invoked as an sh or csh or foosh script.
+X# notice we don't use full path cause we don't
+X# know where the user has perl on their system.
+X#
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' 
+X& eval 'exec perl -S $0 $argv:q'
+X    if $running_under_some_stupid_shell_instead_of_perl;
+X
+X#  Target shell scripts in question:
+X$COPS_CONFIG="pathconf.pl";
+X
+X#  Potential directories to find commands:
+X@all_dirs=("/bin",
+X	   "/usr/bin",
+X	   "/usr/ucb",
+X	   "/usr/local/bin",  # scary
+X	   "/usr/bsd");
+X
+X# uncomment next line if you want your own current path used instead
+X#
+X# @all_dirs = split(/:/, $ENV{'PATH'});
+X
+X#  Target commands in question, sans those checked above:
+X@all_commands= ("cc", "awk", "cat",
+X		"chmod", "cmp", "comm", "cp",
+X		"date", "diff", "echo", "egrep", "expr",
+X		"find", "grep", "ls", "mail",
+X		"mkdir", "mv", "rm", "sed",
+X		"sh", "sort", "test", "tftp", "touch",
+X		"uudecode", "uniq", "ypcat");
+X
+X@want{@all_commands} = ();
+X
+X%exceptions=   ('strings', 'chk_strings',
+X                'tftp', 'misc.chk',
+X		'cmp', 'ftp.chk',
+X                'uudecode', 'misc.chk');
+X
+X# grab the current values:
+Xopen COPS_CONFIG || die "Can't open $COPS_CONFIG: $!\n";
+X
+X$new = "$COPS_CONFIG.$$";
+Xopen(NEW_CONFIG, ">$new") || die "Can't open $new: $!\n";
+X
+Xwhile (<COPS_CONFIG>) {
+X    unless (/\$(\w+)\s*=\s*(['"])(\S*)\2/) {
+X	print NEW_CONFIG;
+X	next;
+X    } 
+X    ($cap_command, $path) = ($1, $3);
+X    ($command = $cap_command) =~ tr/A-Z/a-z/;
+X    unless (($newpath = &getpath($command)) || $command =~ /^yp/) {
+X	warn "Warning!  no path for $command!\n";
+X	warn "          $exceptions{$command} will not work as planned!\n"
+X		     if $exceptions{$command};
+X	$errors++;
+X    } else {
+X	delete $want{$command};
+X    } 
+X    print "old $path now in $newpath\n" if $newpath ne $path;
+X    print NEW_CONFIG "\$$cap_command = '$newpath';\n";
+X
+X}
+X
+Xfor (sort keys %want) {
+X    delete $want{$_} if $path = &getpath($_);
+X    tr/a-z/A-Z/;
+X    print NEW_CONFIG '$', $_, " = '", $path, "';\n";
+X} 
+X
+Xclose(COPS_CONFIG) || die "can't close $COPS_CONFIG: $!\n";
+Xclose(NEW_CONFIG) || die "can't close $new: $!\n";
+X
+Xif (@missing = keys %want) {
+X     warn "Warning!   missing paths for @missing!\n";
+X     warn "The shell version may not work right!\n";
+X} 
+X
+X
+Xif ($errors) {
+X    print STDERR "Not all paths were found: write anyway? ";
+X    # what about removing NEW_CONFIG, $new ??
+X    exit 1 if <STDIN> !~ /^\s*y/i;
+X    print STDERR "Ok, but this might not be right...\n";
+X} 
+X
+X$old = "$COPS_CONFIG.old";
+X
+Xrename($COPS_CONFIG, $old)
+X    || die "can't rename $COPS_CONFIG to $old: $!\n";
+X
+Xrename($new, $COPS_CONFIG)
+X    || die "can't rename $new to $COPS_CONFIG: $!\n";
+X
+X
+Xopen COPS_CONFIG || die "can't re-open $COPS_CONFIG: $!\n";
+X($SH_CONF = $COPS_CONFIG) =~ s/\.pl$/.sh/;
+Xopen (SH_CONF, ">$SH_CONF") || die "can't create $SH_CONF: $!\n";
+X
+Xwhile (<COPS_CONFIG>) {
+X    s/^\$//;
+X    print SH_CONF;
+X} 
+Xclose SH_CONF || die "can't close $SH_CONF: $!\n";
+X
+Xexit 0;
+X
+X#############
+X
+Xsub getpath {
+X    local($cmd) = @_;
+X    local($path);
+X
+X    for (@all_dirs) {
+X	return $path if -x ($path = "$_/$cmd");
+X    } 
+X    '';
+X} 
+SHAR_EOF
+chmod 0700 cops_104/perl/reconfig.pl ||
+echo 'restore of cops_104/perl/reconfig.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/reconfig.pl'`"
+test 3358 -eq "$Wc_c" ||
+	echo 'cops_104/perl/reconfig.pl: original size 3358, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/root.chk ==============
+if test -f 'cops_104/perl/root.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/root.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/root.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/root.chk' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#
+X#  Usage: root.chk
+X#
+X#  This script checks pathnames inside root's startup files for 
+X# writability, improper umask settings (world writable), non-root
+X# entries in /.rhosts, writable binaries in root's path,
+X# and to ensure that root is in /etc/ftpuser.
+X#
+X# Also check for a single "+" in /etc/hosts.equiv (world is trusted),
+X# and that /bin, /etc and certain key files are root owned, so that you
+X# can't, say, rcp from a host.equived machine and blow over the password
+X# file... this may or may not be bad, decide for yourself.
+X# Startup files are /.login /.cshrc /.profile
+X#
+X#  Mechanism:  These files contain paths and filenames that are stripped
+X# out using "grep".  These strings are then processed by the "is_able"
+X# program to see if they are world writable.  Strings of the form:
+X#
+X#	path=(/bin /usr/bin .)
+X#		and
+X#	PATH=/bin:/usr/bin:.:
+X#
+X# are checked  to ensure that "." is not in the path.  All
+X# results are echoed to standard output.  In addition, some effort was
+X# put into parsing out paths with multiple lines; e.g. ending in "\",
+X# and continuing on the next line.  Also, all executable files and 
+X# directories in there are checked for writability as well.
+X#
+X#  For umask stuff, simply grep for umask in startup files, and check
+X# umask value.  For /etc/ftpuser, simple grep to check if root is in
+X# the file.  For /etc/hosts.equiv, just check to see if "+" is alone
+X# on a line by awking it.
+X#
+X
+X# rewritten in perl by tchrist@convex.com
+X# 
+X
+X# root startup/important files
+X
+Xrequire 'file_owner.pl';
+Xrequire 'fgrep.pl';
+Xrequire 'suckline.pl';
+Xrequire 'is_able.pl';
+Xrequire 'chk_strings.pl';
+Xrequire 'glob.pl';
+X
+Xpackage root_chk;
+X
+X# use -a true if you care about non-executables
+X# in root's path
+X
+X$ARGV[0] eq '-a' && ($all_files++, shift);
+X
+Xdie "usage: root.chk [-a]\n" if @ARGV;
+X
+X$W = 'Warning! ';
+X
+X$cshrc	= '/.cshrc';
+X$profile= '/.profile';
+X$rhosts = '/.rhosts';
+X
+X$| = 1;
+X
+X@big_files= ('/.login', '/.cshrc', '/.profile', '/.logout' );
+X
+X# root should own *at least* these, + $big_files; you can check for all files
+X# in /bin & /etc, or just the directories (the default.)
+X# root_files="/bin /bin/* /etc /etc/* $big_files $rhosts"
+X@root_files= ('/bin','/etc',@big_files,$rhosts,'/etc/passwd','/etc/group');
+X
+X# misc important stuff
+X$ftp='/etc/ftpusers';
+X$equiv='/etc/hosts.equiv';
+X
+X#   should't have anyone but root owning /bin or /etc files/directories
+X# In case some of the critical files don't exist (/.rhost), toss away error
+X# messages
+X
+Xif (@bad_files = grep (-e && &'Owner($_), @root_files)) {
+X    print "$W  Root does not own the following file(s):\n";
+X    print "\t@bad_files\n";
+X} 
+X
+Xlocal($chk_strings'recurse) = 1 unless defined $chk_strings'recurse;
+X
+Xfor $file (@big_files) {
+X    open file || next;
+X
+X    &'chk_strings($file);
+X
+X    # check for group or other writable umask
+X    while (<file>) {
+X	next if /^\s*#/;
+X	next unless /umask\s*(\d+)/;
+X	next unless ~oct($1) & 022;
+X	print "$W root's umask set to $1 in $file\n";
+X    } 
+X} 
+X
+Xprint "$W $ftp exists and root is not in it\n" 
+X    if -e $ftp && !&'fgrep($ftp,'root');
+X
+Xprint "$W A \"+\" entry exists in $equiv!\n" if &'fgrep($equiv, '^\+$');
+X
+Xif (open rhosts) {
+X    while (<rhosts>) {
+X	next unless /\S+\s+(\S+)/ && $1 ne 'root';
+X	print "$W Non-root entry in $rhosts! $1\n";
+X    }
+X} 
+Xclose(rhosts);
+X
+Xundef @rootpath;
+X
+X# checking paths...
+X#
+X# Get the root paths from $csh.
+X
+Xif (open(CSHRC, $cshrc)) {
+X    $path = '';
+X    while (<CSHRC>) {
+X	next if /^\s*#/;
+X	chop unless /\\$/;
+X	if (/set\s+path\s*=/) {
+X	    $_ = &'suckline($cshrc, $_);
+X	    s/.*set\s+path\s*=\s*//;
+X	    s/\((.*)\)/$1/;
+X	    s/#.*/./;
+X	    @tmppath = grep($_ ne '', split(' '));
+X	    for (@tmppath) { $whence{$_} .= " " . $cshrc; } 
+X	    push(@rootpath, @tmppath);
+X	} 
+X    } 
+X    close(CSHRC);
+X} 
+X
+Xif (open login) {
+X    $path = '';
+X    while (<cshrc>) {
+X	next if /^\s*#/;
+X	chop unless /\\$/;
+X	if (/set\s+path\s*=/) {
+X	    $_ = &'suckline('login', $_);
+X	    s/.*set\s+path\s*=\s*//;
+X	    s/\((.*)\)/$1/;
+X	    s/#.*/./;
+X	    @tmppath = grep($_ ne '', split(' '));
+X	    for (@tmppath) { $whence{$_} .= " " . $login; } 
+X	    push(@rootpath, @tmppath);
+X	} 
+X    } 
+X    close(login);
+X}
+X
+Xif (open profile) {
+X    $path = '';
+X    while (<profile>) {
+X	next if /^\s*#/;
+X	chop unless /\\$/;
+X	if (/PATH=/) {
+X	    $_ = &'suckline('profile', $_);
+X	    s/.*PATH=//;
+X	    s/#.*//;
+X	    s/;.*//;
+X	    @tmppath = split(/:/);
+X	    for (@tmppath) { $whence{$_} .= " " . $profile; } 
+X	    push(@rootpath, @tmppath);
+X	} 
+X    } 
+X    close(profile);
+X} 
+X
+Xfor (keys %whence) {
+X    $whence{$_} =~ s/^ //;
+X    $whence{$_} =~ s/ / and /g;
+X} 
+X
+Xundef %seen;
+Xgrep($seen{$_}++, @rootpath);
+X
+X$is_able'silent = 1;
+Xfor (keys %seen) {
+X    if (!-e && $_ ne ".") {
+X	print "$W path component $_ in $whence{$_} doesn't exist!\n";
+X	next;
+X    } 
+X
+X    if (/^\.?$/) {  # null -> dot
+X	print "$W \".\" (or current directory) is in root's path in $whence{$_}!\n";
+X    } elsif (&'is_writable($_)) {
+X	print "$W Directory $_ is _World_ writable and in root's path in $whence{$_}!\n";
+X	next;
+X    }
+X
+X    foreach $file (&'glob("$_/*")) {
+X	# can't just check -x here, as that depends on current user
+X	$is_executable = -f $file && (&'Mode($file) & 0111);
+X	if (($all_files || $is_executable) && 
+X		    ($how = &'is_writable($file, 'w', 'w'))) {
+X	    print "$W _World_ $how ",
+X		    $is_executable ? 'executable' : 'file',
+X		" $file in root path component $_ from $whence{$_}!\n";
+X	} 
+X    }
+X} 
+X
+X$is_able'silent = 0;
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/root.chk ||
+echo 'restore of cops_104/perl/root.chk failed'
+Wc_c="`wc -c < 'cops_104/perl/root.chk'`"
+test 5623 -eq "$Wc_c" ||
+	echo 'cops_104/perl/root.chk: original size 5623, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/rules.pl ==============
+if test -f 'cops_104/perl/rules.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/rules.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/rules.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/rules.pl' &&
+Xsub apply_rules {
+X    local($op, $value, @plan) = @_;
+X
+X    printf("eval($op $value): %s\n", &ascii_plan(@plan)) if $opt_d;
+X
+X    #
+X    # apply UID attack rules...
+X    #
+X    if ($op eq "u") {
+X	#
+X	# If we can replace /etc/passwd or /usr/lib/aliases, we can grant 
+X	# any uid. 
+X	#
+X	&addto("r", "/etc/passwd", @plan);
+X        &addto("r", "/usr/lib/aliases", @plan);
+X        &addto("r", "/etc/aliases", @plan);
+X
+X	#
+X	# Check CF's for all usernames with this uid.
+X	#
+Xuname_loop:
+X    foreach $uname (split(/ /, $uid2names{$value})) {
+X	    $home = $uname2dir{$uname};
+X
+X	    next uname_loop unless $home;
+X
+X	    if ($home eq "/") {
+X		$home = "";
+X	    }
+X	    &addto("r", "$home/.rhosts", @plan);
+X	    &addto("r", "$home/.login", @plan);
+X	    &addto("r", "$home/.logout", @plan);
+X	    &addto("r", "$home/.cshrc", @plan);
+X	    &addto("r", "$home/.profile", @plan);
+X	}
+X
+X	#
+X	# Controlling files for root...
+X	#
+X	@rootlist = ( 
+X		"/etc/rc", "/etc/rc.boot", "/etc/rc.single", 
+X		"/etc/rc.config", "/etc/rc.local", "/usr/lib/crontab",
+X		"/usr/spool/cron/crontabs",
+X		);
+X
+X	if ($value eq "0") {
+X	    foreach $file (@rootlist) {
+X		    &addto("r", $file, @plan);
+X	    }
+X	    # Experimental!
+X	    # you can remove this if desired - tjt
+X	    #do "rc.prog";
+X	}
+X
+X	#
+X	# Other CFs for non-root folks...
+X	#
+X	if ($value ne "0") {
+X	    &addto("r", "/etc/hosts.equiv", @plan);
+X	    if (-s "/etc/hosts.equiv") {
+X		&addto("r", "/etc/hosts", @plan);
+X	    }
+X	}
+X
+X    #
+X    # Plans for attacking GIDs...
+X    #
+X    } elsif ($op eq "g") {	# apply gid attack rules
+X
+X	#
+X	# If we can replace /etc/group we can become any group
+X	#				  
+X        &addto("r", "/etc/group", @plan);
+X
+X	#
+X	# If we can grant any member of a group we can grant that group
+X	#
+Xmember_loop:
+X	foreach $uname (split(/ /, $gid2members{$value})) {
+X	    if (! defined($uname2uid{$uname})) {
+X		printf(stderr "group '%s' member '%s' doesn't exist.\n",
+X			$value,
+X			$uname);
+X		next member_loop;
+X	    }
+X
+X	    &addto("u", $uname2uid{$uname}, @plan);
+X	}
+X
+X    #
+X    # Plans for attacking files...
+X    #
+X
+X    } elsif ($op eq "r" || $op eq "w") {
+X
+X        ($owner, $group, $other) = &filewriters($value);
+X
+X	&addto("u", $owner, @plan) if ($owner ne "");
+X	&addto("g", $group, @plan) if ($group ne "");
+X	&addto("u", "-1", @plan) if ($other);
+X
+X	#
+X	# If the goal is to replace the file, check the parent directory...
+X	#
+X	if ($op eq "r") {
+X	    $parent = $value;
+X	    $parent =~ s#/[^/]*$##;     # strip last / and remaining stuff
+X
+X	    if ($parent eq "") {
+X		$parent = "/";
+X	    }
+X
+X	    if ($parent ne $value) {
+X		&addto("r", $parent, @plan);
+X	    }
+X	}
+X
+X    } else {			# wow, bad $type of object!
+X	printf(stderr "kuang: bad op in apply_rules!\n");
+X	printf(stderr "op '%s' value '%s' plan '%s'\n",
+X		$op,
+X		$value,
+X		&ascii_plan(@plan));
+X	exit(1);
+X    }
+X}
+X
+X1;
+X
+SHAR_EOF
+chmod 0600 cops_104/perl/rules.pl ||
+echo 'restore of cops_104/perl/rules.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/rules.pl'`"
+test 2768 -eq "$Wc_c" ||
+	echo 'cops_104/perl/rules.pl: original size 2768, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/stat.pl ==============
+if test -f 'cops_104/perl/stat.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/stat.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/stat.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/stat.pl' &&
+X;# $Header: stat.pl,v 3.0.1.1 90/08/09 04:01:34 lwall Locked $
+SHAR_EOF
+true || echo 'restore of cops_104/perl/stat.pl failed'
+fi
+echo 'End of  part 17'
+echo 'File cops_104/perl/stat.pl is continued in part 18'
+echo 18 > _shar_seq_.tmp
+exit 0
+

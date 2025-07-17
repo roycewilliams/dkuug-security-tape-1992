@@ -1,0 +1,2301 @@
+#!/bin/sh
+# this is cops103.beta.07 (part 7 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file beta/passwd.chk continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 7; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping beta/passwd.chk'
+else
+echo 'x - continuing file beta/passwd.chk'
+sed 's/^X//' << 'FOO_BAR' >> 'beta/passwd.chk' &&
+X	            }
+X	        if ($6 !~ /^\//) {
+X	            printf("Warning!  YPassword file, line %d, invalid login directory: \n\t%s\n", NR, $0)
+X	            }
+X	        }
+X    	    }' $yp_passwd
+X
+fi
+X
+$RM -f $yp_passwd
+X
+# end
+FOO_BAR
+echo 'File beta/passwd.chk is complete' &&
+chmod 0700 beta/passwd.chk ||
+echo 'restore of beta/passwd.chk failed'
+Wc_c="`wc -c < 'beta/passwd.chk'`"
+test 6544 -eq "$Wc_c" ||
+	echo 'beta/passwd.chk: original size 6544, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/patchlevel.h ==============
+if test -f 'beta/patchlevel.h' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/patchlevel.h (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/patchlevel.h (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/patchlevel.h' &&
+#define PATCHLEVEL 2
+FOO_BAR
+chmod 0600 beta/patchlevel.h ||
+echo 'restore of beta/patchlevel.h failed'
+Wc_c="`wc -c < 'beta/patchlevel.h'`"
+test 21 -eq "$Wc_c" ||
+	echo 'beta/patchlevel.h: original size 21, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/quick_start ==============
+if test -f 'beta/quick_start' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/quick_start (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/quick_start (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/quick_start' &&
+X
+X  Here's what I do to start COPS (I always ftp it and run it on any 
+new system I'm on, being the paranoid chap that I am.)  Do the following:
+X
+0) If system V based, or you're just suspicious, type "reconfig"
+X
+1) type "make"
+X
+2) edit two lines in the "cops" file to look like these:
+X
+(If you want the report mailed, edit line 68 to include your user name as well)
+Line 33:
+X
+MMAIL=NO
+X
+(If you want to put your complete path, that's fine too.  This is easy.)
+Line 67:
+X
+SECURE=.
+X
+3) type "cops" and wait, or "cops &" and keep peeking at the result file
+as it's growing (result.pid#) :-)
+X
+FOO_BAR
+chmod 0600 beta/quick_start ||
+echo 'restore of beta/quick_start failed'
+Wc_c="`wc -c < 'beta/quick_start'`"
+test 586 -eq "$Wc_c" ||
+	echo 'beta/quick_start: original size 586, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/rc.chk ==============
+if test -f 'beta/rc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/rc.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/rc.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/rc.chk' &&
+:
+#
+#  Usage: rc.chk
+#
+#  This checks pathnames and files inside the shell script files /etc/rc*
+# for writability.
+#
+#  Mechanism:  The commands inside the files /etc/rc* are executed when
+# the machine is booted.  This shell script greps for commands/paths that
+# are of these forms:
+#
+#	/path/command			# or whatever
+#		or
+#	PATH=:/bin:/usr/bin:.		# or whatever
+#		or
+#	MYVAR=`/path/command`		# or whatever
+#	
+#  It then takes each potential problem-string and uses the program
+# "is_writable" to determine if it is world writable.  All results are
+# echoed to standard output.
+#
+# 12 Apr 90, Mark Plumbly made it ignore lines starting with rm -f
+# (popular in rc files) and fixed my code so it would ignore everything
+# after a ">".
+#
+SED=/bin/sed
+CAT=/bin/cat
+RM=/bin/rm
+AWK=/bin/awk
+LS=/bin/ls
+TEST=/bin/test
+EGREP=/usr/bin/egrep
+ECHO=/bin/echo
+SORT=/usr/bin/sort
+X
+# temp file for stuff:
+FOO_RC="./rc.foo.$$"
+FOO_RC2="./rc.foo2.$$"
+X
+# CHANGE THIS LINE OR PUT IN FILE NAMES IF/AS NEEDED!
+#    (for example: init_files="/etc/rc /etc/rc.local")
+#
+init_files=`$ECHO /etc/*rc /etc/rc* /etc/rc*.d/* /etc/shutdown.d/* /etc/inittab`
+X
+#
+#  This should get all paths in /etc/rc* files; at least two types here.
+# First type starts with a "/", the second is either in the form :
+#
+#	PATH=:/bin:/usr/bin:.		# or whatever
+# or
+#	MYVAR=`/bin/echo "hello"`	# or whatever
+#
+#   Notice also I strip out any references to /tmp, /usr/tmp,
+# /dev/*ty's, and /dev/null.
+#
+# 12 Apr mdp: 	Modified to remove "> file" as well as ">file"
+#		and remove "rm -f file" (this removes a few bogus ones).
+#		(i.e. things which are written to or removed only are ignored).
+#
+for file in $init_files
+X 	do
+X  	./chk_strings $file
+X  	done
+exit
+for file in $init_files
+X	do
+X	if $TEST -f "$file" ; then
+X		$AWK '{ if (substr($1,1,1)== "#") next; \
+X		for (i=1;i<=NF;i++) \
+X			{ first=substr($i,1,1);		\
+X				if (first==">"||first=="#"||first=="$")	\
+X					break;			\
+X				else if ($i == "rm")		\
+X					break;			\
+X				else if (first == "/")		\
+X					print "\"'$file'\"", $i;\
+X				}				\
+X			}' $file |
+X		$SED -e s/\"//g -e s/\'//g -e s/\`//g -e s/\;// |
+X		$EGREP -v "/dev/.*ty|/tmp|/usr/tmp|/dev/null"
+X		fi
+X		done | sort -u >> $FOO_RC2
+X
+#
+#  Ok -- $FOO_RC has a format like thus:
+# /etc/rc.local /bin/foofile
+#
+#  We want to kill off all dups in the second field:
+$AWK '{dup[$2] = $1}
+X	END { for (i in dup) print dup[i], i;}' $FOO_RC2 | $SORT > $FOO_RC
+X
+#  First, get the ones starting with "/":
+#
+#   DANGER!  DANGER!  DANGER Will Robinson! Awk runs out of room ("bails
+# out") if too many files are here....
+# for i in `$CAT $FOO_RC`
+cat $FOO_RC | while read i
+X	do
+X	target=`$ECHO $i | $SED 's/.* //'`
+X	if $TEST -f "$target" ; then
+X		blame=`$ECHO $i | $SED 's/ .*$//'`
+X		if ./is_writable $target
+X			then
+X			$ECHO "Warning!  File $target (in $blame) is _World_ writable!"
+X			fi
+X		fi
+X	done
+X
+$RM -f $FOO_RC $FOO_RC2
+# end of script
+FOO_BAR
+chmod 0700 beta/rc.chk ||
+echo 'restore of beta/rc.chk failed'
+Wc_c="`wc -c < 'beta/rc.chk'`"
+test 2887 -eq "$Wc_c" ||
+	echo 'beta/rc.chk: original size 2887, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/rc.foot ==============
+if test -f 'beta/rc.foot' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/rc.foot (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/rc.foot (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/rc.foot' &&
+files="/dev/printer /dev/null foo null /dev/console /dev/tty"
+echo $files
+for i in $files
+X	do
+X	echo FOO: $i
+X	echo $i | egrep /dev/null\|/dev/console
+done
+exit
+#	if test -n "`echo $i | egrep /tmp\|/dev/{null\|tty\|printer\|console}`"
+#	if test -n "`echo $i | egrep /tmp\|/dev/null\|/dev/printer`"
+X
+for i in $files
+X	if test -n "`echo $i | egrep /tmp\|/dev/{null\|printer}`"
+X		then
+X		echo TRUE $i
+X	else
+X		echo FALSE! $i
+X		fi
+X	done
+FOO_BAR
+chmod 0700 beta/rc.foot ||
+echo 'restore of beta/rc.foot failed'
+Wc_c="`wc -c < 'beta/rc.foot'`"
+test 428 -eq "$Wc_c" ||
+	echo 'beta/rc.foot: original size 428, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/reconfig ==============
+if test -f 'beta/reconfig' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/reconfig (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/reconfig (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/reconfig' &&
+:
+#
+#  Usage: reconfig
+#
+#   This replaces the program paths (e.g. /bin/awk) in COPS with an
+# alternate path that is found in the file "file.paths".
+#   All programs are renamed "name.old", and the new version replaces
+# the original name.  It then uses sed to replace all occurances of
+# the target strings.
+#   Basically, the program looks through all directories listed in
+# $all_dirs for the list of programs in $all_commands and when it finds
+# them, puts them in a sed source file.  It then goes to all of the
+# shell files COPS uses ($shell_scripts) and replaces all occurances of
+# the variables found with the new value.  It goes through some
+# contortions trying to look for test (it has to find test without
+# using test), and does some other not so smart things, but it seems
+# to get the job done.
+X
+# shell is always here, isn't it?
+SH=/bin/sh
+X
+# need these later
+TEST=
+AWK=
+SED=
+TR=
+X
+#  Potential directories to find commands:
+all_dirs='/bin /usr/bin /usr/ucb /usr/local/bin /usr/bsd'
+X
+#   First things first; are test and echo built-in shell commands?
+# Theory.  If test is executed correctly and not found in the path
+# I set, then they should be built into the shell, right?
+PATH=/bin:/usr/bin
+for dir in $all_dirs
+X	do
+X	if test -f $dir/test
+X		then
+X		TEST=$dir/test
+X		break
+X	fi
+X	done
+# if not set, then set to default
+if test -z "$TEST"
+X	then
+X	TEST=test
+X	fi
+X
+for dir in $all_dirs
+X	do
+X	if $TEST -f $dir/echo
+X		then
+X		ECHO=$dir/echo
+X		break
+X	fi
+X	done
+X
+# if not set, then set to default
+if $TEST -z "$ECHO"
+X	then
+X	ECHO=echo
+X	fi
+X
+# The sed filter file
+location=./file.paths
+X
+#  Target shell scripts in question:
+doc_make=docs/makefile
+shell_scripts="makefile $doc_make chk_strings cops crc.chk misc.chk dev.chk ftp.chk is_able.chk cron.chk group.chk passwd.chk rc.chk root.chk suid.chk kuang init_kuang res_diff pass_diff.chk yp_pass.chk"
+X
+#  Target commands in question, sans those checked above:
+all_commands='cc nroff awk cat chmod cmp comm cp date diff egrep expr find grep ls mail mkdir mv rm sed sh sort tftp touch uniq uudecode ypcat'
+X
+$ECHO checking to make sure all the shell scripts are here...
+#  make sure everything is here:
+for i in $shell_scripts
+X	do
+X	if $TEST ! -s $i
+X		then
+X		$ECHO  ERROR -- $i not found!
+X		exit
+X	fi
+done
+X
+#   This finds the paths to any program used in COPS, then prints out
+# a sed filter to the file "file.paths" that is used by this shell
+# script to change all occurances of that command in the COPS system.
+#
+#   For example, if sed is in /usr/bin, it will create a line that looks
+# like this:
+#
+# s.AWK=*$.AWK=/usr/bin/sed.
+#
+#  This corresponds to the sed command substitute ("-" is used as a
+# delineator instead of "/" because the strings will be containing
+# "/"'s) /usr/bin/sed in place of whatever was to the right of the
+# equal sign.  This works because all commands are accessed by the
+# variable "$XYZ", where "XYZ" corresponds to the lowercase command
+# "xyz".  And, of course, all command variables are set at the top
+# of each command file.
+#
+X
+# First we need awk and sed if this shell script will work....
+for dir in $all_dirs
+X	do
+X	if $TEST -f $dir/awk ; then
+X		AWK=$dir/awk
+X		fi
+X	if $TEST -f $dir/sed ; then
+X		SED=$dir/sed
+X		fi
+X	if $TEST -f $dir/tr ; then
+X		TR=$dir/tr
+X		fi
+X	done
+X
+if $TEST -z "$AWK" ; then
+X	$ECHO "Cannot find awk; awk is needed to run this shell script"
+X	exit 1
+X	fi
+X
+if $TEST -z "$SED" ; then
+X	$ECHO "Cannot find sed; sed is needed to run this shell script"
+X	exit 1
+X	fi
+X
+if $TEST -z "$TR" ; then
+X	$ECHO "Cannot find tr; tr is needed to run this shell script"
+X	exit 1
+X	fi
+X
+# zero out the file, then put in the real locations...
+$ECHO > $location
+X
+$ECHO So far so good...
+$ECHO Looking for all the commands now...
+for command in $all_commands
+X	do
+X	found=false
+X	for dir in $all_dirs
+X		do
+X		# if find the command in one of the directories, print string
+X		if $TEST -f $dir/$command
+X			then
+X			# this converts to upper case
+X			upper=`$ECHO $command | $TR '[a-z]' '[A-Z]'`
+X
+X		$ECHO "s-^$upper=.*\$-$upper=$dir/$command-" >> $location
+X			found=true
+X			break
+X			fi
+X		done
+X	if $TEST "$found" = "false" ; then
+X		if $TEST $command = "strings" ; then
+X			$ECHO Warning!  $command not found!  chk_strings will not work as planned.
+X		elif $TEST $command = tftp ; then
+X			$ECHO Warning!  $command not found!  misc.chk will not work as planned.
+X		elif $TEST $command = uudecode ; then
+X			$ECHO Warning!  $command not found!  misc.chk will not work as planned.
+X		elif $TEST $command = ypcat ; then
+X			:
+X		elif $TEST $command = nroff ; then
+X			$ECHO Warning!  $command not found!  docs cannot be formatted.
+X		else
+X			$ECHO ERROR!  $command not found!  Change or delete command!
+X			exit
+X			fi
+X		fi
+X	done
+X
+$ECHO "s-^ECHO=.*\$-ECHO=$ECHO-" >> $location
+$ECHO "s-^TEST=.*\$-TEST=$TEST-" >> $location
+X
+# almost forgot -- we need chmod & mv to make this reconfig work, too:
+for dir in $all_dirs
+X	do
+X	if $TEST -f $dir/mv ; then
+X		MV=$dir/mv
+X		fi
+X	if $TEST -f $dir/chmod ; then
+X		CHMOD=$dir/chmod
+X		fi
+X	done
+X
+$ECHO Ok, now doing substitutions on the shell scripts...
+for i in $shell_scripts
+X	do
+X	$ECHO "Changing paths in $i..."
+X	$SED -f $location $i > $i.new
+X	$MV $i $i.old
+X	$MV $i.new $i
+X	# finally, make sure everything is back to executable status
+X	$CHMOD u+x $i
+X
+done
+FOO_BAR
+chmod 0700 beta/reconfig ||
+echo 'restore of beta/reconfig failed'
+Wc_c="`wc -c < 'beta/reconfig'`"
+test 5232 -eq "$Wc_c" ||
+	echo 'beta/reconfig: original size 5232, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/res_diff ==============
+if test -f 'beta/res_diff' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/res_diff (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/res_diff (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/res_diff' &&
+:
+#
+#  res_diff /path/to/secure_directory current_report
+#
+#   This shell script just looks to see if anything has changed since
+# the last time... it just cuts out the first line (the date) and does
+# a diff... returns a 0 if it has changed, a 1 otherwise...
+#
+#  Started to use head and tail, but some SysV doesn't have 'em.  Bah!  Who
+# needs 'em anyway, when you have awk :-)
+# 
+DIFF=/bin/diff
+TEST=/bin/test
+AWK=/bin/awk
+LS=/bin/ls
+RM=/bin/rm
+ECHO=/bin/echo
+X
+#
+# Important files:
+if $TEST -d "$1" ; then
+X	old_file=`$LS -t $1 | $AWK 'NR==1'`
+else
+X	$ECHO Error -- directory $1 does not exist for $0
+X	exit 2
+X	fi
+X
+# has anything changed?
+$AWK 'NR > 5' $1/$old_file > /tmp/tmp.$$.foo
+$AWK 'NR > 5' $2 > /tmp/tmp.$$.bar
+X
+if $TEST -n "`$DIFF /tmp/tmp.$$.foo /tmp/tmp.$$.bar`" ; then
+X	$RM -f /tmp/tmp.$$.foo /tmp/tmp.$$.bar
+X	$ECHO There is a difference....
+X	exit 1
+X	fi
+X
+$RM -f /tmp/tmp.$$.foo /tmp/tmp.$$.bar
+# echo There is no difference....
+Xexit 0
+# end
+FOO_BAR
+chmod 0700 beta/res_diff ||
+echo 'restore of beta/res_diff failed'
+Wc_c="`wc -c < 'beta/res_diff'`"
+test 953 -eq "$Wc_c" ||
+	echo 'beta/res_diff: original size 953, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/root.chk ==============
+if test -f 'beta/root.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/root.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/root.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/root.chk' &&
+:
+#
+#  Usage: root.chk
+#
+#  This shell script checks pathnames inside root's startup files for 
+# writability, improper umask settings (world writable), non-root
+# entries in /.rhosts, and to ensure that root is in /etc/ftpusers.
+# Also check for a single "+" in /etc/hosts.equiv (world is trusted),
+# and that /bin, /etc and certain key files are root owned, so that you
+# can't, say, rcp from a host.equived machine and blow over the password
+# file... this may or may not be bad, decide for yourself.
+# Startup files are /.login /.cshrc /.profile
+#
+#  Mechanism:  These files contain paths and filenames that are stripped
+# out using "grep".  These strings are then processed by the "is_able"
+# program to see if they are world writable.  Strings of the form:
+#
+#	path=(/bin /usr/bin .)
+#		and
+#	PATH=/bin:/usr/bin:.:
+#
+# are checked (using grep) to ensure that "." is not in the path.  All
+# results are echoed to standard output.  In addition, some effort was
+# put into parsing out paths with multiple lines; e.g. ending in "\",
+# and continuing on the next line.
+#  For umask stuff, simply grep for umask in startup files, and check
+# umask value.  For /etc/ftpuser, simple grep to check if root is in
+# the file.  For /etc/hosts.equiv, just check to see if "+" is alone
+# on a line by awking it.
+#
+#
+AWK=/bin/awk
+SED=/bin/sed
+TEST=/bin/test
+ECHO=/bin/echo
+GREP=/bin/grep
+SORT=/usr/bin/sort
+EXPR=/bin/expr
+LS=/bin/ls
+X
+# root startup/important files
+csh=/.cshrc
+sh=/.profile
+rhosts=/.rhosts
+big_files="/.login /.cshrc /.profile"
+X
+# root should own *at least* these, + $big_files; you can check for all files
+# in /bin & /etc, or just the directories (the default.)
+# root_files="/bin /bin/* /etc /etc/* $big_files $rhosts"
+root_files="/bin /etc $big_files $rhosts /etc/passwd /etc/group"
+X
+# misc important stuff
+ftp=/etc/ftpusers
+equiv=/etc/hosts.equiv
+X
+#   should't have anyone but root owning /bin or /etc files/directories
+# In case some of the critical files don't exist (/.rhost), toss away error
+# messages
+non_root=`$LS -ld $root_files | $AWK '{if ($3 != "root") print $NF}'`
+if $TEST -n "$non_root" ; then
+X	$ECHO "Warning!  Root does not own the following file(s):"
+X	$ECHO $non_root
+X	fi
+X
+# parse into separate paths:
+for i in $big_files
+X	do
+X	if $TEST -s $i
+X		then
+X		./chk_strings $i
+X
+X		# check for umask stuff (thanks to Bruce Spence):
+X		if umsk=`$GREP umask $i ` 2>/dev/null
+X			then
+X			mask=`$ECHO $umsk|$AWK '{if($2!=""){if(length($2)==1) print "00"$2; \
+X				else if (length($2)==2) print "0"$2; \
+X				else print $2} else print "000"}'`
+#			perm=`$EXPR substr $mask 3 1`
+X			perm=`$ECHO $mask | $SED 's/[0-9][0-9]//'`
+X			if $TEST "$perm" -lt 2 -o "$perm" = 4
+X				then
+X				if $TEST "$umsk"
+X					then
+X					$ECHO "Warning!  Root's umask set to $umsk in $i"
+X					fi
+X				fi
+X			fi
+X		fi
+X	done
+X
+# check to see if root is in ftpusers file
+if $TEST -s $ftp
+X	then
+X	if $TEST ! "`$GREP "root" $ftp`"
+X		then
+X		$ECHO Warning!  $ftp exists and root is not in it
+X		fi
+X	fi
+X
+# check for a "+" in hosts.equiv.  Bad.  Bad dog.
+if $TEST -f $equiv ; then
+X	$AWK '{if (NF==1 && $1=="+") printf("Warning!  A \"+\" entry in %s!\n", "'$equiv'")}' $equiv
+X	fi
+X
+# check for non-root entries in /.rhosts
+#$AWK '{if ((NF==1&&!($1=="localhost" || $1=="root"))||(NR!=1&&$2!="root")) printf("Warning!  Non root entry in %s! %s\n", $rhosts, $0)}' $rhosts
+X
+X
+# checking paths...
+#
+#  For both the .profile and .cshrc, the methods are similar.  Awk for
+# lines with "path" or "PATH", rip out the guts, then check with is_writable 
+# Trying to pull out the multi line stuff was a pain...  no thanks to
+# Jay Batson for telling me this was broken :-)
+#
+{
+#
+# Get the root paths from $csh.
+if $TEST -f $csh; then
+X	$AWK '{foo=substr($NF,1,length($NF)); \
+X	if (bar && foo=="\\" )
+X		foobar[i++] = $0; \
+X	if (bar && foo==")") {
+X		bar = 0; \
+X		foobar[i++] = $0;}}
+/path/	{ foobar[i++] = $0; \
+X	foo=substr($NF,1,length($NF)); \
+X	if (foo=="\\" )
+X		bar = NR \
+X	}
+END { for (j=0; j<=i; j++)
+X	print foobar[j] } ' $csh |
+X	$SED -e 's/#.*$//' -e 's/(//' -e 's/)//' -e 's/.*=//' |
+X  	$AWK '{for (i=1;i<=NF;i++) print $i}'
+fi
+X
+#
+# Get the root paths from $sh.
+if $TEST -f $sh; then
+X	$AWK -F: '{foo=substr($NF,1,length($NF)); \
+X	if (bar && foo=="\\" )
+X		foobar[i++] = $0; \
+X	if (bar) {
+X		bar = 0; \
+X		foobar[i++] = $0;}}
+X	/PATH/	{ foobar[i++] = $0; \
+X		foo=substr($NF,1,length($NF)); \
+X		if (foo=="\\" )
+X			bar = NR \
+X		}
+X	END { for (j=0; j<=i; j++)
+X		print foobar[j] }' $sh |
+X	$SED -e 's/#.*$//' -e 's/^export.*$//' -e 's/PATH=//' |
+X 	$AWK '{split($0,temp,":"); for (i in temp) \
+X 			if (temp[i] == "") print "."; \
+X 			else print temp[i]}'
+fi
+} |
+X $SORT -u |
+X  while read i
+X  do
+X	# check to see if "." is in path
+X	if $TEST "." = "$i"
+X	then
+X		$ECHO "Warning!  \".\" (or current directory) is in roots path!"
+X	fi
+X
+X	if ./is_writable $i
+X	then
+X		$ECHO "Warning!  Directory $i is _World_ writable and in roots path!"
+X	fi
+X  done
+X
+# end of script
+FOO_BAR
+chmod 0700 beta/root.chk ||
+echo 'restore of beta/root.chk failed'
+Wc_c="`wc -c < 'beta/root.chk'`"
+test 4897 -eq "$Wc_c" ||
+	echo 'beta/root.chk: original size 4897, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/addto.c ==============
+if test ! -d 'beta/src'; then
+    echo 'x - creating directory beta/src'
+    mkdir 'beta/src'
+fi
+if test -f 'beta/src/addto.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/addto.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/addto.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/addto.c' &&
+/* Copyright 1985 Robert W. Baldwin */
+/* Copyright 1986 Robert W. Baldwin */
+static	char	*notice85 = "Copyright 1985 Robert W. Baldwin";
+static	char	*notice86 = "Copyright 1986 Robert W. Baldwin";
+X
+/*
+X  August 15, added "Warning!"  To prepend warning messages.
+X    -- dan farmer
+*/
+X
+X
+/* 
+X * Add a goal, check for duplicates and completions.
+X * Trace messages written to stdout, success messages written to stderr.
+X * Usage: addto fileroot key comments
+X * Files are arranged in families based on a root name; for example,
+X *    uids.k  -- uids we Know how to access
+X *    uids.n  -- uids to process Next
+X *    uids.p  -- uids Pending results (for duplicate detection)
+X *    uids.x  -- uids being eXamined currently
+X */
+X
+X
+#include	<stdio.h>
+X
+#define	LINELEN	600		/* Max chars in a line. */
+#define	SUCCESS	"Success"	/* Filename to put success messages. */
+X
+main(argc, argv)
+int	argc;
+char	*argv[];
+{
+X	char	*type = argv[1];
+X	char	*key = argv[2];
+X	int	i;
+X	char	linebuf[LINELEN];
+X 	char	keypending[150];
+X	char	filename[150];
+X	FILE	*tmpfile;
+X
+X	if (argc < 3)  {
+X		fprintf(stderr, "addto: missing arguments\n");
+X		exit(1);
+X		}
+X		
+X	tmpfile = NULL;
+X		
+X 	keypending[0] = NULL;
+X	strcat(keypending, key);
+X	strcat(keypending, " ");
+/*
+X * If the uid is known, print out the comments and exit.
+X */
+X	filename[0] = NULL;
+X	strcat(filename, type);
+X	strcat(filename, ".k");
+X	if ((tmpfile = fopen(filename, "r")) == NULL)  {
+X		fprintf(stderr, "addto: can't open %s.\n", filename);
+X		exit(1);
+X		}
+X	while (fgets(linebuf, LINELEN, tmpfile) != NULL)  {
+X		if (strncmp(linebuf, key, strlen(key)) == 0)  {
+X			if ((tmpfile = freopen(SUCCESS,"a",tmpfile)) == NULL) {
+X				fprintf(stderr, "addto: can't open %s.\n",
+X					SUCCESS);
+X				exit(1);
+X				}
+X			fprintf(stderr, "Success^G^G\t");
+X			fprintf(tmpfile, "Warning!  ");
+X			for (i = 1 ; i < argc ; i++)  {
+X				fprintf(tmpfile, argv[i]);
+X				fprintf(tmpfile, " ");
+X				fprintf(stderr, argv[i]);
+X				fprintf(stderr, " ");
+X				}
+X			fprintf(tmpfile, "\n");
+X			fprintf(stderr, "\n");
+X			
+X			exit(0);
+X			}
+X		}
+/*
+X * If a duplicate, don't add it.
+X */
+X	filename[0] = NULL;
+X	strcat(filename, type);
+X	strcat(filename, ".p");
+X	if (freopen(filename, "r", tmpfile) == NULL)  {
+X		fprintf(stderr, "addto: can't open %s.\n", filename);
+X		exit(1);
+X		}
+X	while (fgets(linebuf, LINELEN, tmpfile) != NULL)  {
+X		if (strncmp(linebuf, keypending, strlen(keypending)) == 0)  {
+X			exit(0);	/* Its a duplicate. */
+X			}
+X		}
+/*
+X * Add the goal to the pending file. 
+X */
+X	filename[0] = NULL;
+X	strcat(filename, type);
+X	strcat(filename, ".p");
+X	if (freopen(filename, "a", tmpfile) == NULL)  {
+X		fprintf(stderr,"addto: can't open %s for append.\n", filename);
+X		exit(1);
+X		}
+X	fprintf(tmpfile, keypending);
+X	fprintf(tmpfile, "\n");
+/*
+X * Add the goal to the next goal (type) file.
+X */
+X	filename[0] = NULL;
+X	strcat(filename, type);
+X	strcat(filename, ".n");
+X	if (freopen(filename, "a", tmpfile) == NULL)  {
+X		fprintf(stderr,"addto: can't open %s for append.\n", filename);
+X		exit(1);
+X		}
+X	fprintf(stdout, "        ");
+X	fprintf(stdout, "%s %s ", argv[0], argv[1]);
+X	for (i = 2 ; i < argc ; i++)  {
+X		fprintf(tmpfile, argv[i]);
+X		fprintf(tmpfile, " ");
+X		fprintf(stdout, argv[i]);
+X		fprintf(stdout, " ");
+X		}
+X	fprintf(tmpfile, "\n");
+X	fprintf(stdout, "\n");
+X	exit(0);
+}
+X
+X
+X
+FOO_BAR
+chmod 0600 beta/src/addto.c ||
+echo 'restore of beta/src/addto.c failed'
+Wc_c="`wc -c < 'beta/src/addto.c'`"
+test 3254 -eq "$Wc_c" ||
+	echo 'beta/src/addto.c: original size 3254, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/clearfiles.c ==============
+if test -f 'beta/src/clearfiles.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/clearfiles.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/clearfiles.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/clearfiles.c' &&
+/* Copyright 1985 Robert W. Baldwin */
+/* Copyright 1986 Robert W. Baldwin */
+static	char	*notice85 = "Copyright 1985 Robert W. Baldwin";
+static	char	*notice86 = "Copyright 1986 Robert W. Baldwin";
+X
+/*
+X * Reset the info files used by Kuang.
+X */
+X
+X
+#include	<stdio.h>
+X
+char	*filelist[] = {
+X	"uids.k",
+X	"Success",
+X	"uids.k",
+X	"uids.p",
+X	"uids.n",
+X	"uids.x",
+X	"gids.k",
+X	"gids.p",
+X	"gids.n",
+X	"gids.x",
+X	"files.k",
+X	"files.p",
+X	"files.n",
+X	"files.x",
+X	"",
+X	};
+X
+main(argc, argv)
+int	argc;
+char	*argv[];
+{
+X	int	i;
+X
+X	for (i = 0 ; filelist[i][0] != NULL ; i++)  {
+X		if (freopen(filelist[i], "w", stdout) == NULL)  {
+X			fprintf(stderr, "%s: can't open %s.\n",
+X				argv[0], filelist[i]);
+X			exit(1);
+X			}
+X		}
+}
+X
+FOO_BAR
+chmod 0600 beta/src/clearfiles.c ||
+echo 'restore of beta/src/clearfiles.c failed'
+Wc_c="`wc -c < 'beta/src/clearfiles.c'`"
+test 702 -eq "$Wc_c" ||
+	echo 'beta/src/clearfiles.c: original size 702, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/crc.c ==============
+if test -f 'beta/src/crc.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/crc.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/crc.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/crc.c' &&
+X
+/* updcrc(3), crc(1) - calculate crc polynomials
+X *
+X * Calculate, intelligently, the CRC of a dataset incrementally given a 
+X * buffer full at a time.
+X * 
+X * Usage:
+X * 	newcrc = updcrc( oldcrc, bufadr, buflen )
+X * 		unsigned int oldcrc, buflen;
+X * 		char *bufadr;
+X *
+X * Compiling with -DTEST creates a program to print the CRC of stdin to stdout.
+X * Compile with -DMAKETAB to print values for crctab to stdout.  If you change
+X *	the CRC polynomial parameters, be sure to do this and change
+X *	crctab's initial value.
+X *
+X * Notes:
+X *  Regards the data stream as an integer whose MSB is the MSB of the first
+X *  byte recieved.  This number is 'divided' (using xor instead of subtraction)
+X *  by the crc-polynomial P.
+X *  XMODEM does things a little differently, essentially treating the LSB of
+X * the first data byte as the MSB of the integer. Define SWAPPED to make
+X * things behave in this manner.
+X *
+X * Author:	Mark G. Mendel, 7/86
+X *		UUCP: ihnp4!umn-cs!hyper!mark, GEnie: mgm
+X */
+X
+#define TEST
+X
+/* The CRC polynomial.
+X * These 4 values define the crc-polynomial.
+X * If you change them, you must change crctab[]'s initial value to what is
+X * printed by initcrctab() [see 'compile with -DMAKETAB' above].
+X */
+X
+/* Value used by:	    		CITT	XMODEM	ARC  	*/
+#define	P	 0xA001	 /* the poly:	0x1021	0x1021	A001	*/
+#define INIT_CRC 0L	 /* init value:	-1	0	0	*/
+#define SWAPPED		 /* bit order:	undef	defined	defined */
+#define W	16	 /* bits in CRC:16	16	16	*/
+X
+/* data type that holds a W-bit unsigned integer */
+#if W <= 16
+#  define WTYPE	unsigned short
+#else
+#  define WTYPE   unsigned long
+#endif
+X
+/* the number of bits per char: don't change it. */
+#define B	8
+X
+static WTYPE crctab[1<<B] = /* as calculated by initcrctab() */ {
+X   0x0,  0xc0c1,  0xc181,  0x140,  0xc301,  0x3c0,  0x280,  0xc241,
+X   0xc601,  0x6c0,  0x780,  0xc741,  0x500,  0xc5c1,  0xc481,  0x440,
+X   0xcc01,  0xcc0,  0xd80,  0xcd41,  0xf00,  0xcfc1,  0xce81,  0xe40,
+X   0xa00,  0xcac1,  0xcb81,  0xb40,  0xc901,  0x9c0,  0x880,  0xc841,
+X   0xd801,  0x18c0,  0x1980,  0xd941,  0x1b00,  0xdbc1,  0xda81,  0x1a40,
+X   0x1e00,  0xdec1,  0xdf81,  0x1f40,  0xdd01,  0x1dc0,  0x1c80,  0xdc41,
+X   0x1400,  0xd4c1,  0xd581,  0x1540,  0xd701,  0x17c0,  0x1680,  0xd641,
+X   0xd201,  0x12c0,  0x1380,  0xd341,  0x1100,  0xd1c1,  0xd081,  0x1040,
+X   0xf001,  0x30c0,  0x3180,  0xf141,  0x3300,  0xf3c1,  0xf281,  0x3240,
+X   0x3600,  0xf6c1,  0xf781,  0x3740,  0xf501,  0x35c0,  0x3480,  0xf441,
+X   0x3c00,  0xfcc1,  0xfd81,  0x3d40,  0xff01,  0x3fc0,  0x3e80,  0xfe41,
+X   0xfa01,  0x3ac0,  0x3b80,  0xfb41,  0x3900,  0xf9c1,  0xf881,  0x3840,
+X   0x2800,  0xe8c1,  0xe981,  0x2940,  0xeb01,  0x2bc0,  0x2a80,  0xea41,
+X   0xee01,  0x2ec0,  0x2f80,  0xef41,  0x2d00,  0xedc1,  0xec81,  0x2c40,
+X   0xe401,  0x24c0,  0x2580,  0xe541,  0x2700,  0xe7c1,  0xe681,  0x2640,
+X   0x2200,  0xe2c1,  0xe381,  0x2340,  0xe101,  0x21c0,  0x2080,  0xe041,
+X   0xa001,  0x60c0,  0x6180,  0xa141,  0x6300,  0xa3c1,  0xa281,  0x6240,
+X   0x6600,  0xa6c1,  0xa781,  0x6740,  0xa501,  0x65c0,  0x6480,  0xa441,
+X   0x6c00,  0xacc1,  0xad81,  0x6d40,  0xaf01,  0x6fc0,  0x6e80,  0xae41,
+X   0xaa01,  0x6ac0,  0x6b80,  0xab41,  0x6900,  0xa9c1,  0xa881,  0x6840,
+X   0x7800,  0xb8c1,  0xb981,  0x7940,  0xbb01,  0x7bc0,  0x7a80,  0xba41,
+X   0xbe01,  0x7ec0,  0x7f80,  0xbf41,  0x7d00,  0xbdc1,  0xbc81,  0x7c40,
+X   0xb401,  0x74c0,  0x7580,  0xb541,  0x7700,  0xb7c1,  0xb681,  0x7640,
+X   0x7200,  0xb2c1,  0xb381,  0x7340,  0xb101,  0x71c0,  0x7080,  0xb041,
+X   0x5000,  0x90c1,  0x9181,  0x5140,  0x9301,  0x53c0,  0x5280,  0x9241,
+X   0x9601,  0x56c0,  0x5780,  0x9741,  0x5500,  0x95c1,  0x9481,  0x5440,
+X   0x9c01,  0x5cc0,  0x5d80,  0x9d41,  0x5f00,  0x9fc1,  0x9e81,  0x5e40,
+X   0x5a00,  0x9ac1,  0x9b81,  0x5b40,  0x9901,  0x59c0,  0x5880,  0x9841,
+X   0x8801,  0x48c0,  0x4980,  0x8941,  0x4b00,  0x8bc1,  0x8a81,  0x4a40,
+X   0x4e00,  0x8ec1,  0x8f81,  0x4f40,  0x8d01,  0x4dc0,  0x4c80,  0x8c41,
+X   0x4400,  0x84c1,  0x8581,  0x4540,  0x8701,  0x47c0,  0x4680,  0x8641,
+X   0x8201,  0x42c0,  0x4380,  0x8341,  0x4100,  0x81c1,  0x8081,  0x4040,
+};
+X
+X
+void perror();
+char *strcpy(); 
+void exit();
+X
+WTYPE
+updcrc( icrc, icp, icnt )
+WTYPE icrc;
+unsigned char	*icp;
+int	icnt;
+{
+X   register WTYPE crc = icrc;
+X   register unsigned char	*cp = icp;
+X   register int	cnt = icnt;
+X
+X   while ( cnt--) {
+#ifndef SWAPPED
+X      crc = (crc << B) ^ crctab[(crc>>(W-B)) ^ *cp++];
+#else
+X      crc = (crc >> B) ^ crctab[(crc & ((1<<B)-1)) ^ *cp++];
+#endif 
+X   }
+X
+X   return( crc );
+}
+X
+X
+#ifdef MAKETAB
+X
+#include <stdio.h>
+main()
+{
+X   initcrctab();
+}
+X
+X
+initcrctab()
+{
+X   register int	b, i;
+X   WTYPE v;
+X
+X
+X   for ( b = 0; b <= (1 << B) - 1; ++b ) {
+#ifndef SWAPPED
+X      for ( v = b << (W - B), i = B; --i >= 0; )
+X         v = v & ((WTYPE)1 << (W - 1)) ? (v << 1) ^ P : v << 1;
+#else
+X      for ( v = b, i = B; --i >= 0; )
+X         v = v & 1 ? (v >> 1) ^ P : v >> 1;
+#endif	    
+X      crctab[b] = v;
+X
+X      (void)  printf( "0x%lx,", v & ((1L << W) - 1L));
+X      if ( (b & 7) == 7 )
+X         (void)  printf("\n" );
+X      else
+X         (void)  printf("  ");
+X   }
+}
+X
+X
+#endif
+X
+#ifdef TEST
+X
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <pwd.h>
+#include <grp.h>
+#define MAXBUF	4096
+X
+#ifndef S_IRGRP
+#define S_IRGRP	(S_IREAD >> 3)
+#define S_IWGRP (S_IWRITE >> 3)
+#define S_IXGRP (S_IEXEC >> 3)
+#define S_IROTH (S_IREAD >> 6)
+#define S_IWOTH (S_IWRITE >> 6)
+#define S_IXOTH (S_IEXEC >> 6)
+#endif
+X
+struct stat stat_buf;
+int	initial_crc = INIT_CRC;
+X
+extern char	*optarg;
+extern int	optind;
+extern int	opterr;
+X
+main( argc, argv )
+int	argc;
+char	**argv;
+{
+X   int	stats_flag = 0;
+X
+X   int	c;
+X
+X   if (argc == 1) {
+X      print_crc((char *)0, 0);
+X      return 0;
+X   }
+X
+X   /* process all arguments */
+X
+X   while ((c = getopt(argc, argv, "VvI:i:")) != EOF) {
+X
+X      switch (c) {
+X
+X      case 'V':
+X      case 'v':
+X         stats_flag = 1;
+X         break;
+X
+X      case 'I':
+X      case 'i':
+X         initial_crc = atoi(optarg);
+X         break;
+X
+X      default:
+X         (void) fprintf(stderr, "crc:  -v (verbose listing)\n");
+X         (void) fprintf(stderr, "      -i value (initial crc value)\n");
+X         exit(1);
+X      }
+X   }
+X
+X   for (; optind < argc ; optind++)
+X      print_crc(argv[optind], stats_flag);
+X
+X   return 0;
+}
+X
+X
+print_crc(name, stat_flag)
+char	*name;
+int	stat_flag;
+{
+X   int	fd;
+X   int	nr;
+X   unsigned char	buf[MAXBUF];
+X   WTYPE crc;
+#ifdef MAGICCHECK
+X   WTYPE crc2;
+#endif
+X
+X   fd = 0;
+X
+X   /* quietly ignore files we can't stat */
+X
+X   if (name != NULL && stat(name, &stat_buf) != 0)
+X      return;
+X
+X   /* don't do a crc on strange files */
+X
+X   crc = nr = 0;
+X
+X   if (name == NULL || (stat_buf.st_mode & S_IFMT) == S_IFREG) {
+X
+X      /* open the file and do a crc on it */
+X
+X      if (name != NULL && (fd = open( name, O_RDONLY )) < 0 ) {
+X         perror( name );
+X         exit( -1 );
+X      }
+#ifdef MAGICCHECK
+X      crc2 = 
+#endif
+X      crc = initial_crc;
+X
+X      while ( (nr = read( fd, (char *)buf, MAXBUF )) > 0 ) {
+X         crc = updcrc(crc, buf, nr );
+X      }
+X      (void) close(fd);
+X
+X   }
+X   if ( nr != 0 ) {
+X      perror( "read error" );
+X   } else {
+X      (void)  printf("%4.4x", (unsigned) crc );
+X      if (stat_flag)
+X         stats(name);
+X      else
+X         (void)  printf("\n");
+X
+X   }
+X
+#ifdef MAGICCHECK
+X   /* tack one's complement of crc onto data stream, and
+X       continue crc calculation.  Should get a constant (magic number)
+X       dependent only on P, not the data.
+X     */
+X   crc2 = crc ^ -1L;
+X   for ( nr = W - B; nr >= 0; nr -= B ) {
+X      buf[0] = (crc2 >> nr);
+X      crc = updcrc(crc, buf, 1);
+X   }
+X
+X   /* crc should now equal magic */
+X   buf[0] = buf[1] = buf[2] = buf[3] = 0;
+X   (void)  printf( "magic test: %lx =?= %lx\n", crc, updcrc((WTYPE) - 1, buf, W / B));
+#endif 
+X
+X
+}
+X
+X
+stats(name)
+char	*name;
+{
+X
+X   struct passwd *entry;
+X   struct group *group_entry;
+X   static char	owner[20];
+X   static char	group[20];
+X   char	a_time[50];
+X
+X   struct passwd *getpwuid();
+X   struct group *getgrgid();
+X   char	*ctime();
+X
+X   static int	prev_uid = -9999;
+X   static int	prev_gid = -9999;
+X
+X   if (stat_buf.st_uid != prev_uid) {
+X      entry = getpwuid((int)stat_buf.st_uid);
+X      if (entry)
+X         (void) strcpy(owner, entry->pw_name);
+X      else
+X         (void) sprintf(owner, "%d", stat_buf.st_uid);
+X      prev_uid = stat_buf.st_uid;
+X   }
+X   if (stat_buf.st_gid != prev_gid) {
+X      group_entry = getgrgid((int)stat_buf.st_gid);
+X      if (group_entry)
+X         (void) strcpy(group, group_entry->gr_name);
+X      else
+X         (void) sprintf(group, "%d", stat_buf.st_gid);
+X      prev_gid = stat_buf.st_gid;
+X   }
+X
+X   (void) strcpy(a_time, ctime(&stat_buf.st_mtime));
+X   a_time[24] = '\0';
+X
+X   print_perm(stat_buf.st_mode);
+X
+X   (void)  printf(" %s\t%s\t%s %s\n", owner, group, a_time + 4, name);
+X
+}
+X
+X
+print_perm(perm)
+unsigned int	perm;
+{
+X
+X   char	string[20];
+X   (void) strcpy(string, "----------");
+X
+X   switch (perm & S_IFMT) {
+X
+X   case S_IFDIR:
+X      string[0] = 'd';
+X      break;
+X
+X   case S_IFBLK:
+X      string[0] = 'b';
+X      break;
+X
+X   case S_IFCHR:
+X      string[0] = 'c';
+X      break;
+X
+X   case S_IFIFO:
+X      string[0] = 'p';
+X      break;
+X   }
+X   if (perm & S_IREAD)
+X      string[1] = 'r';
+X   if (perm & S_IWRITE)
+X      string[2] = 'w';
+X   if (perm & S_ISUID && perm & S_IEXEC)
+X      string[3] = 's';
+X   else if (perm & S_IEXEC)
+X      string[3] = 'x';
+X   else if (perm & S_ISUID)
+X      string[3] = 'S';
+X
+X   if (perm & S_IRGRP)
+X      string[4] = 'r';
+X   if (perm & S_IWGRP)
+X      string[5] = 'w';
+X   if (perm & S_ISUID && perm & S_IXGRP)
+X      string[6] = 's';
+X   else if (perm & S_IXGRP)
+X      string[6] = 'x';
+X   else if (perm & S_ISUID)
+X      string[6] = 'l';
+X
+X   if (perm & S_IROTH)
+X      string[7] = 'r';
+X   if (perm & S_IWOTH)
+X      string[8] = 'w';
+X   if (perm & S_ISVTX && perm & S_IXOTH)
+X      string[9] = 't';
+X   else if (perm & S_IXOTH)
+X      string[9] = 'x';
+X   else if (perm & S_ISVTX)
+X      string[9] = 'T';
+X
+X   (void) printf(" %s", string);
+}
+X
+#endif
+X
+X
+FOO_BAR
+chmod 0600 beta/src/crc.c ||
+echo 'restore of beta/src/crc.c failed'
+Wc_c="`wc -c < 'beta/src/crc.c'`"
+test 9920 -eq "$Wc_c" ||
+	echo 'beta/src/crc.c: original size 9920, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/crc_check.c ==============
+if test -f 'beta/src/crc_check.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/crc_check.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/crc_check.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/crc_check.c' &&
+/*
+X    This progam will compare two crc lists and report the differences.
+X    
+X    By Jon Zeeff (zeeff@b-tech.ann-arbor.mi.us)
+X
+X    Permission is granted to use this in any manner provided that    
+X    1) the copyright notice is left intact, 
+X    2) you don't hold me responsible for any bugs and 
+X    3) you mail me any improvements that you make.  
+X
+X
+X    report:
+X         corrupt	-	crc changed w/o date change
+X         replaced	-	crc + date changed
+X         perm		-	permissions changed
+X         own/grp	-	owner or group changed
+X	 removed	-	
+X	 added		-
+X
+Print the info for the new file except for deleted.
+X
+Use:
+X
+find / -print | sort | xargs crc -v > crc_file
+X
+to generate a crc list (crc.c should accompany this source).
+X
+Assume that no files have tabs or spaces in the name.
+X
+*/
+X
+/* max size of line */
+X
+#define BUF_SIZE 1124
+X
+#include <stdio.h>
+X
+char	*strrchr();
+void    exit();
+X
+char	new_line[BUF_SIZE];
+char	old_line[BUF_SIZE];
+X
+FILE *new_file;
+FILE *old_file;
+X
+main(argc, argv)
+int	argc;
+char	**argv;
+{
+X   /*
+X
+X           If line =, read new line from each file
+X           else
+X           If date/perm/crc change, report and read new line from each file
+X           else
+X           If old_line < new_line, report file removed, read old line
+X           else
+X              report new line as added
+X              read new_line
+X        loop
+*/
+X
+X   char	*new_ptr;
+X   char	*old_ptr;
+X
+X   if (argc != 3) {
+X      (void) printf("wrong number of arguments\n");
+X      (void) printf("crc_check old_crc_file new_crc_file\n");
+X      exit(1);
+X   }
+X   new_file = fopen(argv[2], "r");
+X   old_file = fopen(argv[1], "r");
+X
+X   if (new_file == NULL || old_file == NULL) {
+X      (void) printf("can't open input files\n");
+X      (void) printf("crc_check old_crc_file new_crc_file\n");
+X      exit(1);
+X   }
+X
+X   get_line(new_line);
+X   get_line(old_line);
+X
+X   for (; ; ) {
+X
+X      check_eof();
+X
+X      /* If equal, print nothing and get new lines */
+X
+X      if (strcmp(old_line, new_line) == 0) {
+X         get_line(new_line);
+X         get_line(old_line);
+X         continue;
+X      }
+X
+X      /* Compare just the file names */
+X
+X      new_ptr = strrchr(new_line, ' ');
+X      old_ptr = strrchr(old_line, ' ');
+X
+X      if (new_ptr == NULL || old_ptr == NULL) {
+X         (void) printf("Error in input data\n");
+X         exit(1);
+X      }
+X
+X      if (strcmp(old_ptr, new_ptr) == 0) {
+X
+X         new_ptr = strrchr(new_line, '\t');
+X         old_ptr = strrchr(old_line, '\t');
+X
+X         if (new_ptr == NULL || old_ptr == NULL) {
+X            (void) printf("Error in input data\n");
+X            exit(1);
+X         }
+X
+X         /* check crc change */
+X
+X         if (strncmp(new_line, old_line, 4) != 0)
+X            if (strcmp(new_ptr, old_ptr) == 0)
+X               (void) printf("corrupt  %s", new_line + 5);
+X            else
+X               (void) printf("replaced %s", new_line + 5);
+X
+X
+X         /* check permission chenage */
+X
+X         if (strncmp(new_line + 5, old_line + 5, 11) != 0)
+X            (void) printf("permiss  %s", new_line + 5);
+X
+X         /* check  owner/group */
+X
+X         if (strncmp(new_line+16, old_line+16, new_ptr - new_line - 15) != 0)
+X            (void) printf("own/grp  %s", new_line + 5);
+X
+X         get_line(new_line);
+X         get_line(old_line);
+X         continue;
+X      }
+X
+X
+X      if (strcmp(old_ptr, new_ptr) < 0) {
+X         (void) printf("removed  %s", old_line + 5);
+X         get_line(old_line);
+X         continue;
+X      }
+X
+X      (void) printf("added    %s", new_line + 5);
+X      get_line(new_line);
+X
+X   }
+X
+}
+X
+X
+get_line(string)
+char	*string;
+{
+X   if (string == new_line)
+X      (void) fgets(string, BUF_SIZE, new_file);
+X   else
+X      (void) fgets(string, BUF_SIZE, old_file);
+X
+}
+X
+X
+check_eof()
+{
+X
+X   if (feof(new_file)) {
+X
+X      while (!feof(old_file)) {
+X         (void) printf("removed  %s", old_line + 5);
+X         (void) fgets(old_line, BUF_SIZE, old_file);
+X      }
+X      exit(0);
+X   } else if (feof(old_file)) {
+X      while (!feof(new_file)) {
+X         (void) printf("added    %s", new_line + 5);
+X         (void) fgets(new_line, BUF_SIZE, new_file);
+X      }
+X      exit(0);
+X   }
+X
+}
+X
+X
+X
+FOO_BAR
+chmod 0600 beta/src/crc_check.c ||
+echo 'restore of beta/src/crc_check.c failed'
+Wc_c="`wc -c < 'beta/src/crc_check.c'`"
+test 4067 -eq "$Wc_c" ||
+	echo 'beta/src/crc_check.c: original size 4067, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/filewriters.c ==============
+if test -f 'beta/src/filewriters.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/filewriters.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/filewriters.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/filewriters.c' &&
+/* Copyright 1985 Robert W. Baldwin */
+/* Copyright 1986 Robert W. Baldwin */
+X
+/*
+X   August 15, 1989: Dan Farmer
+X   One line changed -- #38 is the old line, #41 is my version.
+X   See comment for details...
+*/
+static	char	*notice85 = "Copyright 1985 Robert W. Baldwin";
+static	char	*notice86 = "Copyright 1986 Robert W. Baldwin";
+X
+/*
+X * Useage: filewriters pathname
+X * Writes on stdout the list of people who can write the file.
+X * This writer's list contains three tokens, the owner, the group, and
+X * the 'all others' group, respectively.
+X * If either group does not have write access, then that token is
+X * replace with the token "NONE".  If the 'all others' group has
+X * write access then that token is "OTHER".
+X *
+X * Notice that the owner of a file can always write it because the
+X * owner can change the file access mode.
+X *
+X * BUG: should handle links correctly.
+X */
+X
+#include	<stdio.h>
+#include	<sys/types.h>
+#include	<sys/stat.h>
+#include	<grp.h>
+#include	<pwd.h>
+X
+/*
+X  changed this line from upper to lower case 's'.
+X  Ultrix barfed 'cause already defined in sys/stat.h,
+X  no one else seemed to mind...
+X
+#define	S_GWRITE	(S_IWRITE >> 3)
+*/
+X
+#ifdef cray
+struct group *getgrgid();
+#endif
+X
+#define	s_GWRITE	(S_IWRITE >> 3)		/* Group write access. */
+#define	S_OWRITE	(S_IWRITE >> 6)		/* Other write access. */
+X
+X
+main(argc, argv)
+int	argc;
+char	*argv[];
+{
+X	int	i;
+X	struct	stat	buf;
+X
+/*
+X * Make sure the file exists.
+X */
+X 	if (argc != 2)  {
+X		fprintf(stderr, "%s: wrong number of args.\n", argv[0]);
+X		exit(1);
+X		}
+X	if (stat(argv[1], &buf) != 0)  {
+X		fprintf(stderr, "%s: File %s does not exist.\n",
+X			argv[0], argv[1]);
+X		exit(1);
+X		}
+/*
+X * Produce list of writers.
+X * Owner can always write.
+X */
+X	printf("        ");
+X	print_uid(stdout, buf.st_uid);
+X	printf(" ");
+X	if (s_GWRITE & (buf.st_mode))  {
+X		print_gid(stdout, buf.st_gid);
+X		}
+X	else {
+X		printf("NONE");
+X		}
+X	printf(" ");
+X	if (S_OWRITE & buf.st_mode)  {
+X		printf("OTHER");
+X		}
+X	else {
+X		printf("NONE");
+X		}
+X	printf("\n");
+X	exit(0);
+}
+X
+X
+print_uid(out, uid)
+FILE	*out;
+int	uid;
+{
+X	struct	passwd	*pwent;
+X	
+X	if ((pwent = getpwuid(uid)) == NULL)  {
+X		fprintf(stderr, "Bad user id %d.\n", uid);
+X		exit(1);
+X		}
+X	fprintf(out, "%s", pwent->pw_name);
+}
+X
+X
+print_gid(out, gid)
+FILE	*out;
+int	gid;
+{
+X	struct	group	*grpent;
+X	
+X	if ((grpent = getgrgid(gid)) == NULL)  {
+X		fprintf(stderr, "Bad group id %d.\n", gid);
+X		exit(1);
+X		}
+X	fprintf(out, "%s", grpent->gr_name);
+X
+}
+X
+FOO_BAR
+chmod 0600 beta/src/filewriters.c ||
+echo 'restore of beta/src/filewriters.c failed'
+Wc_c="`wc -c < 'beta/src/filewriters.c'`"
+test 2420 -eq "$Wc_c" ||
+	echo 'beta/src/filewriters.c: original size 2420, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/home.chk.c ==============
+if test -f 'beta/src/home.chk.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/home.chk.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/home.chk.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/home.chk.c' &&
+/*
+X
+-------------------------------------------------------------------------
+Modification: Aug 2, 1989
+Author: Dan Farmer
+X
+X  I made a minor change to this; it uses a bit mask instead of comparing
+to various ok modes.  Otherwise it is unchanged....
+-------------------------------------------------------------------------
+X
+Original Comment:
+X
+This was posted to comp.unix.wizards and net.sources, but I also wanted to
+send it here, both for those that don't read or get news, and so that it
+will be in the archives for posterity....
+X
+On the UNIX Security list, quite a while back, mention was made of
+problems that could occur when home directories of users are writable.
+(Installing |"some command" in ~uucp/.forward remotely and things like
+that.)  This prompted me to write the enclosed program, both to check
+for this, and to help protect users against themselves.
+X
+The program looks at all the home directories listed in /etc/passwd,
+and prints a message if they don't exist, are not directories, or
+their mode is not in the "table" of "OK" modes.  I'm using stat()
+instead of lstat(), so symbolic links are perfectly acceptable, as
+long as they point to directories....  This program should run on any
+version of UNIX that I can think of; if it doesn't, please let me
+know.
+X
+The list of good modes is, of course, subjective.  I initially used
+the first set, then added the second set based on the output of the
+first run.  I didn't add all the mismatched modes I found; just the
+ones that were fairly normal and that I didn't want to hear about....
+X
+The program is surprisingly (to me) fast.  It took under a second on
+our decently loaded VAX-11/785 running 4.3BSD with 501 passwd entries!
+X
+This program is placed in the public domain - you have only your
+conscience to stop you from saying "hey, look at this neat program I
+wrote"....
+X
+X	Enjoy!
+X
+John Owens		Old Dominion University - Norfolk, Virginia, USA
+john@ODU.EDU		old arpa: john%odu.edu@RELAY.CS.NET
++1 804 440 3915		old uucp: {seismo,harvard,sun,hoptoad}!xanth!john
+*/
+X
+#include <pwd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+X
+X
+/* mask for modes.... (world writable) */
+#define DMODE 002
+X
+main(argc,argv)
+char **argv;
+{
+X	register int mode;
+X	register int *p;
+X	struct passwd *pp;
+X	static struct stat statb;
+X
+X	if (argc != 1) {
+X		printf("Usage: %s\n",argv[0]);
+X		exit(1);
+X	}
+X
+X	while ((pp = getpwent()) != (struct passwd *)0) {
+X		if (stat(pp->pw_dir,&statb) < 0) {
+X		/*
+X			perror(pp->pw_dir);
+X		*/
+X			continue;
+X		}
+X
+X		if ((statb.st_mode & S_IFMT) != S_IFDIR) {
+X			printf("Warning!  User %s's home directory %s is not a directory! (mode 0%o)\n",
+X				pp->pw_name,pp->pw_dir,statb.st_mode);
+X			continue;
+X		}
+X
+X		mode = statb.st_mode & ~S_IFMT;
+X
+X		if (!(mode & DMODE)) goto ok;
+X
+X				/* note that 3.3 will print 4 if needed */
+X		printf("Warning!  User %s's home directory %s is mode 0%3.3o!\n",
+X		       pp->pw_name,pp->pw_dir,mode);
+ok:	;
+X	}
+X
+X	exit(0);
+X
+}
+FOO_BAR
+chmod 0600 beta/src/home.chk.c ||
+echo 'restore of beta/src/home.chk.c failed'
+Wc_c="`wc -c < 'beta/src/home.chk.c'`"
+test 2916 -eq "$Wc_c" ||
+	echo 'beta/src/home.chk.c: original size 2916, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/is_able.c ==============
+if test -f 'beta/src/is_able.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/is_able.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/is_able.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/is_able.c' &&
+/*
+X    Usage:
+X
+X is_able filename {w|g|s|S}       {r|w|B|b|s}
+X         (world/group/SUID/SGID   read/write/{read&write}/{suid&write}/s[ug]id)
+X
+X    The second arg of {r|w} determines whether a file is (group or world
+X  depending on the first arg of {w|g}) writable/readable, or if it is
+X  SUID/SGID (first arg, either s or S, respectively), and prints out a
+X  short message to that effect.
+X
+X So:
+X    is_able w w		# checks if world writable
+X    is_able g r		# checks if group readable
+X    is_able s s		# checks if SUID
+X    is_able S b		# checks if world writable and SGID
+X
+X  	Permissions bits:		  vvv--- Permission bits
+X   	        1 = execute		00000
+X   	        2 = writable		 ^
+X   	        4 = readable		 + Setuid bits
+X
+X  	Setuid bits:
+X   	        1 = sticky
+X   	        2 = set group id
+X   	        4 = set user od
+X
+X    Pete Shipley (shipley@mica.berkeley.edu) gutted my original code,
+X  made in cleaner and smarter, and combined everything into one compact
+X  file.  What a deal, huh?  Then I came along and beat up his code and
+X  made it look ugly again (I changed the is_writeable option to return
+X  true if _any_ parent directories are writable, not just the target.  So
+X  you can blame me if you want.  Better yet, just send me a patch if I
+X  blew it.)
+X
+*/
+X
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <ctype.h>
+#include <stdio.h>
+X
+#define G_READ_TEST 00044	/* group (or world) readable */
+#define W_READ_TEST 00004	/* world readable */
+#define G_READ_STRING	"Warning!  %s is group readable!\n"
+#define W_READ_STRING	"Warning!  %s is _World_ readable!\n"
+X
+#define G_WRITE_TEST 00022	/* group (or world) writable */
+#define W_WRITE_TEST 00002	/* world writable */
+#define G_WRITE_STRING	"Warning!  %s is group writable!\n"
+#define G_WRITE_TREE	"Warning!  %s is group writable! (*)\n"
+#define W_WRITE_STRING	"Warning!  %s is _World_ writable!\n"
+#define W_WRITE_TREE	"Warning!  %s is _World_ writable! (*)\n"
+X
+#define SGID_TEST 02000		/* set group id */
+#define SUID_TEST 04000		/* set user id */
+#define SUID_STRING	"Warning!  %s is SUID!\n"
+#define SGID_STRING	"Warning!  %s is SGID!\n"
+X
+char usage[]="Usage: is_able file {w|g|S|s} {r|w|B|b|}\n";
+X
+main(argc,argv)
+int argc;
+char **argv;
+{
+char file[256],wg,rwb,gstring[35],wstring[35],wstring_tree[50],
+X	gstring_tree[50], suidstring[35];
+register int group, read, write, both, suid, sgid, verbose, xmode;
+static struct stat statb;
+X
+group=read=write=suid=sgid=both=verbose=xmode=0;
+X
+/* check out arguments */
+if (argc != 4) {
+X	fprintf(stderr, usage);
+X	exit(1);
+X	}
+X
+/* parse arguments */
+strcpy(file, argv[1]);
+X
+/* get stats on file in question -- if doesn't exist, exit */
+if (stat(file,&statb) < 0) {
+X	fprintf(stderr, file);
+X	exit(2);
+X	}
+X
+wg   = argv[2][0];		/* world or group */
+rwb  = argv[3][0];		/* read/write/both */
+X
+/* set the report string and some flags */
+if (wg == 'g') group = 1;
+else if (wg == 's') suid = 1;
+else if (wg == 'S') sgid = 1;
+X
+if (rwb == 'r') {
+X	if (group) strcpy(gstring, G_READ_STRING);
+X	else strcpy(wstring, W_READ_STRING);
+X	read = 1;
+X	}
+else if (rwb == 's')
+X	(suid?strcpy(suidstring,SUID_STRING):strcpy(suidstring,SGID_STRING));
+X
+else if (rwb == 'w') {
+X	if (group) {
+X		strcpy(gstring, G_WRITE_STRING);
+X		strcpy(gstring_tree, G_WRITE_TREE);
+X		}
+X	else {
+X		strcpy(wstring, W_WRITE_STRING);
+X		strcpy(wstring_tree, W_WRITE_TREE);
+X		}
+X	write = 1;
+X	}
+else if (rwb == 'b') {
+X	/* do the write first, then read check */
+X	if (group) strcpy(gstring, G_WRITE_STRING);
+X	else strcpy(wstring, W_WRITE_STRING);
+X	if (suid) strcpy(suidstring,SUID_STRING);
+X	both = read = write = 1;
+X	}
+else if (rwb == 'B') {
+X	/* do the write first, then s[ug]id check */
+X	if (suid) strcpy(suidstring, SUID_STRING);
+X	else if (sgid) strcpy(suidstring, SGID_STRING);
+X	else {
+X		fprintf(stderr, usage);
+X		exit(1);
+X		}
+X	both = write = 1;
+X	}
+else {
+X	fprintf(stderr, usage);
+X	exit(1);
+X	}
+X
+/*
+X *         the write stuff, so to speak...
+X *   What I'm doing in this mess is to parse the file in question, check out
+X * whole path; 'cause if anything is world writable, you can compromise.
+X * For instance, if /usr is world writable, then /usr/spool/mail is
+X * compromisable, no matter what its permissions are.
+X *
+*/
+if (write) {
+X	/* 256 levels of dirs, max len each 256 chars */
+X	char foo_dirs[256][256];
+X	char *foo_file;
+X	int i = 0, j;
+X
+X	foo_file = file;
+X	strcpy(foo_dirs[i++], foo_file);
+X
+X	j=strlen(foo_file) - 1;
+X	do {
+X		if (foo_file[j] == '/')
+X			strncpy(foo_dirs[i++], foo_file, j);
+X	} while (--j > 0);
+X
+X	for (j = 0; j < i; j++) {
+X		if (stat(foo_dirs[j],&statb) < 0)
+X			continue;
+X		xmode=statb.st_mode;
+X		if (!group) {
+X			if (xmode & W_WRITE_TEST) {
+X				/* want to distinguish between file being
+X				   writable and directory tree being
+X				   writable; j==0 means actual file */
+X				if (!j) printf( wstring, file);
+X				else printf( wstring_tree, file);
+X				if (both) goto bboth;
+X				exit(!xmode);
+X				}
+X			}
+X		else if (xmode & G_WRITE_TEST) {
+X			if (!j) printf( gstring, file);
+X			else printf( gstring_tree, file);
+X			if (both) goto bboth;
+X			exit(!xmode);
+X			}
+X		}
+X
+if (!both) exit(!xmode);
+}
+X
+bboth:
+if (both) if (stat(file,&statb) < 0) {
+X		fprintf(stderr, file);
+X		exit(2);
+X		}
+X
+/* find premissions on file in question */
+if (group)
+X	xmode = statb.st_mode & G_READ_TEST;
+else
+X	xmode = statb.st_mode & W_READ_TEST;
+X
+if (wg == 's') {
+X	/* check SUID */
+X	xmode = statb.st_mode & SUID_TEST;
+X	if (xmode) printf( suidstring, file);
+X	exit (!xmode);
+X	}
+if (wg == 'S') {
+X	/* check SGID */
+X	xmode = statb.st_mode & SGID_TEST;
+X	if (xmode) printf( suidstring, file);
+X	exit (!xmode);
+X	}
+X
+if (rwb == 'b') {
+X	/* do the read now */
+X	if (group) strcpy(gstring, G_READ_STRING);
+X	else strcpy(wstring, W_READ_STRING);
+X	}
+X
+/* report finding */
+if (xmode) printf( (group ? gstring : wstring), file);
+X
+exit(!xmode);
+}
+FOO_BAR
+chmod 0600 beta/src/is_able.c ||
+echo 'restore of beta/src/is_able.c failed'
+Wc_c="`wc -c < 'beta/src/is_able.c'`"
+test 5750 -eq "$Wc_c" ||
+	echo 'beta/src/is_able.c: original size 5750, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/is_something.c ==============
+if test -f 'beta/src/is_something.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/is_something.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/is_something.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/is_something.c' &&
+/*
+X    Usage: is_xxx [-gv] <filename>
+X
+X    This checks determines whether a file is (group or world)
+X  writable, readable, or SUID, and returns a 0 if false, 1 if true.
+X  The -g option checks for group status, the -v option prints out
+X  the result as well.
+X
+X  	Permissions bits:		  vvv--- Permission bits
+X   	        1 = execute		00000
+X   	        2 = writable		 ^
+X   	        4 = readable		 + Setuid bits
+X
+X  	Setuid bits:
+X   	        1 = sticky
+X   	        2 = set group id
+X   	        4 = set user od
+X
+X    Pete Shipley (shipley@mica.berkeley.edu) gutted my original code,
+X  made in cleaner and smarter, and combined everything into one compact
+X  file.  What a deal, huh?  Then I came along and beat up his code and
+X  made it look ugly again (I changed the is_writeable option to return
+X  true if _any_ parent directories are writable, not just the target.  So
+X  you can blame me if you want.  Better yet, just send me a patch if I
+X  blew it.)
+X
+*/
+X
+#include <sys/types.h>
+#include <sys/stat.h>
+X
+#ifdef SETUID
+#define G_TEST 02000	/* set group id */
+#define W_TEST 04000	/* set user id */
+#define G_REPORT_STRING	"%s is set gid\n"
+#define W_REPORT_STRING	"%s is set uid\n"
+#endif SETUID
+X
+#ifdef READABLE
+#define G_TEST 00040	/* group readable */
+#define W_TEST 00004	/* world readable */
+#define G_REPORT_STRING	"%s is group readable\n"
+#define W_REPORT_STRING	"%s is world readable\n"
+#endif READABLE
+X
+#ifdef WRITABLE
+#define G_TEST 00020	/* group writable */
+#define W_TEST 00002	/* world writable */
+#define G_REPORT_STRING	"%s is group writable\n"
+#define W_REPORT_STRING	"%s is world writable\n"
+#endif WRITABLE
+X
+main(argc,argv)
+int argc;
+char **argv;
+{
+X    register int group = 0,
+X	    verbose = 0,
+X	    xmode;
+X
+X    static struct stat statb;
+X
+X    /* check out arguments */
+X    if (argc < 2) {
+X	(void) printf("Usage: %s [-gv] file\n",argv[0]);
+X	exit(0);
+X    }
+X
+X    /* parse arguments */
+X    if (argc > 2) {
+X	while (argv[1][0] == '-' && argv[1][1] != '\0') {
+X	    if (argv[1][1] == 'g') { group++; argv++; }
+X	    if (argv[1][1] == 'v') { verbose++; argv++; }
+X	}
+X    }
+X
+X    /* get stats on file in question */
+X    if (stat(*++argv,&statb) < 0) {
+X	perror(*argv);
+X	exit(2);
+X    }
+X
+/*
+X           the write stuff, so to speak...
+X     What I'm doing in this mess is to parse the file in question, check out
+X   whole path; 'cause if anything is world writable, you can compromise.
+X
+*/
+#ifdef WRITABLE
+{
+char foo_dirs[256][256];  /* 256 levels of dirs, max len each 256 chars */
+char *foo_file;
+int i = 0, j;
+X
+X	foo_file = *argv;
+X	strcpy(foo_dirs[i++], foo_file);
+X
+X	j=strlen(foo_file) - 1;
+X	do {
+X		if (foo_file[j] == '/')
+X			strncpy(foo_dirs[i++], foo_file, j);
+X	} while (--j > 0);
+X
+X	for (j = 0; j < i; j++)
+X		{
+X		if (stat(foo_dirs[j],&statb) < 0)
+X			continue;
+X		else if (!group) {
+X			if (statb.st_mode & W_TEST)
+X				exit(0);
+X			}
+X		else if (statb.st_mode & G_TEST)
+X			exit(0);
+X		}
+X
+X	exit(1);
+}
+#endif WRITABLE
+X
+X    /* test premissions on file in question */
+X    if (group) {
+X	xmode = statb.st_mode & G_TEST;
+X    } else {
+X	xmode = statb.st_mode & W_TEST;
+X    }
+X
+X    /* report finding */
+X
+X    if(verbose && xmode) {
+X	(void) printf( (group ? G_REPORT_STRING : W_REPORT_STRING), *argv);
+X    }
+X
+X    exit(!xmode);
+}
+FOO_BAR
+chmod 0600 beta/src/is_something.c ||
+echo 'restore of beta/src/is_something.c failed'
+Wc_c="`wc -c < 'beta/src/is_something.c'`"
+test 3206 -eq "$Wc_c" ||
+	echo 'beta/src/is_something.c: original size 3206, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/members.c ==============
+if test -f 'beta/src/members.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/members.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/members.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/members.c' &&
+/* Copyright 1985 Robert W. Baldwin */
+/* Copyright 1986 Robert W. Baldwin */
+static	char	*notice85 = "Copyright 1985 Robert W. Baldwin";
+static	char	*notice86 = "Copyright 1986 Robert W. Baldwin";
+X
+/*
+X * useage: members GroupName
+X * Writes to stdout the list of UserNames that are in the given group.
+X * The UserNames are separated by space or newline characters.
+X *
+X */
+X
+#include	<stdio.h>
+#include	<grp.h>
+#include	<pwd.h>
+X
+X
+#ifdef cray
+struct	group	*getgrnam();
+#endif
+X
+main(argc, argv)
+int	argc;
+char	*argv[];
+{
+X	int	i;
+X	int	gid;
+X	struct	group	*grent;
+X	struct	passwd	*pwent;
+X	char	**user;
+X
+/*
+X * Print the list of group members from /etc/group.
+X */
+X	if ((grent = getgrnam(argv[1])) == NULL)  {
+X		fprintf(stderr, "%s: Bad group name %s.\n",
+X			argv[0], argv[1]);
+X		exit(1);
+X		}
+X	gid = grent->gr_gid;
+X	for (user = grent->gr_mem ; *user != NULL ; user++)  {
+X		fprintf(stdout, "%s ", *user);
+X		}
+X	fprintf(stdout, "\n");
+X	endgrent();
+/*
+X * The passwd file must also be examined to find members of the group.
+X * Duplicates may occur, but the higher level code shouldn't care about them.
+X */
+X	while ((pwent = getpwent()) != NULL)  {
+X		if (pwent->pw_gid != gid)
+X			continue;
+X		fprintf(stdout, "%s ", pwent->pw_name);
+X		}
+X	fprintf(stdout, "\n");
+X	endpwent();
+}
+X
+FOO_BAR
+chmod 0600 beta/src/members.c ||
+echo 'restore of beta/src/members.c failed'
+Wc_c="`wc -c < 'beta/src/members.c'`"
+test 1258 -eq "$Wc_c" ||
+	echo 'beta/src/members.c: original size 1258, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/src/pass.c ==============
+if test -f 'beta/src/pass.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/src/pass.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/src/pass.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/src/pass.c' &&
+#include <stdio.h>
+#include <pwd.h>
+#include <ctype.h>
+X
+/* number of words the dictionary can suck up */
+#define ARB_CONST	32000
+X
+#ifndef lint
+static char *rcsid = "$Header: pwchkr.c,v 1.1 85/09/10 16:00:56 root Exp $";
+#endif
+X
+/*
+X * Warning: this program burns a lot of cpu.
+X */
+/*
+X * Insecure - find accounts with poor passwords
+X	Date: Tue, 29 Nov 83 18:19:32 pst
+X	From: leres%ucbarpa@Berkeley (Craig Leres)
+X
+X	Insecure is something that Jef Poskanzer and I wrote to rid a
+X	local system of an overly persistent ankle-biting adolescent.
+X	It was a quick hack we whipped up in just a few minutes and was
+X	never intended to be publically distributed. Unfortunately, I
+X	made the mistake of giving a copy to an associate at UC
+X	Berkeley. Apparently, he incorporated it in a security package
+FOO_BAR
+true || echo 'restore of beta/src/pass.c failed'
+fi
+echo 'End of  part 7'
+echo 'File beta/src/pass.c is continued in part 8'
+echo 8 > _shar_seq_.tmp
+exit 0

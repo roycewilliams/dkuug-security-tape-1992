@@ -1,0 +1,926 @@
+
+Network Working Group                                         B. Kaliski
+INTERNET-DRAFT                                   RSA Data Security, Inc.
+                                                             1 July 1991
+
+
+           Privacy Enhancement for Internet Electronic Mail:
+  Part IV: Notary, Co-Issuer, CRL-Storing and CRL-Retrieving Services
+
+
+STATUS OF THIS MEMO
+
+   This draft document will be submitted to the RFC editor as a protocol
+   specification. Comments should be sent to <pem-dev@tis.com> or to the
+   author. Distribution of this memo is unlimited.
+
+
+ACKNOWLEDGEMENT
+
+   This document is the product of many discussions at RSA Data
+   Security, Inc., at Trusted Information Systems, Inc., and on the
+   <pem-dev@tis.com> mailing list. Contributors include Dave Balenson,
+   Jim Bidzos, Pat Cain, Vint Cerf, Pam Cochrane, Steve Dusse, Jeff
+   Fassett, Craig Finseth, Jim Galvin, Mike Indovina, Bob Jueneman,
+   Steve Kent, John Lowry, Paul McKenney, Jeff Thompson, Charles Wu, and
+   several others.
+
+
+Table of Contents
+
+   1. Executive Summary                                                1
+   2. Terminology                                                      2
+   3. Overview                                                         3
+   4. Notary Service -- pem-notary                                     4
+   5. Co-Issuer Service -- pem-co-issuer                               7
+   6. CRL-Storing Service -- pem-crl-archive                          11
+   7. CRL-Retrieving Service -- pem-crl-server                        12
+   8. Other Services -- pem-info and pem-bug-report                   14
+   9. Areas for Further Study                                         14
+   10. Security Considerations                                        14
+   References                                                         14
+   Author's Address                                                   15
+   APPENDIX - Top-Level Certification Authorities                     16
+
+
+
+1. Executive Summary
+
+   This document describes four services that top-level certification
+   authorities (TLCAs) may provide in support of Internet Privacy-
+   Enhanced Mail [1-3]: notary certificate-signing services, co-issuer
+   certificate-signing and certificate revocation list (CRL)-signing
+   services, CRL-storing services, and CRL-retrieving services. The
+
+
+Kaliski                                                         [Page 1]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+   document specifies the forms for interacting by electronic mail with
+   TLCAs providing those services. It is intended as a reference for
+   TLCAs and for implementors of privacy-enhanced mail software; it is
+   not at the appropriate level for users, except for the CRL-retrieving
+   service. The document also lists TLCAs.
+
+   Certificate-signing services are provided on behalf of organizations
+   registered with a TLCA and for users not affiliated with registered
+   organizations; CRL-signing services are provided on behalf of
+   registered organizations. CRL-storing and CRL-retrieving services are
+   provided for all users. Registration of organizations, designation of
+   organizational notaries for Privacy-Enhanced Mail, and the paper
+   forms submitted in conjunction with electronic forms are outside the
+   scope of this document. Nevertheless, such information should be
+   available from TLCAs through the information service.
+
+   This Internet draft is proposed as a successor to the RFC
+   1113/1114/1115 Privacy-Enhanced Mail suite, describing procedures
+   required by the other proposed successors to those RFCs [4-6]. It is
+   expected that if this document and other proposed successors are
+   accepted as RFCs, then references in this document to the proposed
+   successors would be replaced by references to the new RFCs. This
+   document may be referred to as Internet draft [FORMS-C].
+
+
+2. Terminology
+
+   Most terms in this document, such as certificate, CRL, and privacy-
+   enhanced message, are defined in the proposed successors to RFCs
+   1113, 1114 and 1115 [4-6].
+
+
+2.1 Prototype Certificate
+
+   A prototype certificate has the same syntax as a certificate
+   (assuming the syntax given in the proposed successor to RFC 1114 [5])
+   but the following differences in semantics:
+
+     1.   The outer algorithm identifier (the one in the SIGNED
+          macro) identifies a hash algorithm. The hash algorithm
+          can be based on the issuer's signature algorithm, but it
+          need not be. For example, if the issuer's signature
+          algorithm is "rsaWithMD2" then the issuer's hash
+          algorithm can be "md2," but it need not be "md2."
+
+     2.   The signature (the one in the SIGNED macro) is the hash
+          of the "to-be-signed" field under the outer hash
+          algorithm.
+
+
+
+
+
+
+Kaliski                                                         [Page 2]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+2.2 Prototype CRL
+
+   A prototype CRL has the same syntax as a CRL (assuming the syntax
+   given in the proposed successor to RFC 1114 [5]) with the differences
+   in semantics outlined for prototype certificates.
+
+
+2.3 Prototype Privacy-Enhanced Message
+
+   A prototype privacy-enhanced message is a privacy-enhanced message
+   (assuming the syntax given in the proposed successor to RFC 1113 [4])
+   that contains a prototype certificate or a prototype CRL where a
+   "real" certificate or CRL would go. To be precise, a prototype
+   privacy-enhanced message can have the MIC-CLEAR, MIC-ONLY, or CRL
+   process type, as follows:
+
+     MIC-CLEAR or MIC-ONLY: For these process types, the privacy-
+          enhanced message should employ asymmetric cryptography;
+          the message-integrity check (MIC) algorithm should be
+          keyless (e.g., RSA-MD2, not MAC) so that the signature on
+          that message can be verified by anyone; and there should
+          be only one originator. The originator's "Certificate:"
+          field should contain the prototype certificate, and there
+          should not be any issuer certificates.
+
+     CRL: For this process type, there should be one or more "CRL:"
+          fields containing prototype CRLs. There should not be any
+          certificates or issuer certificates.
+
+   A prototype privacy-enhanced message is almost "real," in the sense
+   that once the prototype certificate or CRLs it contains are signed,
+   the privacy-enhanced message can be processed in the ordinary way.
+
+
+3. Overview
+
+   The key management infrastructure defined in the proposed successor
+   to RFC 1114 [5] in support of Internet Privacy-Enhanced Mail implies
+   that TLCAs support some of the following services:
+
+     1.   Notary service, or certificate-signing service on behalf
+          of users. The TLCA issues a certificate to a user under
+          the TLCA's NOTARY organizational unit.
+
+     2.   Co-issuer service, or certificate- and CRL-signing
+          services on behalf of organizations. The TLCA holds an
+          organization's private key and issues a certificate or a
+          CRL on behalf of the organization, as requested by an
+          organizational notary.
+
+     3.   CRL-storing and CRL-retrieving services. The TLCA stores
+          and retrieves CRLs.
+
+
+Kaliski                                                         [Page 3]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+   A TLCA may choose to support the first service or the second service
+   or both. A TLCA must support the third service as well as bug-report
+   and information services. Support of the third service must cover at
+   least those CRLs signed by the TLCA and by organizations to which the
+   TLCA issues certificates.
+
+   This document gives details on how TLCAs should implement these
+   services. All the services are based on electronic mail, although
+   TLCAs may require paper forms in addition. Six electronic-mail
+   addresses are defined:
+
+     pem-notary: for the notary service
+
+     pem-co-issuer: for the co-issuer service
+
+     pem-crl-archive: for the CRL-storing service
+
+     pem-crl-server: for the CRL-retrieving service
+
+     pem-bug-report: for bug reports
+
+     pem-info: for information
+
+   Replies to service requests are sent to the address identified in the
+   "Reply-To:" field of the request, and if that field is omitted, to
+   the address identified in the "From:" field.
+
+
+4. Notary Service -- pem-notary
+
+   The notary service (electronic-mail address "pem-notary") signs
+   certificates on behalf of users not affiliated with registered
+   organizations. Notary service can be requested by any user. Such
+   users are issued certificates under the TLCA's NOTARY organizational
+   unit, in accordance with the proposed successor to RFC 1114 [5].
+
+   The total process of accessing the notary service can be viewed in
+   three parts: request preparation, request processing, and reply
+   processing. This section describes those three parts, then gives
+   examples.
+
+
+4.1 Request Preparation
+
+   A user prepares a request for notary service by constructing a
+   prototype MIC-CLEAR or MIC-ONLY privacy-enhanced message with the
+   user as originator, where the privacy-enhanced message contains a
+   prototype certificate that the user wants the notary service to sign.
+
+   There are three substeps to this step:
+
+
+
+
+Kaliski                                                         [Page 4]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+     1.   The user constructs a prototype certificate containing
+          the user's distinguished name, the user's public key and
+          prototype (not necessarily final) information in the
+          other certificate fields. Here the issuer should be the
+          TLCA's NOTARY organizational unit. This step can be done
+          when the user generates a public-key/private-key pair, or
+          at a later time.
+
+     2.   The user prepares a prototype MIC-CLEAR or MIC-ONLY
+          privacy-enhanced message containing the prototype
+          certificate, some text, and the user's signature (with
+          the user's newly generated private key) on the text. Some
+          TLCAs may specify what the text of the message should be;
+          in general, it should be something innocuous but user-
+          specific like "This is a certificate for <name>."
+
+     3.   The user sends the result of step 2 to the notary
+          service.
+
+   The notary service may require that the user accompany a request with
+   a paper form or contract, and may require notarization of the form or
+   contract by a notary public or other trusted entity. Such procedures
+   are outside the scope of this document, but should be available
+   through the TLCA's information service.
+
+
+4.2 Request Processing
+
+   The notary service processes a request by replacing the prototype
+   certificate in the request with a signed version, and adding some
+   certificates. Thus the result of processing is an "ordinary" privacy-
+   enhanced message with the user as originator.
+
+   There are four substeps to this step:
+
+     1.   The notary service checks the user's signature on the
+          text of the message. If the signature check is
+          unsuccessful, processing stops.
+
+     2.   The notary service gives final values to fields of the
+          prototype certificate such as serial number, issuer name,
+          and validity period. The notary service does not change
+          the user's name or the user's public key, however.
+
+     3.   The notary service signs the revised prototype
+          certificate with the NOTARY organizational unit's private
+          key and replaces the prototype certificate in the user's
+          prototype privacy-enhanced message with the newly signed
+          certificate. The notary service also adds the NOTARY
+          unit's certificate to the message, and possibly some
+          pairs of cross-certificates to expand the audience that
+          can process the resulting message.
+
+
+Kaliski                                                         [Page 5]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+     4.   The notary service sends the result of step 3 to the user
+          (or other party as indicated by the "Reply-To:" address).
+          A separate error report, when necessary, is also sent to
+          this address.
+
+   The notary service may also send a paper reply to the user.
+
+
+4.3 Reply Processing
+
+   The recipient of the reply (typically the user) processes the reply
+   like any other privacy-enhanced message, which results in the newly
+   signed certificate and the other certifi-cates being inserted into
+   the recipient's database. The recipient can subsequently send the
+   reply to other users as a means of disseminating the new certificate.
+
+
+4.4 Examples
+
+   Following are an example request to the notary service, and an
+   example reply. Notice that the user's Originator-ID: field in both
+   the request and the reply omits the issuer name and serial number
+   subfields, since the values of those subfields are implied by the
+   prototype certificate or certificate. Those subfields can be included
+   or omitted, as the proposed successor to RFC 1113 [4] allows.
+
+To: pem-notary@tlca.domain
+From: user@host.domain
+
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 4,MIC-CLEAR
+Originator-ID: user@host.domain::
+Certificate: <user's prototype certificate>
+MIC-Info: <user's signature on text>
+
+<text>
+-----END PRIVACY-ENHANCED MESSAGE-----
+
+   Figure 1. Example request to notary service to sign a certificate.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kaliski                                                         [Page 6]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+To: user@host.domain
+From: pem-notary@tlca.domain
+
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 4,MIC-CLEAR
+Originator-ID: user@host.domain::
+Certificate: <user's newly signed certificate>
+Issuer-Certificate: <NOTARY organizational unit's certificate>
+MIC-Info: <user's signature on text>
+
+<text>
+-----END PRIVACY-ENHANCED MESSAGE-----
+
+  Figure 2. Example reply from notary service including a newly signed
+                              certificate.
+
+
+5. Co-Issuer Service -- pem-co-issuer
+
+   The co-issuer service (electronic-mail address "pem-co-issuer") signs
+   certificates and CRLs on behalf of registered organizations whose
+   private key the TLCA holds. Co-issuer service can be requested by any
+   organizational notary authorized by the TLCA.
+
+   A given organizational notary may be authorized to request co-issuer
+   service for more than one organization, and more than one
+   organizational notary may be authorized to request service for a
+   given organization. The association of organizational notaries with
+   organizations, and how a TLCA manages organizational notaries'
+   authorization, is outside the scope of this document.
+
+   The total process of accessing the co-issuer service can be viewed in
+   three parts: request preparation, request processing, and reply
+   processing. This section describes those three parts, then gives
+   examples.
+
+   Note. To avoid ambiguity, we note that an organizational notary is an
+   individual in an organization authorized by that organization and the
+   TLCA to request co-issuer service. The organizational notary is
+   distinct from the TLCA's NOTARY unit.
+
+
+5.1 Request Preparation
+
+   An organizational notary prepares a request for co-issuer service by
+   constructing a MIC-CLEAR or MIC-ONLY privacy-enhanced message with
+   the organizational notary as originator, where the text of the
+   privacy-enhanced message contains one or more prototype privacy-
+   enhanced messages. Each prototype privacy-enhanced message contains a
+   prototype certificate or one or more prototype CRLs that the
+   organizational notary wants signed.
+
+
+
+Kaliski                                                         [Page 7]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+   There are three substeps to this step:
+
+     1.   The organizational notary constructs, or otherwise
+          obtains, one or more prototype privacy-enhanced messages
+          containing prototype certificates and prototype CRLs that
+          are to be signed. Here the prototype certificates and
+          CRLs specify as issuer a registered organization on whose
+          behalf the organizational notary is authorized to request
+          co-issuer service.
+
+          It is intended that a prototype privacy-enhanced message
+          containing a prototype certificate follow the same
+          conventions as one a user sends to the notary service
+          (Section 4.1). A user's steps, consequently, are
+          essentially the same whether the user is affiliated with
+          a registered organization or not. The primary difference,
+          however, is that the co-issuer service does not change
+          any fields of the prototype certificate, whereas the
+          notary service may. Thus the organizational notary must
+          give final values to fields of the user's prototype
+          certificate. Similarly, the organizational notary must
+          give final values to fields of a prototype CRL.
+
+     2.   The organizational notary "notarizes" the prototype
+          privacy-enhanced messages by encapsulating them in a MIC-
+          CLEAR or MIC-ONLY privacy-enhanced message, with the
+          organizational notary as originator.
+
+     3.   The organizational notary sends the result of step 2 to
+          the co-issuer service.
+
+
+5.2 Request Processing
+
+   The co-issuer service processes a request by replacing the prototype
+   certificates and CRLs in the request with signed versions, and adding
+   some certificates. The result of processing is one or more privacy-
+   enhanced messages, "back to back."
+
+   There are four substeps to this step:
+
+     1.   The co-issuer service checks the organizational notary's
+          signature on the prototype privacy-enhanced message. If
+          the signature check is unsuccessful, processing stops.
+
+     2.   For each prototype private-enhanced message, the co-
+          issuer service does the following:
+
+          a.   If the prototype privacy-enhanced message contains a
+               prototype certificate, the co-issuer service checks
+               the user's signature on the text of the message. If
+
+
+
+Kaliski                                                         [Page 8]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+               the signature check is unsuccessful, processing of
+               the particular privacy-enhanced message stops.
+
+          b.   The co-issuer service signs the prototype
+               certificate or CRLs contained in the privacy-
+               enhanced message with the appropriate issuer's
+               private key and replaces the prototype certificate
+               or CRLs in the prototype privacy-enhanced messages
+               with the newly signed certificate or CRLs. The
+               notary service also adds the organization's
+               certificate to the messages, and possibly some pairs
+               of cross-certificates to expand the audience that
+               can process the resulting message.
+
+               The co-issuer service does not change any fields of
+               a prototype certificate or CRL before signing it.
+               The co-issuer service either signs a prototype
+               certificate or CRL verbatim, or, if any values are
+               erroneous, rejects the particular certificate or
+               CRL.
+
+     3.   The co-issuer service sends the result of step 2 to the
+          organizational notary (or other party as indicated by
+          "Reply-To:" address.) A separate error report, when
+          necessary, is also sent to this address.
+
+     4.   The co-issuer service sends newly signed CRLs resulting
+          from step 2 to the CRL-storing service described in
+          Section 6.)
+
+
+5.3 Reply Processing
+
+   The recipient of the reply (typically the organizational notary)
+   processes the reply like any other set of "back to back" privacy-
+   enhanced messages, which results in the newly signed certificates and
+   CRLs being inserted into the recipient's database. The recipient can
+   subsequently send the reply to other users as a means of
+   disseminating the new certificates and CRLs.
+
+
+5.4 Examples
+
+   Following are example requests to the co-issuer service (one to sign
+   a certificate, the other to sign a CRL), and example replies. Notice
+   that the user's Originator-ID: field encapsulated in the request and
+   the reply omits the issuer name and serial number subfields, as in
+   Section 4.4. The organizational notary's Originator-ID: field, on the
+   other hand, includes both subfields, since the organizational notary
+   does not include a certificate. The subfields can be included or
+   omitted, as the proposed successor to RFC 1113 [4] allows.
+
+
+
+Kaliski                                                         [Page 9]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+To: pem-co-issuer@tlca.domain
+From: organizational-notary@host.domain
+Reply-To: user@host.domain
+
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 4,MIC-CLEAR
+Originator-ID: organizational-notary@host.domain:
+ <organization's name>:<serial number>
+MIC-Info: <organizational notary's signature on prototype message>
+
+- -----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 4,MIC-CLEAR
+Originator-ID: user@host.domain::
+Certificate: <user's prototype certificate>
+MIC-Info: <user's signature on text>
+
+<text>
+- -----END PRIVACY-ENHANCED-MESSAGE-----
+-----END PRIVACY-ENHANCED MESSAGE-----
+
+ Figure 3. Example request to co-issuer service to sign a certificate.
+
+To: user@host.domain
+From: pem-co-issuer@tlca.domain
+
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 4,MIC-CLEAR
+Originator-ID: user@host.domain::
+Certificate: <user's newly signed certificate>
+Issuer-Certificate: <organization's certificate>
+MIC-Info: <user's signature on text>
+
+<text>
+-----END PRIVACY-ENHANCED MESSAGE-----
+
+Figure 4. Example reply from co-issuer service, including a newly signed
+                              certificate.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kaliski                                                        [Page 10]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+To: pem-co-issuer@tlca.domain
+From: organizational-notary@host.domain
+
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 4,MIC-CLEAR
+Originator-ID: organizational-notary@host.domain:
+ <organization's name>:<serial number>
+MIC-Info: <organizational notary's signature on prototype message>
+
+- -----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 4,CRL
+CRL: <prototype CRL>
+- -----END PRIVACY-ENHANCED MESSAGE-----
+-----END PRIVACY-ENHANCED MESSAGE-----
+
+     Figure 5. Example request to co-issuer service to sign a CRL.
+
+To: organizational-notary@host.domain
+Cc: pem-crl-archive@tlca.domain
+From: pem-co-issuer@tlca.domain
+
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 4,CRL
+CRL: <newly signed CRL>
+Certificate: <organization's certificate>
+-----END PRIVACY-ENHANCED MESSAGE-----
+
+Figure 6. Example reply from co-issuer service, including a newly signed
+                                  CRL.
+
+
+6. CRL-Storing Service -- pem-crl-archive
+
+   The CRL-storing service (electronic-mail address "pem-crl-archive")
+   stores CRLs. CRL-storing service can be requested by any user,
+   although it is expected that CRL-storing service will be requested
+   primarily by organizational notaries of organizations for which the
+   TLCA is not a co-issuer. The co-issuer service automatically sends
+   newly signed CRLs to the CRL-storing service, so organizational
+   notaries of organizations for which the TLCA is a co-issuer need not
+   use the CRL-storing service directly.
+
+   The total process of accessing the CRL-storing service can be viewed
+   in two parts: request preparation and request processing. There is no
+   significant reply processing, since a reply is just an
+   acknowledgement. This section describes those two parts, then gives
+   an example.
+
+
+
+
+
+
+
+Kaliski                                                        [Page 11]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+6.1 Request Preparation
+
+   A user or organizational notary prepares a request for CRL-storing
+   service by constructing a CRL-type privacy-enhanced message, where
+   the privacy-enhanced message contains CRLs that the user or
+   organizational notary wants stored. The user or organizational notary
+   sends the result to the CRL-storing service.
+
+
+6.2 Request Processing
+
+   The CRL-storing service stores the CRLs in the request, provided they
+   are valid, and replies with an acknowledgement (or an error report).
+
+
+6.3 Example
+
+   Following is an example request to the CRL-storing service and an
+   example reply.
+
+To: pem-crl-archive@tlca.domain
+From: organizational-notary@host.domain
+
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 4,CRL
+CRL: <CRL to be stored>
+-----END PRIVACY-ENHANCED MESSAGE-----
+
+    Figure 7. Example request to CRL-storing service to store a CRL.
+
+To: organizational-notary@host.domain
+From: pem-crl-archive@tlca.domain
+
+Your request to store a CRL for
+
+organizationalUnitName=Widgets Division, XYZ Inc., US
+
+has been processed successfully.
+
+           Figure 8. Example reply from CRL-storing service.
+
+
+7. CRL-Retrieving Service -- pem-crl-server
+
+   The CRL-retrieving service (electronic-mail address "pem-crl-server")
+   retrieves CRLs. CRL-retrieving service can be requested by any user.
+
+   A side-effect of this service is that current cross-certificate
+   pairs, and relevant current CRLs other than those requested, are made
+   available.
+
+
+
+
+Kaliski                                                        [Page 12]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+   The total process of accessing the CRL-retrieving service can be
+   viewed in three parts: request preparation, request processing, and
+   reply processing. This section describes those three parts, then
+   gives examples.
+
+
+7.1 Request Preparation
+
+   A user prepares a request for CRL-retrieving service by constructing
+   a message that contains distinguished names of one or more issuers,
+   separated by blank lines. The names are represented according to the
+   User-Friendly Name syntax [7]. The names identify the issuers whose
+   latest CRLs the user wants.
+
+
+7.2 Request Processing
+
+   The CRL-retrieving service processes a request by replacing the
+   issuer distinguished names in the request with the latest CRLs for
+   the issuers, and adding some certificates. The result of processing
+   is a CRL-type privacy-enhanced message containing one or more CRLs.
+   The CRL-retrieving service also adds the requested issuers'
+   certificates, possibly some pairs of cross-certificates, and other
+   relevant CRLs to expand the audience that can process the resulting
+   message.
+
+   The CRL-retrieving service sends a separate error report if
+   necessary.
+
+
+7.3 Reply Processing
+
+   The recipient of the reply processes the reply like any other CRL-
+   type privacy-enhanced message, which results in the CRLs being
+   inserted into the recipient's database. The recipient can
+   subsequently send the reply to other users as a means of
+   disseminating the CRLs.
+
+
+7.4 Examples
+
+   Following are an example request and an example reply. The request is
+   for the latest CRLs issued by RSA Data Security, Inc.'s TLCA and
+   NOTARY organizational units.
+
+
+
+
+
+
+
+
+
+
+Kaliski                                                        [Page 13]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+To: pem-crl-server@tlca.domain
+From: user@host.domain
+
+organizationalUnitName=TLCA, "RSA Data Security, Inc.", US
+
+organizationalUnitName=NOTARY, "RSA Data Security, Inc.", US
+
+  Figure 9. Example request to CRL-retrieving service to retrieve two
+                                 CRLs.
+
+To: user@host.domain
+From: pem-crl-server@tlca.domain
+
+-----BEGIN PRIVACY-ENHANCED MESSAGE-----
+Proc-Type: 4,CRL
+CRL: <latest CRL issued by RSA Data Security, Inc.'s TLCA unit>
+CRL: <latest CRL issued by RSA Data Security, Inc.'s NOTARY unit>
+Certificate: <RSA Data Security, Inc.'s NOTARY unit's certificate>
+-----END PRIVACY-ENHANCED MESSAGE-----
+
+  Figure 10. Example reply from CRL-retrieving service, including two
+                                 CRLs.
+
+
+8. Other Services -- pem-info and pem-bug-report
+
+   The information service (electronic-mail address: pem-info) provides
+   information about the TLCA's services, and the bug-report service
+   (electronic-mail address: pem-bug-report) receives reports on bugs in
+   the services.
+
+
+9. Areas for Further Study
+
+   One important area for further study is what services are needed for
+   certifying organizations for which the TLCA is not a co-issuer (in
+   particular, other TLCAs).
+
+
+10. Security Considerations
+
+   Some of the services described in this memo rely on the security of
+   Privacy-Enhanced Mail. In particular, the co-issuer service relies on
+   the trustworthiness of Privacy-Enhanced Mail purportedly signed by an
+   organizational notary.
+
+
+References
+
+     [1]  Linn, J., Privacy Enhancement for Internet Electronic
+          Mail: Part I -- Message Encipherment and Authentication
+          Procedures (RFC 1113), August 1989.
+
+
+Kaliski                                                        [Page 14]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+     [2]  Kent, S., and J. Linn, Privacy Enhancement for Internet
+          Electronic Mail: Part II -- Certificate-Based Key
+          Management (RFC 1114), August 1989.
+
+     [3]  Linn, J., Privacy Enhancement for Internet Electronic
+          Mail: Part III -- Algorithms, Modes, and Identifiers (RFC
+          1115), August 1989.
+
+     [4]  Linn, J., Privacy Enhancement for Internet Electronic
+          Mail: Part I: Message Encryption and Authentication
+          Procedures (Internet Draft), March 1991.
+
+     [5]  Kent, S., Privacy Enhancement for Internet Electronic
+          Mail: Part II: Certificate-Based Key Management
+          (unofficially, RFC [1114B]), February 1991.
+
+     [6]  Balenson, D., Privacy Enhancement for Internet Electronic
+          Mail: Part III: Algorithms, Modes, and Identifiers
+          (unofficially, RFC [1115B]), February 1991.
+
+     [7]  Kille, S.E., Using the OSI Directory to Achieve User
+          Friendly Naming (Internet Draft), January 1991.
+
+
+Author's Address
+
+   Burton S. Kaliski Jr.
+   RSA Data Security, Inc.
+   10 Twin Dolphin Drive
+   Redwood City, CA  94065
+   Phone: (415) 595-8782
+   FAX: (415) 595-1873
+   EMail: kaliski@rsa.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kaliski                                                        [Page 15]
+INTERNET-DRAFT           Mail Privacy: Services              1 July 1991
+
+
+
+APPENDIX - Top-Level Certification Authorities
+
+   This appendix lists TLCAs providing services described in this
+   document.
+
+
+A.1 RSA Data Security, Inc.
+
+   RSA Data Security, Inc. provides all six services described in this
+   document ("pem-notary," "pem-co-issuer," "pem-crl-archive," "pem-crl-
+   server," "pem-info," and "pem-bug-report") at the host "rsa.com." For
+   more information, including organizational contracts and paper re-
+   quest forms, write or call:
+
+          RSA Data Security, Inc.
+          10 Twin Dolphin Drive
+          Redwood City, CA  94065
+          Phone: (415) 595-8782
+          FAX: (415) 595-1873
+          EMail: pem-info@rsa.com
+
+   RSA Data Security, Inc. has both TLCA and NOTARY organizational
+   units. They are:
+
+     organizationalUnitName=TLCA, "RSA Data Security, Inc.", US
+
+   and
+
+     organizationalUnitName=NOTARY, "RSA Data Security, Inc.", US
+
+   Their public keys, respectively, are:
+
+     (to be supplied)
+
+   and
+
+     (to be supplied)
+
+   As of this writing, these services are NOT YET ACTIVE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kaliski                                                        [Page 16]

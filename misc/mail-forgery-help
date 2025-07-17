@@ -1,0 +1,133 @@
+From mojo!mimsy!haven!uflorida!rex!samsung!usc!zaphod.mps.ohio-state.edu!uakari.primate.wisc.edu!aplcen!wb3ffv!ka3ovk!raysnec!shwake Tue Jun  5 19:50:48 EDT 1990
+Article: 23377 of comp.unix.questions:
+Path: mojo!mimsy!haven!uflorida!rex!samsung!usc!zaphod.mps.ohio-state.edu!uakari.primate.wisc.edu!aplcen!wb3ffv!ka3ovk!raysnec!shwake
+>From: shwake@raysnec.UUCP (Ray Shwake)
+Newsgroups: comp.unix.questions
+Subject: Re: Unix mail files.
+Summary: A contrary opinion
+Message-ID: <38@raysnec.UUCP>
+Date: 29 May 90 15:44:42 GMT
+References: <23447@adm.BRL.MIL> <1163:May2719:09:5690@stealth.acf.nyu.edu>
+Reply-To: shwake@raysnec.UUCP (Ray Shwake)
+Distribution: na
+Organization: IRS - ACI Project Office
+Lines: 22
+
+In article <1163:May2719:09:5690@stealth.acf.nyu.edu> brnstnd@stealth.acf.nyu.edu (Dan Bernstein) writes:
+
+>Yep, exactly right. You'll also note that if a line in the text of a
+>message starts with From and a space, the mailer adds a > to the line;
+>that way mailreaders won't think that it starts a new message.
+>To be precise, the separator is "\n\nFrom ".
+
+The > prefix on lines beginning with From is also intended to cut down on
+mail forgeries. Also, while "\n\nFrom " is present BETWEEN messages, the
+mailer will often simply look at each line and, if it begins with "From "
+judge it to be the start of the next message. You can confirm this by
+eliminating the blank line between messages and see if your mailer still
+separates your messages.
+
+>There are other popular conventions for mail. The easiest to work with
+>has every message in a separate file; unfortunately, this also wastes
+>the most space.
+
+This is an arguable position. Separating messages certainly does waste
+more space, but makes for a more complex directory structure by requiring
+(for efficiency sake) a separate directory for each subject collection,
+and makes movement between messages horribly inefficient.
+
+
+From mojo!mimsy!haven!aplcen!samsung!zaphod.mps.ohio-state.edu!rpi!crdgw1!underdog!volpe Tue Jun  5 20:04:22 EDT 1990
+Article: 23474 of comp.unix.questions:
+Path: mojo!mimsy!haven!aplcen!samsung!zaphod.mps.ohio-state.edu!rpi!crdgw1!underdog!volpe
+>From: volpe@underdog.crd.ge.com (Christopher R Volpe)
+Newsgroups: comp.unix.questions
+Subject: Re: Unix mail files.
+Message-ID: <8129@crdgw1.crd.ge.com>
+Date: 1 Jun 90 17:50:18 GMT
+References: <23447@adm.BRL.MIL> <1163:May2719:09:5690@stealth.acf.nyu.edu>
+Sender: news@crdgw1.crd.ge.com
+Organization: General Electric Corporate R&D Center
+Lines: 20
+
+In article <1163:May2719:09:5690@stealth.acf.nyu.edu> brnstnd@stealth.acf.nyu.edu (Dan Bernstein) writes:
+>
+>Yep, exactly right. You'll also note that if a line in the text of a
+>message starts with From and a space, the mailer adds a > to the line;
+>that way mailreaders won't think that it starts a new message.
+>
+>To be precise, the separator is "\n\nFrom ".
+
+The SunOS mail program that I use doesn't seem to use that as
+a separator. I sent a message to myself containing "From me@here" in
+the body of the message after two carriage returns, and indeed the ">"
+was automatically inserted, but I directly edited my spool file 
+and removed the ">". When I invoked "mail" to read it, It didn't
+confuse the line in the text with the start of a new message,
+even though the ">" was no longer there. Could there be some
+control characters inserted somewhere?
+
+Chris Volpe
+G.E. Corporate Research and Development
+VOLPECR@CRD.GE.COM
+
+
+From mojo!mimsy!cvl!haven!adm!news Tue Jun  5 20:18:20 EDT 1990
+Article: 23513 of comp.unix.questions:
+Path: mojo!mimsy!cvl!haven!adm!news
+>From: rbottin@atl.calstate.edu (Richard John Botting)
+Newsgroups: comp.unix.questions
+Subject: Re: Unix mail files
+Message-ID: <23510@adm.BRL.MIL>
+Date: 3 Jun 90 05:23:19 GMT
+Sender: news@adm.BRL.MIL
+Lines: 46
+
+In article <1163:May2719:09:5690@stealth.acf.nyu.edu> brnstnd@stealth.acf.nyu.ed
+u (Dan Bernstein) writes:
+>
+>Yep, exactly right. You'll also note that if a line in the text of a
+>message starts with From and a space, the mailer adds a > to the line;
+>that way mailreaders won't think that it starts a new message.
+>
+>To be precise, the separator is "\n\nFrom ".
+Christopher R Volpe <volpe@underdog.crd.ge.com> adds
+>The SunOS mail program that I use doesn't seem to use that as
+>a separator. [...]
+>Could there be some control characters inserted somewhere?
+
+I would place small bet on 4 CTRL/A's
+because this is what about 50% of our mail system does at silicon.???.csusb.edu.
+The other half  doesn't put in these characters
+(Please don't ask me why - I assume insanity on the part of the programmers)
+(whio would doubtless prefer to reamin anonymous)
+
+The fun starts when a third process parses mail...this appears to use the
+FIRST line to determine what the seperator between the messages is.
+
+In consequence we often find 6 or 7 or messages all masquerading as a
+single one...
+
+I wrote a script to clean my mail out, then some others tried it as well.
+As of tonight it went into service from root - as a crontab...It reads:
+: clean dumb sentinels from mail files
+cd /usr/spool/mail
+for mbox in *
+do echo $mbox
+ed - $mbox <<++++ 2>/dev/null
+g//s///
+w
+q
+++++
+done
+
+By the way - g//s/// is not what it appears to be you'll have to insert
+4 CTRL/A's    ^here
+:-)
+Dr. Richard J Botting (The Aging Hacker)
+Computer Science Dept
+CalStateUniversity, San Bernardino.
+rbottin@atl.calstate.edu
+paaaaar@calstate.bitnet
+
+

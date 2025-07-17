@@ -1,0 +1,76 @@
+Authentication Working Group
+Chairpersons:  Jeff Schiller/MIT and Jon Rochlis/MIT
+
+
+
+
+
+CURRENT MEETING REPORT
+Reported by Jeff Schiller
+
+
+
+ATTENDEES
+
+
+       1. Carter, Glen/gcarter@ddn1.dca.mil
+
+       2. Cook, John/cook@chipcom.com
+
+       3. Galvin, James M./galvin@tis.com
+
+       4. Jerian, Chuck/cpj@eng.sun.com
+
+       5. Kincl, Norman/kincl@iag.hp.com
+
+       6. Lee, Young/youngl@jessica.stanford.edu
+
+       7. Leser, Norbert/nl@osf.org
+
+       8. LoVerso, John/loverso@xylogics.com
+
+       9. Mamakos, Louis/louie@trantor.umd.edu
+
+      10. McCloghrie, Keith/kzm@twg.com
+
+      11. Merritt, Don/don@brl.mil
+
+      12. Mundy, Russ/mundy@tis.com
+
+      13. Natalie, Ron/ron@rutgers.edu
+
+      14. Pak, Raylene/raylene@tardis.tymnet
+
+      15. Petry, Mike/petry@trantor.umd.edu
+
+      16. Rochlis, Jon/jon@mit.edu
+
+      17. Schiller, Jeff/jis@bitsy.mit.edu
+
+      18. Schofield, Bruce J./schofield@edn-vax.dca.mil
+
+      19. Tharenos, Michael/tharenos@jessica.stanford.edu
+
+
+MINUTES
+
+The AWG met briefly at the July IETF at Stanford.  The meeting was short and
+basically consisted of announcements.  The following was announced by
+myself:
+
+
+   o The IP Authentication Option document will be submitted as an Internet
+     Draft
+
+   o Work is progressing on a document entitled "Authentication and Privacy
+     in the SNMP" which attempts to address the issue of adding
+     authentication to SNMP. This document is currently being worked on by
+     its authors and should be ready to be circulated to the AWG on or
+     before the October IETF meeting.
+
+
+The next planned meeting of the AWG is for the October IETF.
+
+
+
+                                        1

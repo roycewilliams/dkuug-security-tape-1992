@@ -1,0 +1,1618 @@
+#!/bin/sh
+# this is p4.shar.15 (part 15 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/carp/carp.anlz continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 15; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/carp/carp.anlz'
+else
+echo 'x - continuing file cops_104/carp/carp.anlz'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/carp/carp.anlz' &&
+X/Group file, line.*onnumeric group id:/ {print FILENAME, check, testing "2"; next }
+X/Group file, line.*blank/ {print FILENAME, check, testing "2"; next }
+X/Group file, line.*does not have 4 fields:/ {print FILENAME, check, testing "2"; next }
+X/Group file, line.*nonalphanumeric user id:/ {print FILENAME, check, testing "2"; next }
+X/Group file, line.*group has password:/ {print FILENAME, check, testing "2"; next }
+X/Password Problem: Guessed:/ {print FILENAME, check, testing "2"; next }
+X/Password Problem: null passwd:/ {print FILENAME, check, testing "2"; next }
+X/Password file, line.*no password:/ {print FILENAME, check, testing "    2"; next }
+X/Duplicate uid.* found in/ {print FILENAME, check, testing "2"; next }
+X/Password file, line.*user.*has uid = 0 and is not root/ {print FILENAME, check, testing "2"; next }
+X/Password file, line.*nonalphanumeric login:/ {print FILENAME, check, testing "2"; next }
+X/Password file, line.*invalid login directory:/ {print FILENAME, check, testing "2"; next }
+X/Password file, line.*nonnumeric group id:/ {print FILENAME, check, testing "2"; next }
+X/Password file, line.*negative user id:/ {print FILENAME, check, testing "2"; next }
+X/Password file, line.*does not have 7 fields:/ {print FILENAME, check, testing "2"; next }
+X/Password file, line.*uid.*chars/ {print FILENAME, check, testing "2"; next }
+X/User.*home directory bar is not a directory!/ {print FILENAME, check, testing "2"; next }
+X/NFS file system.*exported with no restrictions!/ {print FILENAME, check, testing "2"; next }
+X/Root's umask set to/ {print FILENAME, check, testing "2"; next }
+X/is in roots path/ {print FILENAME, check, testing "2"; next }
+X/uudecode creates setuid files!/ {print FILENAME, check, testing "2"; next }
+X/ROOT owned SUID file/ {print FILENAME, check, testing "2"; next }
+X/UserSUID file is type/ {print FILENAME, check, testing "2"; next }
+X# ftp.chk's...
+X/should be in/ {print FILENAME, check, testing "2"; next }
+X/should exist/ {print FILENAME, check, testing "2"; next }
+X/Need user.*for anonymous ftp to work/ {print FILENAME, check, testing "2"; next }
+X/Home directory for ftp doesn't exist/ {print FILENAME, check, testing "2"; next }
+X/and.*oup.*are the same/ {print FILENAME, check, testing "2"; next }
+X/File.*is missing/ {print FILENAME, check, testing "2"; next }
+X/should be owned by.*or/ {print FILENAME, check, testing "2"; next }
+X/Incorrect permissions on "ls" in/ {print FILENAME, check, testing "2"; next }
+X/Incorrect permissions on "passwd" in/ {print FILENAME, check, testing "2"; next }
+X/Incorrect permissions on "group" in/ {print FILENAME, check, testing "2"; next }
+X/Anon-ftp directory.*is World Writable/ {print FILENAME, check, testing "2"; next }
+X
+X#
+X#  PRINT *SOMETHING* if can't find anything... just for the result file...
+X{if (check != "") print FILENAME, check, testing "3"; next }
+SHAR_EOF
+echo 'File cops_104/carp/carp.anlz is complete' &&
+chmod 0700 cops_104/carp/carp.anlz ||
+echo 'restore of cops_104/carp/carp.anlz failed'
+Wc_c="`wc -c < 'cops_104/carp/carp.anlz'`"
+test 5309 -eq "$Wc_c" ||
+	echo 'cops_104/carp/carp.anlz: original size 5309, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/carp/carp.table ==============
+if test -f 'cops_104/carp/carp.table' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/carp/carp.table (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/carp/carp.table (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/carp/carp.table' &&
+X#
+X# is going to accept input something like:
+X#
+X# cops_dir/architecture_dir/hostname/cops_report_file root.chk 2
+X#
+X#  Where the first field is the path to the report file (relative
+X# or absolute to the cops dir), the second is the check that generated
+X# the warning message, and the last is the warning level.
+X
+X#  This is something like what the final report will be:
+X#
+X# hostname     date crn dev ftp grp hme is pass msc pwd rc root usr
+X# ===================================================================
+X#             |    |   |   |   |   |   |   |   |   |   |   |   |
+X#
+X#  TO ADD NEW CHECKS -- just add a line near the bottom; bug.chk is
+X# used as an example.  Note you'll also have to add this to "carp" --
+X# see comments there, too...
+X#
+X# find the most serious problems
+X{
+Xif (type[$2] == "")     type[$2] = $3
+Xelse if (type[$2] > $3) type[$2] = $3
+X# print "type:", $2, $3, "now", type[$2]
+X
+X# something like "arch/hostname/1992_Dec_31" or "hostname/1992_Dec_31", etc.
+X# print "one, Line:", $1, ",", $0
+Xif (final == "") {
+X	res=split($1, host_date, "/");
+X
+X	if (res >= 2) {
+X		host = sprintf("%s",host_date[res-1])
+X		date = sprintf("%s",host_date[res])
+X		}
+X	else if (res == 1) {
+X		host = "unknown"
+X		date = sprintf("%s",host_date[res])
+X		}
+X	else {
+X		host = "unknown"
+X		date = "unknown"
+X		}
+X
+X	host_len=length(host)
+X	date_len=length(date)
+X	diff = 25 - date_len - host_len
+X
+X	final=sprintf("%s", host)
+X	for (j=1; j < diff; j++)
+X		final=sprintf("%s ",final);
+X	final=sprintf("%s%s", final, date)
+X	}
+X}
+X
+X#
+X#
+X#  Final printing, etc...
+XEND {
+Xprintf("%s  |", final)
+X
+Xfor (i in type)
+X	if (type[i] == 3) type[i] = " "
+X
+Xif (type["cron.chk"] != "") { printf(" %s |", type["cron.chk"]) }
+Xelse printf(" ? |")
+Xif (type["dev.chk"] != "") { printf(" %s |", type["dev.chk"]) }
+Xelse printf(" ? |")
+Xif (type["ftp.chk"] != "") { printf(" %s |", type["ftp.chk"]) }
+Xelse printf(" ? |")
+Xif (type["group.chk"] != "") { printf(" %s |", type["group.chk"]) }
+Xelse printf(" ? |")
+Xif (type["home.chk"] != "") { printf(" %s |", type["home.chk"]) }
+Xelse printf(" ? |")
+Xif (type["is_able.chk"] != "") { printf(" %s |", type["is_able.chk"]) }
+Xelse printf(" ? |")
+Xif (type["pass.chk"] != "") { printf(" %s |", type["pass.chk"]) }
+Xelse printf(" ? |")
+Xif (type["misc.chk"] != "") { printf(" %s |", type["misc.chk"]) }
+Xelse printf(" ? |")
+Xif (type["passwd.chk"] != "") { printf(" %s |", type["passwd.chk"]) }
+Xelse printf(" ? |")
+Xif (type["rc.chk"] != "") { printf(" %s |", type["rc.chk"]) }
+Xelse printf(" ? |")
+Xif (type["root.chk"] != "") { printf(" %s |", type["root.chk"]) }
+Xelse printf(" ? |")
+Xif (type["user.chk"] != "") { printf(" %s |", type["user.chk"]) }
+Xelse printf(" ? |")
+Xif (type["kuang"] != "") { printf(" %s |\n", type["kuang"]) }
+Xelse print " ? |"
+X
+X#  Note -- if adding this, change the last line above to *not* print
+X# a newline; e.g. take the "\n" out of the printf, and make the
+X# last "print" a printf like the rest of 'em.
+X#
+X# if (type["bug.chk"] != "") { printf(" %s |\n", type["bug.chk"]) }
+X# else print " ? |"
+X}
+SHAR_EOF
+chmod 0700 cops_104/carp/carp.table ||
+echo 'restore of cops_104/carp/carp.table failed'
+Wc_c="`wc -c < 'cops_104/carp/carp.table'`"
+test 2995 -eq "$Wc_c" ||
+	echo 'cops_104/carp/carp.table: original size 2995, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/carp/carp.awk ==============
+if test -f 'cops_104/carp/carp.awk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/carp/carp.awk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/carp/carp.awk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/carp/carp.awk' &&
+XBEGIN { LPP=40; line=0; }
+X
+X/COPS/ {
+X  printf ("/title (%s) def\n",$0);
+X}
+X
+X/hostname/ {
+X  #assume first three fields are "hostname     rep date"
+X  printf "/headray [ ";
+X  for (f=4; f <= NF; ++f) {
+X    printf ("(%s) ",$f);
+X  }
+X  print "] def";
+X  printf ("/numcols %d def\n",NF-3);
+X  print "dotitle";
+X  print "doheader";
+X  FS = "|"
+X}
+X
+X/\|/ {
+X  ++line;
+X  #assumes spaces not tabs
+X  host=substr($1,0,index($1," ")-1);
+X  date=substr($1,index($1," "));
+X  #breaks in the year 2000
+X  date=substr(date,index(date,"1"));
+X  date=substr(date,0,index(date," ")-1);
+X
+X  printf ("(%s) (%s) newline\n",host,date);
+X  for (f=2; f <= NF; ++f) {
+X    if ($f == 0) print "  dofull";
+X    else if ($f == 1) print "  dohalf";
+X    else if ($f == 2) print "  doempty";
+X    else print "  donothing";
+X  }
+X}
+X
+Xline != 0 && line%LPP == 0 {
+X  print "showpage";
+X  print "";
+X  print "dotitle";
+X  print "doheader";
+X}
+X
+XEND { print "showpage" }
+SHAR_EOF
+chmod 0700 cops_104/carp/carp.awk ||
+echo 'restore of cops_104/carp/carp.awk failed'
+Wc_c="`wc -c < 'cops_104/carp/carp.awk'`"
+test 905 -eq "$Wc_c" ||
+	echo 'cops_104/carp/carp.awk: original size 905, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/carp/carp.anlz.1 ==============
+if test -f 'cops_104/carp/carp.anlz.1' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/carp/carp.anlz.1 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/carp/carp.anlz.1 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/carp/carp.anlz.1' &&
+X.TH CARP.ANLZ 1 "Feb 15, 1992"
+X.UC 4
+X.SH NAME
+Xcarp.anlz \- an awk program run internally by \fIcarp\fP(1)
+X.SH SYNOPSIS
+X.B \fIawk\fP \-f carp.anlz
+X.SH DESCRIPTION
+X.I carp.anlz
+Xis an awk program that helps transform \fIcops\fP(1) output into
+Xa report file; it is run internally by \fIcarp\fP.
+XThere are two basic kinds of lines used in this program -- one is
+Xa check to see if a problem exists, and the other is an exception
+Xline that will ignore any warning line that matches it.
+XThe order that the lines appear is very important, since normally
+Xwhen a match is found, the rest of the checks for that line are skipped. 
+XThe checks are nothing more than regular expressions that match
+Xan arbitrary line of \fIcops\fP output, and that ouput the report file
+Xthat is being checked, the \fIcops\fP check that the warning was
+Xfound in, and finally the severity code assigned to the warning (0 is
+Xproblem that can gain root access almost instantly, 1 is a perhaps
+Xlesser, but still serious problem, and a 2 is a problem of unknown
+Xseverity.)  For instance:
+X
+X.nf
+X# level 0 checks:
+X/A "+" entry in/ {print FILENAME, check, testing "0"; next }
+X# level 1 checks:
+X/User.*home directory.*is mode/ {print FILENAME, check, testing "1"; next }
+X# level 2 checks:
+X/is _World_ writable!/ {print FILENAME, check, testing "2" }
+X.fi
+X.PP
+XNote that wildcards are not always neccessary (and they slow
+Xdown the pattern matching, as well.)  The first matches the "+" in
+Xhosts.equiv warning, the second matches a user with a home
+Xdirectory with a "bad" mode, and the last matches any warning that
+Xsays something is world writable.
+X.PP
+XSimilarily, exceptions are also simple lines of awk code; they
+Xdo not print anything out, however, they merely tell the program
+Xto skip the line altogether -- presumably, because you know the
+Xwarning is superfluous, or that it is of little consequence to the
+Xoverall security of your system, or that you don't mind taking the
+Xrisk that the potential problem offers.  They are usually placed at the
+Xtop of the file, since they do no good if the the warning is first,
+Xbecause they will never be reached.
+X
+X.nf
+X/Warning!  \\/usr\\/spool\\/mail is _World_ writable!/ {next}
+X.fi
+X.PP
+XHint -- make sure you backquote forward slashes, as in a path names.
+X
+X.SH SEE ALSO
+Xcarp(1)
+X.SH BUGS
+XAny line not matched by a pattern will be ignored.
+SHAR_EOF
+chmod 0644 cops_104/carp/carp.anlz.1 ||
+echo 'restore of cops_104/carp/carp.anlz.1 failed'
+Wc_c="`wc -c < 'cops_104/carp/carp.anlz.1'`"
+test 2334 -eq "$Wc_c" ||
+	echo 'cops_104/carp/carp.anlz.1: original size 2334, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/carp/carp2ps ==============
+if test -f 'cops_104/carp/carp2ps' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/carp/carp2ps (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/carp/carp2ps (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/carp/carp2ps' &&
+X#!/bin/sh
+X#
+X# carp2ps carp_result_file
+X#
+X#   CARP 2 Postscript converter -- takes a carp text output file
+X# (or standard in) and converts it to postscript output.
+X#
+XAWK=/bin/awk
+XCAT=/bin/cat
+XTEST=/bin/test
+XECHO=/bin/echo
+XRM=/bin/rm
+Xcarp_awk="./carp.awk"
+X
+Xif $TEST $# -ne "1" -o ! -f "$1" ; then
+X	$ECHO "Usage: $0 carp_result_file"
+X	exit 2;
+X	fi
+Xcarp_ps="$1.ps"
+X
+X$CAT > $carp_ps << EO_PS
+X%!
+X
+X%set line height to 40 lines per page, assuming 50 point borders
+X/lineht 692 40 div def
+X/col1 80 def
+X/col2 160 def
+X/col3 240 def
+X
+X/colwd {
+X  612 col1 sub col3 sub numcols div
+X} def
+X
+X/dotitle {
+X  /y 742 def
+X  /Times-Roman findfont 20 scalefont setfont
+X  title stringwidth pop 2 div 306 exch sub y moveto
+X  title show
+X} def
+X
+X/doheader {
+X  /y y 42 sub def
+X  /Times-Roman findfont 12 scalefont setfont
+X  col1 y moveto (Hostname) show
+X  col2 y moveto (Report Date) show
+X  /Times-Bold findfont 12 scalefont setfont
+X  /x col3 def
+X  1 2 numcols {
+X    pop
+X    newpath
+X    x y 4 sub moveto 0 lineht rlineto colwd 0 rlineto 0 lineht neg rlineto
+X    closepath 0.85 setgray fill 0 setgray
+X    /x x colwd 2 mul add def
+X  } for
+X  /x col3 def
+X  1 1 numcols {
+X    x y moveto
+X    headray exch 1 sub get
+X    dup stringwidth pop /w exch def
+X    w colwd 1 sub gt {
+X      0.5 0 rmoveto
+X      gsave colwd 1 sub w div 1 scale show grestore
+X    } {
+X      w 2 div neg colwd 2 div add 0 rmoveto
+X      show
+X    } ifelse
+X    /x x colwd add def
+X  } for
+X  /y y 4 sub def
+X  gsave 1.5 setlinewidth col1 y moveto 612 col1 sub y lineto stroke grestore
+X} def
+X
+X/newline {
+X  /Times-Roman findfont 12 scalefont setfont
+X  /y y lineht sub def
+X  exch
+X  col1 y moveto show
+X  col2 y moveto show
+X  /x col3 def
+X  1 2 numcols {
+X    pop
+X    newpath
+X    x y 2 sub moveto 0 lineht rlineto
+X      colwd 0 rlineto 0 lineht neg rlineto
+X      closepath 0.85 setgray fill 0 setgray
+X    /x x colwd 2 mul add def
+X  } for
+X  /x col3 def
+X} def
+X
+X/donothing {
+X  /x x colwd add def
+X} def
+X
+X/dofull {
+X  newpath
+X  x colwd 2 div add y 6 add 6 0 360 arc gsave fill grestore stroke
+X  /x x colwd add def
+X} def
+X
+X/dohalf {
+X  newpath
+X  x colwd 2 div add y 6 add 6 0 360 arc gsave 1 setgray fill grestore stroke
+X  x colwd 2 div add y 6 add 6 180 360 arc
+X  closepath fill
+X  /x x colwd add def
+X} def
+X
+X/doempty {
+X  newpath
+X  x colwd 2 div add y 6 add 6 0 360 arc gsave 1 setgray fill grestore stroke
+X  /x x colwd add def
+X} def
+X
+X0.5 setlinewidth
+XEO_PS
+X
+X# tack on the real results:
+X$AWK -f $carp_awk $1 >> $carp_ps
+X
+X# done
+SHAR_EOF
+chmod 0700 cops_104/carp/carp2ps ||
+echo 'restore of cops_104/carp/carp2ps failed'
+Wc_c="`wc -c < 'cops_104/carp/carp2ps'`"
+test 2433 -eq "$Wc_c" ||
+	echo 'cops_104/carp/carp2ps: original size 2433, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/carp/carp2ps.1 ==============
+if test -f 'cops_104/carp/carp2ps.1' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/carp/carp2ps.1 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/carp/carp2ps.1 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/carp/carp2ps.1' &&
+X.TH CARP2PS 1 "Feb 13, 1992"
+X.UC 4
+X.SH NAME
+Xcarp2ps \- Converts \fIcarp\fP(1) output into postscript code.
+X.SH SYNOPSIS
+X.B carp2ps
+Xcarp_result_filename
+X.SH DESCRIPTION
+X.I carp2ps
+Xreads a standard \fIcarp\fP(1) input file and emits postscript.
+X.SH SEE ALSO
+Xcarp(1)
+X.SH BUGS
+XAssumes correct carp output as its input.
+SHAR_EOF
+chmod 0644 cops_104/carp/carp2ps.1 ||
+echo 'restore of cops_104/carp/carp2ps.1 failed'
+Wc_c="`wc -c < 'cops_104/carp/carp2ps.1'`"
+test 315 -eq "$Wc_c" ||
+	echo 'cops_104/carp/carp2ps.1: original size 315, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/carp/README ==============
+if test -f 'cops_104/carp/README' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/carp/README (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/carp/README (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/carp/README' &&
+X
+XCARP (COPS Analysis and Report Program)
+X
+X  A new idea for cops... at usenix, everyone was griping about big
+Xnetworks, and how to keep an eye on things, so I thought of a potential
+Xpartial solution...
+X
+X  IMPORTANT!!!  The program described here will *ONLY* work on cops
+Xreport files if the report files were created with the "-v" flag to cops!
+X
+X  Let's assume you use cops (or this won't do you a hell of a lot of
+Xgood :-)) on your network.  You use NFS to mount the cops stuff, or
+Xyou just mail/copy the report files back to the cops directory;
+Xassume you have something like:
+X
+X/path/to/cops ----  sun3_subdirectory_with_binaries (and subdirs sun3a,
+X              \                    sun3b, etc., each holding result files)
+X               \
+X                \--  sun4_subdir (+subdirs...)
+X                 \
+X                  \-- dec_mips_subdir (+...)
+X                   \
+X                    \-- ad nausaeum.
+X
+X  Here's what happens; carp does a 'find' on the cops dir for all sub-
+Xdirectories containing the standard "year_month_day" types of cops report
+Xfiles.  This gives a list of all the subdirs (e.g. hosts) that have cops
+Xreports in them.  I then take the newest one in each directory, scan it for
+Xproblems, and then output a summary that looks something like this (a 0 == a
+Xproblem that gives instant root access, 1 == a miscellaneous serious problem
+X(guessed password, whatever), 2 == who knows -- something cops reports
+Xbut I can't determine on an arbitrary machine (/etc/foo world writable,
+Xor whatever)):
+X
+XCOPS warning summary, Mon Jan 27 16:47:42 PST 1992
+X
+Xhostname      rep date     crn dev ftp grp hme is pass msc pwd rc  rot usr
+X===========================================================================
+Xsunshine     1992_Jan_14  |   |   |   |   | 1 | 2 |   |   | 2 | 2 | 2 |   |
+Xrayban       1992_Jan_26  | 1 |   |   | 2 |   | 2 |   |   | 2 | 2 | 2 | 1 |
+Xneuromancer  1992_Jan_27  |   |   | 2 |   | 1 | 2 |   |   | 2 | 2 | 2 |   |
+Xsun          1992_Jan_26  |   |   | 2 | 2 | 1 | 2 |   |   | 2 | 2 |   | 1 |
+Xfoo_eng      1992_Jan_26  |   | 2 |   |   |   | 2 |   |   |   | 2 |   |   |
+Xdeath        1992_Jan_15  |   |   |   | 2 | 1 | 2 |   |   | 2 | 2 | 0 |   |
+X
+X  This way you can scan your whole net at a glance, and see where the most
+Xserious and/or reoccuring problems are on your net (the number in the
+Xcolumns gives you the most serious warning of the check in question, of
+Xcourse.)  The X version ("xcarp") of this program (due out within a
+Xmonth or so) will do the same thing, plus you'll be able to click on a
+Xhost or host problem area and have it pull up the host report(s); click on
+Xa specific problem header, you get the report for that problem (guessed
+Xpasswords, whatever.)  Instead of numbers, it uses round circles (filled,
+Xhalf filled, or empty, corresponding to 0, 1, 2.)
+X
+X  The key is that all of the numbers are generated by awk filters that
+Xare easily modifiable, and include an exception filter handling device
+Xto delete things you don't want to hear about; for instance, if you run
+Xtftp, know about it, and don't *care* that COPS keeps bitching about it,
+Xyou can put a line in the report generating file like:
+X
+X/tftp is enabled on/ { next }
+X
+X  That says everytime that (regexp) line is encountered, awk will just
+Xskip over it, so it won't trigger the usual warning on the summary sheet.
+XCaution, though, this is real awk code, so position is important in the file --
+Xfor instance, to check for tftp, the filter has a line like:
+X
+X/tftp is enabled on/ {print FILENAME, check, "1"; next }
+X
+X  ("1" is the warning level it prints out.)  If you put the first line
+Xafter the second line, then it will never see the second line, since
+Xthe "next" says to go to the next line in the cops result file.  "*"'s
+Xand "?"'s and the lot are all cool, of course, since it's all in awk,
+Xbut they slow things down, of course.  It's deathly slow right now --
+Xabout 10 seconds to process each host on a sparc2, but speed doesn't
+Xmatter that much here, IMHO (plus I can optimize it by just moving
+Xaround the regexp's in awk (that's what sucks in all the time) and/or
+Xrewriting the code.  Try using [gmn]awk for a bit of speed increase
+Xas well.
+X
+X  Now you can read the man page :-)
+X
+SHAR_EOF
+chmod 0600 cops_104/carp/README ||
+echo 'restore of cops_104/carp/README failed'
+Wc_c="`wc -c < 'cops_104/carp/README'`"
+test 4199 -eq "$Wc_c" ||
+	echo 'cops_104/carp/README: original size 4199, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/carp/How2Change ==============
+if test -f 'cops_104/carp/How2Change' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/carp/How2Change (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/carp/How2Change (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/carp/How2Change' &&
+X
+X  To add or delete checks to the base model, you'll need to add or delete
+Xtwo lines near the bottom of carp.table (see comments in that file as
+Xto exact instructions.)  In addition, you'll also have to add/delete the
+Xcheck to "carp" too; see comments in that source file for more info.  Both
+Xfiles use "bug.chk" as a sample program you may wish to add in the check.
+X
+X  Why would you want to add/delete stuff?  Well, bug.chk isn't there
+Xby default, and other checks may or may not apply.  Use your own judgment,
+Xas always...
+X
+SHAR_EOF
+chmod 0600 cops_104/carp/How2Change ||
+echo 'restore of cops_104/carp/How2Change failed'
+Wc_c="`wc -c < 'cops_104/carp/How2Change'`"
+test 526 -eq "$Wc_c" ||
+	echo 'cops_104/carp/How2Change: original size 526, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/shadow.sh ==============
+if test ! -d 'cops_104/perl'; then
+    echo 'x - creating directory cops_104/perl'
+    mkdir 'cops_104/perl'
+fi
+if test -f 'cops_104/perl/shadow.sh' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/shadow.sh (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/shadow.sh (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/shadow.sh' &&
+X#!/bin/sh
+X#
+X#  Usage: shadow.stuff
+X#
+X#   Extracts the correct info from shadow pass to use for processing with
+X# the rest of the perl stuff
+X#
+X#   The way you use this is just to type "shadow.stuff > tempfile";
+X# this will create a file, "tempfile" (or whatever), that *should*
+X# be the equivalent to a normal password file.  Of course, you'll have
+X# to run this as root so that you can read the shadow password file.
+X
+Xshadow=/etc/shadow
+Xpasswd=/etc/passwd
+Xfoo_pass=./shadow.tmp.$$
+X
+X# foo_pass=shadow.pass
+X
+Xcat $passwd $shadow | sort > $foo_pass
+X
+Xawk -F: '{parray[$1] = $0":"parray[$1]} END { \
+X	for (line in parray) { \
+X		nf=split(parray[line], pline, ":"); \
+X		if (pline[9] != "LOCKED" && nf == 13) {
+X			print pline[1]":"pline[9]":"pline[3]":"pline[4]":" \
+X			pline[5]":"pline[6]":"pline[7]; \
+X		      	} \
+X		      } \
+X		}' $foo_pass
+Xrm $foo_pass
+X
+SHAR_EOF
+chmod 0600 cops_104/perl/shadow.sh ||
+echo 'restore of cops_104/perl/shadow.sh failed'
+Wc_c="`wc -c < 'cops_104/perl/shadow.sh'`"
+test 849 -eq "$Wc_c" ||
+	echo 'cops_104/perl/shadow.sh: original size 849, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/README.kuang ==============
+if test -f 'cops_104/perl/README.kuang' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/README.kuang (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/README.kuang (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/README.kuang' &&
+XThis is a perl version of Dan's version of Bob Baldwin's Kuang program
+X(originally written as some shell scripts and C programs). 
+X
+XThe original intent was to improve the speed of kuang, which is
+Xespecially important for installations like ours with several thousand
+Xaccounts and NFS things and all that.  The shell version of Kuang used
+XC programs to add rules, get a groups members, determine the writers
+Xof a file, and so on, which really slowed things down.
+X
+X		"no" problems	/etc staff writeable
+X		-------------	--------------------
+Xshell kuang	2:14 (14)	12:26 (98)	0.1 p/s
+Xperl kuang	1:10 (18)	 2:34 (588)	3.8 p/s
+X
+X--- Steve Romig, CIS, Ohio State, October 1990
+X
+X------------------------------------------------------------------------------
+X
+XSome Features
+X---- --------
+X
+X  Caches passwd/group file entries in an associative array for faster
+X  lookups.  This is particularly helpful on insecure systems using YP
+X  where password and group lookups are slow and you have to do alot of
+X  them...:-)
+X
+X  Can specify target (uid or gid) on command line.
+X
+X  Can use -l option to generate PAT for a goal.
+X
+X  Can use -f to preload file owner, group and mode info, which is
+X  helpful in speeding things up and in avoiding file system
+X  'shadows'...  See the man page for details.
+X
+XFuture plans, things to fix:
+X----------------------------
+X
+X- In a large environment (like ours, 260+ machines, 30+ file systems
+X  on as many servers, 2000 password file entries served by YP) it
+X  would be nice to 'precompute' successful plans that would be common
+X  to all systems.  In particular, plans for becoming most of the users
+X  with home directories on the NFS file systems would be useful, since
+X  we don't really want to recheck these on each host.  You wouldn't
+X  want the plan to be too deep - probably shouldn't span more than 2
+X  uids (1 on each end: grant u.romig grant g.staff write ~foo/.login
+X  grant u.foo).  I'm thinking that you could feed a list of these
+X  precomputed plans to kuang and add some code that causes it to
+X  splice in relevent plans where it can to short cut the planning
+X  steps.  For example, if one of the plans in uids.next is something
+X  like "grant u.foo ...", and I have the precomputed plan mentioned
+X  above, I could splice the two: "grant u.romig grant g.staff write
+X  ~foo/.login grant u.foo ..." and skip all the normal steps that
+X  would've been taken to get there.
+X
+X- Hmmm...thinking about it, it seems like some of the steps are a bit
+X  too implicit...maybe the rules should be broken out a bit more.
+X  That will cost in processing time, though.
+X
+X- Would be really, really nice to be able to deal with PATH variables
+X  - location of ., who can write elements of path, etc.  Basic rule is
+X  "anyone who can replace anything in any of path directories or the
+X  path directories themselves can become that PATH's user..."  This
+X  can be really messy though - in our environment, the path for a user
+X  will depend on the architecture type of the machine that he is
+X  logged into, and to get the path, you'd have to read and interpret
+X  his .login (including variable assignments, source's and
+X  conditionals).  Urf.  One wonders whether it might be better to have
+X  something running as root that su's to each username in turn and
+X  gets the path that way...
+X
+X- ignore plans that start with "uid root", unless that's the only element - root
+X  can get to anything, and hopefully nothing can get to root...?
+X
+X- remove duplicate names from uid2names and gid2names...
+X
+X- with ~/.login world writeable - only follows group path, but not OTHER.
+X
+X- add plans to asseccible list.
+X
+XDone
+X----
+X
+X- Need to find all plans that lead to compromise, not just a plan.
+X
+X- An earlier version scanned the password file looking for generally
+X  accesible accounts (no password), which would be added to the
+X  uids.known list (in addition to -1, "other").  I had planned on also
+X  adding a password checker which would allow us to also add accounts
+X  with easily guessed passwords.  Eventually I nuked the code that
+X  scanned the password file to speed things up, and further reflection
+X  reveals that it isn't wise to add the password scanning to kuang
+X  itself.  At some point we should add a comand line option that
+X  allows us to add additional uid's (or gid's?) to the uids.known
+X  list.  That way the user could run some other tool to scan the
+X  password file and generate a list of accessible accounts, which
+X  could then be fed to kuang.  Makes it faster on clients using YP
+X  since most of the password file is the same for all N clients, why
+X  scan it N times.  Means that user can do smarter things to/with the
+X  password file checks (list all accounts with no password or easily
+X  guessed password, filter out "ok" entries (eg, sync) and etc.)
+X
+X- We aren't dealing with uid's and gid's correctly.  If there are
+X  several entries that list the same UID, but with different names,
+X  directories and shells, we'll only check plans for becoming one of
+X  them, rather than any of them.  Hmmm...this is easier than I
+X  thought, when we evaluate some plan for granting a particular uid,
+X  we need to evaluate plans for all usernames that can become that
+X  uid.  Just stick a loop in there somewhere...get CF's for each of
+X  username's in turn.  Bah, harder than I thought, since it'd have to
+X  scan the whole password file to figure which username/home directories
+X  can become which uid's.  Similarly with groups.
+X
+X  Current plan: by default, kuang will have to scan the whole password
+X  and group files so it can be sure to get all possible ways to become
+X  some uid or gid.  Internally, really need several lists:
+X
+X	mapping from uid to list of usernames that have that uid
+X	mapping from a username to home directory, shell
+X	mapping from gid to list of uids that have access to that
+X	  gid when they login (either member of group with that gid or
+X	  given as login group in passwd file)
+X	mapping from gid to list of group names for that gid
+X
+X  Course, this means that we have to read the whole password and group
+X  file, most of which will be common to many machines (like in a YP
+X  environment).  We could preload the tables above from files created
+X  once, containing the brunt of the YP info, and then augment that
+X  withthe local passwd and group info on each host when kuang is
+X  invoked, but then we need to correctly interpret funky YP things
+X  like +@netgroup:::*:..., which means that the uid has a name but no
+X  password here...and similarly with shell substitutions and so on.
+X  Bah. 
+X
+X- The kuang described in Baldwin's dissertation is somewhat different
+X  in nature from this one.  The original computes a Privilege Access
+X  Table (PAT) which describes for each uid and gid which uids have
+X  access to that uid.  To assess security, we compare this against the
+X  security policy for the site, which similarly describes which uid's
+X  are supposed to have access to each uid and gid.  A sample SP might
+X  be that each uid should be accessible only by itself and root, and
+X  each gid should be accessible only to the members of that group and
+X  root.  If the PAT listed additional uid's for some priv, that would
+X  constitute a violation of the Security Policy for the site.
+X
+X  The current kuang is different.  It registers Success (a problem was
+X  found) if it determines that some uid in the uids.known list (-1,
+X  "other" by default) can access the target privilege.  It may find
+X  along the way that extra uids can access some uid, but these aren't
+X  reported as specific problems unless they are added to the
+X  uids.known list. 
+X
+X  We could do something similar to the kuang described in the paper by
+X  setting uids.known to be all the uids that aren't in the security
+X  policy table for the target uid, and running kuang against the
+X  target.  This would report success for each uid that could access
+X  the target.  You could do similar things with groups - uids.known
+X  would be all the uids that aren't members of the group...
+X
+X  Alternately, we could simply have kuang record the list of uids that
+X  can access the target priv and print the list when its done.  That
+X  way you could iterate kuang against all uids and gids and compare
+X  the resulting PAT against your security policy and record the
+X  differences.  You'd probably want to record the plan for each uid
+X  reported also.
+X
+X  On our system this would mean running kuang roughly 2500
+X  times to check 1 host, and we have about 300 hosts...urf...assuming
+X  that each kuang invocation has to check 50 plans, that's a total of
+X  125,000 plans per host, or about an hour of real time...not as bad
+X  as it could be, though.
+X
+X- It would be nice to add to the list of rules.  It would be especialy
+X  nice to extract the rules from the code so that we can create site
+X  specific rule files (for example, we use X11r4 here, and many users
+X  have a .Xinitrc that contains shell commands that get executed when
+X  they login.)
+X
+X  Easiest way to do this would be to extract the rules as Perl code so
+X  we can take advantage of conditionals and so on, and include them
+X  within the body of kuang somehow.  A sample rule in perl:
+X
+X	if (&shell($uid) eq "/bin/csh") {
+X	    &addto("files", &home($uid)."/.login", 
+X			"replace .login $plan");
+X	}
+X
+X  which simply means "if the user's shell is csh, then try to replace
+X  his .login file." 
+SHAR_EOF
+chmod 0600 cops_104/perl/README.kuang ||
+echo 'restore of cops_104/perl/README.kuang failed'
+Wc_c="`wc -c < 'cops_104/perl/README.kuang'`"
+test 9306 -eq "$Wc_c" ||
+	echo 'cops_104/perl/README.kuang: original size 9306, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/cops.cf.orig ==============
+if test -f 'cops_104/perl/cops.cf.orig' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/cops.cf.orig (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/cops.cf.orig (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/cops.cf.orig' &&
+X#
+X# COPS CONFIGURATION FILE
+X#
+X# put user variables here: anything beginning with /^\s*[$@%&]/ will be eval'd
+X# in general, variables in package main are for cops itself, whereas
+X# those with package qualifiers are for a particular chk routine or
+X# for auxiliary routines.
+X
+X# COPS  main variables follow...
+X$NMAIL 		= 0; 		# send mail instead of generating reports
+X$ONLY_DIFF 	= 0;  		# only send diff from last time
+X$SECURE_USERS   = "root"; 	# user to receive mailed report
+X$C2             = 0;		# Sun c2 security package
+X$OVER_8		= 0;		# long usernames > 8 characters
+X
+X# these don't really work for pass.cache yet
+X$IGNORE_YP	= 0;
+X$PASSWD		= '/etc/passwd';
+X$GROUP		= '/etc/group';
+X
+X# put whatever gets pw info here, like '/bin/cat /etc/security/passwd' or
+X# whatever; no or a null entry means it tries the standard /etc/passwd
+X# and 'ypcat passwd' stuff.  Note that this will pass the info to the
+X# password caching program -- it expects a file with *exactly* the same
+X# fields and such as the normal password file, ok?
+X$GET_PASSWD	= '/bin/cat passwd';
+X
+X###############################################################
+X# many things call &chk_strings (including {cron,misc,rc,root}.chk)
+X# the following two variable settings affects its behaviour...
+X# this one says to ignore warnings about paths matching these regexps
+X
+X@chk_strings'ignores = ( '^/tmp/?', '^/(var|usr)/tmp/?' );
+X
+X# this will take a bit longer, but can find dangerous things much better
+X# the shell cops can't do this.... sigh
+X
+X$chk_strings'recurse = 1;
+X
+X# if we want stat failure warnings from is_able...
+X
+X$is_able'noisy = 0;  
+X
+X###############################################################
+X# finally the checks to execute.  these can also all be run 
+X# stand-alone from the shell.
+X
+X# first test the security of the root account
+Xroot.chk
+X
+X#   Now of the various devices.  adding the -g option to dev.chk means too
+X# check group writability, too
+X$MTAB    = '/etc/fstab';
+X$EXPORTS = '/etc/exports';
+X$TAB_STYLE = 'new';
+Xdev.chk
+X
+X# exaustive tests for things that shouldn't be readable/writable etc:
+Xis_able.chk
+X
+X# check for insecuities in /etc/rc*:
+Xrc.chk
+X
+X# and in cron:
+Xcron.chk
+X
+X# some consistency and idiocy (null or trivial passwds) in /etc/passwd:
+Xpasswd.chk
+X
+X# cracking passwds:
+Xpass.chk
+X
+X# consistency checks in /etc/group
+Xgroup.chk
+X
+X# make sure user accounts don't have trojanable dot files:
+Xuser.chk
+X
+X# check ftp security:
+X$ftp'primary = "root";
+X$ftp'secondary = "ftp";
+Xftp.chk
+X
+X# and anything else we forgot
+X
+X# Sys V types use /etc/servers here:
+X$misc'inetd = "/etc/inetd";
+Xmisc.chk
+X
+X# Kuang!
+Xkuang
+X
+X# SUID checking:
+X# suid.chk
+SHAR_EOF
+chmod 0700 cops_104/perl/cops.cf.orig ||
+echo 'restore of cops_104/perl/cops.cf.orig failed'
+Wc_c="`wc -c < 'cops_104/perl/cops.cf.orig'`"
+test 2606 -eq "$Wc_c" ||
+	echo 'cops_104/perl/cops.cf.orig: original size 2606, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/cops.cf ==============
+if test -f 'cops_104/perl/cops.cf' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/cops.cf (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/cops.cf (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/cops.cf' &&
+X#
+X# COPS CONFIGURATION FILE
+X#
+X# put user variables here: anything beginning with /^\s*[$@%&]/ will be eval'd
+X# in general, variables in package main are for cops itself, whereas
+X# those with package qualifiers are for a particular chk routine or
+X# for auxiliary routines.
+X
+X# COPS  main variables follow...
+X$MMAIL 		= 0; 		# send mail instead of generating reports
+X$ONLY_DIFF 	= 0;  		# only send diff from last time
+X$SECURE_USERS   = "foo@bar.edu";# user to receive mailed report
+X$C2             = 0;		# Sun c2 security package
+X$OVER_8		= 0;		# long usernames > 8 characters
+X$COPS_ERRORS    = 0;		# do you want error stuff or not?
+X
+X# these don't really work for pass.cache yet
+X$IGNORE_YP	= 0;
+X$PASSWD		= '/etc/passwd';
+X$GROUP		= '/etc/group';
+X
+X# put whatever gets pw info here, like '/bin/cat /etc/security/passwd' or
+X# whatever; no or a null entry means it tries the standard /etc/passwd
+X# and 'ypcat passwd' stuff.  Note that this will pass the info to the
+X# password caching program -- it expects a file with *exactly* the same
+X# fields and such as the normal password file, ok?
+X# $GET_PASSWD	= '/bin/cat passwd';
+X
+X###############################################################
+X# many things call &chk_strings (including {cron,misc,rc,root}.chk)
+X# the following two variable settings affects its behaviour...
+X# this one says to ignore warnings about paths matching these regexps
+X
+X@chk_strings'ignores = ( '^/tmp/?', '^/(var|usr)/tmp/?' );
+X
+X# this will take a bit longer, but can find dangerous things much better
+X# the shell cops can't do this.... sigh
+X
+X$chk_strings'recurse = 0;
+X
+X# if we want stat failure warnings from is_able...
+X
+X$is_able'noisy = 0;  
+X
+X###############################################################
+X# finally the checks to execute.  these can also all be run 
+X# stand-alone from the shell.
+X
+X# first test the security of the root account
+Xroot.chk
+X
+X#   Now of the various devices.  adding the -g option to dev.chk means too
+X# check group writability, too
+X$MTAB    = '/etc/fstab';
+X$EXPORTS = '/etc/exports';
+X$TAB_STYLE = 'new';
+Xdev.chk
+X
+X# exaustive tests for things that shouldn't be readable/writable etc:
+Xis_able.chk
+X
+X# check for insecuities in /etc/rc*:
+Xrc.chk
+X
+X# and in cron:
+Xcron.chk
+X
+X# some consistency and idiocy (null or trivial passwds) in /etc/passwd:
+Xpasswd.chk
+X
+X# cracking passwds:
+Xpass.chk
+X
+X# consistency checks in /etc/group
+Xgroup.chk
+X
+X# make sure user accounts don't have trojanable dot files:
+Xuser.chk
+X
+X# check ftp security:
+X$ftp'primary = "root";
+X$ftp'secondary = "ftp";
+Xftp.chk
+X
+X# and anything else we forgot
+X
+X# Sys V types use /etc/servers here:
+X$misc'inetd = "/etc/inetd";
+Xmisc.chk
+X
+X# Kuang!
+Xkuang
+X
+X# SUID checking:
+X# suid.chk
+SHAR_EOF
+chmod 0700 cops_104/perl/cops.cf ||
+echo 'restore of cops_104/perl/cops.cf failed'
+Wc_c="`wc -c < 'cops_104/perl/cops.cf'`"
+test 2669 -eq "$Wc_c" ||
+	echo 'cops_104/perl/cops.cf: original size 2669, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/chk_strings ==============
+if test -f 'cops_104/perl/chk_strings' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/chk_strings (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/chk_strings (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/chk_strings' &&
+X#!/bin/sh  # need to mention perl here to avoid recursion
+X#
+X#  Usage: chk_strings filename
+X#
+X#  This will check pathnames inside executable files for writability,
+X# The big string "@ignores" is a list of files that are ignored by
+X# this; you can set it to whatever you want -- default is:
+X# '^/tmp/?' and '^/(var|usr)/tmp/?'
+X# 
+X#  No program root EVER runs should be show up here.
+X#
+X# NOTE:
+X#   If you know where perl is and your system groks #!, put its
+X# pathname at the top to make this a tad faster.
+X#
+X# the following magic is from the perl man page
+X# and should work to get us to run with perl 
+X# even if invoked as an sh or csh or foosh script.
+X# notice we don't use full path cause we don't
+X# know where the user has perl on their system.
+X#
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' 
+X& eval 'exec perl -S $0 $argv:q'
+X    if $running_under_some_stupid_shell_instead_of_perl;
+X
+Xpackage main;
+X
+X$| = 1;
+X
+Xrequire 'getopts.pl';
+Xrequire 'chk_strings.pl';
+X
+Xdie "Usage: $0 [-rd] file ...\n" unless &Getopts('rd') && @ARGV;
+X
+Xpackage chk_strings;
+X
+X$debug = $'opt_d;
+X$recurse = $'opt_r;
+X@ignores = ( '^/tmp/?', '^/(var|usr)/tmp/?' )
+X    unless defined @ignores;
+X
+X#%paths = ();  # faster than local
+X
+Xfor (@'ARGV) { 
+X    (warn("$0: $_: $!\n"), next) unless -e;
+X    &'chk_strings($_); 
+X} 
+SHAR_EOF
+chmod 0700 cops_104/perl/chk_strings ||
+echo 'restore of cops_104/perl/chk_strings failed'
+Wc_c="`wc -c < 'cops_104/perl/chk_strings'`"
+test 1292 -eq "$Wc_c" ||
+	echo 'cops_104/perl/chk_strings: original size 1292, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/chk_strings.pl ==============
+if test -f 'cops_104/perl/chk_strings.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/chk_strings.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/chk_strings.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/chk_strings.pl' &&
+X#
+X#  This is a big one.  Support routines to check for strings 
+X# that look like pathnames and make sure they're not writable.
+X# Will recurse if $recurse is set.  the shell version can't do
+X# this (yet).  call &ignore with list of regexps that you don't
+X# care about.  (or set @ignores)
+X#
+X# originally by Tom Christiansen <tchrist@convex.com>
+X# since hacked on by parties various and sundry.
+X
+Xrequire 'is_able.pl';
+Xrequire 'file_mode.pl';
+Xrequire 'pathconf.pl';
+X
+Xpackage chk_strings;
+X
+X
+X$'STRINGS = $'STRINGS || '/usr/ucb/strings';
+X
+Xfor ( '/dev/null', '/dev/tty' ) {
+X    $seen{$_}++;
+X} 
+X
+Xsub main'chk_strings {
+X    local($ARGV) = @_;
+X    local($_);
+X    local($word);
+X    local(*STRINGS);  # XXX: might run out of fd's on deep recursion!  -tchrist
+X    local(%paths, $text); 
+X    local($STRINGS) = "$'STRINGS $ARGV |";
+X
+X    &ignore(@ignores) if defined @ignores && !$already_ignored;
+X
+X    $STRINGS="< $ARGV", $text=1 if -T $ARGV;
+X    print "Opening via: $STRINGS\n" if $debug;
+X
+X    open (STRINGS, $STRINGS); 
+X    while (<STRINGS>) { 
+X	next unless m#/#;   # was m#/.*/#;
+X#---------------------------------------------------------------------------
+X# Comments and modifications by Martin Foord (maf%dbsm.oz.au@munnari.oz.au).
+X	#s/#.*$// if $text;  # strip out comments if -T file
+X	# Comments start in the shell at the beginning of a word or at the
+X	# beggining of a line
+X	if ($text) {
+X		s/\s+#.*$//;
+X		s/^#.*$//;
+X	}
+X
+X	# Get rid of semicolons, they can hang around on filenames ...
+X	s/;//g;
+X#---------------------------------------------------------------------------
+X
+X	s/"([^"]*)"/ $1 /g;
+X	s/'([^']*)'/ $1 /g;
+X	# See my comments below on how to deal with this stuff ... (line 64).
+X	#s/`([^`]*)`/ $1 /g;
+X
+X
+X	s!([<>])\s+/!$1/!g;  # "> /foo" goes to ">/foo";
+X
+X	s/=/ /g;  # warning -- mangled files with = in them
+X	for $word (split) {
+X	    if ($word =~ m#:/#) {
+X		print "push $word (split on the colons)\n" if $debug;
+X		@paths{split(/:/, $word)} = ();
+X	    } elsif ($word =~ m#^[<>]?/#) {
+X		print "push $word\n" if $debug;
+X		$paths{$word}++;
+X	    }
+X	}
+X    }
+X    close (STRINGS);
+X    push(@files, $ARGV);
+X
+X    for (keys %paths) {
+X	s/\)$//;
+X	s/^\(//;
+X	s#^/+#/#;
+X	s#^(/.*)/$#$1#;	    # get rid of trailing slash
+X
+X#---------------------------------------------------------------------------
+X# Comments and modifications by Martin Foord (maf%dbsm.oz.au@munnari.oz.au).
+X	# It's best to evaluate what's in backquotes rather than remove them
+X	# as in the substitution above, due to files which
+X	# look like this /var/yp/`domainname` (eg in my /etc/rc.local).
+X	s`\`(.+)\``$1`; # eval what's in backquotes.
+X	chop if /\n$/;	# fang off \n if there ...
+X#---------------------------------------------------------------------------
+X	next if &ignored($_);
+X	s/^[<>]//;
+X	next if $_ eq '';
+X	next unless !$seen{$_}++ && -e && !-S _;
+X	print "checking $_\n" if $debug;
+X	if ($how = &'is_writable($_)) {
+X	    print "Warning!  File $_ (inside ",
+X			join(' inside ', reverse @files), ") is _World_ $how!\n";
+X	} elsif ($recurse && (&'Mode($_) & 0111) && -f _) {
+X	     print "recursing $_\n" if $debug;
+X	     &'chk_strings($_);   
+X	} 
+X    }
+X     pop(@files);
+X} 
+X
+Xsub ignore {
+X    local($_);
+X    local($prog);
+X
+X    $already_ignored = 1;
+X
+X    $prog = <<'EOCODE';
+X
+Xsub ignored {
+X    local($return) = 1;
+X    local($prog);
+X    local($_) = @_;
+X    {
+XEOCODE
+X    for (@_) {
+X	$prog .= "\tlast if m\201${_}\201;\n";
+X    } 
+X    $prog .= <<'EOCODE';
+X	$return = 0;
+X    }
+X    print "$_ IGNORED\n" if $debug && $return;
+X    $return;
+X}
+XEOCODE
+X    
+X    print $prog if $debug;
+X    eval $prog;
+X    die $@ if $@;
+X} 
+X
+Xsub ignored {}; # in case they never ignore anything
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/chk_strings.pl ||
+echo 'restore of cops_104/perl/chk_strings.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/chk_strings.pl'`"
+test 3616 -eq "$Wc_c" ||
+	echo 'cops_104/perl/chk_strings.pl: original size 3616, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/cops ==============
+if test -f 'cops_104/perl/cops' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/cops (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/cops (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/cops' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#
+X#  Usage: cops [-vx] [-c config file] [-s secure_dir] [architecture]
+X#
+X#  This will change into the $SECURE/architecture directory, suck lots
+X# of info and configuration stuff out of "cops.cf", and runs all of the
+X# security programs in that file.  If any of the programs find any 
+X# security problems, it either sends mail to everyone in the $SECURE_USERS
+X# list (see "cops.cf"), or saves the results in a file 
+X# $SECURE/architecture/hostname.  It then destroys all temporary files, 
+X# and exits the program.  Programs that are run (besides this one):
+X#
+X#	root.chk	dev.chk		group.chk
+X#	rc.chk		passwd.chk	is_able.chk
+X#	pass.chk 	user.chk	cron.chk
+X#	misc.chk	ftp.chk
+X#
+X#  The -x and -v (verbose) flags print out the name each program to 
+X# the results file as it is executed.  The -v flag also passes the
+X# verbose option to other modules.  The -s and -c flags allow you
+X# to specify the $SECURE directory and $CONFIG file, respectively.
+X# 
+X# NOTE:
+X#   If you know where perl is and your system groks #!, put its
+X# pathname at the top to make this a tad faster.
+X#
+X# the following magic is from the perl man page
+X# and should work to get us to run with perl 
+X# even if invoked as an sh or csh or foosh script.
+X# notice we don't use full path cause we don't
+X# know where the user has perl on their system.
+X#
+X
+X######################################
+X# perl COPS main driver.
+X# tchrist@convex.com
+X######################################
+X
+X# security sanity settings
+X#
+X$ENV{'IFS'} = '' if $ENV{'IFS'};
+X$ENV{'PATH'} = '/bin:/usr/bin:/usr/ucb';
+X$| = 1;
+Xumask 077;
+X
+X#
+X# Getopts stuff
+X$usage = "Usage: $0 [-vx] [-c config_file] [-s secure_dir] architecture\n";
+Xrequire 'getopts.pl';
+X# Process the command args; Either specify verbose or an alternate config file:
+Xdie $usage unless &Getopts('vxc:s:');
+X
+Xif (defined($opt_v)) { $verbose = $opt_v;}
+Xelse { $verbose = 0; }
+X
+Xif (defined($opt_s)) { $SECURE = $LIBCOPS = $opt_s; }
+Xelse { $SECURE = $LIBCOPS = '.'; }
+X
+Xif (defined($opt_c)) { $CONFIG = $opt_c; }
+Xelse {$CONFIG = "$SECURE/cops.cf"; }
+X
+Xif (@ARGV > 1) {
+X    die $usage;
+X} elsif (@ARGV == 1) {
+X    $SECURE = shift;
+X    die "Architecture directory $SECURE does not exist\n" unless -d $SECURE;
+X    chdir($SECURE) || die "can't cd to $SECURE: $!";
+X    exec './cops';
+X} 
+X
+X# internal cops stuff needed
+Xrequire "$LIBCOPS/pathconf.pl";
+Xrequire "$LIBCOPS/is_able.pl";
+Xrequire "$LIBCOPS/hostname.pl";
+X
+Xchmod 0700, $SECURE;  
+Xchdir ($SECURE) || die "Error -- Security directory $SECURE doesn't exist\n";
+X
+X#  Read stuff to do from the config file
+Xdie "$0: Can't trust $CONFIG to reconfig!\n" 	if &'is_writable($CONFIG);
+Xopen CONFIG || die "can't open $CONFIG: $!";
+X
+X&argh unless -s $CONFIG;
+X
+X&init_result;
+X
+Xwhile (<CONFIG>) {
+X    next if /^\s*#/;
+X    next if /^\s*$/;
+X
+X    if (/^\s*[\$&\@\%]/) {  #  reset a config variable
+X	s/#.*//;
+X	eval;
+X	warn "Bad config variable at line $. of $CONFIG:\n\t$_\t$@\n" if $@;
+X	next;
+X    } 
+X
+X    # must be a program to run
+X    chop;
+X    s/#.*//;
+X    s/;$//;
+X    @ARGV=split;
+X    $program = shift;
+X    if ($verbose || $opt_x) { print "**** $program ****\n"; }
+X    &flush;
+X    &run("$LIBCOPS/$program");
+X    &flush;
+X
+X} 
+X
+X&save_result;
+X
+X&argh unless $ran_something;
+X
+Xexit 0;
+X
+X######################################################################
+Xsub run {
+X    local($module) = @_;
+X    local($status);
+X    local($0) = $module; # so it shows up in ps
+X    local($!);
+X
+X
+X    $ran_something++;
+X
+X    open(STDERR, $COPS_ERRORS ? ">&STDOUT" : ">/dev/null");
+X
+X    unless ($status = do $module) {
+X	if ($@) {
+X	    warn "cops: unexpected exit from $module:\n\t-> $@\n";
+X	} elsif ($! != 0) {
+X	    warn "cops: couldn't run $module: $!\n";
+X	} else {
+X	    warn "cops: $module returned $status\n";
+X	} 
+X    }
+X
+X    # hack for kuang, who doesn't write to STDOUT (yet!)
+X    $SUCCESS = "$SECURE/Success";
+X    if ($module =~ /^kuang/ && -e $SUCCESS) {
+X	if (open SUCCESS) {
+X	    print while <SUCCESS>;  # STDOUT is $REPORT
+X	    close SUCCESS;
+X	    unlink $SUCCESS;
+X	} else {
+X	    warn "can't open $SUCCESS: $!\n";
+X	} 
+X    } 
+X}
+X######################################################################
+Xsub init_result {
+X    $REPORT = "$SECURE/result.$$";  # global!
+X    open (REPORT, ">$REPORT") || die "can't create $REPORT: $!\n";
+X
+X    # assume dups work
+X    open (STDOUT, ">&REPORT");
+X    open (SAVERR, ">&STDERR");
+X    open (STDERR, ">&STDOUT");
+X
+X    ($sec, $min, $hour, $mday, $mon, $year,
+X	$wday, $yday, $isdst) = localtime(time);
+X
+X    $name = sprintf("%s_%s_%s", $year + 1900, 
+X	(Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec)[$mon],
+X	$mday);
+X
+X    $host = &hostname;	# from hostname.pl
+X    $host =~ s/\..*//;
+X
+X    # Dan, do you want full path for `date` on next line?
+X    print "ATTENTION:\nSecurity report for ", `date`;
+X    print "\nfrom host $host, $name\n\n";
+X    $report = $name;
+X
+X    &flush;
+X}
+X######################################################################
+Xsub save_result {
+X    open(STDERR, ">&SAVERR");
+X
+X    close REPORT || die "can't close $REPORT: $!\n";
+X
+X    $dir = "$SECURE/$host";
+X    $report = $dir . "/" . $report;
+X
+X    mkdir($dir,0700) unless -d $dir;
+X
+X    if ($MMAIL) {
+X	# system "$MAIL $SECURE_USERS < $REPORT"
+X	system "$ECHO $SECURE_USERS $REPORT"
+X	    unless $ONLY_DIFF && !&different($dir, $REPORT);
+X    } else {
+X#	rename ($REPORT, $dir . "/" . $name) ||
+X#	    die "can't put $REPORT into $dir/$name: $!";
+X	rename ($REPORT, $report) ||
+X	    die "can't put $REPORT into $report: $!\n";
+X    }
+X    unlink $REPORT;
+X} 
+X
+X######################################################################
+Xsub different {
+X    local($dir, $FILE1) = @_;
+X    local($FILE2, $f1, $f2, $_);
+X
+X    open (LS, "$LS -t $dir |");
+X    chop($FILE2 = <LS>);
+X    close(LS); # snuff it out
+X
+X
+X    if ($FILE2 eq "") {
+X	system "$CP $REPORT $report";
+X	}
+X    return 1 if (($FILE2 eq "") || (-s $FILE1 != -s $report));
+X
+X    open FILE1 || die "can't open $FILE1: $!\n";
+X    open FILE2 || die "can't open $FILE2: $!\n";
+X
+X    for (1..5) {
+X	$_ = <FILE1>;
+X	$_ = <FILE2>;
+X    } 
+X
+X    while ( ($f1 = <FILE1>), ($f2 = <FILE2>) ) {
+X	last if $f1 ne $f2;
+X    } 
+X
+X    close FILE1;
+X    close FILE2;
+X
+X    defined($f1) || defined($f2);
+X} 
+X
+X######################################################################
+Xsub flush {
+X    local($old) = $|;
+X    $| = 1;
+X    print '';
+X    $| = $old;
+X} 
+X
+Xsub argh {
+X    die "Argh -- Can't find anything in $CONFIG\n";
+X}
+SHAR_EOF
+chmod 0700 cops_104/perl/cops ||
+echo 'restore of cops_104/perl/cops failed'
+Wc_c="`wc -c < 'cops_104/perl/cops'`"
+test 6537 -eq "$Wc_c" ||
+	echo 'cops_104/perl/cops: original size 6537, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/cron.chk ==============
+if test -f 'cops_104/perl/cron.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/cron.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/cron.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/cron.chk' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#  Usage: cron.chk.pl [-rd]
+X#
+X#  This checks pathnames and files inside the cron files /usr/lib/crontab
+X# for writability.
+X#
+X#  Mechanism:  The commands inside the file /usr/lib/crontab are executed
+X# by root.  This perl script uses chk_strings.pl for chking for writable
+X# files/dirs.
+X#
+X#  cron.chk.pl will try to find a file in /usr/lib/crontab first (bsd),
+X# and then if it isn't there, it will look in the any alternate
+X# possible locations next -- right now, /usr/spool/cron/crontab -- to
+X# see if a directory exists, and, if it does, it checks all the cron
+X# files in turn.
+X#
+X#  WARNING!
+X#
+X#  Spurious messages can occur; a more stringent method (if perhaps less
+X# careful of a check) would be to test just the 6th field, instead of
+X# all the fields after the fifth.  Also throwing away /tmp, etc. could
+X# be a mistake.
+X#
+X
+Xpackage main;
+X
+Xrequire 'getopts.pl';
+Xrequire 'glob.pl';
+SHAR_EOF
+true || echo 'restore of cops_104/perl/cron.chk failed'
+fi
+echo 'End of  part 15'
+echo 'File cops_104/perl/cron.chk is continued in part 16'
+echo 16 > _shar_seq_.tmp
+exit 0
+

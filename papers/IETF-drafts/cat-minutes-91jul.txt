@@ -1,0 +1,249 @@
+
+CURRENT_MEETING_REPORT_
+
+
+Reported by John Linn/DEC
+
+CAT Minutes
+
+The Common Authentication Technology Working Group met for two sessions
+in Atlanta, and held discussions building on the three Internet Drafts
+issued on behalf of the group in advance of the meeting.  John Linn led
+a discussion on CAT and GSS-API concepts, and Jeff Schiller and Charlie
+Kaufman gave presentations on implementations of CAT atop (respectively)
+Kerberos V5 and SPX mechanisms; slides from these presentations will be
+submitted along with these minutes for inclusion in the IETF
+Proceedings.  Representatives from some protocol Working Groups were
+available to comment on issues related to integration and use of CAT
+within their protocols.
+
+CAT concepts were generally well received.  Some areas of potential
+refinement and discussion were raised, and discussions are expected to
+continue on the CAT mailing list.  One key area of technical discussion
+was the interrelationship among CAT, underlying mechanisms, and
+alternative naming architectures; a related area was alternative types
+of authenticated principals (users, hosts, processes) and means for
+their distinction.  It was noted that the fact of implementation of a
+particular mechanism in support of CAT should not be taken as IETF
+endorsement of the strength of that mechanism.  It was also noted that
+multiple mechanisms may in principle be incorporated beneath a single
+GSS-layer implementation, though no such implementations have yet been
+developed.
+
+Identification of Shared Mechanism
+
+One major discussion topic was the question of how to identify a CAT
+mechanism which is shared with a peer CAT system.  Options include
+combinations of negotiation, directory entries, configuration data, and
+user/caller input; it was agreed that CAT should seek to make suitable
+determinations internally where possible so as to ease burdens on its
+callers and to avoid replicating common security-oriented features
+separately within a variety of caller protocols.  This implies, for
+example, that CAT callers' requests for the ``default'' mechanism type
+could result in exchange of tokens in order to resolve a common
+mechanism; the feasibility of such a scheme warrants investigation.
+Whenever negotiation is used to establish a mechanism, it should be
+carried out against an acceptable set defined by configuration data
+and/or caller input, to prevent blind acceptance of authentication
+schemes weaker than those intended by a CAT peer.
+
+Naming Issues
+
+As the Internet evolves to a multi-protocol environment, it also evolves
+to an environment where multiple naming architectures must coexist.
+Prominent examples include DNS names for hosts, mailbox identifiers for
+users, and X.500 Distinguished Names.  This variation causes problems in
+
+                                   1
+
+
+
+
+
+many areas of technology (and is engendering discussion in several parts
+of the IETF and the TSIG, as well as other groups), and security is
+among those bitten.
+
+Since authentication mechanisms typically authenticate principals in
+conjunction with name forms native to those mechanisms, mismatches are
+likely to emerge when CAT callers oriented to operation in particular
+naming environments are served by CAT mechanisms employing different
+native forms.  It was agreed that CAT would benefit from broader
+IETF-defined approaches to handle such mismatches; in the interim,
+mechanism designers will have to anticipate, observe, and provide
+case-by-case resolutions to specific problems.  In the interests of
+portability between alternative mechanisms both capable of
+authenticating a common name format, it was observed to be preferable
+for identification of the mechanism used to authenticate a name to be
+carried in a separate parameter rather than being encoded within the
+name itself.
+
+Mechanism Discussions
+
+(See also presentation slides.)
+
+Jeff Schiller led a discussion on Kerberos GSS-API implementation.  MIT
+believes that it is appropriate for all services which run as root on a
+given host to use a common set of verifier credentials in /etc/srvtab;
+the Athena DISCUSS service has a different identity with credentials in
+a different file.  Distinction between client and server principals is
+made based on examination of names.
+
+Jeff also observed that MIT intends to relinquish control of the
+Kerberos V5 specification (distributed to Internet-Drafts before the
+meeting) to the CAT Working Group for evolution and standards-track
+progression, and cited Ted Tso and Cliff Neuman as additional relevant
+contacts.  A Kerberos V4 specification will also be submitted as an
+informational RFC.
+
+Charlie Kaufman led a discussion on SPX GSS-API implementation,
+emphasizing implementors' agreements made in order to enable application
+portability (though not the broader issue of interoperability) between
+Kerberos and SPX. Internal names were accepted to be opaque (preserving
+flexibility for mechanism implementors), although use of a standardized
+format at this level could offer value if callers were positioned to use
+the same format across other interfaces besides the GSS-API. The target
+applications chosen to validate the portability concept were Telnet and
+rlogin; since DNS-style textual names are native to these applications,
+conflicts with SPX's use and certification of X.500 DNs needed to be
+resolved.
+
+Protocol Integration Issues
+
+It was observed that error cases resulting from inability to process a
+transferred and received token cannot always be reflected to a CAT peer
+before that peer believes that the context establishment sequence is
+complete; for CAT callers to be assured that their tokens have been
+
+                                   2
+
+
+
+
+
+successfully processed on receipt, mutual authentication must be
+performed.  Error-indicating tokens received after context establishment
+is complete can still be processed, by being passed to a different
+primitive (process_context_token).  It was observed that it might be
+preferable to incorporate more messages in mechanisms' context
+establishment sequences so that COMPLETE status is never returned before
+positive acknowledgment by the peer.  No conclusive decision was made on
+this issue.
+
+The Telnet Working Group plans to issue the Telnet authentication option
+as an experimental RFC; it was anticipated that migration to CAT as an
+additional Telnet-visible type (which would likely supplant other
+Telnet-visible type indicators over time) would be appropriate.
+Terminal servers cannot be assumed to maintain configuration data
+corresponding to arbitrary ``walk-up'' users, so raise special issues
+with regards to integration with user interfaces and CAT infrastructure.
+
+The Network Printing Working Group is seeking to employ CAT. Discussion
+indicated that different types of authentication semantics (users,
+hosts, daemon processes) would be most appropriate in different
+circumstances; unfortunately, prioritized needs for the different
+alternatives were not available.
+
+Possible CAT applications arise in the Network News Transport Protocol
+(NNTP). Primary requirement areas raised at the CAT meeting include
+host-granularity authentication for sessions between NNTP peers and
+user-granularity authentication for individuals associated with NNTP
+newsreaders.  Ted Tso is engaging in additional discussion with the NNTP
+group regarding potential CAT usage.
+
+The LIST group may wish to employ CAT-based authentication for those
+cases where list maintenance commands are transferred across on-line
+connections rather than within messages.
+
+Possible Extension Areas
+
+Various candidate CAT extension areas were discussed, and are likely to
+be discussed further on the CAT mailing list.
+
+Means for provision of long-term signature capabilities were considered
+only briefly, in part because of unclear requirements for
+non-repudiation services outside the messaging paradigm.  The following
+observations were noted:
+
+
+  1. Since such signatures are intended to be validatable over an
+     extended period and by other than the single peer associated with a
+     context, such extensions are not well suited to modeling via the
+     Quality-of-Protection (QOP) parameters to existing GSS-API
+     per-message protection primitives,
+
+  2. That alternative primitives might utilize common credentials, and
+
+
+
+                                   3
+
+
+
+
+
+  3. That long-term signature capabilities would not likely be portable
+     to other than public-key mechanisms.
+
+
+Interest was expressed in making the set of intermediary entities which
+had been involved in a CAT authentication visible to a caller,
+presumably by providing means to extract such a name list from a
+context's data structures.  It was unclear whether callers would be
+likely to make use of such a list in a mechanism-independent manner.
+
+We also discussed the idea of an overlay veneer
+(``init_sec_context_stream()'') to provide CAT with a communications
+path over which to pass tokens rather than returning the tokens for
+caller manipulation and transfer, an extension facility which could
+simplify integration of CAT-based authentication into certain caller
+protocols.  Such an overlay would be analogous to Kerberos's send_auth
+interface; follow-up mailing list discussion is anticipated.
+
+
+David Bolen
+David Borman             dab@cray.com
+Stephen Crocker          crocker@tis.com
+Peter Deutsch
+James Ellis              jte@cert.sei.cmu.edu
+Arlan Finestead          arlanf@ncsa.uiuc.edu
+James Galvin             galvin@tis.com
+Joe Godsil               jgodsil@ncsa.uiuc.edu
+Russ Hobby               rdhobby@ucdavis.edu
+Alton Hoover
+Ken Jones                konkord!ksj@uunet.uu.net
+Charles Kaufman          kaufman@dsmail.enet.dec.com
+Peter Kirstein           kirstein@cs.ucl.ac.uk
+Dale Land                land@lanl.gov
+Eliot Lear               lear@turbo.bio.net
+John Linn                linn@zendia.enet.dec.com
+Louis Mamakos            louie@ni.umd.edu
+Ellen McDermott          emcd@osf.org
+Glenn McGregor           ghm@merit.edu
+Clifford Neuman          bcn@isi.edu
+Oscar Newkerk            newkerk@decwet.enet.dec.com
+Richard Parker           rp@mbunix.mitre.org
+Geir Pedersen            geir.pedersen@use.uio.no
+Mel Pleasant             pleasant@hardees.rutgers.edu
+P. Rajaram               rajaram@sun.com
+Michael Reilly           reilly@nsl.dec.com
+Jan Michael Rynning      jmr@nada.kth.se
+Jeffrey Schiller         jis@mit.edu
+Robert Shirey            shirey@mitre.org
+Mark Sleeper             mws@sparta.com
+Mark Stein               marks@eng.sun.com
+Brad Strand              bstrand@cray.com
+Glenn Trewitt            trewitt@nsl.dec.com
+Theodore Tso
+Preston Wilson           preston@i88.isc.com
+
+                                   4
+
+
+
+
+
+
+
+
+5

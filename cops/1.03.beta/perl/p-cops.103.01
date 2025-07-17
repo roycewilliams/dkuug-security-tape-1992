@@ -1,0 +1,1968 @@
+#!/bin/sh
+# This is a shell archive (produced by shar 3.49)
+# To extract the files from this archive, save it to a file, remove
+# everything above the "!/bin/sh" line above, and type "sh file_name".
+#
+# made 06/23/1991 05:19 UTC by df@death.cert.sei.cmu.edu
+# Source directory /usr/users/df/COPS/perl
+#
+# existing files will NOT be overwritten unless -c is specified
+#
+# This is part 1 of a multipart archive                                    
+# do not concatenate these parts, unpack them in order with /bin/sh        
+#
+# This shar contains:
+# length  mode       name
+# ------ ---------- ------------------------------------------
+#    849 -rw------- beta/shadow.sh
+#   2606 -rwx------ beta/cops.cf.old
+#   9306 -rw------- beta/README.kuang
+#   4854 -rwx------ beta/README.perl
+#   1292 -rwx------ beta/chk_strings
+#   3616 -rwx------ beta/chk_strings.pl
+#   6437 -rwx------ beta/cops
+#   2608 -rwx------ beta/cops.cf
+#   2199 -rwx------ beta/cron.chk
+#   2378 -rwx------ beta/dev.chk
+#    463 -rwx------ beta/fgrep.pl
+#    414 -rwx------ beta/file_mode.pl
+#    398 -rwx------ beta/file_owner.pl
+#   6582 -rwx------ beta/ftp.chk
+#   1776 -rwx------ beta/get-cf
+#    902 -rwx------ beta/getopts.pl
+#   2963 -rwx------ beta/glob.pl
+#   4819 -rwx------ beta/group.chk
+#    475 -rwx------ beta/hostname.pl
+#   1235 -rwx------ beta/is_able.chk
+#   1603 -rwx------ beta/is_able.lst
+#  15363 -rwx------ beta/kuang
+#   2835 -rwx------ beta/is_able.pl
+#   7253 -rw------- beta/kuang.1
+#   3967 -rwx------ beta/misc.chk
+#  10640 -rwx------ beta/pass.cache.pl
+#   7034 -rwx------ beta/pass.chk
+#   4773 -rwx------ beta/passwd.chk
+#    677 -rwx------ beta/pathconf.pl
+#    644 -rwx------ beta/pathconf.sh
+#    897 -rwx------ beta/rc.chk
+#   3358 -rwx------ beta/reconfig.pl
+#   5609 -rwx------ beta/root.chk
+#   2768 -rw------- beta/rules.pl
+#    653 -rwx------ beta/stat.pl
+#    229 -rwx------ beta/suckline.pl
+#   4128 -rwx------ beta/suid.chk
+#      0 -rwx------ beta/suid.stop
+#   1870 -rwx------ beta/user.chk
+#   1274 -rw------- beta/yagrip.pl
+#
+if test -r _shar_seq_.tmp; then
+	echo 'Must unpack archives in sequence!'
+	echo Please unpack part `cat _shar_seq_.tmp` next
+	exit 1
+fi
+# ============= beta/shadow.sh ==============
+if test ! -d 'beta'; then
+    echo 'x - creating directory beta'
+    mkdir 'beta'
+fi
+if test -f 'beta/shadow.sh' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/shadow.sh (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/shadow.sh (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/shadow.sh' &&
+#!/bin/sh
+#
+#  Usage: shadow.stuff
+#
+#   Extracts the correct info from shadow pass to use for processing with
+# the rest of the perl stuff
+#
+#   The way you use this is just to type "shadow.stuff > tempfile";
+# this will create a file, "tempfile" (or whatever), that *should*
+# be the equivalent to a normal password file.  Of course, you'll have
+# to run this as root so that you can read the shadow password file.
+X
+shadow=/etc/shadow
+passwd=/etc/passwd
+foo_pass=./shadow.tmp.$$
+X
+# foo_pass=shadow.pass
+X
+cat $passwd $shadow | sort > $foo_pass
+X
+awk -F: '{parray[$1] = $0":"parray[$1]} END { \
+X	for (line in parray) { \
+X		nf=split(parray[line], pline, ":"); \
+X		if (pline[9] != "LOCKED" && nf == 13) {
+X			print pline[1]":"pline[9]":"pline[3]":"pline[4]":" \
+X			pline[5]":"pline[6]":"pline[7]; \
+X		      	} \
+X		      } \
+X		}' $foo_pass
+rm $foo_pass
+X
+SHAR_EOF
+chmod 0600 beta/shadow.sh ||
+echo 'restore of beta/shadow.sh failed'
+Wc_c="`wc -c < 'beta/shadow.sh'`"
+test 849 -eq "$Wc_c" ||
+	echo 'beta/shadow.sh: original size 849, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/cops.cf.old ==============
+if test -f 'beta/cops.cf.old' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/cops.cf.old (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/cops.cf.old (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/cops.cf.old' &&
+#
+# COPS CONFIGURATION FILE
+#
+# put user variables here: anything beginning with /^\s*[$@%&]/ will be eval'd
+# in general, variables in package main are for cops itself, whereas
+# those with package qualifiers are for a particular chk routine or
+# for auxiliary routines.
+X
+# COPS  main variables follow...
+$NMAIL 		= 0; 		# send mail instead of generating reports
+$ONLY_DIFF 	= 0;  		# only send diff from last time
+$SECURE_USERS   = "root"; 	# user to receive mailed report
+$C2             = 0;		# Sun c2 security package
+$OVER_8		= 0;		# long usernames > 8 characters
+X
+# these don't really work for pass.cache yet
+$IGNORE_YP	= 0;
+$PASSWD		= '/etc/passwd';
+$GROUP		= '/etc/group';
+X
+# put whatever gets pw info here, like '/bin/cat /etc/security/passwd' or
+# whatever; no or a null entry means it tries the standard /etc/passwd
+# and 'ypcat passwd' stuff.  Note that this will pass the info to the
+# password caching program -- it expects a file with *exactly* the same
+# fields and such as the normal password file, ok?
+$GET_PASSWD	= '/bin/cat passwd';
+X
+###############################################################
+# many things call &chk_strings (including {cron,misc,rc,root}.chk)
+# the following two variable settings affects its behaviour...
+# this one says to ignore warnings about paths matching these regexps
+X
+@chk_strings'ignores = ( '^/tmp/?', '^/(var|usr)/tmp/?' );
+X
+# this will take a bit longer, but can find dangerous things much better
+# the shell cops can't do this.... sigh
+X
+$chk_strings'recurse = 1;
+X
+# if we want stat failure warnings from is_able...
+X
+$is_able'noisy = 0;  
+X
+###############################################################
+# finally the checks to execute.  these can also all be run 
+# stand-alone from the shell.
+X
+# first test the security of the root account
+root.chk
+X
+#   Now of the various devices.  adding the -g option to dev.chk means too
+# check group writability, too
+$MTAB    = '/etc/fstab';
+$EXPORTS = '/etc/exports';
+$TAB_STYLE = 'new';
+dev.chk
+X
+# exaustive tests for things that shouldn't be readable/writable etc:
+is_able.chk
+X
+# check for insecuities in /etc/rc*:
+rc.chk
+X
+# and in cron:
+cron.chk
+X
+# some consistency and idiocy (null or trivial passwds) in /etc/passwd:
+passwd.chk
+X
+# cracking passwds:
+pass.chk
+X
+# consistency checks in /etc/group
+group.chk
+X
+# make sure user accounts don't have trojanable dot files:
+user.chk
+X
+# check ftp security:
+$ftp'primary = "root";
+$ftp'secondary = "ftp";
+ftp.chk
+X
+# and anything else we forgot
+X
+# Sys V types use /etc/servers here:
+$misc'inetd = "/etc/inetd";
+misc.chk
+X
+# Kuang!
+kuang
+X
+# SUID checking:
+# suid.chk
+SHAR_EOF
+chmod 0700 beta/cops.cf.old ||
+echo 'restore of beta/cops.cf.old failed'
+Wc_c="`wc -c < 'beta/cops.cf.old'`"
+test 2606 -eq "$Wc_c" ||
+	echo 'beta/cops.cf.old: original size 2606, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/README.kuang ==============
+if test -f 'beta/README.kuang' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/README.kuang (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/README.kuang (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/README.kuang' &&
+This is a perl version of Dan's version of Bob Baldwin's Kuang program
+(originally written as some shell scripts and C programs). 
+X
+The original intent was to improve the speed of kuang, which is
+especially important for installations like ours with several thousand
+accounts and NFS things and all that.  The shell version of Kuang used
+C programs to add rules, get a groups members, determine the writers
+of a file, and so on, which really slowed things down.
+X
+X		"no" problems	/etc staff writeable
+X		-------------	--------------------
+shell kuang	2:14 (14)	12:26 (98)	0.1 p/s
+perl kuang	1:10 (18)	 2:34 (588)	3.8 p/s
+X
+--- Steve Romig, CIS, Ohio State, October 1990
+X
+------------------------------------------------------------------------------
+X
+Some Features
+---- --------
+X
+X  Caches passwd/group file entries in an associative array for faster
+X  lookups.  This is particularly helpful on insecure systems using YP
+X  where password and group lookups are slow and you have to do alot of
+X  them...:-)
+X
+X  Can specify target (uid or gid) on command line.
+X
+X  Can use -l option to generate PAT for a goal.
+X
+X  Can use -f to preload file owner, group and mode info, which is
+X  helpful in speeding things up and in avoiding file system
+X  'shadows'...  See the man page for details.
+X
+Future plans, things to fix:
+----------------------------
+X
+- In a large environment (like ours, 260+ machines, 30+ file systems
+X  on as many servers, 2000 password file entries served by YP) it
+X  would be nice to 'precompute' successful plans that would be common
+X  to all systems.  In particular, plans for becoming most of the users
+X  with home directories on the NFS file systems would be useful, since
+X  we don't really want to recheck these on each host.  You wouldn't
+X  want the plan to be too deep - probably shouldn't span more than 2
+X  uids (1 on each end: grant u.romig grant g.staff write ~foo/.login
+X  grant u.foo).  I'm thinking that you could feed a list of these
+X  precomputed plans to kuang and add some code that causes it to
+X  splice in relevent plans where it can to short cut the planning
+X  steps.  For example, if one of the plans in uids.next is something
+X  like "grant u.foo ...", and I have the precomputed plan mentioned
+X  above, I could splice the two: "grant u.romig grant g.staff write
+X  ~foo/.login grant u.foo ..." and skip all the normal steps that
+X  would've been taken to get there.
+X
+- Hmmm...thinking about it, it seems like some of the steps are a bit
+X  too implicit...maybe the rules should be broken out a bit more.
+X  That will cost in processing time, though.
+X
+- Would be really, really nice to be able to deal with PATH variables
+X  - location of ., who can write elements of path, etc.  Basic rule is
+X  "anyone who can replace anything in any of path directories or the
+X  path directories themselves can become that PATH's user..."  This
+X  can be really messy though - in our environment, the path for a user
+X  will depend on the architecture type of the machine that he is
+X  logged into, and to get the path, you'd have to read and interpret
+X  his .login (including variable assignments, source's and
+X  conditionals).  Urf.  One wonders whether it might be better to have
+X  something running as root that su's to each username in turn and
+X  gets the path that way...
+X
+- ignore plans that start with "uid root", unless that's the only element - root
+X  can get to anything, and hopefully nothing can get to root...?
+X
+- remove duplicate names from uid2names and gid2names...
+X
+- with ~/.login world writeable - only follows group path, but not OTHER.
+X
+- add plans to asseccible list.
+X
+Done
+----
+X
+- Need to find all plans that lead to compromise, not just a plan.
+X
+- An earlier version scanned the password file looking for generally
+X  accesible accounts (no password), which would be added to the
+X  uids.known list (in addition to -1, "other").  I had planned on also
+X  adding a password checker which would allow us to also add accounts
+X  with easily guessed passwords.  Eventually I nuked the code that
+X  scanned the password file to speed things up, and further reflection
+X  reveals that it isn't wise to add the password scanning to kuang
+X  itself.  At some point we should add a comand line option that
+X  allows us to add additional uid's (or gid's?) to the uids.known
+X  list.  That way the user could run some other tool to scan the
+X  password file and generate a list of accessible accounts, which
+X  could then be fed to kuang.  Makes it faster on clients using YP
+X  since most of the password file is the same for all N clients, why
+X  scan it N times.  Means that user can do smarter things to/with the
+X  password file checks (list all accounts with no password or easily
+X  guessed password, filter out "ok" entries (eg, sync) and etc.)
+X
+- We aren't dealing with uid's and gid's correctly.  If there are
+X  several entries that list the same UID, but with different names,
+X  directories and shells, we'll only check plans for becoming one of
+X  them, rather than any of them.  Hmmm...this is easier than I
+X  thought, when we evaluate some plan for granting a particular uid,
+X  we need to evaluate plans for all usernames that can become that
+X  uid.  Just stick a loop in there somewhere...get CF's for each of
+X  username's in turn.  Bah, harder than I thought, since it'd have to
+X  scan the whole password file to figure which username/home directories
+X  can become which uid's.  Similarly with groups.
+X
+X  Current plan: by default, kuang will have to scan the whole password
+X  and group files so it can be sure to get all possible ways to become
+X  some uid or gid.  Internally, really need several lists:
+X
+X	mapping from uid to list of usernames that have that uid
+X	mapping from a username to home directory, shell
+X	mapping from gid to list of uids that have access to that
+X	  gid when they login (either member of group with that gid or
+X	  given as login group in passwd file)
+X	mapping from gid to list of group names for that gid
+X
+X  Course, this means that we have to read the whole password and group
+X  file, most of which will be common to many machines (like in a YP
+X  environment).  We could preload the tables above from files created
+X  once, containing the brunt of the YP info, and then augment that
+X  withthe local passwd and group info on each host when kuang is
+X  invoked, but then we need to correctly interpret funky YP things
+X  like +@netgroup:::*:..., which means that the uid has a name but no
+X  password here...and similarly with shell substitutions and so on.
+X  Bah. 
+X
+- The kuang described in Baldwin's dissertation is somewhat different
+X  in nature from this one.  The original computes a Privilege Access
+X  Table (PAT) which describes for each uid and gid which uids have
+X  access to that uid.  To assess security, we compare this against the
+X  security policy for the site, which similarly describes which uid's
+X  are supposed to have access to each uid and gid.  A sample SP might
+X  be that each uid should be accessible only by itself and root, and
+X  each gid should be accessible only to the members of that group and
+X  root.  If the PAT listed additional uid's for some priv, that would
+X  constitute a violation of the Security Policy for the site.
+X
+X  The current kuang is different.  It registers Success (a problem was
+X  found) if it determines that some uid in the uids.known list (-1,
+X  "other" by default) can access the target privilege.  It may find
+X  along the way that extra uids can access some uid, but these aren't
+X  reported as specific problems unless they are added to the
+X  uids.known list. 
+X
+X  We could do something similar to the kuang described in the paper by
+X  setting uids.known to be all the uids that aren't in the security
+X  policy table for the target uid, and running kuang against the
+X  target.  This would report success for each uid that could access
+X  the target.  You could do similar things with groups - uids.known
+X  would be all the uids that aren't members of the group...
+X
+X  Alternately, we could simply have kuang record the list of uids that
+X  can access the target priv and print the list when its done.  That
+X  way you could iterate kuang against all uids and gids and compare
+X  the resulting PAT against your security policy and record the
+X  differences.  You'd probably want to record the plan for each uid
+X  reported also.
+X
+X  On our system this would mean running kuang roughly 2500
+X  times to check 1 host, and we have about 300 hosts...urf...assuming
+X  that each kuang invocation has to check 50 plans, that's a total of
+X  125,000 plans per host, or about an hour of real time...not as bad
+X  as it could be, though.
+X
+- It would be nice to add to the list of rules.  It would be especialy
+X  nice to extract the rules from the code so that we can create site
+X  specific rule files (for example, we use X11r4 here, and many users
+X  have a .Xinitrc that contains shell commands that get executed when
+X  they login.)
+X
+X  Easiest way to do this would be to extract the rules as Perl code so
+X  we can take advantage of conditionals and so on, and include them
+X  within the body of kuang somehow.  A sample rule in perl:
+X
+X	if (&shell($uid) eq "/bin/csh") {
+X	    &addto("files", &home($uid)."/.login", 
+X			"replace .login $plan");
+X	}
+X
+X  which simply means "if the user's shell is csh, then try to replace
+X  his .login file." 
+SHAR_EOF
+chmod 0600 beta/README.kuang ||
+echo 'restore of beta/README.kuang failed'
+Wc_c="`wc -c < 'beta/README.kuang'`"
+test 9306 -eq "$Wc_c" ||
+	echo 'beta/README.kuang: original size 9306, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/README.perl ==============
+if test -f 'beta/README.perl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/README.perl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/README.perl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/README.perl' &&
+X
+**BETA ALERT**BETA ALERT**BETA ALERT**BETA ALERT**BETA ALERT**
+X
+(Warning!  This is the beta version of p-cops, or perl cops... the
+real version will be forthcoming shortly...)
+X
+X  This will attempt to familiarize you with the perl version of cops.  If
+you have never used cops before, you can get the complete documentation,
+along with shell/C code, via anon-ftp, at cert.sei.cmu.edu, ~ftp/pub/cops/1.02.
+Ok; the main difference with this version is that (besides being written
+in perl) there is a config file -- "cops.cf", that is used to control the
+cruft inside all of the modules.  No more muss, no more fuss.  I'll try
+to go over the main ones here.  The only important thing you have to set in
+the "cops" main file (or via the "-s" flag) is the secure directory, which 
+by default is "."; this is where cops will look for the config file and all
+the programs.  Also, if something is flagged as world-writable, and the file
+itself is not writable, but the parent directory is, then there will be an
+asterix after the warning (e.g. /usr/foo/bar is World Writable! (*).)  
+Finally, the suid.chk program, like all the rest of the programs, is meant 
+to be run as a part of "cops"; it's output will go to stdout if run 
+standalone, or either get mailed or saved to the result file if run under 
+cops.  That's a bit different than the old version.  Depending on comments,
+I'll either keep it this way, or put in some more options.
+X
+X  As said in the config file -- "cops.cf" (a "#" sign denotes comments):
+X
+# anything beginning with /^\s*[$@%&]/ will be eval'd
+X
+X  In general, you can put variables and programs that will be run inside
+the config file.  Variables look startlingly like they do in normal perl
+(look at the "PROGRAMS" section below for more on running programs); e.g.:
+X
+$NMAIL 		= 0; 		# send mail instead of generating reports
+$ONLY_DIFF 	= 0;  		# only send diff from last time
+$SECURE_USERS   = "root"; 	# user to receive mailed report
+X
+X  Setting something to "0" (without quotes is fine) generally means that 
+the option is not used.  "1" (or non-zero values, if you feel gutsy) is 
+used for a positive/true/whatever value.  The variables in general should
+be very similar to their normal cops counterparts; in this case, setting
+NMAIL to 1 would mean to mail info to the user listed in SECURE_USERS.
+If ONLY_DIFF is 1, it will only mail reports if change has occurred.
+X
+X  In general, variables in package main are for cops itself, whereas
+those with package qualifiers are for a particular chk routine or
+for auxiliary routines.  For instance, the following lines:
+X
+# this one says to ignore warnings about paths matching these regexps
+@chk_strings'ignores = ( '^/tmp/?', '^/(var|usr)/tmp/?' );
+X
+X  "chk_strings" is a routine that checks for writable programs within other
+programs, usually executed by root, such as /etc/rc and crontab.  This line
+says to ignore any files that start with a "/tmp", "/var/tmp", or "/usr/tmp".
+If you have a file or set of files that always are returning writable that
+are inside your rc and cron files, then you can put exceptions here.  One
+possibility is that you don't care about files created by other programs,
+so that anything after a ">" should be ignored.  You might add something
+like '>.*' to ignore files like "/usr/bar/snowcone", in a line like
+"/foo/bar/command > /usr/bar/snowcone".
+X
+X  Next, there is a nifty option, that does recursive searching inside the
+files chk_strings looks at.  This is neat... get it working by setting this
+to 1:
+X
+$chk_strings'recurse = 1;
+X
+X  So, if you have a line like this in /etc/rc:
+X
+/usr/bin/foo > /dev/console
+X
+X  It will examine "/usr/bin/foo" for programs inside of it -- and it will
+keep going until it has exhausted all possibilities.  So you can get warning
+messages like:
+X
+Warning!  File /foo/bar (inside /usr/local/X11R4/bin/X inside /usr/local/X11R4
+/bin/xdm inside /etc/rc.local) is _World_ writable!
+X
+X  Fun stuff.  No one can hide, now...
+X
+PROGRAMS
+=========
+X
+X  Running a program within cops is easy; you just have the program with
+any options by itself on a line.  Semi-colons are not welcome here.
+E.g.:
+X
+# first test the security of the root account
+root.chk
+X
+X  Some variables specific to the various programs are here as well, e.g.:
+X
+# now of the various devices.  -g means to check group writability, too
+$MTAB    = '/etc/fstab';
+$EXPORTS = '/etc/exports';
+$TAB_STYLE = 'new';
+dev.chk -g 
+X
+X  This is specifying the export files, etc., and saying that you should
+use the "new" format style in the exports file.  Ultrix, etc. uses the
+old style.  Suid.chk eats up time -- consider the "-n" flag for systems
+that have big NFS mounted disks.  And that's it -- the rest should be very 
+similar to the old cops, and theoretically, should give you similar or
+the same results.
+X
+X  Good luck!  Send bugs, flames, etc. to df@cert.sei.cmu.edu
+X
+X -- dan
+SHAR_EOF
+chmod 0700 beta/README.perl ||
+echo 'restore of beta/README.perl failed'
+Wc_c="`wc -c < 'beta/README.perl'`"
+test 4854 -eq "$Wc_c" ||
+	echo 'beta/README.perl: original size 4854, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/chk_strings ==============
+if test -f 'beta/chk_strings' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/chk_strings (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/chk_strings (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/chk_strings' &&
+#!/bin/sh  # need to mention perl here to avoid recursion
+#
+#  Usage: chk_strings filename
+#
+#  This will check pathnames inside executable files for writability,
+# The big string "@ignores" is a list of files that are ignored by
+# this; you can set it to whatever you want -- default is:
+# '^/tmp/?' and '^/(var|usr)/tmp/?'
+# 
+#  No program root EVER runs should be show up here.
+#
+# NOTE:
+#   If you know where perl is and your system groks #!, put its
+# pathname at the top to make this a tad faster.
+#
+# the following magic is from the perl man page
+# and should work to get us to run with perl 
+# even if invoked as an sh or csh or foosh script.
+# notice we don't use full path cause we don't
+# know where the user has perl on their system.
+#
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' 
+& eval 'exec perl -S $0 $argv:q'
+X    if $running_under_some_stupid_shell_instead_of_perl;
+X
+package main;
+X
+$| = 1;
+X
+require 'getopts.pl';
+require 'chk_strings.pl';
+X
+die "Usage: $0 [-rd] file ...\n" unless &Getopts('rd') && @ARGV;
+X
+package chk_strings;
+X
+$debug = $'opt_d;
+$recurse = $'opt_r;
+@ignores = ( '^/tmp/?', '^/(var|usr)/tmp/?' )
+X    unless defined @ignores;
+X
+#%paths = ();  # faster than local
+X
+for (@'ARGV) { 
+X    (warn("$0: $_: $!\n"), next) unless -e;
+X    &'chk_strings($_); 
+} 
+SHAR_EOF
+chmod 0700 beta/chk_strings ||
+echo 'restore of beta/chk_strings failed'
+Wc_c="`wc -c < 'beta/chk_strings'`"
+test 1292 -eq "$Wc_c" ||
+	echo 'beta/chk_strings: original size 1292, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/chk_strings.pl ==============
+if test -f 'beta/chk_strings.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/chk_strings.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/chk_strings.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/chk_strings.pl' &&
+#
+#  This is a big one.  Support routines to check for strings 
+# that look like pathnames and make sure they're not writable.
+# Will recurse if $recurse is set.  the shell version can't do
+# this (yet).  call &ignore with list of regexps that you don't
+# care about.  (or set @ignores)
+#
+# originally by Tom Christiansen <tchrist@convex.com>
+# since hacked on by parties various and sundry.
+X
+require 'is_able.pl';
+require 'file_mode.pl';
+require 'pathconf.pl';
+X
+package chk_strings;
+X
+X
+$'STRINGS = $'STRINGS || '/usr/ucb/strings';
+X
+for ( '/dev/null', '/dev/tty' ) {
+X    $seen{$_}++;
+} 
+X
+sub main'chk_strings {
+X    local($ARGV) = @_;
+X    local($_);
+X    local($word);
+X    local(*STRINGS);  # XXX: might run out of fd's on deep recursion!  -tchrist
+X    local(%paths, $text); 
+X    local($STRINGS) = "$'STRINGS $ARGV |";
+X
+X    &ignore(@ignores) if defined @ignores && !$already_ignored;
+X
+X    $STRINGS="< $ARGV", $text=1 if -T $ARGV;
+X    print "Opening via: $STRINGS\n" if $debug;
+X
+X    open (STRINGS, $STRINGS); 
+X    while (<STRINGS>) { 
+X	next unless m#/#;   # was m#/.*/#;
+#---------------------------------------------------------------------------
+# Comments and modifications by Martin Foord (maf%dbsm.oz.au@munnari.oz.au).
+X	#s/#.*$// if $text;  # strip out comments if -T file
+X	# Comments start in the shell at the beginning of a word or at the
+X	# beggining of a line
+X	if ($text) {
+X		s/\s+#.*$//;
+X		s/^#.*$//;
+X	}
+X
+X	# Get rid of semicolons, they can hang around on filenames ...
+X	s/;//g;
+#---------------------------------------------------------------------------
+X
+X	s/"([^"]*)"/ $1 /g;
+X	s/'([^']*)'/ $1 /g;
+X	# See my comments below on how to deal with this stuff ... (line 64).
+X	#s/`([^`]*)`/ $1 /g;
+X
+X
+X	s!([<>])\s+/!$1/!g;  # "> /foo" goes to ">/foo";
+X
+X	s/=/ /g;  # warning -- mangled files with = in them
+X	for $word (split) {
+X	    if ($word =~ m#:/#) {
+X		print "push $word (split on the colons)\n" if $debug;
+X		@paths{split(/:/, $word)} = ();
+X	    } elsif ($word =~ m#^[<>]?/#) {
+X		print "push $word\n" if $debug;
+X		$paths{$word}++;
+X	    }
+X	}
+X    }
+X    close (STRINGS);
+X    push(@files, $ARGV);
+X
+X    for (keys %paths) {
+X	s/\)$//;
+X	s/^\(//;
+X	s#^/+#/#;
+X	s#^(/.*)/$#$1#;	    # get rid of trailing slash
+X
+#---------------------------------------------------------------------------
+# Comments and modifications by Martin Foord (maf%dbsm.oz.au@munnari.oz.au).
+X	# It's best to evaluate what's in backquotes rather than remove them
+X	# as in the substitution above, due to files which
+X	# look like this /var/yp/`domainname` (eg in my /etc/rc.local).
+X	s`\`(.+)\``$1`; # eval what's in backquotes.
+X	chop if /\n$/;	# fang off \n if there ...
+#---------------------------------------------------------------------------
+X	next if &ignored($_);
+X	s/^[<>]//;
+X	next if $_ eq '';
+X	next unless !$seen{$_}++ && -e && !-S _;
+X	print "checking $_\n" if $debug;
+X	if ($how = &'is_writable($_)) {
+X	    print "Warning!  File $_ (inside ",
+X			join(' inside ', reverse @files), ") is _World_ $how!\n";
+X	} elsif ($recurse && (&'Mode($_) & 0111) && -f _) {
+X	     print "recursing $_\n" if $debug;
+X	     &'chk_strings($_);   
+X	} 
+X    }
+X     pop(@files);
+} 
+X
+sub ignore {
+X    local($_);
+X    local($prog);
+X
+X    $already_ignored = 1;
+X
+X    $prog = <<'EOCODE';
+X
+sub ignored {
+X    local($return) = 1;
+X    local($prog);
+X    local($_) = @_;
+X    {
+EOCODE
+X    for (@_) {
+X	$prog .= "\tlast if m\201${_}\201;\n";
+X    } 
+X    $prog .= <<'EOCODE';
+X	$return = 0;
+X    }
+X    print "$_ IGNORED\n" if $debug && $return;
+X    $return;
+}
+EOCODE
+X    
+X    print $prog if $debug;
+X    eval $prog;
+X    die $@ if $@;
+} 
+X
+sub ignored {}; # in case they never ignore anything
+X
+1;
+SHAR_EOF
+chmod 0700 beta/chk_strings.pl ||
+echo 'restore of beta/chk_strings.pl failed'
+Wc_c="`wc -c < 'beta/chk_strings.pl'`"
+test 3616 -eq "$Wc_c" ||
+	echo 'beta/chk_strings.pl: original size 3616, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/cops ==============
+if test -f 'beta/cops' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/cops (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/cops (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/cops' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#  Usage: cops [-vx] [-c config file] [-s secure_dir] [architecture]
+#
+#  This will change into the $SECURE/architecture directory, suck lots
+# of info and configuration stuff out of "cops.cf", and runs all of the
+# security programs in that file.  If any of the programs find any 
+# security problems, it either sends mail to everyone in the $SECURE_USERS
+# list (see "cops.cf"), or saves the results in a file 
+# $SECURE/architecture/hostname.  It then destroys all temporary files, 
+# and exits the program.  Programs that are run (besides this one):
+#
+#	root.chk	dev.chk		group.chk
+#	rc.chk		passwd.chk	is_able.chk
+#	pass.chk 	user.chk	cron.chk
+#	misc.chk	ftp.chk
+#
+#  The -x and -v (verbose) flags print out the name each program to 
+# the results file as it is executed.  The -v flag also passes the
+# verbose option to other modules.  The -s and -c flags allow you
+# to specify the $SECURE directory and $CONFIG file, respectively.
+# 
+# NOTE:
+#   If you know where perl is and your system groks #!, put its
+# pathname at the top to make this a tad faster.
+#
+# the following magic is from the perl man page
+# and should work to get us to run with perl 
+# even if invoked as an sh or csh or foosh script.
+# notice we don't use full path cause we don't
+# know where the user has perl on their system.
+#
+X
+######################################
+# perl COPS main driver.
+# tchrist@convex.com
+######################################
+X
+# security sanity settings
+#
+$ENV{'IFS'} = '' if $ENV{'IFS'};
+$ENV{'PATH'} = '/bin:/usr/bin:/usr/ucb';
+$| = 1;
+umask 077;
+X
+#
+# Getopts stuff
+$usage = "Usage: $0 [-vx] [-c config_file] [-s secure_dir] architecture\n";
+require 'getopts.pl';
+# Process the command args; Either specify verbose or an alternate config file:
+die $usage unless &Getopts('vxc:s:');
+X
+if (defined($opt_v)) { $verbose = $opt_v;}
+else { $verbose = 0; }
+X
+if (defined($opt_s)) { $SECURE = $LIBCOPS = $opt_s; }
+else { $SECURE = $LIBCOPS = '.'; }
+X
+if (defined($opt_c)) { $CONFIG = $opt_c; }
+else {$CONFIG = "$SECURE/cops.cf"; }
+X
+if (@ARGV > 1) {
+X    die $usage;
+} elsif (@ARGV == 1) {
+X    $SECURE = shift;
+X    die "Architecture directory $SECURE does not exist\n" unless -d $SECURE;
+X    chdir($SECURE) || die "can't cd to $SECURE: $!";
+X    exec './cops';
+} 
+X
+# internal cops stuff needed
+require "$LIBCOPS/pathconf.pl";
+require "$LIBCOPS/is_able.pl";
+require "$LIBCOPS/hostname.pl";
+X
+chmod 0700, $SECURE;  
+chdir ($SECURE) || die "Error -- Security directory $SECURE doesn't exist\n";
+X
+#  Read stuff to do from the config file
+die "$0: Can't trust $CONFIG to reconfig!\n" 	if &'is_writable($CONFIG);
+open CONFIG || die "can't open $CONFIG: $!";
+X
+&argh unless -s $CONFIG;
+X
+&init_result;
+X
+while (<CONFIG>) {
+X    next if /^\s*#/;
+X    next if /^\s*$/;
+X
+X    if (/^\s*[\$&\@\%]/) {  #  reset a config variable
+X	s/#.*//;
+X	eval;
+X	warn "Bad config variable at line $. of $CONFIG:\n\t$_\t$@\n" if $@;
+X	next;
+X    } 
+X
+X    # must be a program to run
+X    chop;
+X    s/#.*//;
+X    s/;$//;
+X    @ARGV=split;
+X    $program = shift;
+X    if ($verbose || $opt_x) { print "\n******* $program *******\n\n"; }
+X    &flush;
+X    &run("$LIBCOPS/$program");
+X    &flush;
+X
+} 
+X
+&save_result;
+X
+&argh unless $ran_something;
+X
+Xexit 0;
+X
+######################################################################
+sub run {
+X    local($module) = @_;
+X    local($status);
+X    local($0) = $module; # so it shows up in ps
+X    local($!);
+X
+X
+X    $ran_something++;
+X
+X    open(STDERR, $COPS_ERRORS ? ">&STDOUT" : ">/dev/null");
+X
+X    unless ($status = do $module) {
+X	if ($@) {
+X	    warn "cops: unexpected exit from $module:\n\t-> $@\n";
+X	} elsif ($! != 0) {
+X	    warn "cops: couldn't run $module: $!\n";
+X	} else {
+X	    warn "cops: $module returned $status\n";
+X	} 
+X    }
+X
+X    # hack for kuang, who doesn't write to STDOUT (yet!)
+X    $SUCCESS = "$SECURE/Success";
+X    if ($module =~ /^kuang/ && -e $SUCCESS) {
+X	if (open SUCCESS) {
+X	    print while <SUCCESS>;  # STDOUT is $REPORT
+X	    close SUCCESS;
+X	    unlink $SUCCESS;
+X	} else {
+X	    warn "can't open $SUCCESS: $!\n";
+X	} 
+X    } 
+}
+######################################################################
+sub init_result {
+X    $REPORT = "$SECURE/result.$$";  # global!
+X    open (REPORT, ">$REPORT") || die "can't create $REPORT: $!\n";
+X
+X    # assume dups work
+X    open (STDOUT, ">&REPORT");
+X    open (SAVERR, ">&STDERR");
+X    open (STDERR, ">&STDOUT");
+X
+X    ($sec, $min, $hour, $mday, $mon, $year,
+X	$wday, $yday, $isdst) = localtime(time);
+X
+X    $name = sprintf("%s_%s_%s", $year + 1900, 
+X	(Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec)[$mon],
+X	$mday);
+X
+X    $host = &hostname;	# from hostname.pl
+X    $host =~ s/\..*//;
+X
+X    # Dan, do you want full path for `date` on next line?
+X    print "ATTENTION:\nSecurity report for ", `date`;
+X    print "\nfrom host $host, $name\n\n";
+X    $report = $name;
+X
+X    &flush;
+}
+######################################################################
+sub save_result {
+X    open(STDERR, ">&SAVERR");
+X
+X    close REPORT || die "can't close $REPORT: $!\n";
+X
+X    $dir = "$SECURE/$host";
+X    $report = $dir . "/" . $report;
+X
+X    mkdir($dir,0700) unless -d $dir;
+X
+X    if ($NMAIL) {
+X	system "$MAIL $SECURE_USERS < $REPORT"
+X	    unless $ONLY_DIFF && !&different($dir, $REPORT);
+X    } else {
+#	rename ($REPORT, $dir . "/" . $name) ||
+#	    die "can't put $REPORT into $dir/$name: $!";
+X	rename ($REPORT, $report) ||
+X	    die "can't put $REPORT into $report: $!\n";
+X    }
+X    unlink $REPORT;
+} 
+X
+######################################################################
+sub different {
+X    local($dir, $FILE1) = @_;
+X    local($FILE2, $f1, $f2, $_);
+X
+X    open (LS, "$LS -t $dir |");
+X    chop($FILE2 = <LS>);
+X    close(LS); # snuff it out
+X
+X
+X    return 1 if !$FILE2 || -s $FILE1 != -s $FILE2;
+X
+X    open FILE1 || die "can't open $FILE1: $!\n";
+X    open FILE2 || die "can't open $FILE2: $!\n";
+X
+X    for (1..5) {
+X	$_ = <FILE1>;
+X	$_ = <FILE2>;
+X    } 
+X
+X    while ( ($f1 = <FILE1>), ($f2 = <FILE2>) ) {
+X	last if $f1 ne $f2;
+X    } 
+X
+X    close FILE1;
+X    close FILE2;
+X
+X    defined($f1) || defined($f2);
+} 
+X
+######################################################################
+sub flush {
+X    local($old) = $|;
+X    $| = 1;
+X    print '';
+X    $| = $old;
+} 
+X
+sub argh {
+X    die "Argh -- Can't find anything in $CONFIG\n";
+}
+SHAR_EOF
+chmod 0700 beta/cops ||
+echo 'restore of beta/cops failed'
+Wc_c="`wc -c < 'beta/cops'`"
+test 6437 -eq "$Wc_c" ||
+	echo 'beta/cops: original size 6437, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/cops.cf ==============
+if test -f 'beta/cops.cf' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/cops.cf (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/cops.cf (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/cops.cf' &&
+#
+# COPS CONFIGURATION FILE
+#
+# put user variables here: anything beginning with /^\s*[$@%&]/ will be eval'd
+# in general, variables in package main are for cops itself, whereas
+# those with package qualifiers are for a particular chk routine or
+# for auxiliary routines.
+X
+# COPS  main variables follow...
+$NMAIL 		= 0; 		# send mail instead of generating reports
+$ONLY_DIFF 	= 0;  		# only send diff from last time
+$SECURE_USERS   = "root"; 	# user to receive mailed report
+$C2             = 0;		# Sun c2 security package
+$OVER_8		= 0;		# long usernames > 8 characters
+X
+# these don't really work for pass.cache yet
+$IGNORE_YP	= 0;
+$PASSWD		= '/etc/passwd';
+$GROUP		= '/etc/group';
+X
+# put whatever gets pw info here, like '/bin/cat /etc/security/passwd' or
+# whatever; no or a null entry means it tries the standard /etc/passwd
+# and 'ypcat passwd' stuff.  Note that this will pass the info to the
+# password caching program -- it expects a file with *exactly* the same
+# fields and such as the normal password file, ok?
+# $GET_PASSWD	= '/bin/cat passwd';
+X
+###############################################################
+# many things call &chk_strings (including {cron,misc,rc,root}.chk)
+# the following two variable settings affects its behaviour...
+# this one says to ignore warnings about paths matching these regexps
+X
+@chk_strings'ignores = ( '^/tmp/?', '^/(var|usr)/tmp/?' );
+X
+# this will take a bit longer, but can find dangerous things much better
+# the shell cops can't do this.... sigh
+X
+$chk_strings'recurse = 1;
+X
+# if we want stat failure warnings from is_able...
+X
+$is_able'noisy = 0;  
+X
+###############################################################
+# finally the checks to execute.  these can also all be run 
+# stand-alone from the shell.
+X
+# first test the security of the root account
+root.chk
+X
+#   Now of the various devices.  adding the -g option to dev.chk means too
+# check group writability, too
+$MTAB    = '/etc/fstab';
+$EXPORTS = '/etc/exports';
+$TAB_STYLE = 'new';
+dev.chk
+X
+# exaustive tests for things that shouldn't be readable/writable etc:
+is_able.chk
+X
+# check for insecuities in /etc/rc*:
+rc.chk
+X
+# and in cron:
+cron.chk
+X
+# some consistency and idiocy (null or trivial passwds) in /etc/passwd:
+passwd.chk
+X
+# cracking passwds:
+pass.chk
+X
+# consistency checks in /etc/group
+group.chk
+X
+# make sure user accounts don't have trojanable dot files:
+user.chk
+X
+# check ftp security:
+$ftp'primary = "root";
+$ftp'secondary = "ftp";
+ftp.chk
+X
+# and anything else we forgot
+X
+# Sys V types use /etc/servers here:
+$misc'inetd = "/etc/inetd";
+misc.chk
+X
+# Kuang!
+kuang
+X
+# SUID checking:
+# suid.chk
+SHAR_EOF
+chmod 0700 beta/cops.cf ||
+echo 'restore of beta/cops.cf failed'
+Wc_c="`wc -c < 'beta/cops.cf'`"
+test 2608 -eq "$Wc_c" ||
+	echo 'beta/cops.cf: original size 2608, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/cron.chk ==============
+if test -f 'beta/cron.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/cron.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/cron.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/cron.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#  Usage: cron.chk.pl [-rd]
+#
+#  This checks pathnames and files inside the cron files /usr/lib/crontab
+# for writability.
+#
+#  Mechanism:  The commands inside the file /usr/lib/crontab are executed
+# by root.  This perl script uses chk_strings.pl for chking for writable
+# files/dirs.
+#
+#  cron.chk.pl will try to find a file in /usr/lib/crontab first (bsd),
+# and then if it isn't there, it will look in the any alternate
+# possible locations next -- right now, /usr/spool/cron/crontab -- to
+# see if a directory exists, and, if it does, it checks all the cron
+# files in turn.
+#
+#  WARNING!
+#
+#  Spurious messages can occur; a more stringent method (if perhaps less
+# careful of a check) would be to test just the 6th field, instead of
+# all the fields after the fifth.  Also throwing away /tmp, etc. could
+# be a mistake.
+#
+X
+package main;
+X
+require 'getopts.pl';
+require 'glob.pl';
+require 'chk_strings.pl';
+require 'pathconf.pl';
+X
+# should also add args to override default crontab locations
+die "Usage: $0 [-rd]\n" unless &Getopts('rd') && !@ARGV;
+X
+$chk_strings'debug = $opt_d;
+$chk_strings'recurse = $opt_r;
+X
+package cron_chk;
+X
+#  Possible location of crontab file:
+$cron = "/usr/lib/crontab";
+#  alternate reality locations of crontab file:
+@alt_cron = ("/usr/spool/cron/crontabs");
+X
+if ( ! -s $cron) {
+X    for (@alt_cron) {
+X	# are there ever multiple crontab directories?
+X	(@crons = &'glob("$_/*")), last if -d;
+X    }
+X    die "No crontabs?\n" if ! @crons;
+}
+@crons = ($cron) unless @crons;
+X
+# ignore /tmp /dev/null and tty stuff
+# &'chk_strings ignores all of above
+# STILL NEED to ignore stuff after `>'  ??
+#   when we add @ignore stuff to &'chk_strings
+# @ignore stuff is in &'chk_strings now, do we want to ignore filenames
+#   being redirected into .. might as well leave them, let the user decide.
+X
+# finally, do the checking -- maybe for one, maybe for lots of cron-ites:
+for (@crons) {
+X    if (! -e) {
+X	warn "$0: $_: $!\n";
+X	next;
+X    }
+X    &'chk_strings($_);
+}
+X
+1;
+SHAR_EOF
+chmod 0700 beta/cron.chk ||
+echo 'restore of beta/cron.chk failed'
+Wc_c="`wc -c < 'beta/cron.chk'`"
+test 2199 -eq "$Wc_c" ||
+	echo 'beta/cron.chk: original size 2199, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/dev.chk ==============
+if test -f 'beta/dev.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/dev.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/dev.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/dev.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#  dev.chk [-g]
+#
+#   This shell script checks the permissions of all devs listed in the
+# file /etc/fstab (the "mount" command would be a preferable way of
+# getting the file system name, but the syntax of the output is variable
+# from machine to machine), and flags them if they are readable by using
+# the "is_readable" command.  It also checks for unrestricted NFS
+# mountings.  By default, dev_check will flag devs only if world readable
+# or writable.  The -g option tells it to print out devs that are also
+# group readable/writable.
+#   As an aside, the fact that NFS mounted dirs are world readable isn't
+# a big deal, but they shouldn't be world writable.  So do two checks here,
+# instead of one.
+#
+#  Two types of /etc/fstab formats I've seen so far:
+#
+# "old" --
+#  spec:file:type:freq:passno:name:options
+#      NFS are indicated by an "@"
+#
+# "new" --
+#  fsname dir type opts freq passno
+#      NFS are indicated by an ":"
+#
+# tchrist@convex.com
+#
+X
+require 'is_able.pl';
+X
+$MTAB    = '/etc/fstab' unless defined $MTAB;
+$EXPORTS = '/etc/exports' unless defined $EXPORTS;
+$TAB_STYLE = 'new' unless defined $TAB_STYLE;  # or 'old'  
+X
+&usage if @ARGV > 1;
+X
+sub usage { die "Usage: $0 [-g]\n"; }
+X
+if (@ARGV == 1) {
+X    if ($ARGV[0] eq '-g') {
+X	$group++;
+X    } else {
+X	&usage;
+X    } 
+} 
+X
+X
+open MTAB || die "can't open $MTAB: $!\n";
+X
+while (<MTAB>) {
+X    next if /^#/;
+X    chop;
+X    if ($TAB_STYLE eq 'new') {
+X	($dev, $fs) = split;
+X	next unless $fs;
+X	if ($dev =~ /:/) {
+X	    push(@nfs_devs, $fs);
+X	} else {
+X	    push(@local_devs, $dev);
+X	} 
+X    } else {
+X	($dev, $fs) = split(/:/);
+X	next unless $fs;
+X	if ($dev =~ /@/) {
+X	    push(@nfs_devs, $fs);
+X	} else {
+X	    push(@local_devs, $dev);
+X	} 
+X    } 
+X
+} 
+X
+if (open EXPORTS) {
+X    while (<EXPORTS>) {
+X	next if /^\s*#/;
+X	next if /\S\s+\S/;
+X	next if /^\s*$/;
+X	chop;
+X	print "Warning!  NFS file system $_ exported with no restrictions.\n";
+X    } 
+} 
+X
+# WARNING: we may hang if server down....
+#
+for (@nfs_devs, @local_devs) {
+X    &is_able($_, 'w', 'w');
+X    next unless $group;
+X    &is_able($_, 'g', 'w');
+} 
+X
+for (@local_devs) {
+X    &is_able($_, 'w', 'r');
+X    next unless $group;
+X    &is_able($_, 'g', 'r');
+} 
+X
+1;
+SHAR_EOF
+chmod 0700 beta/dev.chk ||
+echo 'restore of beta/dev.chk failed'
+Wc_c="`wc -c < 'beta/dev.chk'`"
+test 2378 -eq "$Wc_c" ||
+	echo 'beta/dev.chk: original size 2378, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/fgrep.pl ==============
+if test -f 'beta/fgrep.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/fgrep.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/fgrep.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/fgrep.pl' &&
+#
+#  Just a quick perl fgrep...
+#
+package fgrep;
+X
+sub main'fgrep {
+X    local($file, @exprs) = @_;
+X    local(@list);
+X
+X    if (open file) {
+X	$code = "while (<file>) {\n\tchop;\n";
+X	for (@exprs) {
+X	    $code .= "\tpush(\@list, \$_), next if m\201${_}\201;\n";
+X	} 
+X	$code .= "}\n";
+X	warn "fgrep code is $code" if $debug;
+X	eval $code;
+X	warn "fgrep @exprs $file: $@\n" if $@;
+X    } elsif ($debug) {
+X	warn "main'fgrep: can't open $file: $!\n";
+X    } 
+X
+X    @list;
+} 
+X
+1;
+SHAR_EOF
+chmod 0700 beta/fgrep.pl ||
+echo 'restore of beta/fgrep.pl failed'
+Wc_c="`wc -c < 'beta/fgrep.pl'`"
+test 463 -eq "$Wc_c" ||
+	echo 'beta/fgrep.pl: original size 463, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/file_mode.pl ==============
+if test -f 'beta/file_mode.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/file_mode.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/file_mode.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/file_mode.pl' &&
+#
+#  This retrieves a possibly cached mode on file.
+# If it returns "BOGUS", it means that the stat failed.
+#
+# tchrist@convex.com
+X
+package main;
+require 'stat.pl';
+X
+package file_mode;
+X
+sub main'Mode {
+X    local($file) = @_;
+X
+X    if (!defined $modes{$file}) {
+X       if (&'Stat($file)) {
+X           $modes{$file} = $'st_mode;
+X       } else {
+X           $modes{$file} = 'BOGUS';
+X       }
+X    }
+X    $modes{$file};
+}
+SHAR_EOF
+chmod 0700 beta/file_mode.pl ||
+echo 'restore of beta/file_mode.pl failed'
+Wc_c="`wc -c < 'beta/file_mode.pl'`"
+test 414 -eq "$Wc_c" ||
+	echo 'beta/file_mode.pl: original size 414, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/file_owner.pl ==============
+if test -f 'beta/file_owner.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/file_owner.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/file_owner.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/file_owner.pl' &&
+#
+#   This retrieves possibly cached owner of a file.
+# If it returns "BOGUS", it means that the stat failed.
+X
+package main;
+require 'stat.pl';
+X
+package file_owner;
+X
+sub main'Owner {
+X    local($file) = @_;
+X
+X    if (!defined $owners{$file}) {
+X       if (&'Stat($file)) {
+X           $owners{$file} = $'st_uid;
+X       } else {
+X           $owners{$file} = 'BOGUS';
+X       }
+X    }
+X    $owners{$file};
+}
+SHAR_EOF
+chmod 0700 beta/file_owner.pl ||
+echo 'restore of beta/file_owner.pl failed'
+Wc_c="`wc -c < 'beta/file_owner.pl'`"
+test 398 -eq "$Wc_c" ||
+	echo 'beta/file_owner.pl: original size 398, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/ftp.chk ==============
+if test -f 'beta/ftp.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/ftp.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/ftp.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/ftp.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#  Usage: ftp.chk
+#
+#   This shell script checks to see if you've set up (mainly anonymous)
+# ftp correctly.  There seems to be some different types of ftp's 
+# around; for instance, some allow "chmod" -- and if the home dir is 
+# owned by "ftp", you're toast.  So I've tried to err on the side of
+# safety...
+#
+#   See the man page for a more detailed description, here's what this
+# checks for:
+#
+# - User ftp exists in the password file.
+# - root (or all root equivalents) are in ftpusers file.
+# - Home directory for ftp should exist, and not be /
+# - The ~ftp/etc/{passwd|group} should not be the same as the real ones.
+# - Various critical files/directories should exist, and have correct
+#   permissions and owners; variables "$primary" and "$secondary" can be set
+# to whomever you want owning the files:
+#
+#  File/Dir          Perms           Owner      Other
+#  =========         ======          ======     ======
+#  ~ftp              non-w.w.        root
+#           or
+#  ~ftp              555             ftp	if no chmod command exists
+#
+#     All of these are ftp owned iff no chmod exists...
+#
+#  ~ftp/bin          non-w.w.        root/ftp
+#  ~ftp/bin/ls       111             root/ftp
+#  ~ftp/etc          non-w.w.        root/ftp
+#  ~ftp/etc/passwd   non-w.w.        root/ftp   0 size or nonexistant
+#  ~ftp/etc/group    non-w.w.        root/ftp   0 size or nonexistant
+#  ~ftp/pub          non-w.w.        root/ftp
+#  ~ftp/incoming     world-writable  root/ftp   This can be set to "pub"
+#  ~ftp/.rhosts      non-w.w.        root       0 size, is optional
+#  ~ftp/*            non-w.w.                   other dirs/files in ~ftp
+#
+#
+X
+require 'is_able.pl';
+require 'file_mode.pl';
+require 'glob.pl';
+require 'fgrep.pl';
+require 'pass.cache.pl';
+require 'file_owner.pl';
+require 'pathconf.pl';
+X
+$CMP="/bin/cmp" unless defined $CMP;
+X
+package ftp;
+X
+#   Primary and secondary owners of the ftp files/dirs; if you *don't* have
+# chmod, you can probably change the secondary owner to "ftp".  If you have
+# chmod in your ftp, definitely have secondary to some other account (root
+# is fine for this.)
+$primary = "root" unless defined $primary;
+$secondary = "ftp" unless defined $secondary;
+X
+# some might have this as ftpd; is the account in /etc/passwd
+$ftpuid = "ftp";
+X
+# system files
+$ftpusers = "/etc/ftpusers";
+$passwd = $'PASSWD || "/etc/passwd";
+$group = $'GROUP || "/etc/group";
+X
+#   ftp's home:
+$ftproot = &'uname2dir($ftpuid);
+$anonymous = $ftproot ne '';
+X
+$ftprhosts = "$ftproot/.rhosts";
+$ftpbin = "$ftproot/bin";
+$ftpls = "$ftpbin/ls";
+$ftpetc = "$ftproot/etc";
+$ftppasswd = "$ftpetc/passwd";
+$ftpgroup = "$ftpetc/group";
+X
+$W = 'Warning!  ' unless defined $W;
+X
+#   the pub/incoming stuff; by default, pub is *not* world writable, incoming
+# is; if you want pub to be world writable, just change incoming to "pub"
+$incoming = "pub";
+X
+@crit_files=($ftpgroup,
+X	     $ftppasswd,
+X	     $ftpls);
+X
+if (-s $ftpusers) {
+X    # check to see if root (or root equivalents) is in ftpusers file
+X    @all_roots = split(" ", $'uid2names{0});
+X    for $i (@all_roots) {
+X	if (length($user2passwd{$i}) == 13 && ! &'fgrep($ftpusers, "^$i$")) {
+X	    print "Warning!  $i should be in $ftpusers!\n";
+X	}
+X    }
+}
+X
+#  do the anonymous ftp checking stuff now?
+die unless $anonymous;
+X
+#   if the user ftp doesn't exist, no-anon stuff....
+# if $TEST -z $ftproot -a "$anonymous" = "yes" ; then
+X
+die "${W}Need user $ftpuid for anonymous ftp to work!\n" if ($ftpuid eq "");
+X
+#   if the user ftp doesn't exist, no-anon stuff....
+if (! -d $ftproot || $ftproot eq "") {
+X    die "${W}Home directory for ftp doesn\'t exist!\n";
+}
+if ($ftproot eq "/") {
+X    print qq:${W}$ftproot ftp's home directory should not be "/"!\n:;
+}
+X
+#   want to check all the critical files and directories for correct
+# ownership.  Some versions of ftp don't need much of anything... no 
+# etc directory or password/group files.
+#   others need etc directory & password/group files.  Experiment.
+#
+push(@crit_files, $ftpbin, $ftpetc);
+for $i (@crit_files) {
+X    $owner = &'Owner($i);
+X
+X    if ($owner eq 'BOGUS') {
+X	print "${W}Critical anon-ftp file $i is missing!\n";
+X	next;
+X    }
+X
+X    $owner = $'uid2names{$owner};
+X
+X    if ($owner !~ /\b$primary\b|\b$secondary\b/) {
+X       print "${W}$i should be owned by $primary or $secondary, not $owner!\n";
+X    }
+}
+X
+#  Don't want the passwd and group files to be the real ones!
+if (&'Owner($ftppasswd) ne 'BOGUS' &&
+X    $passwd ne $ftppasswd && 
+X    ! system "$CMP -s $passwd $ftppasswd") 
+{
+X    print "${W}$ftppasswd and $passwd are the same!\n";
+}
+X
+if (&'Owner($ftpgroup) ne 'BOGUS' &&
+X    $group ne $ftpgroup && 
+X    ! system "$CMP -s $passwd $ftpgroup") 
+{
+X    print "${W}$ftpgroup and $group are the same!\n";
+}
+X
+#   ftproot is special; if owned by root; should be !world writable;
+# if owned by ftp, should be mode 555
+X
+if (&'Owner($ftproot) ne 'BOGUS') {
+X    $owner = $'uid2names{&'Owner($ftproot)};
+X    $perms=&'Mode($ftproot);
+X    if ($owner !~ /\b$primary\b|\b$secondary\b/) {
+X	print "${W}$ftproot should be owned by $primary or $secondary, not $owner!\n";
+X    }
+X
+X    # ftp-root should not be world-writable:
+X    &'is_able($ftproot, "w", "w");
+X
+X    # if ftp owns root-dir, then mode should be 555:
+X    if ($owner eq $ftpuid && $perms ne 00555) {
+X	print "${W}$ftproot should be mode 555!\n";
+X    }
+}
+X
+#
+# check the .rhosts file:
+if (-f $ftprhosts) {
+X    if (-s $ftprhosts) {
+X	print "${W}$ftprhosts should be be empty!\n";
+X    }
+X    $owner=$'uid2names{&'Owner($ftprhosts)};
+X    if ($owner ne $primary && $owner ne $secondary) {
+X	print "${W}$ftprhosts should be owned by $primary or $secondary!\n";
+X    }
+}
+X
+# finally, some permissions of miscellaneous files:
+if (($perms=&'Mode($ftpls)) & 0666) {
+X    printf "${W}Incorrect permissions (%04o) on $ftpls!\n", $perms;
+}
+X
+if (($perms=&'Mode($ftppasswd)) & 0333) {
+X    printf "${W}Incorrect permissions (%04o) on $ftppasswd!\n", $perms;
+}
+X
+X
+if (($perms=&'Mode($ftpgroup)) & 0333) {
+X    printf "${W}Incorrect permissions (%04o) on $ftpgroup!\n", $perms;
+}
+X
+#   Finally, the ~ftp/{pub|incoming|whatever} stuff:
+opendir(FTPDIR, $ftproot) || die "can't opendir $ftproot: $!\n";
+X
+@all_dirs=grep(-d, readdir(FTPDIR));
+X
+local($is_able'silent) = 1;  
+for $i (@all_dirs) {
+X    if ($i ne $incoming && &'is_able($ftproot . "/$i", "w", "w")) {
+X	print "${W}Anon-ftp directory $i is World Writable!\n";
+X    }
+}
+X
+1;
+# end of script
+SHAR_EOF
+chmod 0700 beta/ftp.chk ||
+echo 'restore of beta/ftp.chk failed'
+Wc_c="`wc -c < 'beta/ftp.chk'`"
+test 6582 -eq "$Wc_c" ||
+	echo 'beta/ftp.chk: original size 6582, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/get-cf ==============
+if test -f 'beta/get-cf' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/get-cf (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/get-cf (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/get-cf' &&
+#! /usr/local/bin/perl
+X
+@dot_files = (
+X    ".login", ".logout", ".cshrc",			# csh, cshe or tcsh
+X    ".profile",						# ksh, sh
+X    ".env",						# ksh
+X    ".alias", ".aliases",				# common for all shells
+X    "user.ps", ".user.ps", "tools.ps", ".tools.ps",
+X	"startup.ps", ".startup.ps",			# NeWS
+X    ".mgrc",						# MGR
+X    ".X11init", ".awmrc", ".twmrc", ".xinitrc",		# X11
+X    ".emacs"						# emacs
+);
+X
+%seen = {};
+X
+open(HOST, "/bin/hostname |") || die "can't get the hostname";
+chop($hostname=<HOST>);
+close(HOST);
+X
+user_loop:
+X    for (($name,$passwd,$uid,$gid,$quota,$comment,$gcos,$dir,$shell) = getpwent();
+X         $name ne "";
+X         ($name,$passwd,$uid,$gid,$quota,$comment,$gcos,$dir,$shell) = getpwent()) {
+X
+X	#
+X	# If the user has a home directory on this server, get the info 
+X	# about the directory, his CF's and so on.
+X	#
+X	if ($dir =~ m,^/n/$hostname/,) {
+X	    if (! -d $dir) {
+X		printf(stderr "home directory '%s' for user '%s' doesn't exist.\n",
+X			$dir,
+X			$name);
+X		next user_loop;
+X	    }
+X
+X	    ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+X                    $atime,$mtime,$ctime,$blksize,$blocks)
+X                        = stat(_);
+X	    $mode = $mode & 07777;
+X
+X	    &spit_it_out("d", $uid, $gid, $mode, $dir);
+X
+X	    foreach $file (@dot_files) {
+X		$path = "$dir/$file";
+X
+X		if (-f $path) {
+X		    ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+X                        $atime,$mtime,$ctime,$blksize,$blocks)
+X                            = stat(_);
+X		    $mode = $mode & 07777;
+X
+X		    &spit_it_out("f", $uid, $gid, $mode, $dir);
+X		}
+X	    }
+X	}
+X    }
+X
+X
+X
+X
+sub spit_it_out {
+X    local($type, $uid, $gid, $mode, $name) = @_;
+X
+X    if (defined($seen{$name})) {
+X	return;
+X    }
+X
+X    printf("%s %d %d 0%o %s\n", $type, $uid, $gid, $mode, $name);
+X    $seen{$name} = 1;
+}
+X
+SHAR_EOF
+chmod 0700 beta/get-cf ||
+echo 'restore of beta/get-cf failed'
+Wc_c="`wc -c < 'beta/get-cf'`"
+test 1776 -eq "$Wc_c" ||
+	echo 'beta/get-cf: original size 1776, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/getopts.pl ==============
+if test -f 'beta/getopts.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/getopts.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/getopts.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/getopts.pl' &&
+;# getopts.pl - a better getopt.pl
+X
+;# Usage:
+;#      do Getopts('a:bc');  # -a takes arg. -b & -c not. Sets opt_* as a
+;#                           #  side effect.
+X
+sub Getopts {
+X    local($argumentative) = @_;
+X    local(@args,$_,$first,$rest,$errs);
+X    local($[) = 0;
+X
+X    @args = split( / */, $argumentative );
+X    while(($_ = $ARGV[0]) =~ /^-(.)(.*)/) {
+X	($first,$rest) = ($1,$2);
+X	$pos = index($argumentative,$first);
+X	if($pos >= $[) {
+X	    if($args[$pos+1] eq ':') {
+X		shift(@ARGV);
+X		if($rest eq '') {
+X		    $rest = shift(@ARGV);
+X		}
+X		eval "\$opt_$first = \$rest;";
+X	    }
+X	    else {
+X		eval "\$opt_$first = 1";
+X		if($rest eq '') {
+X		    shift(@ARGV);
+X		}
+X		else {
+X		    $ARGV[0] = "-$rest";
+X		}
+X	    }
+X	}
+X	else {
+X	    print STDERR "Unknown option: $first\n";
+X	    ++$errs;
+X	    if($rest ne '') {
+X		$ARGV[0] = "-$rest";
+X	    }
+X	    else {
+X		shift(@ARGV);
+X	    }
+X	}
+X    }
+X    $errs == 0;
+}
+X
+1;
+SHAR_EOF
+chmod 0700 beta/getopts.pl ||
+echo 'restore of beta/getopts.pl failed'
+Wc_c="`wc -c < 'beta/getopts.pl'`"
+test 902 -eq "$Wc_c" ||
+	echo 'beta/getopts.pl: original size 902, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/glob.pl ==============
+if test -f 'beta/glob.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/glob.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/glob.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/glob.pl' &&
+#
+#  This does shell or perl globbing without resorting
+# to the shell -- we were having problems with the shell blowing
+# up with extra long pathnames and lots of file names.  set $glob'debug 
+# for trace information.
+#
+# tom christiansen <tchrist@convex.com>
+X
+package glob;
+X
+sub main'glob { 
+X    local($expr) = @_;
+X    local(@files);
+X
+X    $? = 0;
+X    open(SAVERR, ">&STDERR"); close(STDERR);  # suppress args too long
+X    @files = <${expr}>;
+X    if ($?) {
+X	print SAVERR "shell glob blew up on $expr\n" if $debug;
+X	@files = &SHglob($expr);
+X    }
+X    open (STDERR, ">&SAVERR");
+X    # if (@files == 1 && $files[0] eq $expr) { @files = ''; } # sh foo
+X    @files;
+}
+X
+sub main'SHglob {
+X    local($expr) = @_;
+X    local(@retlist) = ();
+X    local($dir);
+X
+X    print "SHglob: globbing $expr\n" if $debug;
+X
+X    $expr =~ s/([.{+\\])/\\$1/g;
+X    $expr =~ s/\*/.*/g;
+X    $expr =~ s/\?/./g;
+X
+X    for $dir (split(' ',$expr)) {
+X	push(@retlist, &main'REglob($dir));
+X    } 
+X
+X    return sort @retlist;
+} 
+X
+sub main'REglob {
+X    local($path) = @_;
+X    local($_);
+X    local(@retlist) = ();
+X    local($root,$expr,$pos);
+X    local($relative) = 0;
+X    local(@dirs);
+X    local($user);
+X
+X    $haveglobbed = 0;
+X
+X    @dirs = split(/\/+/, $path);
+X
+X    if ($dirs[$[] =~ m!~(.*)!) {
+X	$dirs[$[] = &homedir($1);
+X	return @retlist unless $dirs[$[];
+X    } elsif ($dirs[$[] eq '') {
+X	$dirs[$[] = '/' unless $dirs[$[] =~ m!^\.{1,2}$!;
+X    } else {
+X	unshift(@dirs, '.');
+X	$relative = 1;
+X    } 
+X
+X    printf "REglob: globbing %s\n", join('/',@dirs) if $debug;
+X
+X    @retlist = &expand(@dirs);
+X
+X    for (@retlist) {
+X	if ($relative) {
+X	    s!^\./!!o;
+X	}
+X	s!/{2,}!/!g;
+X    } 
+X
+X    return sort @retlist;
+}
+X
+sub expand {
+X    local($dir, $thisdir, @rest) = @_;
+X    local($nextdir);
+X    local($_);
+X    local(@retlist) = ();
+X    local(*DIR);
+X
+X    unless ($haveglobbed || $thisdir =~ /([^\\]?)[?.*{[+\\]/ && $1 ne '\\') {
+X	@retlist = ($thisdir);
+X    } else {
+X	unless (opendir(DIR,$dir)) {
+X	    warn "glob: can't opendir $dir: $!\n" if $debug;
+X	} else {
+X		@retlist = grep(/^$thisdir$/,readdir(DIR));
+X		@retlist = grep(!/^\./, @retlist) unless $thisdir =~ /^\\\./;
+X		$haveglobbed++;
+X	} 
+X	closedir DIR;
+X    } 
+X
+X    for (@retlist) {
+X	$_ = $dir . '/' . $_;
+SHAR_EOF
+true || echo 'restore of beta/glob.pl failed'
+fi
+echo 'End of  part 1'
+echo 'File beta/glob.pl is continued in part 2'
+echo 2 > _shar_seq_.tmp
+exit 0

@@ -1,0 +1,173 @@
+
+CURRENT_MEETING_REPORT_
+
+
+
+Reported by James Galvin/TIS and Keith McCloghrie/Hughes
+
+SNMPSEC Minutes
+
+The SNMP Security Working Group met on Wednesday evening, November 20.
+The Agenda was as follows.
+
+   o Document Finalization
+   o Interoperability Reports
+   o Other Comments
+   o Steps to Publication
+
+
+In particular, the Working Group wanted to see revised documents and
+implementation experience before it would consider recommending the
+documents for publication.
+
+Two of the three documents had been revised and distributed prior to the
+meeting:  SNMP Security Protocols and Definitions of Managed Objects for
+Administration of SNMP Parties.  There were no non-editorial changes to
+be made to the SNMP Administrative Model document so it was not revised
+for this meeting.
+
+Document Finalization
+
+Two editorial changes had been suggested on the mailing list for the
+revised SNMP Security Protocols document.  These changes were noted for
+the Working Group.
+
+The editorial changes required of the SNMP Administrative Model document
+were noted for the Working group.
+
+Interoperability Reports
+
+There are four known implementations of the suite of documents; the only
+feature not implemented in any of them was support for proxy.  Three of
+them have interoperated with each other, using noAuth/noPriv, using MD4,
+and using DES. The Working Group requested that the implementations be
+upgraded to include support for proxy.  [Editors' note:  two of the
+implementations were so upgraded within a few days of the meeting.]
+
+A number of minor changes were suggested as feedback from the
+implementation experience, the most significant being:  changing the
+units of the party clock to be in seconds, and adding a new MIB object
+to the party table to specify the largest SNMP message size that a party
+would accept.  These changes were presented to the Working Group and all
+were approved.  A suggestion that additional MIB objects were required
+to support proxy to non-SNMP-party based proxied agents was also agreed,
+but that these additional objects were considered to be the subject of
+separate follow-on document(s).
+
+                                   1
+
+
+
+
+
+In addition, some performance data was presented comparing the use of
+MD4 and MD5 as authentication digest algorithms.  The data indicated
+that using MD5 took 15MD4 took 5the MD4 implementation was an
+``optimized'' implementation, while the MD5 implementation was the one
+directly out of the internet draft.  This suggests that the reported
+difference should be a worst case scenario.
+
+Next, it was reported to the meeting that the authors of MD4 have
+decided that the MD4 algorithm is suitable for use in all applications
+except those which are long-lived.  In particular, a protocol standard
+is considered long-lived.  Consequently, the Working Group decided to
+adopt MD5 instead of MD4.
+
+Other Comments
+
+A number of other wording changes to the documents were suggested by
+meeting attendees.  All suggestions were noted and adopted.
+
+Steps to Publication
+
+The Working Group agreed that its work was ready for publication.  The
+following steps were specified.
+
+
+  1. The documents would be revised according to the comments discussed
+     at the meeting by Friday, November 22.
+
+  2. The documents will be submitted as internet drafts by Monday,
+     November 25.
+
+  3. The three weeks immediately following their availability as
+     internet drafts will be set aside for final review of the documents
+     by the Working Group.
+
+  4. At the end of three weeks, the documents will be revised (if
+     necessary) according to any discussions on the mailing list, and
+     submitted to the IESG with a recommendation they be published as a
+     Proposed Standard.
+
+
+Attendees
+
+Steve Alexander          stevea@i88.isc.com
+James Barnes             barnes@xylogics.com
+Larry Blunk              ljb@merit.edu
+Steve Bostock            steveb@novell.com
+David Bridgham           dab@asylum.sf.ca.us
+Theodore Brunner         tob@thumper.bellcore.com
+Philip Budne             phil@shiva.com
+Jeffrey Buffum           buffum@vos.stratus.com
+Jeffrey Case             case@cs.utk.edu
+Richard Cherry           rcherry@wc.novell.com
+James Codespote          jpcodes@tycho.ncsc.mil
+
+                                   2
+
+
+
+
+
+Stephen Crocker          crocker@tis.com
+Dave Cullerot            cullerot@ctron.com
+James Davin              jrd@ptt.lcs.mit.edu
+Michael Erlinger         mike@lexcel.com
+Jeff Erwin
+Bill Fardy               fardy@ctron.com
+Shawn Gallagher          gallagher@quiver.enet.dec.com
+James Galvin             galvin@tis.com
+William Jackson          jackson@manta.nosc.mil
+Ole Jacobsen             ole@csli.stanford.edu
+Ron Jacoby               rj@sgi.com
+Satish Joshi             sjoshi@synoptics.com
+Frank Kastenholz         kasten@europa.clearpoint.com
+David Kaufman
+Manu Kaycee              kaycee@ctron.com
+Mark Kepke               mak@cnd.hp.com
+Yoav Kluger              ykluger@fibhaifa.com
+Deidre Kostick           dck2@sabre.bellcore.com
+Ron Lau
+Kenneth Laube            laube@bbn.com
+Walter Lazear            lazear@gateway.mitre.org
+John Linn                linn@zendia.enet.dec.com
+Keith McCloghrie         kzm@hls.com
+Ellen McDermott          emcd@osf.org
+Evan McGinnis            bem@3com.com
+David Minnich            dwm@fibercom.com
+Lynn Monsanto            monsanto@sun.com
+David Perkins            dperkins@synoptics.com
+David Piscitello         dave@sabre.bellcore.com
+Robert Purvy             bpurvy@us.oracle.com
+Anil Rijsinghani         anil@levers.enet.dec.com
+Marshall Rose            mrose@dbc.mtview.ca.us
+Gregory Ruth             gruth@bbn.com
+Jonathan Saperia         saperia@tcpjon.enet.dec.com
+Mark Schaefer            schaefer@davidsys.com
+John Seligson            johns@ultra.com
+William Simpson          Bill_Simpson@um.cc.umich.edu
+Timon Sloane             peernet!timon@uunet.uu.net
+Bruce Taber              taber@interlan.com
+Iris Tal                 437-3580@mcimail.com
+Kaj Tesink               kaj@nvuxr.cc.bellcore.com
+Mark Therieau            markt@python.eng.microcom.com
+Dean Throop              throop@dg-rtp.dg.com
+Steven Waldbusser        waldbusser@andrew.cmu.edu
+Jeremy Wilson
+Preston Wilson           preston@i88.isc.com
+John Ziegler             ziegler@artel.com
+
+
+
+                                   3

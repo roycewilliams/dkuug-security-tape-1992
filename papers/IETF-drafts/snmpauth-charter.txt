@@ -1,0 +1,27 @@
+
+
+SNMP Authentication (snmpauth)
+
+Charter_
+
+Chair(s):
+     James Galvin, galvin@tis.com
+     Keith McCloghrie,
+Mailing Lists:
+     General Discussion:  awg@bitsy.mit.edu
+     To Subscribe:  awg-request@bitsy.mit.edu
+Description of Working Group:
+
+     To define a standard mechanism for authentication within the
+     SNMP.
+
+
+Goals and Milestones:
+
+
+May 1990      Write an RFC specifying procedures and formats for
+              providing standardized authentication within the SNMP.
+
+
+
+                                   1

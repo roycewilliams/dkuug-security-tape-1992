@@ -1,0 +1,1655 @@
+#!/bin/sh
+# this is p4.shar.07 (part 7 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/extensions/questions continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 7; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/extensions/questions'
+else
+echo 'x - continuing file cops_104/extensions/questions'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/extensions/questions' &&
+Xinter-system traffic to cause these things to happen.
+X
+X   Yes - and as a felony in all cases, without exception.
+X
+X   Yes but murder, rape, robbery... are more important and laws and
+Xsentencing should reflect this. There are some around who want to treat
+Xcracking as a capital crime!
+X
+X   Yes, from the denial of services standpoint.  I pay $XXX,XXX.XX for a
+Xsystem, and joe blow slides in and sucks away at those resources, there
+Xshould be a nontrivial penalty for getting caught.  Don't behead the guy,
+Xbut monetary fines or community service would be just fine.
+X
+X
+X   I don't know.  I'm not a philosopher.  Certainly causing
+Xdamage to others is wrong, including denial of service,
+Xcompromising sensitive info, or whatever.  I'm concerned
+Xthough that clamping down on young kids will discourage them
+Xfrom becoming computer geeks.  I think we need to encourage
+Xour young people to become technically literate.  If we
+Xdon't become a more expert society we can kiss it goodbye;
+Xall we'll have left is our military solutions, like some
+Xbrainless jock bully...
+X
+X   I'm not sure that it is everywhere - but: Yes.  Should attempting 
+Xto break in be against the law: No.  Is this vague: Yes.
+X
+X   I did not know that it was. The laws about it have not been tested and 
+Xare vague and unclear. You need to be very clear about what the laws
+Xare going to do. 
+X
+X   **HELL FUCKING YES** Those of us who started in UNIX years ago have
+Xfor the most part *always* respected others!! This I can't stress strong
+Xenough.
+X
+X
+X  10)  Is your site academic, government, or commercial in nature?
+X
+X      Just over 1/2 of those that answered claimed university ties,
+Xwith about 1/4 being commercial, 1/6 government, a few research sites,
+Xand a couple that were a mixture.  Sites included Sun, AT&T, SCO (Xenix),
+Xthe DoD, and the Army, among others.
+X
+X(Guess where this one came from :-)
+X
+XResearch.  We invented Unix.
+X
+XAcademic with commercial applications.
+X
+XPrimarily academic, but we are part of the government.
+X
+XAcademic, except when collecting student fees *) *)
+SHAR_EOF
+echo 'File cops_104/extensions/questions is complete' &&
+chmod 0600 cops_104/extensions/questions ||
+echo 'restore of cops_104/extensions/questions failed'
+Wc_c="`wc -c < 'cops_104/extensions/questions'`"
+test 13339 -eq "$Wc_c" ||
+	echo 'cops_104/extensions/questions: original size 13339, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extensions/uucp.hardening ==============
+if test -f 'cops_104/extensions/uucp.hardening' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extensions/uucp.hardening (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extensions/uucp.hardening (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extensions/uucp.hardening' &&
+XFrom davidsen@crdos1.crd.ge.com Mon Jun 24 21:39:17 1991
+XOrganization: GE Corporate R&D Center
+XDate: Fri, 21 Jun 91 23:32:54 EDT
+XTo: df@cert.sei.cmu.edu
+XSubject: uucp hardening
+X
+XWell, I might not get to it tomorrow, so I did it tonight. Here's the
+Xstuff I have on uucp hardening. It's not all I know, but all I have
+Xwritten down...
+X
+XI give, I give! I got 60+ requests for this so here it is.
+X
+XI am reposting a few articles about uucp hardening which I have used as
+Xa starting point for hardening my own system. I don't totally agree
+Xwith all the things in them, but they are useful input. In particular, I
+Xlike to leave uucp as the main uucp file owner, and move all the logins
+Xto other UIDs.
+X
+XThis is the heart of what I do; change all data files in /usr/lib/uucp
+Xto be owned by uucp, rw to owner only, all uucp programs, such as
+Xuucico, uuxqt, uucp, etc, should all be owned by uucp and run setuid.
+XThe uucp related programs in /usr/bin should be done as well, except
+Xuuto and uupick if you have them, they failed on my system when setuid.
+X
+XThe uucp account is made no login. A second account having the same UID
+Xand GID is setup with your favorite shell to do maintenence. The second
+Xlogin should follow uucp in the passwd file, to allow mail to work
+Xcorrectly. Then each system dialing into yours is given its own
+Xusername and UID, and its login shell is set to /usr/lib/uucp/uucico
+X(or wherever uucico lives in your system). This prevents anyone from
+Xrunning under the uucp UID.
+X
+XIf your system will allow it, make up a group just for uucp dialin, put
+Xall the dialing id's there, and don't allow anyone but owner to execute
+Xuucico (chmod 4700 uucico). On some systems this may not work, and you
+Xwill have to put the dialin id's as group uucp, and allow that group to
+Xexecute uucico (chmod 4710 uucico).
+X
+XIn all cases, no interactive users should run as UID or GID uucp, other
+Xthan the maintenence account. This will prevent executing uucico with
+Xdebug set and getting login info about systems you call, and/or forcing
+Xcalls you don't want to originate and pay for.
+X
+XHere are the original articles I read about uucp hardening, they were
+Xthe starting point for my learning curve in this matter. They were
+Xoriginally on the unix-pc, but contain info directly applicable to any
+X"old" uucp, and with modifications to HDB as well.
+X================
+XPath: chinet!ethos!gizzmo!fthood!egray
+XFrom: egray@fthood
+XNewsgroups: unix-pc.uucp
+XSubject: uucp security
+XMessage-ID: <6700001@fthood>
+XDate: 24 Nov 86 19:14:00 GMT
+XLines: 117
+XNf-ID: #N:fthood:6700001:000:5839
+XNf-From: fthood!egray    Nov 24 14:14:00 1986
+X
+X
+XThe 'rules' of uucp security were not applied to the Unix PC, perhaps
+Xbecause it was assumed that it was going to be a 'home' computer.  That
+Xmight well be the case in quite a few instances but in other situtations,
+Xthe Unix PC might be in a 'hostile' environment.  The following dicussion
+Xis directed to those your wish to harden their uucp security.
+X
+XThe first rule is to have an administrative account to own the uucp
+Xcommands and directories (call it 'uucpadm' for example).  This account
+Xshould NOT have the same UID number as the 'uucp' account.  The account
+Xshould be a normal 'user' account and have one of the standard shells in
+Xthe 7th field of the password file instead of /usr/lib/uucp/uucico.  The
+Xpurpose of this is to prevent a user on a remote system using 'uucp' from
+Xgaining access to your uucp commands and directories.
+X
+XThe second rule is to restrict execute permission on the uucico program.
+XAny person who can execute this command can turn on the debugging with
+Xthe -x option and gain access to the login and passwords to your uucp
+Xaccounts on all of your remote systems.  This can be easily prevented by
+Xremoving the execute permission to 'others'.
+X
+XThe third rule ties the first two together.  In order for your uucp
+Xaccounts to be able to execute 'uucico', you must create a group for
+Xthese users.  This group (call it 'uucpgrp' for example) would be
+Xassigned to the uucico program the uucp directories and to the 'uucp'
+Xaccounts.  In this way only members of this group would have execute
+Xpermission on 'uucico'.
+X
+XSome additional consideration should be given to providing unique UID's
+Xfor each 'uucp' account.  For example, if the remote machines 'sys1'
+Xand 'sys2' both call your system then they should have unique UID's but
+Xshare the same group.  This is to provide an accurate accounting records
+Xof login times, etc.
+X
+XEvery uucp file and directory should have it's write permission removed
+Xto 'others'.  The files /usr/lib/uucp/L.sys and /usr/lib/uucp/USERFILE
+Xshould be set to mode 400 (read to the owner and no access to the
+Xgroup or 'others').
+X
+XThe /usr/lib/uucp/USERFILE determines which accounts should have 'free
+Xreign' over your files.  This file should be set to give read permission
+Xto whatever files your remotes systems need.  On a 'generic' account
+Xlike 'uucp', the read permission should be set to /usr/spool/uucppublic.
+XThis is to allow the machine calling in as 'uucp' to gain access to
+Xonly those files that you have placed in the /usr/spool/uucppublic
+Xdirectory.
+X 
+XThis is the /usr/spool/uucp directory:
+X
+Xdrwxrwxr-x  2 uucpadm uucpgrp     272 Nov 23 19:13 .
+Xdrwxrwxr-x  5 root    bin          80 Oct 11  1985 ..
+X-rw-------  1 uucpadm uucpgrp      58 Nov 23 18:33 AUDIT
+X-rw-rw-r--  1 uucpadm uucpgrp      97 Nov 23 18:33 ERRLOG
+X-rw-rw-rw-  2 root    root          4 Nov 23 19:11 LCK..ph0
+X-rw-rw-r--  1 uucpadm mail         78 Jun  5 04:30 LOGDEL
+X-rw-rw-r--  1 uucpadm uucpgrp       0 Nov 23 18:33 LOGFILE
+X-rw-rw-rw-  2 root    root          4 Nov 23 19:11 LTMP.44
+X-rw-r--r--  1 uucpadm uucpgrp    7320 Nov 23 18:33 Log-WEEK
+X-rw-rw-r--  1 uucpadm uucpgrp    1693 Nov 23 18:33 SYSLOG
+X-rw-r--r--  1 uucpadm mail         59 Nov 10 05:30 o.Log-WEEK
+X-rw-r--r--  1 uucpadm uucpgrp     792 Nov 23 18:33 o.Log-WEEK.z
+X-rw-rw-r--  1 uucpadm uucpgrp     202 Nov 23 18:33 o.SYSLOG
+X
+XThis is the /usr/lib/uucp directory:
+X
+Xdrwxrwxr-x  4 uucpadm uucpgrp     368 Oct 11  1985 .
+Xdrwxrwxr-x 13 bin     bin         992 Oct 11  1985 ..
+Xdrwxrwxr-x  2 uucpadm uucpgrp      32 Jan  1  1970 .OLD
+Xdrwxrwxr-x  2 uucpadm uucpgrp      32 Jan  1  1970 .XQTDIR
+X-rw-r--r--  1 root    uucpgrp     606 Nov 23 18:33 L-devices
+X-rw-r--r--  1 uucpadm uucpgrp      24 Jan  1  1970 L-dialcodes
+X-r--r--r--  1 uucpadm uucpgrp      39 Aug 11 09:54 L.cmds
+X-r--------  1 uucpadm uucpgrp     180 Nov 23 18:33 L.sys
+X-r--------  1 root    daemon      180 Sep 24 17:19 L.sys.bak
+X-rw-r--r--  1 uucpadm uucpgrp      18 Nov 23 18:33 L_stat
+X-rw-r--r--  1 uucpadm uucpgrp      26 Nov 23 18:33 L_sub
+X-rw-r--r--  1 uucpadm uucpgrp      84 Nov 23 18:33 R_stat
+X-rw-r--r--  1 uucpadm uucpgrp      22 Nov 23 18:33 R_sub
+X-rw-rw-rw-  1 uucpadm uucpgrp       4 Nov 23 18:33 SEQF
+X-r--------  1 uucpadm uucpgrp      55 Aug 11 16:13 USERFILE
+X-r--r--r--  1 uucpadm uucpgrp    2581 Jan  1  1970 modemcap
+X---s--x---  1 uucpadm uucpgrp   69376 Jan  1  1970 uucico
+X---s--x--x  1 uucpadm uucpgrp   15536 Jan  1  1970 uuclean
+X-rwxrwxr-x  1 uucpadm operators   390 Jun 11 20:08 uudemon.day
+X-rwxrwxr-x  1 uucpadm operators   134 Jan  1  1970 uudemon.hr
+X-rwxrwxr-x  1 uucpadm operators   332 Jun 11 20:08 uudemon.wk
+X---x------  1 uucpadm uucpgrp    7586 Jan  1  1970 uusub
+X---s--x--x  1 uucpadm uucpgrp   21616 Jan  1  1970 uuxqt
+X
+XThese are the permissions of the uucp commands:
+X
+X---s--x--x  1 uucpadm bin       21942 Jan  1  1970 /usr/bin/uucp
+X-rwxr-xr-x  1 bin     bin        2108 Jan  1  1970 /usr/bin/uucppwd
+X---s--x--x  1 uucpadm bin        7378 Jan  1  1970 /usr/bin/uulog
+X---s--x--x  1 uucpadm bin        2248 Jan  1  1970 /usr/bin/uuname
+X-rwxr-xr-x  1 bin     bin        1596 Jan  1  1970 /usr/bin/uupick
+X---s--x--x  1 uucpadm bin       18042 Jan  1  1970 /usr/bin/uustat
+X-rwxr-xr-x  1 bin     bin         959 Jan  1  1970 /usr/bin/uuto
+X---s--x--x  1 uucpadm bin       25310 Jan  1  1970 /usr/bin/uux
+X
+XThis the line out of the /etc/group file:
+X
+Xuucpgrp:NONE:11:uucp,uucpadm,sys1,sys2
+X
+XThis is the part of the /etc/passwd file:
+X
+Xuucpadm:MslxlslvaW5E2:5:11:Admin for Uucp:/usr/lib/uucp:
+Xuucp:QKqtywR1ggBeo:6:11:Generic Unix to Unix Copy:/usr/spool/uucppublic:/usr/lib/uucp/uucico
+Xusys1:bksugI32a9Z/o:7:11:UUCP for sys1:/usr/spool/uucppublic:/usr/lib/uucp/uucico
+Xusys2:g328dkfgl83wo:8:11:UUCP for sys2:/usr/spool/uucppublic:/usr/lib/uucp/uucico
+X
+XThis is a sample /usr/lib/uucp/USERFILE:
+X
+Xusys1,sys1 /
+Xusys2,sys2 /
+Xuucp, /usr/spool/uucppublic /tmp
+Xgreg,sys1 /u/greg
+X
+X------------------------------
+X
+XPath: chinet!ethos!mtune!shlepper!andys
+XFrom: andys@shlepper.UUCP (andy sherman)
+XNewsgroups: unix-pc.uucp
+XSubject: Re: uucp security
+XSummary: HDB uucico does not echo passwords
+XMessage-ID: <119@shlepper.UUCP>
+XDate: 25 Nov 86 13:51:48 GMT
+XReferences: <6700001@fthood>
+XOrganization: AT&T Bell Laboratories, Middletown, NJ
+XLines: 33
+X
+XIn article <6700001@fthood>, egray@fthood writes:
+X> The second rule is to restrict execute permission on the uucico program.
+X> Any person who can execute this command can turn on the debugging with
+X> the -x option and gain access to the login and passwords to your uucp
+X> accounts on all of your remote systems.  This can be easily prevented by
+X> removing the execute permission to 'others'.
+X> 
+X> The third rule ties the first two together.  In order for your uucp
+X> accounts to be able to execute 'uucico', you must create a group for
+X> these users.  This group (call it 'uucpgrp' for example) would be
+X> assigned to the uucico program the uucp directories and to the 'uucp'
+X> accounts.  In this way only members of this group would have execute
+X> permission on 'uucico'.
+X> 
+XFirst off, a lot of the lack of security for the 7300 uucp is in the
+Xversion of uucp distributed with the basic system.  These
+Xshortcomings, incidentally, are shared with any vanilla SysV R2 UNIX
+Xsystem.  The HoneyDanBer uucp package deals with a lot of these
+Xsecurity holes.  For example, there is a port of the HoneyDanBer
+Xuucp to the 7300 which does not echo passwords for uucico debugging.
+X(I know this package is available inside of AT&T.  I don't know
+Xif/when it is released outside the company.)
+X
+XAs for restricted access to uucico, I know that when I send mail,
+Xthe uucp stuff goes across under my UID.  If you have mail set its
+XUID to call uucico as uucp or mail, don't you lose the ability
+Xto see what user is attached to which jobs in a uustat or in the log?
+X
+X-- 
+Xandy sherman			480 Red Hill Road
+Xat&t bell laboratories		Middletown, NJ 07748
+XDDD:	(201) 615-5708
+XUUCP:	{ihnp4,allegra,akgua,cbosgd,vax135,mtune,...}!shlepper!andys
+X
+X------------------------------
+X
+XPath: chinet!ethos!mtune!mtung!jmd
+XFrom: jmd@mtung.UUCP (JM Donnelly)
+XNewsgroups: unix-pc.uucp
+XSubject: Re: uucp security
+XMessage-ID: <837@mtung.UUCP>
+XDate: 25 Nov 86 16:15:21 GMT
+XReferences: <6700001@fthood> <119@shlepper.UUCP>
+XReply-To: jmd@mtung.UUCP (JM Donnelly)
+XOrganization: AT&T ISL Middletown NJ USA
+XLines: 3
+X
+X
+XI think that protecting /usr/spool/uucp will break the terminal
+Xemulater (async_main) which tries to create a LCK file there.
+X
+X-- 
+Xbill davidsen		(wedu@ge-crd.ARPA -or- davidsen@crdos1.uucp)
+X			{uunet | philabs}!steinmetz!crdos1!davidsen
+X"Stupidity, like virtue, is its own reward" -me
+X
+SHAR_EOF
+chmod 0600 cops_104/extensions/uucp.hardening ||
+echo 'restore of cops_104/extensions/uucp.hardening failed'
+Wc_c="`wc -c < 'cops_104/extensions/uucp.hardening'`"
+test 11163 -eq "$Wc_c" ||
+	echo 'cops_104/extensions/uucp.hardening: original size 11163, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extensions/writing.suid ==============
+if test -f 'cops_104/extensions/writing.suid' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extensions/writing.suid (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extensions/writing.suid (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extensions/writing.suid' &&
+X.TH SETUID 7 local
+X.DA 21 Feb 1987
+X.SH NAME
+Xsetuid \- checklist for security of setuid programs
+X.SH DESCRIPTION
+XWriting a secure setuid (or setgid) program is tricky.
+XThere are a number of possible ways of subverting such a program.
+XThe most conspicuous security holes occur when a setuid program is
+Xnot sufficiently careful to avoid giving away access to resources
+Xit legitimately has the use of.
+XMost of the other attacks are basically a matter of altering the program's
+Xenvironment in unexpected ways and hoping it will fail in some
+Xsecurity-breaching manner.
+XThere are generally three categories of environment manipulation:
+Xsupplying a legal but unexpected environment that may cause the
+Xprogram to directly do something insecure,
+Xarranging for error conditions that the program may not handle correctly,
+Xand the specialized subcategory of giving the program inadequate
+Xresources in hopes that it won't respond properly.
+X.PP
+XThe following are general considerations of security when writing
+Xa setuid program.
+X.de P
+X.nr x \\w'\(sq'u+1n
+X.TP \\nxu
+X\(sq
+X..
+X.P
+XThe program should run with the weakest userid possible, preferably
+Xone used only by itself.
+XA security hole in a setuid program running with a highly-privileged
+Xuserid can compromise an entire system.
+XSecurity-critical programs like
+X.IR passwd (1)
+Xshould always have private userids, to minimize possible damage
+Xfrom penetrations elsewhere.
+X.P
+XThe result of
+X.I getlogin
+Xor
+X.I ttyname
+Xmay be wrong if the descriptors have been meddled with.
+XThere is
+X.I no
+Xfoolproof way to determine the controlling terminal
+Xor the login name (as opposed to uid) on V7.
+X.P
+XOn some systems (not ours), the setuid bit may not be honored if
+Xthe program is run by
+X.IR root ,
+Xso the program may find itself running as
+X.IR root .
+X.P
+XPrograms that attempt to use
+X.I creat
+Xfor locking can foul up when run by
+X.IR root ;
+Xuse of
+X.I link
+Xis preferred when implementing locking.
+XUsing
+X.I chmod
+Xfor locking is an obvious disaster.
+X.P
+XBreaking an existing lock is very dangerous; the breakdown of a locking
+Xprotocol may be symptomatic of far worse problems.
+XDoing so on the basis of the lock being `old' is sometimes necessary,
+Xbut programs can run for surprising lengths of time on heavily-loaded
+Xsystems.
+X.P
+XCare must be taken that user requests for i/o are checked for
+Xpermissions using the user's permissions, not the program's.
+XUse of
+X.I access
+Xis recommended.
+X.P
+XPrograms executed at user request (e.g. shell escapes) must
+Xnot receive the setuid program's permissions;
+Xuse of daughter processes and
+X.I setuid(getuid())
+Xplus
+X.I setgid(getgid())
+Xafter
+X.I fork
+Xbut before
+X.I exec
+Xis vital.
+X.P
+XSimilarly, programs executed at user request must not receive other
+Xsensitive resources, notably file descriptors.
+XUse of
+X.IR closeall (3)
+Xor close-on-exec arrangements,
+Xon systems which have them,
+Xis recommended.
+X.P
+XPrograms activated by one user but handling traffic on behalf of
+Xothers (e.g. daemons) should avoid doing
+X.IR setuid(getuid())
+Xor
+X.IR setgid(getgid()) ,
+Xsince the original invoker's identity is almost certainly inappropriate.
+XOn systems which permit it, use of
+X.I setuid(geteuid())
+Xand
+X.I setgid(getegid())
+Xis recommended when performing work on behalf of the system as
+Xopposed to a specific user.
+X.P
+XThere are inherent permission problems when a setuid program executes
+Xanother setuid program,
+Xsince the permissions are not additive.
+XCare should be taken that created files are not owned by the wrong person.
+XUse of
+X.I setuid(geteuid())
+Xand its gid counterpart can help, if the system allows them.
+X.P
+XCare should be taken that newly-created files do not have the wrong
+Xpermission or ownership even momentarily.
+XPermissions should be arranged by using
+X.I umask
+Xin advance, rather than by creating the file wide-open and then using
+X.IR chmod .
+XOwnership can get sticky due to the limitations of the setuid concept,
+Xalthough using a daughter process connected by a pipe can help.
+X.P
+XSetuid programs should be especially careful about error checking,
+Xand the normal response to a strange situation should be termination,
+Xrather than an attempt to carry on.
+X.PP
+XThe following are ways in which the program may be induced to carelessly
+Xgive away its special privileges.
+X.P
+XThe directory the program is started in, or directories it may
+Xplausibly
+X.I chdir
+Xto, may contain programs with the same names as system programs,
+Xplaced there in hopes that the program will activate a shell with
+Xa permissive
+X.B PATH
+Xsetting.
+X.B PATH
+Xshould \fIalways\fR be standardized before invoking a shell
+X(either directly or via
+X.I popen
+Xor
+X.IR execvp/execlp ).
+X.P
+XSimilarly, a bizarre
+X.B IFS
+Xsetting may alter the interpretation of a shell command in really
+Xstrange ways, possibly causing a user-supplied program to be invoked.
+X.B IFS
+Xtoo should always be standardized before invoking a shell.
+X(Our shell does this automatically.)
+X.P
+XEnvironment variables in general cannot be trusted.
+XTheir contents should never be taken for granted.
+X.P
+XSetuid shell files (on systems which implement such) simply cannot
+Xcope adequately with some of these problems.
+XThey also have some nasty problems like trying to run a
+X.I \&.profile
+Xwhen run under a suitable name.
+XThey are terminally insecure, and must be avoided.
+X.P
+XRelying on the contents of files placed in publically-writeable
+Xdirectories, such as
+X.IR /tmp ,
+Xis a nearly-incurable security problem.
+XSetuid programs should avoid using
+X.I /tmp
+Xentirely, if humanly possible.
+XThe sticky-directories modification (sticky bit on for a directory means
+Xonly owner of a file can remove it) (we have this feature) helps,
+Xbut is not a complete solution.
+X.P
+XA related problem is that
+Xspool directories, holding information that the program will trust
+Xlater, must never be publically writeable even if the files in the
+Xdirectory are protected.
+XAmong other sinister manipulations that can be performed, note that
+Xon many Unixes (not ours), a core dump of a setuid program is owned
+Xby the program's owner and not by the user running it.
+X.PP
+XThe following are unusual but possible error conditions that the
+Xprogram should cope with properly (resource-exhaustion questions
+Xare considered separately, see below).
+X.P
+XThe value of
+X.I argc
+Xmight be 0.
+X.P
+XThe setting of the
+X.I umask
+Xmight not be sensible.
+XIn any case, it should be standardized when creating files
+Xnot intended to be owned by the user.
+X.P
+XOne or more of the standard descriptors might be closed, so that
+Xan opened file might get (say) descriptor 1, causing chaos if the
+Xprogram tries to do a
+X.IR printf .
+X.P
+XThe current directory (or any of its parents)
+Xmay be unreadable and unsearchable.
+XOn many systems
+X.IR pwd (1)
+Xdoes not run setuid-root,
+Xso it can fail under such conditions.
+X.P
+XDescriptors shared by other processes (i.e., any that are open
+Xon startup) may be manipulated in strange ways by said processes.
+X.P
+XThe standard descriptors may refer to a terminal which has a bizarre
+Xmode setting, or which cannot be opened again,
+Xor which gives end-of-file on any read attempt, or which cannot
+Xbe read or written successfully.
+X.P
+XThe process may be hit by interrupt, quit, hangup, or broken-pipe signals,
+Xsingly or in fast succession.
+XThe user may deliberately exploit the race conditions inherent
+Xin catching signals;
+Xignoring signals is safe, but catching them is not.
+X.P
+XAlthough non-keyboard signals cannot be sent by ordinary users in V7,
+Xthey may perhaps be sent by the system authorities (e.g. to
+Xindicate that the system is about to shut down),
+Xso the possibility cannot be ignored.
+X.P
+XOn some systems (not ours)
+Xthere may be an
+X.I alarm
+Xsignal pending on startup.
+X.P
+XThe program may have children it did not create.
+XThis is normal when the process is part of a pipeline.
+X.P
+XIn some non-V7 systems, users can change the ownerships of their files.
+XSetuid programs should avoid trusting the owner identification of a file.
+X.P
+XUser-supplied arguments and input data
+X.I must
+Xbe checked meticulously.
+XOverly-long input stored in an array without proper bound checking
+Xcan easily breach security.
+XWhen software depends on a file being in a specific format, user-supplied
+Xdata should never be inserted into the file without being checked first.
+XMeticulous checking includes allowing for the possibility of non-ASCII
+Xcharacters.
+X.P
+XTemporary files left in public directories
+Xlike
+X.I /tmp
+Xmight vanish at inconvenient times.
+X.PP
+XThe following are resource-exhaustion possibilities that the
+Xprogram should respond properly to.
+X.P
+XThe user might have used up all of his allowed processes, so
+Xany attempt to create a new one (via
+X.I fork
+Xor
+X.IR popen )
+Xwill fail.
+X.P
+XThere might be many files open, exhausting the supply of descriptors.
+XRunning
+X.IR closeall (3),
+Xon systems which have it,
+Xis recommended.
+X.P
+XThere might be many arguments.
+X.P
+XThe arguments and the environment together might occupy a great deal
+Xof space.
+X.PP
+XSystems which impose other resource limitations can open setuid
+Xprograms to similar resource-exhaustion attacks.
+X.PP
+XSetuid programs which execute ordinary programs without reducing
+Xauthority pass all the above problems on to such unprepared children.
+XStandardizing the execution environment is only a partial solution.
+X.SH SEE ALSO
+Xcloseall(3), standard(3)
+X.SH HISTORY
+XLocally written, although based on outside contributions.
+X.SH BUGS
+XThe list really is rather long...
+Xand probably incomplete.
+X.PP
+XNeither the author nor the University of Toronto accepts any responsibility
+Xwhatever for the use or non-use of this information.
+SHAR_EOF
+chmod 0600 cops_104/extensions/writing.suid ||
+echo 'restore of cops_104/extensions/writing.suid failed'
+Wc_c="`wc -c < 'cops_104/extensions/writing.suid'`"
+test 9462 -eq "$Wc_c" ||
+	echo 'cops_104/extensions/writing.suid: original size 9462, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/bug.chk.sgi ==============
+if test -f 'cops_104/bug.chk.sgi' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/bug.chk.sgi (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/bug.chk.sgi (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/bug.chk.sgi' &&
+X#!/bin/sh
+X#
+X#  SGI module for bug/vulnerability checking
+X#
+XECHO=/bin/echo
+XTEST=/bin/test
+XLS=/bin/ls
+XLS_OPTS="-slagL"
+XARCH=/bin/arch
+XGREP=/bin/grep
+XAWK=/bin/awk
+XBUG="$AWK -f ./bug_cmp"
+X
+Xif $TEST ! -f ./bug_cmp ; then
+X	$ECHO "Must have bug compare module, ./bug_cmp, to run..."
+X	exit 2
+X	fi
+X# what is the date?  We just need the month and year...
+X# Format: Fri Feb  7 14:16:55 PST 1992
+Xif $TEST $# -eq "2" ; then
+X        real_date="$1 $2"
+Xelse
+X        real_date=`$DATE | $AWK '{print $2, $NF}'`
+X        fi
+X
+X# Mail
+X#
+X# IRIX 3.3 & 3.31
+XMail="/usr/sbin/Mail"
+Xfix_date="31 Oct 1990"
+Xcert_advis="CA-90:08"
+Xif $TEST -f "$Mail" ; then
+X	cur_date=`$LS $LS_OPTS $Mail | $AWK '{print $8, $7, $9}'`
+X	$ECHO $Mail $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# fmt
+X#
+X# Fixed in 4.0
+Xfmt="/usr/sbin/fmt"
+Xfix_date="26 Aug 1991"
+Xcert_advis="CA-91:14"
+Xif $TEST -f "$fmt" ; then
+X	cur_date=`$LS $LS_OPTS $fmt | $AWK '{print $8, $7, $9}'`
+X	$ECHO $fmt $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# finis
+SHAR_EOF
+chmod 0700 cops_104/bug.chk.sgi ||
+echo 'restore of cops_104/bug.chk.sgi failed'
+Wc_c="`wc -c < 'cops_104/bug.chk.sgi'`"
+test 999 -eq "$Wc_c" ||
+	echo 'cops_104/bug.chk.sgi: original size 999, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/ftp.chk ==============
+if test -f 'cops_104/ftp.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/ftp.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/ftp.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/ftp.chk' &&
+X:
+X#
+X#  Usage: ftp.chk [-a]
+X#
+X#   This shell script checks to see if you've set up (mainly anonymous)
+X# ftp correctly.  The "-a" option forces a check on your anon-ftp setup
+X# (without the flag, this will look in your /etc/passwd, to see if user
+X# ftp exists, and proceed onwards anyway) without that, this script 
+X# doesn't do a whole lot -- just check to see if your ftpusers file 
+X# doesn't have any root accounts in it.  There seems to be some different
+X# types of ftp's around; for instance, some allow "chmod" -- and if the home
+X# dir is owned by "ftp", you're toast.  So I've tried to err on the side of
+X# safety...
+X#
+X#   See the man page for a more detailed description, here's what this
+X# checks for:
+X#
+X# - User ftp exists in the password file.
+X# - root (or all root equivalents) are in ftpusers file.
+X# - Home directory for ftp should exist, and not be /
+X# - The ~ftp/etc/{passwd|group} should not be the same as the real ones.
+X# - Various critical files/directories should exist, and have correct
+X#   permissions and owners; variables "$primary" and "$secondary" can be set
+X# to whomever you want owning the files:
+X#
+X#  File/Dir          Perms           Owner      Other
+X#  =========         ======          ======     ======
+X#  ~ftp              non-w.w.        root
+X#           or
+X#  ~ftp              555             ftp	if no chmod command exists
+X#
+X#     All of these are ftp owned iff no chmod exists...
+X#
+X#  ~ftp/bin          non-w.w.        root/ftp
+X#           or
+X#  ~ftp/bin          non-w. and ftp w. ftp
+X#  ~ftp/bin/ls       111             root/ftp
+X#  ~ftp/etc          non-w.w.        root
+X#           or
+X#  ~ftp/etc          non-w. & ftp w. ftp
+X#  ~ftp/etc/passwd   non-w.w.        root/ftp   0 size or nonexistant
+X#  ~ftp/etc/group    non-w.w.        root/ftp   0 size or nonexistant
+X#  ~ftp/pub          non-w.w.        root/ftp
+X#  ~ftp/incoming     world-writable  root/ftp   This can be set to "pub"
+X#  ~ftp/.rhosts      non-w.w.        root       0 size, is optional
+X#  ~ftp/*            non-w.w.                   other dirs/files in ~ftp
+X#
+X
+X#  If an argument is present, it should be an "a"
+XTEST=/bin/test
+XECHO=/bin/echo
+Xif $TEST $# -gt 1 ; then
+X	$ECHO Usage: $0 [-a]
+X	exit 1
+X	fi
+Xif $TEST $# -eq 1 ; then
+X	if $TEST $1 = "-a" ; then
+X			anonymous=yes
+X	else
+X		$ECHO Usage: $0 [-a]
+X		exit 1
+X		fi
+X	fi
+X
+X#   Primary and secondary owners of the ftp files/dirs; if you *don't* have
+X# chmod, you can probably change the secondary owner to "ftp".  If you have
+X# chmod in your ftp, definitely have secondary to some other account (root
+X# is fine for this.)
+Xprimary=root
+Xsecondary=root
+X
+X# some might have this as ftpd; is the account in /etc/passwd
+Xftpuid=ftp
+X
+X# Where is everyone?
+XAWK=/bin/awk
+XEGREP=/usr/bin/egrep
+XLS=/bin/ls
+XCMP=/bin/cmp
+XRM=/bin/rm
+XYPCAT=/usr/bin/ypcat
+XCAT=/bin/cat
+X
+X# system files
+Xftpusers=/etc/ftpusers
+Xpasswd=/etc/passwd
+Xgroup=/etc/group
+X
+X#  A pox on YP/NIS, making life tougher for me :-)  Thanks to Rob Kolstad
+X# for pointing this out -- you need to use ypcat to get the password file,
+X# if you run yp:
+X
+X# Scratch files for testing:
+Xyp_passwd="./p.$$"
+Xyp_group="./g.$$"
+Xall_passwds="./ap.$$"
+X
+X# generic test to check for yp use?
+Xif $TEST -s $YPCAT ; then
+X	$YPCAT passwd > $yp_passwd
+X	if $TEST $? -eq 0 ; then
+X		$YPCAT group > $yp_group
+X		yp=true
+X	else
+X		yp=false
+X		fi
+X	fi
+X
+Xif $TEST "$yp" = "true" ; then
+X	$CAT $yp_passwd $passwd > $all_passwds
+X	passwd=$yp_passwd
+X	group=$yp_group
+Xelse
+X	$CAT $passwd > $all_passwds
+X	fi
+X
+X#   ftp's files:
+Xftproot=`$AWK -F: '/^'"$ftpuid"':/{print $6}' $passwd`
+X#  just recheck that user ftp exists:
+Xftpuid=`$AWK -F: '/^'"$ftpuid"':/{print $1}' $passwd`
+X
+X#
+X# If they have user $ftpuid in /etc/password, then anon-ftp is possible...
+X#
+X# Comment this (next three lines) out if you don't want this program to
+X# automatically detect anon-ftp setup!
+Xif $TEST -n "$ftpuid" ; then
+X	anonymous=yes
+X	fi
+X
+Xftprhosts=$ftproot/.rhosts
+Xftpbin=$ftproot"/bin"
+Xftpls=$ftpbin"/ls"
+Xftpetc=$ftproot"/etc"
+Xftppasswd=$ftpetc"/passwd"
+Xftpgroup=$ftpetc"/group"
+X
+X#   the pub/incoming stuff; by default, pub is *not* world writable, incoming
+X# is; if you want pub to be world writable, just change incoming to "pub"
+Xincoming=incoming
+Xftppub=$ftproot"/pub"
+X
+Xcrit_files="$ftpgroup $ftppasswd $ftpls"
+X
+Xif $TEST -s "$ftpusers" ; then
+X	# check to see if root (or root equivalents) is in ftpusers file
+X	all_roots=`$AWK -F: '{if ($3==0 && length($2)==13) printf("%s ", $1)}' $all_passwds`
+X	if $TEST -n "$all_roots" ; then
+X		for i in $all_roots
+X			do
+X			if $TEST ! "`$EGREP '^'"$i"'$' $ftpusers`"
+X				then
+X				$ECHO Warning!  $i should be in $ftpusers!
+X				fi
+X			done
+X		fi
+Xelse
+X	$ECHO "Warning!  $ftpusers should exist!"
+X	fi
+X
+X#  do the anonymous ftp checking stuff now
+Xif $TEST -n "$anonymous" ; then
+X
+X	#   if the user ftp doesn't exist, no-anon stuff....
+X	if $TEST -z "$ftpuid" ; then
+X		$ECHO Warning!  Need user $ftpuid for anonymous ftp to work!
+X		$RM -f $yp_passwd $yp_group $all_passwds
+X		exit 1
+X		fi
+X	#
+X	#  ftp's home dir checking
+X	if $TEST ! -d "$ftproot" -o -z "$ftproot"; then
+X		$ECHO Warning!  Home directory for ftp doesn\'t exist!
+X		$RM -f $yp_passwd $yp_group $all_passwds
+X		exit 1
+X		fi
+X	if $TEST "$ftproot" = "/" ; then
+X		$ECHO Warning!  $ftproot ftp\'s home directory should not be \"/\"!
+X		fi
+X	#
+X	#  Don't want the passwd and group files to be the real ones!
+X	if $TEST "$passwd" != "$ftppasswd" ; then
+X		if $TEST "`$CMP $passwd $ftppasswd 2> /dev/null`" ; then
+X			:
+X		else $ECHO ftp-Warning!  $ftppasswd and $passwd are the same!
+X			fi
+X		fi
+X	if $TEST "$group" != "$ftpgroup" ; then
+X		if $TEST "`$CMP $group $ftpgroup 2> /dev/null`" ; then
+X			:
+X		else $ECHO ftp-Warning!  $ftpgroup and $group are the same!
+X			fi
+X		fi
+X
+X	#   want to check all the critical files and directories for correct
+X	# ownership.
+X	#
+X	#  This is what a "/bin/ls -l" of a file should look like:
+X	# ---x--x--x  1 root        81920 Dec 31  1999 /bin/ls
+X	#  So in awk, $3 is the owner, $1 is the permission.
+X	#
+X	#   some versions don't need much of anything... no etc directory or
+X	# password/group files.
+X	# crit_files=$ftpls
+X	#   others need etc directory & password/group files.  Experiment.
+X	crit_files=$crit_files" "$ftpbin" "$ftpetc
+X	for i in $crit_files
+X		do
+X		if $TEST ! -f $i -a ! -d $i; then
+X			$ECHO "ftp-Warning!  File $i is missing (anon-ftp setup)!"
+X			fi
+X
+X		owner=`$LS -Lld $i | $AWK '{print $3}'`
+X		if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X			:
+X		else
+X			$ECHO ftp-Warning!  $i should be owned by $primary or $secondary!
+X			fi
+X		done
+X
+X	#   ftproot is special; if owned by root; should be !world writable;
+X	# if owned by ftp, should be mode 555
+X	owner=`$LS -Lld $ftproot | $AWK '{print $3}'`
+X	perms=`$LS -Lld $ftproot | $AWK '{print $1}'`
+X	if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X		:
+X	else
+X		$ECHO ftp-Warning!  $ftproot should be owned by $primary or $secondary!
+X	fi
+X
+X	# ftp-root should not be world-writable:
+X	./is_able $ftproot w w
+X
+X	# if ftp owns root-dir, then mode should be 555:
+X	if $TEST "$owner" = "$ftpuid" -a "$perms" != "dr-xr-xr-x" ; then
+X		$ECHO ftp-Warning!  $ftproot should be mode 555!
+X		fi
+X
+X	#
+X	# check the .rhosts file:
+X	if $TEST -f $ftprhosts ; then
+X		if $TEST -s $ftprhosts ; then
+X			$ECHO ftp-Warning!  $ftprhosts should be be empty!
+X			fi
+X		owner=`$LS -Lld $ftprhosts | $AWK '{print $3}'`
+X		if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X			:
+X		else
+X			$ECHO ftp-Warning!  $ftprhosts should be owned by $primary or $secondary!
+X			fi
+X		fi
+X
+X	#
+X	# finally, some permissions of miscellaneous files:
+X	perms=`$LS -Lld $ftpls | $AWK '{print $1}'`
+X	if $TEST "$perms" != "---x--x--x" ; then
+X		$ECHO ftp-Warning!  Incorrect permissions on \"ls\" in $ftpbin!
+X		fi
+X
+X	perms=`$LS -Lld $ftppasswd | $AWK '{print $1}'`
+X	if $TEST "$perms" != "-r--r--r--" ; then
+X		$ECHO ftp-Warning!  Incorrect permissions on \"passwd\" in $ftpetc!
+X		fi
+X
+X	perms=`$LS -Lld $ftpgroup | $AWK '{print $1}'`
+X	if $TEST "$perms" != "-r--r--r--" ; then
+X		$ECHO ftp-Warning!  Incorrect permissions on \"group\" in $ftpetc!
+X		fi
+X
+X	#   Finally, the ~ftp/{pub|incoming|whatever} stuff:
+X	all_dirs=`$LS -Lal $ftproot | $AWK '{if (NF >= 8) print $NF}'`
+X	for i in $all_dirs
+X		do
+X		if $TEST -n "`is_able $ftproot/$i w w`" -a $i != "$incoming" ; then
+X			$ECHO Warning!  Anon-ftp directory $i is World Writable!
+X			fi
+X		done
+X	fi
+X
+X# get rid of any yp evidence
+X$RM -f $yp_passwd $yp_group $all_passwds
+X# end of script
+SHAR_EOF
+chmod 0755 cops_104/ftp.chk ||
+echo 'restore of cops_104/ftp.chk failed'
+Wc_c="`wc -c < 'cops_104/ftp.chk'`"
+test 8387 -eq "$Wc_c" ||
+	echo 'cops_104/ftp.chk: original size 8387, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/kuang ==============
+if test -f 'cops_104/kuang' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/kuang (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/kuang (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/kuang' &&
+X:
+X# /* Copyright 1985 Robert W. Baldwin */
+X# /* Copyright 1986 Robert W. Baldwin */
+X#
+X# Jan 1990, Ported to bourne shell from Csh.  Dan Farmer
+X#
+X#   Took out some comments, combined four of Bob's shell
+X# scripts into one (the target script remains separate for
+X# easy editing of targets.)  More or less a straight line
+X# for line translation; a rewrite that goes for speed will
+X# come later.  Maybe just rewrite it in C.  Yeah, that's it....
+X
+X###############################################
+X# Kuang: Rule based computer security checker.
+X###############################################
+X
+X# commands used....
+XSH=/bin/sh
+XMV=/bin/mv
+XTEST=/bin/test
+XECHO=/bin/echo
+XAWK=/bin/awk
+XRM=/bin/rm
+X
+X# Initialization.
+X$SH ./init_kuang
+X
+X# Main loop
+X#
+X$ECHO Starting main loop                        #>/dev/tty
+Xwhile $TEST -f uids.n -o -f gids.n -o -f files.n
+X    do
+X    if $TEST -f uids.n ; then
+X        $MV uids.n uids.x
+X
+X# Process a list of uids from stdin.
+X# Usage: douids username comments
+X    $ECHO Called douids                        #>/dev/tty
+X    i=1
+X    while $TEST "1"
+X        do
+X        nextuid=`$AWK '{if (NR=="'$i'") print $0}' uids.x`
+X        i=`expr $i + 1`
+X
+X        if $TEST -z "$nextuid"  ; then
+X            break;
+X	    fi
+X
+X            user=`$ECHO $nextuid | $AWK '{print $1}'`
+X
+X        $ECHO "   " User $user                    #>/dev/tty
+X
+X# Rules mapping uids to files.
+X#
+X        next=`$ECHO $nextuid | $AWK '{for (i=2;i<=NF;i++) printf("%s ", $i)}'`
+X        ./addto files /etc/passwd replace grant $user $next
+X        ./addto files /usr/lib/aliases replace trojan $user $next
+X
+X#   hsh = home sweet home = home directory of $user
+X        hsh=`./tilde $user`
+X
+X        if $TEST -f $hsh/.rhosts ;  then
+X            ./addto files $hsh/.rhosts write grant $user $next
+X        fi
+X
+X        if $TEST -f $hsh/.login ;  then
+X            ./addto files $hsh/.login replace trojan $user $next
+X        fi
+X
+X        if $TEST -f $hsh/.cshrc ;  then
+X            ./addto files $hsh/.cshrc replace trojan $user $next
+X        fi
+X
+X        if $TEST -f $hsh/.profile ;  then
+X            ./addto files $hsh/.profile replace trojan $user $next
+X        fi
+X
+X        if $TEST "$user" = "root" ;  then
+X	    if $TEST -f /usr/lib/crontab ; then
+X               ./addto files /usr/lib/crontab replace create supershell $next
+X	    else
+X               ./addto files /usr/spool/cron/crontabs replace create supershell $next
+X	    fi
+X            ./addto files /etc/rc replace trojan $user $next
+X            ./addto files /etc/rc.local replace trojan $user $next
+X        fi
+X
+X        if $TEST "$user" != "root" ;  then
+X            ./addto files /etc/hosts.equiv replace allow rlogin $next
+X        fi
+X
+X        if $TEST "$user" != "root" -a -f /etc/hosts.equiv -a -s /etc/hosts.equiv 
+X            then
+X            ./addto files /etc/hosts replace fake HostAddress $next
+X        fi
+X
+X    done
+Xfi
+X
+X    if $TEST -f gids.n ; then
+X       $MV gids.n gids.x
+X
+X    $ECHO Called dogids                        #>/dev/tty
+X    i=1
+X    while $TEST "1"
+X        do
+X        nextgid=`$AWK '{if (NR=="'$i'") print $0}' gids.x`
+X        i=`expr $i + 1`
+X
+X        if $TEST -z "$nextgid" ; then
+X            break;
+X	    fi
+X
+X        group=`$ECHO $nextgid | $AWK '{print $1}'`
+X        $ECHO "   " Group $group                    #>/dev/tty
+X
+X# Rules mapping gids to uids.
+X#
+X        next=`$ECHO $nextgid | $AWK '{for (i=2;i<=NF;i++) printf("%s ", $i)}'`
+X        use=`./members $group`
+X        for user in $use
+X            do
+X            ./addto uids $user grant $group $next
+X            done
+X
+X# Rules mapping gids to files.
+X#
+X        ./addto files /etc/group replace grant $group $next
+X        done
+X    fi
+X
+X    if $TEST -f files.n ; then
+X       $MV files.n files.x
+X
+X# A list of file names is read from successive lines of stdin.
+X# Each file is examined for ways to access it.
+X# The input format is:
+X#    <filename> <whitespace> <mode> <comments>
+X# The <mode> is either "write" or "replace".
+X#
+X    $ECHO Called dofiles.                        #>/dev/tty
+X    i=1
+X    while $TEST "1"
+X        do
+X        nextfile=`$AWK '{if (NR=='"$i"') print $0}' files.x`
+X        i=`expr $i + 1`
+X        if $TEST -z "$nextfile" ; then
+X            break;
+X	    fi
+X
+X        file=`$ECHO $nextfile | $AWK '{print $1}'`
+X        mode=`$ECHO $nextfile | $AWK '{print $2}'`
+X
+X        $ECHO "    File $file, mode $mode"            #>/dev/tty
+X
+X# Rules converting filename goals into UserName or GroupName goals.
+X#
+X        next=`$ECHO $nextfile | $AWK '{for (i=3;i<=NF;i++) printf("%s ", $i)}'`
+X
+X        writers=`./filewriters $file`
+X        numwriters=`$ECHO $writers | $AWK '{print NF}'`
+X        if $TEST "$numwriters" = "3" ; then
+X            owner=`$ECHO $writers | $AWK '{print $1}'`
+X            group=`$ECHO $writers | $AWK '{print $2}'`
+X            other=`$ECHO $writers | $AWK '{print $3}'`
+X
+X            $ECHO "        Writers are $owner $group $other"    #>/dev/tty
+X                ./addto uids $owner $mode $file $next
+X            if $TEST "$group" != "NONE" ; then
+X                ./addto gids $group $mode $file $next
+X            fi
+X            if $TEST "$other" != "NONE" ; then
+X                ./addto uids $other $mode $file $next
+X            fi
+X        else
+X            $ECHO "        $file does not exist"        #>/dev/tty
+X            continue
+X        fi
+X
+X# Rules converting filename goals into other filename goals.
+X#
+X        if $TEST "$mode" != "replace" ; then
+X            continue
+X        fi
+X
+X    parent=`$ECHO $file | $AWK -F/ '{if (NF == 2) {
+X		printf("/%s", $1)}
+X		else if (NF>2) {for (i=2;i<NF;i++) printf("/%s", $i)} 
+X		else printf("")'}`
+X
+X    basename=`$ECHO $file | $AWK -F/ '{print $NF}'`
+X
+X    $ECHO -n "       " Parent directory is $parent        #>/dev/tty
+X    $ECHO ", " basename is $basename                #>/dev/tty
+X    if $TEST -n "$parent" ; then
+X       ./addto files $parent write replace $basename $next
+X        fi
+X    done
+X
+X    fi
+Xdone
+X
+X# destroy the evidence.... Need "Success" file for report, though.
+X$RM files.? gids.? uids.?
+SHAR_EOF
+chmod 0755 cops_104/kuang ||
+echo 'restore of cops_104/kuang failed'
+Wc_c="`wc -c < 'cops_104/kuang'`"
+test 5969 -eq "$Wc_c" ||
+	echo 'cops_104/kuang: original size 5969, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/group.chk ==============
+if test -f 'cops_104/group.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/group.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/group.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/group.chk' &&
+X:
+X#
+X#   group.chk
+X#
+X#  Check group file -- /etc/group -- for incorrect number of fields,
+X# duplicate groups, non-alphanumeric group names, and non-numeric group
+X# id's.
+X#
+X# Awk part based on _passwd_ from _The AWK Programming Language_, page 78
+X#
+X#   Mechanism:  Group.check uses awk to ensure that each line of the group
+X# has 4 fields, as well as examining each line for any duplicate groups or
+X# any duplicate user id's in a given group by using "sort -u" to ferret
+X# out any duplications.  It also checks to make sure that the password
+X# field (the second one) is a "*", meaning the group has no password (a
+X# group password is usually not necessary because each member listed on 
+X# the line has all the privilages that the group has.)  All results are
+X# echoed to standard output.  Finally it ensures that the group names
+X# are alphanumeric, that the group id's are numeric, and that there are
+X# no blank lines.  For yellow pages groups, it does the same checking,
+X# but in order to get a listing of all members of the groups, it does a
+X# "ypcat group > ./$$" and uses that temporary file for a groupfile.
+X# It removes the tmp file after using it, of course.
+X#   The /etc/group file has a very specific format, making the task
+X# fairly simple.  Normally it has lines with 4 fields, each field
+X# separated by a colon (:).  The first field is the group name, the second
+X# field is the encrypted password (an asterix (*) means the group has no
+X# password, otherwise the first two characters are the salt), the third
+X# field is the group id number, and the fourth field is a list of user
+X# ids in the group.  If a line begins with a plus sign (+), it is a yellow
+X# pages entry.  See group(5) for more information.
+X#
+X#
+XAWK=/bin/awk
+XSED=/bin/sed
+XECHO=/bin/echo
+XTEST=/bin/test
+XSORT=/usr/bin/sort
+XUNIQ=/usr/bin/uniq
+XYPCAT=/usr/bin/ypcat
+XRM=/bin/rm
+X
+X#   Used for Sun C2 security group file.  FALSE (default) will flag
+X# valid C2 group syntax as an error, TRUE attempts to validate it.
+X# Thanks to Pete Troxell for pointing this out.
+XC2=FALSE
+X
+Xetc_group=/etc/group
+Xyp_group=./$$
+Xyp=false
+X
+Xif $TEST -f $YPCAT
+X	then
+Xif $TEST -s $YPCAT
+X	then
+X	$YPCAT group > $yp_group
+X	if $TEST $? -eq 0
+X		then
+X		yp=true
+X		fi
+X	fi
+Xfi
+X
+X# Testing $etc_group for potential problems....
+X
+X#   First line is for a yellow pages entry in the group file.
+X# It really should check for correct yellow pages syntax....
+X$AWK 'BEGIN {FS = ":" }
+X    {
+X    if (substr($1,1,1) != "+") { \
+X        if ($0 ~ /^[ 	]*$/) {
+X            printf("Warning!  Group file, line %d, is blank\n", NR)
+X            }
+X        else {
+X            if (NF != 4) {
+X                printf("Warning!  Group file, line %d, does not have 4 fields: %s\n", NR, $0)
+X                } \
+X            if ($1 !~ /[A-Za-z0-9]/) {
+X                printf("Warning!  Group file, line %d, nonalphanumeric user id: %s\n", NR, $0)
+X                } \
+X            if ($2 != "" && $2 != "*" && $2 != "!") {
+X                if ("'$C2'" != "TRUE") {
+X                    if (length($2) == 13)
+X                        printf("Warning!  Group file, line %d, group has password: %s\n", NR, $0)
+X                        }
+X                    else {
+X                        if ("#$"$1 != $2)
+X                            printf("Warning!  Group file, line %d, group has invalid field for C2:\n%s\n", NR, $0)
+X                        } \
+X                    } \
+X                if ($3 !~ /[0-9]/) {
+X                    printf("Warning!  Group file, line %d, nonnumeric group id: %s\n", NR, $0)
+X                    }
+X                }
+X            }
+X        }' $etc_group
+X
+X#
+X#  Look for duplications in groups in $etc_group
+X#
+Xresult=`$AWK -F: '{print $1}' $etc_group | $SORT |$UNIQ -d`
+Xif $TEST "$result"
+X	then
+X	$ECHO "Warning!  Duplicate Group(s) found in $etc_group:"
+X	$ECHO $result
+Xfi
+X
+X#
+X#   Next, check for duplicate users in a group in /etc/group.  Let
+X# awk do all the work (thanks, adri!)
+X#
+X
+X# Ignore all groups with less than two members.
+X#
+Xawk -F: 'split($4, users, ",") > 1 {
+X    ct = 0
+X    for (i in users) {
+X        curuser = users[i]
+X        for (j in users) {
+X            if (j > i && curuser == users[j]) {
+X                if (ct++ == 0) print "Warning!  Group "$1" has duplicate user(s):"
+X                    print curuser
+X                }
+X            }
+X        }
+X    }' $etc_group
+X
+X
+X#
+X# Test yellow pages groups as well
+Xif $TEST "$yp" = "true"
+X	then
+X$AWK 'BEGIN {FS = ":" }
+X    {
+X    if ($0 ~ /^[ 	]*$/) {
+X        printf("Warning!  YGroup file, line %d, is blank\n", NR)
+X        }
+X    else {
+X        if (NF != 4) {
+X            printf("Warning!  YGroup file, line %d, does not have 4 fields: %s\n", NR, $0)
+X            } \
+X        if ($1 !~ /[A-Za-z0-9]/) {
+X            printf("Warning!  YGroup file, line %d, nonalphanumeric user id: %s\n", NR, $0)
+X            } \
+X        if ($2 != "" && $2 != "*") {
+X            if (length($2) == 13)
+X                printf("Warning!  YGroup file, line %d, group has password: %s\n", NR, $0)
+X            } \
+X        if ($3 !~ /[0-9]/) {
+X            printf("Warning!  YGroup file, line %d, nonnumeric group id: %s\n", NR, $0)
+X            }
+X        }
+X    }' $yp_group
+X
+X#
+X#  Look for duplications in groups in yellow pages groups
+X#
+X	yresult=`$AWK -F: '{print $1}' $yp_group | $SORT |$UNIQ -d`
+X	if $TEST "$yresult"
+X		then
+X		$ECHO "Warning!  Duplicate Group(s) found in yellow pages group:"
+X		$ECHO $result
+X	fi
+X#
+X#   Next, check for duplicate users in a group in yellow groups.  Let
+X# awk do all the work (thanks, adri!) 
+X
+X# ignore all groups with one member.
+X#
+X	awk -F: 'split($4, users, ",") > 1 {
+X	    ct = 0
+X	    for (i in users) {
+X	        curuser = users[i]
+X	            for (j in users) {
+X	                if (j > i && curuser == users[j]) {
+X	                    if (ct++ == 0) 
+X	                        print "Warning!  YGroup "$1" has duplicate user(s):"
+X	                    print curuser
+X	                    }
+X	                }
+X	            }
+X	    }' $yp_group
+X
+Xfi
+X
+X$RM -f $yp_group
+X
+X# end
+SHAR_EOF
+chmod 0755 cops_104/group.chk ||
+echo 'restore of cops_104/group.chk failed'
+Wc_c="`wc -c < 'cops_104/group.chk'`"
+test 5952 -eq "$Wc_c" ||
+	echo 'cops_104/group.chk: original size 5952, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/init_kuang ==============
+if test -f 'cops_104/init_kuang' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/init_kuang (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/init_kuang (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/init_kuang' &&
+X# /* Copyright 1985 Robert W. Baldwin */
+X# /* Copyright 1986 Robert W. Baldwin */
+X###############################################
+X# Kuang: Rule based computer security checker.
+X###############################################
+X
+XCAT=/bin/cat
+XECHO=/bin/echo
+X
+X#
+X# Initialization.
+X#
+X./clearfiles
+X#
+X# First setup what we have access to.
+X# The uids.k file must include the user 'OTHER' meaning the world access bits.
+X# Add any other UIDs accessible to the attacker (e.g., ftp, daemon).
+X#
+X# Directly accessible user IDs.
+X$CAT >uids.k <<END
+XOTHER
+XEND
+X
+X#  Commented out example of how to set up above:
+X#
+X#$CAT >uids.k <<END
+X#guest
+X#df
+X#foo
+X#END
+X#
+X# Directly accessible group IDs.
+X# This usually includes a group like 'users', which most users are in.
+X#
+X$CAT >gids.k <<END
+XEND
+X
+X#  Commented out example of how to set up above:
+X#
+X#$CAT >gids.k <<END
+X#guest
+X#END
+X#
+X# Setup the primary goal(s).
+X#
+X$ECHO Setting up goal						#>/dev/tty
+X./addto uids root DO ANYTHING
+SHAR_EOF
+chmod 0755 cops_104/init_kuang ||
+echo 'restore of cops_104/init_kuang failed'
+Wc_c="`wc -c < 'cops_104/init_kuang'`"
+test 950 -eq "$Wc_c" ||
+	echo 'cops_104/init_kuang: original size 950, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/is_able.chk ==============
+if test -f 'cops_104/is_able.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/is_able.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/is_able.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/is_able.chk' &&
+X:
+X#
+X#  is_able.chk
+X#
+X#   This shell script checks the permissions of all files and directories
+X# listed in the configuration file "is_able.lst", and prints warning messages
+X# according to the status of files.  You can specify world or group readability
+X# or writeability.  See the config file for the format of the configuration
+X# file.
+X#
+X#   Mechanism:  This shell script parses each line from the configure file,
+X# changes into the directory the file is in, and then uses the "is_able" 
+X# program to check if any of the directories in question are writable by 
+X# world/group.  All results are written to standard output.
+X#
+XTEST=/bin/test
+XECHO=/bin/echo
+XAWK=/bin/awk
+XSED=/bin/sed
+X
+Xconfig_file=is_able.lst
+X
+X# where the test is run:
+Xold_dir=`pwd`
+X
+Xif $TEST ! -f "$config_file" ; then
+X	$ECHO "Config file $config_file doesn't exist!"
+X	exit
+X	fi
+X
+X#  Read from $dir_list (e.g. "is.chk.lst") what files/dirs to check.
+X#
+X# Comments are lines starting with a "#".
+X#
+X# /path/to/{dir|file}   World/Group     Read/Write/Both
+X# as above              {W|w|G|g}       {R|r|W|w|B|b}
+X#
+X$AWK '/^#/ {
+X	next;}
+X	{ world=group=read=write=both=0; \
+X	# need 3 fields, or format error
+X	if (NF != 3) next; \
+X	if ($2 != "W" && $2 != "w" && $2 != "G" && $2 != "g") next; \
+X	if ($3!="R"&&$3!="r"&&$3!="W"&&$3!="w"&&$3!="B"&&$3!="b") next; \
+X	for (f=1;f < NF; f++) printf("%s ", $f); \
+X	print $NF;
+X	}' $config_file |
+Xwhile read targets
+X	do
+X	#   Use sed, 'cause awk lets me down (line too long) -- then realize
+X	# I should have used sed anyway.  Lazy bum.
+X	foo=`echo "$targets" | $SED 's/\(.*\)....$/\1/'`
+X	args=`echo "$targets" | $SED 's/.*\(...\)$/\1/'`
+X
+X	#  I added this, to change into the directory before checking
+X	# for writability; the reason?  With long dir pathnames that had
+X	# lots of files inside, the shell would blow up, trying to expand
+X	# all the full paths, and stuff it into a single variable.  For
+X	# instance, a line like this in $config_file:
+X	#
+X	#  /usr/foo/bar/cowabunga/* w w
+X	#
+X	#  Would expand to "/usr/foo/bar/cowabunga/ls /usr/..."  Need full
+X	# pathnames, tho!  And it can still blow up, tho it's tougher.
+X	#
+X	dir=`echo "$targets" | $SED 's/\(.*\\)\/[^ ]* .*$/\1/'`
+X
+X	if $TEST -n "$dir" -a -d "$dir" ; then
+X		cd $dir
+X		fi
+X
+X	for f in $foo
+X		do
+X#		echo $dir $f $args
+X		$old_dir/is_able $f $args
+X		done
+X	cd $old_dir
+X	done
+X
+X# end of script
+SHAR_EOF
+chmod 0755 cops_104/is_able.chk ||
+echo 'restore of cops_104/is_able.chk failed'
+Wc_c="`wc -c < 'cops_104/is_able.chk'`"
+test 2336 -eq "$Wc_c" ||
+	echo 'cops_104/is_able.chk: original size 2336, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/is_able.lst ==============
+if test -f 'cops_104/is_able.lst' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/is_able.lst (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/is_able.lst (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/is_able.lst' &&
+X#  This lists any/all sensitive files the administration wants to ensure
+X# non-read/writability of.  Comments are lines starting with a "#".
+X#
+X# USE FULL PATHNAMES!
+X#
+X#   Lines are of the format:
+X#
+X# /path/to/{dir|file}	World/Group	Read/Write/Both
+X#
+X# as above		{w|g}		{r|w|b}
+X#
+X/			w		w
+X/etc			w		w
+X/usr			w		w
+X/bin			w		w
+X/dev			w		w
+X/usr/bin		w		w
+X/usr/etc		w		w
+X/usr/adm		w		w
+X/usr/lib		w		w
+X/usr/include		w		w
+X/usr/spool		w		w
+X/usr/spool/mail		w		w
+X/usr/spool/news		w		w
+X/usr/spool/uucp		w		w
+X/usr/spool/at		w		w
+X/usr/local		w		w
+X/usr/local/bin		w		w
+X/usr/local/lib		w		w
+X/usr/users		w		w
+X/Mail			w		w
+X
+X# some Un*x's put shadowpass stuff here:
+X/etc/security		w		r
+X
+X# /.login /.profile /.cshrc /.rhosts
+X/.*			w		w
+X
+X#   I think everything in /etc should be !world-writable, as a rule; but
+X# if you're selecting individual files, do at *least* these:
+X#   /etc/passwd /etc/group /etc/inittab /etc/rc /etc/rc.local /etc/rc.boot
+SHAR_EOF
+true || echo 'restore of cops_104/is_able.lst failed'
+fi
+echo 'End of  part 7'
+echo 'File cops_104/is_able.lst is continued in part 8'
+echo 8 > _shar_seq_.tmp
+exit 0
+

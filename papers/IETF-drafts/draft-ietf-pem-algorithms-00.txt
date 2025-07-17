@@ -1,0 +1,725 @@
+Network Working Group                                  D. Balenson (TIS)
+INTERNET-DRAFT                                             IAB IRTF PSRG
+                                                             August 1991
+
+
+
+             Privacy Enhancement for Internet Electronic Mail:
+               Part III: Algorithms, Modes, and Identifiers
+
+
+STATUS OF THIS MEMO
+
+   This draft document will be submitted to the RFC editor as a
+   standards document, and is submitted as a proposed successor to
+   current RFC 1115.  References within the text of this Internet-Draft
+   to this document as an RFC, or to other related Internet-Drafts cited
+   as RFCs, are not intended to carry any connotation about the
+   progression of these Internet-Drafts through the IAB standards-track
+   review cycle.  Distribution of this draft is unlimited.  This
+   specification was developed by the Internet Research Task Force's
+   Privacy and Security Research Group.  Comments should be sent to
+   <pem-dev@tis.com>.
+
+
+ACKNOWLEDGMENT
+
+   This document is the outgrowth of a series of IAB Internet Research
+   Task Force (IRTF) Privacy and Security Research Group (PSRG) meetings
+   and other discussions.  In particular, John Linn contributed
+   significantly to the predecessor of this document (RFC 1115).  I
+   would like to thank the members of the PSRG and others for their
+   comments and contributions which led to the preparation of this
+   document.  I would also like to thank the contributors to the PEM-DEV
+   mailing list who have provided valuable input which is reflected in
+   this document.
+
+
+Table of Contents
+
+   1.  Executive Summary ................................... 2
+
+   2.  Symmetric Encryption Algorithms and Modes ........... 2
+
+   2.1  DES Modes .......................................... 3
+   2.1.1  DES in ECB mode (DES-ECB) ........................ 3
+   2.1.2  DES in EDE mode (DES-EDE) ........................ 3
+   2.1.3  DES in CBC mode (DES-CBC) ........................ 4
+
+
+
+
+Balenson                                                        [Page 1]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+   3.  Asymmetric Encryption Algorithms and Modes .......... 5
+   3.1  RSA ................................................ 5
+
+   4.  Message Integrity Check Algorithms .................. 7
+   4.1  Message Authentication Code (MAC) .................. 8
+   4.2  RSA-MD2 Message Digest Algorithm ................... 9
+   4.3  RSA-MD5 Message Digest Algorithm ................... 9
+
+   5.  Signature Algorithms ............................... 10
+   5.1  md2WithRSAEncryption Signature Algorithm .......... 10
+
+   References ............................................. 12
+
+
+
+1  Executive Summary
+
+   This document provides definitions, references, and citations for
+   algorithms, usage modes, and associated identifiers and parameters
+   used in support of privacy-enhanced mail (PEM) in the Internet
+   community.  It is intended to become one member of a set of four
+   related RFCs.  This document is organized into four primary sections,
+   dealing with symmetric encryption algorithms, asymmetric encryption
+   algorithms, message integrity check algorithms, and signature
+   algorithms.  Some parts of this material are cited by other
+   Internet-Drafts and it is anticipated that some of the material
+   herein may be changed, added, or replaced without affecting the
+   citing documents.  Therefore, algorithm-specific material has been
+   placed into this separate document.  Use of other algorithms and/or
+   modes will require case-by-case study to determine applicability and
+   constraints.  Additional algorithms and modes approved for use in PEM
+   in this context will be specified in successors to this document.
+
+
+
+2  Symmetric Encryption Algorithms and Modes
+
+   This section identifies alternative symmetric encryption algorithms
+   and modes that may be used to encrypt message text and, when
+   symmetric key management is employed, to encrypt data encryption keys
+   (DEKs) and message integrity check (MIC) values.  Character string
+   identifiers are assigned for incorporation in encapsulated header
+   fields to indicate the choice of algorithm employed.  (Note: All
+   alternatives presently defined in this category correspond to
+
+
+
+Balenson                                                        [Page 2]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+   different usage modes of the DES algorithm, rather than to other
+   algorithms.)
+
+
+
+2.1  DES Modes
+
+   The Data Encryption Standard (DES), defined in FIPS PUB 46-1 [1], is
+   used for encryption of message text and, when symmetric key
+   management is employed, encryption of DEKs and MICs.  The DES is
+   equivalent to the the Block Cipher Algorithm DEA-1 provided in ANSI
+   X3.92-1981 [2].  The ECB and CBC modes of operation of DES are
+   defined in FIPS PUB 81 [3], and are equivalent to those provided in
+   ANSI X3.106 [4] and in ISO IS 8372 [5].
+
+
+
+2.1.1  DES in ECB mode (DES-ECB)
+
+   The DES algorithm in Electronic Codebook (ECB) mode is used for DEK
+   and MIC encryption when symmetric key management is employed.  The
+   string "DES-ECB" within an encapsulated header field indicates use of
+   this algorithm/mode combination.
+
+   All PEM implementations supporting symmetric key management must
+   support this algorithm/mode combination.
+
+   Since alternative MIC algorithms may produce MICs of varying lengths,
+   the use of DES-ECB for MIC encryption may differ depending on the MIC
+   algorithm used to compute the MIC.  See the subsections on
+   alternative MIC algorithms to determine the proper manner in which to
+   use DES-ECB with the respective MICs.
+
+
+
+2.1.2  DES in EDE mode (DES-EDE)
+
+   The DES algorithm in Encrypt-Decrypt-Encrypt (EDE) mode, as defined
+   by ANSI X9.17 [6] for encryption and decryption with pairs of 64-bit
+   keys, is used for DEK and MIC encryption when symmetric key
+   management is employed.  The string "DES-EDE" within an encapsulated
+   header field indicates use of this algorithm/mode combination.
+
+
+
+
+
+Balenson                                                        [Page 3]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+   PEM implementations supporting symmetric key management may
+   optionally support this algorithm/mode combination.
+
+   Since alternative MIC algorithms may produce MICs of varying lengths,
+   the use of DES-EDE for MIC encryption may differ depending on the MIC
+   algorithm used to compute the MIC.  See the subsections on
+   alternative MIC algorithms to determine the proper manner in which to
+   use DES-EDE with the respective MICs.
+
+
+
+2.1.3  DES in CBC mode (DES-CBC)
+
+   The DES algorithm in Cipher Block Chaining (CBC) mode is used for
+   encryption of message text and, when asymmetric key management is
+   employed in an ENCRYPTED PEM message, for encryption of signed MICs.
+   The string "DES-CBC" within an encapsulated header field indicates
+   use of this algorithm/mode combination.
+
+   The input to the DES CBC encryption process must be padded to a
+   multiple of 8 octet, in the following manner.  Let n be the length in
+   octets of the input.  Pad the input by appending 8-(n mod 8) octet to
+   the end of the message, each having the value 8-(n mod 8), the number
+   of octets being added.  In hexadecimal, the possible paddings are:
+   01, 0202, 030303, 04040404, 0505050505, 060606060606, 07070707070707,
+   and 0808080808080808.  All input is padded with 1 to 8 octets to
+   produce a multiple of 8 octets in length.  The padding can be removed
+   unambiguously after decryption.
+
+   The DES CBC encryption process requires a 64-bit Initialization
+   Vector (IV).  A new, pseudorandom IV must be generated for each
+   ENCRYPTED PEM message.  Section 4.3.1 of [7] provides rationale for
+   this requirement, even given the fact that individual DEKs are
+   generated for individual messages.  The IV is transmitted with the
+   message within an encapsulated header field.
+
+   To avoid any potential ambiguity regarding the ordering of the octets
+   of a DES key that is input as a data value to the RSA encryption
+   process, the following holds true.  The first (or left-most
+   displayed, if one thinks in terms of a key's "print" representation
+   (1) ) octet of the key (i.e., bits 1-8 per FIPS PUB 46-1), when
+_______________
+(1) For purposes of discussion in this document, data values  are
+normalized in terms of their "print" representation.  For a octet
+
+
+
+Balenson                                                        [Page 4]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+   considered as an RSA data value, has numerical weight 2**56.  The
+   last (or right-most displayed) octet (i.e., bits 57-64 per FIPS PUB
+   46-1) has numerical weight 2**0.
+
+
+
+3  Asymmetric Encryption Algorithms and Modes
+
+   This section identifies alternative asymmetric encryption algorithms
+   and modes that may be used to encrypt DEKs and MICs when asymmetric
+   key management is employed.  Character string identifiers are
+   assigned for incorporation in encapsulated header fields to indicate
+   the choice of algorithm employed.  ASN.1 object identifiers are also
+   assigned for incorporation in RSA public-key certificates to indicate
+   the algorithm with which the respective public key is to be employed.
+   (Note: Only one alternative is presently defined in this category.)
+
+
+
+3.1  RSA
+
+   The RSA public-key encryption algorithm, as defined in CCITT X.509
+   [8], Annex C, is used for DEK and MIC encryption when asymmetric key
+   management is employed.  The string "RSA" indicates use of this
+   algorithm.  The ASN.1 object identifier
+
+    rsa OBJECT IDENTIFIER ::=
+    {joint-iso-ccitt(2) ds(5) algorithm(8) encryptionAlgorithm(1) 1}
+
+   as defined in X.509, Annex H, indicates a public key to be used with
+   this algorithm.  When used in the algorithm field of a value of type
+   AlgorithmIdentifier, the parameters field of that type has the ASN.1
+   type INTEGER and contains an integer value that specifies the length,
+   in bits, of the associated public key modulus.
+
+   All PEM implementations supporting asymmetric key management must
+   support this algorithm.
+
+
+
+_______________
+stream, the "first" octet would appear as the one on the  "left",
+and the "last" octet would appear on the "right".
+
+
+
+
+Balenson                                                        [Page 5]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+   A public key consists of an encryption exponent e and an arithmetic
+   modulus n, both public quantities which are typically carried in a
+   public-key certificate.  For the value of e, Annex C to X.509
+   suggests the use of Fermat's Number F4 (65537 decimal, or 1+2**16) as
+   a value "common to the whole environment in order to reduce
+   transmission capacity and complexity of transformation", i.e., the
+   value can be transmitted as 3 octets and at most seventeen (17)
+   multiplications are required to effect exponentiation.  As an
+   alternative, the number three (3) can be employed as the value for e,
+   requiring even less octets for transmission and yielding even faster
+   exponentiation.  For purposes of PEM, the value of e must be either
+   F4 or the number three (3).  The use of the value three (3) for
+   certificate validation is encouraged, to permit rapid certificate
+   validation.
+
+   A private key consists of a decryption exponent d, a secret quantity,
+   and the arithmetic modulus n.  Given the value for e, users of the
+   RSA encryption algorithm also must select values for d and for n.
+
+   The modulus n may vary in size from 508 to 1024 bits.
+
+   Quantities input as data values to the RSA encryption process are
+   properly justified and padded to the length of the modulus prior to
+   the encryption process.  In general, an RSA input value is formed by
+   concatenating a block type BT, a padding string PS, a NULL octet, and
+   the data quantity D, that is, BT || PS || 0x00 || D.
+
+   To prepare a MIC for RSA encryption, the block type BT is a single
+   octet containing the value 0x01 and the padding string PS is one or
+   more octets (enough octets to make the length of the complete RSA
+   input value equal to the length of the modulus) each containing the
+   value 0xFF.  The data quantity D is formed by concatenating the ASN.1
+   BER-encoded object identifier (OID) corresponding to the algorithm
+   used to generate the MIC and the MIC itself.  Thus, the MIC is
+   right-justified within the RSA input such that the last (or rightmost
+   displayed, if one thinks in terms of the "print" representation)
+   octet of the MIC is aligned with the right-most, or least-
+   significant, octet of the RSA input.  Proceeding to the left, each of
+   the remaining octets of the MIC, up through the first (or left-most
+   displayed) octet, is aligned in the next more significant octet of
+   the RSA input.  The MIC OID is placed in a similar manner to the left
+   of the MIC.  Note that this scheme is identical to the "block type
+   01" encryption-block formatting scheme described in PKCS #1 [13].
+
+
+
+
+Balenson                                                        [Page 6]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+   To prepare a DEK for RSA encryption, the block type BT is a single
+   octet containing the value 0x02 and the padding string PS is one or
+   more octets (enough octets to make the length of the complete RSA
+   input value equal to the length of the modulus) each containing a
+   pseudorandomly generated, nonzero value.  The data quantity D is the
+   DEK itself, which is right-justified within the RSA input such that
+   the last (or rightmost displayed, if one thinks in terms of the
+   "print" representation) octet of the DEK is aligned with the right-
+   most, or least-significant, octet of the RSA input.  Proceeding to
+   the left, each of the remaining octets of the DEK, up through the
+   first (or left-most displayed) octet, are each aligned in the next
+   more significant octet of the RSA input.  Note that this scheme is
+   identical to the "block type 02" encryption-block formatting scheme
+   described in PKCS #1 [13].
+
+   The RSA input is then encrypted per the RSA algorithm via modular
+   exponentiation, with the first (or left-most) octet taken as the most
+   significant octet, and the last (or right-most) octet taken as the
+   least significant octet.  The resulting RSA output is interpreted in
+   a similar manner.
+
+
+
+4  Message Integrity Check Algorithms
+
+   This section identifies the alternative algorithms that may be used
+   to compute Message Integrity Check (MIC) values.  Character string
+   identifiers and ASN.1 object identifiers are assigned for
+   incorporation in encapsulated header fields to indicate the choice of
+   MIC algorithm employed.
+
+   For compatibility with this specification, a PEM implementation must
+   be able to process MAC (Section 4.1), RSA-MD2 (Section 4.2), and
+   RSA-MD5 (Section 4.3) MICs on incoming messages.  It is a sender
+   option whether MAC, RSA-MD2, or RSA-MD5 is employed on an outbound
+   message.
+
+   Use of MAC is strongly discouraged for messages sent to more than a
+   single recipient.  Also, use of MAC does not provide non-repudiation
+   of origin, even when asymmetric key management is employed.  The
+   reason for these statements is that the use of MAC fails to prevent
+   recipients of a message from tampering with the message in a manner
+   which preserves the message's appearance as an authentic message from
+   the original sender.  In other words, use of MAC on mail provides
+
+
+
+Balenson                                                        [Page 7]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+   source authentication at the granularity of membership in the
+   message's authorized address list (plus the sender) rather than at a
+   finer (and more desirable) granularity authenticating only the
+   individual sender.
+
+
+
+4.1  Message Authentication Code (MAC)
+
+   A message authentication code (MAC) is computed using the DES CBC
+   mode of operation in the fashion defined in FIPS PUB 113 [9].  The
+   MAC is taken as the left-most 8 octets (i.e., 64 bits) of the final
+   output block (On, read "O-sub-n", as denoted in FIPS PUB 113).  The
+   string "MAC", and as defined in NIST Special Publication 500-183
+   [10], the ASN.1 object identifier
+
+    desCBCMAC OBJECT IDENTIFIER ::=
+    {iso(1) identified-organization(3) oiw(14) secsig(3) algorithm(2)
+    miscAlgorithm(4) 1}
+
+   indicate the use of this algorithm.  (2)
+
+   The MAC algorithm requires a 64-bit cryptographic key.  For our
+   purposes, this key is derived as a variant of the DEK used for
+   message text encryption.  The variant is formed by modulo-2 addition
+   of the 8-octet hexadecimal quantity F0F0F0F0F0F0F0F0 to the
+   encryption DEK.
+
+   The MAC algorithm accepts as input a message of any length.  The
+   input is padded at the end, per FIPS PUB 113, with zero-valued octets
+   as needed in order to form an integral number of 8-octet encryption
+   quanta.  These padding octets are inserted implicitly and are not
+   transmitted with a message.
+
+   To avoid any potential ambiguity regarding the ordering of the octets
+   of a MAC that is input as a data value to the RSA encryption process,
+   the following holds true.  The first (or left-most displayed, if one
+   thinks in terms of a MAC's "print" representation) octet of the MAC,
+_______________
+(2) It  is  anticipated  that  this  object  identifier  will  be
+assigned  by  the  NIST OSI Implementor's Workshop (OIW) Security
+Special Interest Group (SECSIG) in Fall 1991, and will appear  in
+the Stable Agreements published at the end of the year.
+
+
+
+
+Balenson                                                        [Page 8]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+   when considered as an RSA data value, has numerical weight 2**56.
+   The last (or right-most displayed) octet has numerical weight 2**0.
+
+
+
+4.2  RSA-MD2 Message Digest Algorithm
+
+   The RSA-MD2 message digest is computed using the algorithm defined in
+   Internet Draft [MD2-B] [11].  The string "RSA-MD2" and, as defined in
+   Internet Draft [MD2-B], the ASN.1 object identifier
+
+    md2 OBJECT IDENTIFIER ::=
+    {iso(1) member-body(2) US(840) rsadsi(113549) digestAlgorithm(2) 2}
+
+   indicate the use of this algorithm.
+
+   The RSA-MD2 message digest algorithm accepts as input a message of
+   any length and produces as output a 16-octet quantity.  When
+   symmetric key management is employed, an RSA-MD2 MIC is encrypted by
+   splitting the MIC into two 8-octet halves, independently encrypting
+   each half, and concatenating the results.
+
+   To avoid any potential ambiguity regarding the ordering of the octets
+   of an MD2 message digest that is input as an RSA data value to the
+   RSA encryption process, the following holds true.  The first (or
+   left-most displayed, if one thinks in terms of a digest's "print"
+   representation) octet of the digest (i.e., X[0] as specified in
+   Internet Draft [MD2-B]), when considered as an RSA data value, has
+   numerical weight 2**120.  The last (or right-most displayed) octet
+   (i.e., X[15] as specified in Internet Draft [MD2-B]) has numerical
+   weight 2**0.
+
+   This algorithm may be used as a MIC algorithm whenever a message is
+   addressed to multiple recipients as well as to a single recipient.
+   The use of this algorithm in conjunction with asymmetric key
+   management does provide for non-repudiation of origin.
+
+
+
+
+
+
+
+
+
+
+
+Balenson                                                        [Page 9]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+4.3  RSA-MD5 Message Digest Algorithm
+
+   The RSA-MD5 message digest is computed using the algorithm defined in
+   Internet Draft [MD5-A] [12].  The string "RSA-MD5" and, as defined in
+   Internet Draft [MD5-A], the object identifier
+
+    md5 OBJECT IDENTIFIER ::=
+    {iso(1) member-body(2) US(840) rsadsi(113549) digestAlgorithm(2) 5}
+
+   indicate the use of this algorithm.
+
+   The RSA-MD5 message digest algorithm accepts as input a message of
+   any length and produces as output a 16-octet quantity.  When
+   symmetric key management is employed, an RSA-MD5 MIC is encrypted by
+   splitting the MIC into two 8-octet halves, independently encrypting
+   each half, and concatenating the results.
+
+   To avoid any potential ambiguity regarding the ordering of the octets
+   of a MD5 message digest that is input as an RSA data value to the RSA
+   encryption process, the following holds true.  The first (or left-
+   most displayed, if one thinks in terms of a digest's "print"
+   representation) octet of the digest (i.e., the low-order octet of A
+   as specified in Internet Draft [MD5-A]), when considered as an RSA
+   data value, has numerical weight 2**120.  The last (or right-most
+   displayed) octet (i.e., the high-order octet of D as specified in
+   Internet Draft [MD5-A]) has numerical weight 2**0.
+
+   This algorithm may be used as a MIC algorithm whenever a message is
+   addressed to multiple recipients as well as to a single recipient.
+   The use of this algorithm in conjunction with asymmetric key
+   management does provide for non-repudiation of origin.
+
+
+
+   5  Signature Algorithms
+
+   This section identifies alternative signature algorithms which may be
+   used to sign certificates and certificate revocation lists (CRLs).
+   ASN.1 object identifiers are assigned for incorporation in
+   certificates and CRLs to indicate the choice of algorithm employed.
+   (Note: Only one alternative is presently defined in this category.)
+
+
+
+
+
+
+Balenson                                                       [Page 10]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+   5.1  md2WithRSAEncryption
+
+   The md2WithRSAEncryption algorithm is used to sign certificates and
+   CRLs.  The algorithm incorporates the RSA-MD2 message digest
+   algorithm as specified in Internet Draft [MD2-B] [11] and the RSA
+   asymmetric encryption algorithm and "block type 01" encryption block
+   padding scheme defined in PKCS #1 [13].  The ASN.1 object identifier
+
+    md2WithRSAEncryption OBJECT IDENTIFIER ::=
+    {iso(1) member-body(2) US(840) rsadsi(113549) pkcs(1) pkcs-1(1) 2}
+
+   (as defined in PKCS #1) indicates the use of this algorithm.  When
+   used in the algorithm field of a value of type AlgorithmIdentifier,
+   the parameters field of that type has the ASN.1 type NULL.
+
+   In accordance with PKCS #1, an md2WithRSAEncryption signature is
+   prepared in the following manner.  First, the item ToBeSigned is
+   ASN.1 encoded according to the distinguished encoding rules (DERs)
+   specified in Section 8.7 of X.509.  Then, a RSA-MD2 message digest is
+   computed on the DER-encoded result, and the digest and the digest
+   AlgorithmIdentifier for md2WithRSAEncryption are ASN.1 encoded as the
+   following sequence.
+
+    SEQUENCE {
+      digestAlgorithm AlgorithmIdentifier,
+      digest OCTET STRING
+    }
+
+   Next, an RSA input value is formed by concatenating the block type
+   0x01, a padding string PS, a NULL octet, and the encoded sequence.
+   The padding string is one or more octets (enough octets to make the
+   length of the complete RSA input value equal to the length of the
+   modulus) each containing the value 0xFF.  Finally, the input value is
+   RSA encrypted via modular exponentiation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Balenson                                                       [Page 11]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+References:
+
+     [1]  Federal Information Processing Standards Publication (FIPS
+          PUB) 46-1, Data Encryption Standard, Reaffirmed 22 January
+          1988 (supercedes FIPS PUB 46, 15 January 1977).
+
+     [2]  ANSI X3.92-1981, American National Standard Data Encryption
+          Algorithm, American National Standards Institute, Approved 30
+          December 1980.
+
+     [3]  Federal Information Processing Standards Publication (FIPS
+          PUB) 81, DES Modes of Operation, 2 December 1980.
+
+     [4]  ANSI X3.106-1983, American National Standard for Information
+          Systems - Data Encryption Algorithm - Modes of Operation,
+          American National Standards Institute, Approved 16 May 1983.
+
+     [5]  ISO 8372, Information Processing Systems: Data Encipherment:
+          Modes of Operation of a 64-bit Block Cipher.
+
+     [6]  ANSI X9.17-1985, American National Standard, Financial
+          Institution Key Management (Wholesale), American Bankers
+          Association, April 4, 1985, Section 7.2.
+
+     [7]  Voydock, V. L. and Kent, S. T., "Security Mechanisms in High-
+          Level Network Protocols", ACM Computing Surveys, Vol. 15, No.
+          2, June 1983, pp. 135-171.
+
+     [8]  CCITT Recommendation X.509 (1988), "The Directory -
+          Authentication Framework".
+
+     [9]  Federal Information Processing Standards Publication 113,
+          Computer Data Authentication, May 1985.
+
+     [10] NIST Special Publication 500-183, Stable Implementation
+          Agreements for Open Systems Interconnection Protocols, Version
+          5, Edition 1, Part 11, to be published December 1991.
+
+     [11] Kaliski, B., The MD2 Message-Digest Algorithm, Internet Draft,
+          July 1, 1991.
+
+     [12] Rivest, R. and S. Dusse, The MD5 Message-Digest Algorithm,
+          Internet Draft, July 10, 1991.
+
+
+
+
+Balenson                                                       [Page 12]
+
+
+
+
+Internet-Draft   PEM: Algorithms, Modes and Identifiers      August 1991
+
+
+
+     [13] PKCS #1: RSA Encryption Standard, Version 1.4, RSA Data
+          Security, Inc., June 3, 1991.
+
+
+   Author's Address:
+
+       David Balenson
+       Trusted Information Systems
+       3060 Washington Road
+       Glenwood, Maryland 21738
+
+       Phone: 301-854-6889
+
+       EMail: balenson@tis.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Balenson                                                       [Page 13]
+

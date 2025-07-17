@@ -1,0 +1,326 @@
+
+CURRENT_MEETING_REPORT_
+
+
+Reported by John Linn/DEC
+
+CAT Minutes
+
+The meeting began with a review of the planned agenda.  The first
+session was devoted to mechanism-oriented discussion, including
+presentation and discussion of public-key Distributed Authentication
+Security Services (DASS) architecture and consideration of weaker-level
+authentication schemes which might be considered in support of CAT. The
+second session was primarily devoted to interface questions and issues
+pending from the Atlanta meeting.
+
+To this point, CAT has emphasized authentication mechanisms which
+provide authentication in terms of global names but which also requiring
+deployment of significant supporting infrastructure.  Interest has been
+expressed in enabling entry to CAT through simpler alternative
+mechanisms (e.g., passwords, hand-held authenticators, Yellow Pages
+(YP)), which generally authenticate in terms of local (per-host) names
+rather than a global structure.  This prospect was controversial for two
+basic reasons:  (1) in terms of the level of portability that would
+actually be supportable for subsequent migration to stronger mechanisms,
+and (2) because of concern that support within CAT could result in
+institutionalizing the current weak state of authentication within the
+Internet.  Evaluation and debate on these questions will continue.
+
+DASS Architecture
+
+Charlie Kaufman gave a presentation on the DASS architecture, which was
+recently submitted to Internet-Drafts and accompanied by a letter from
+Digital Equipment Corporation to the IAB ceding change control to the
+IETF process.  The general scope was described as strong mutual
+interactive authentication, with functionality analogous to Kerberos
+(V4) but extended for elimination of the on-line Key Distribution Center
+(KDC), limitation of dictionary attacks against passwords, delegation
+support, hierarchic realm support, and support for various types of
+principals (user, node, combination).  A login agent protocol using two
+hash algorithms was incorporated to provide password guessing
+protection.  DASS fits under the GSS-API, providing all CAT services as
+well as additional functions.
+
+DASS credentials cannot, if intercepted, be used to permanently
+impersonate the principal they represent.  Temporary impersonation (for
+credentials' lifetime, normally corresponding to the duration of a login
+session) is possible in the case of an overrun workstation.  It was also
+observed that execution of rlogin with the delegation option set results
+in transfer of credentials to the rlogin target, and concern was
+expressed that this poses danger in the case of a temporarily unattended
+workstation.
+
+Several aspects were contrasted against Kerberos.  DASS tokens are built
+by using a certificate chain and the target's public key, but repeated
+
+                                   1
+
+
+
+
+
+use of public key operations is not needed to build successive
+authenticators on the same context.  Address data is placed into the
+authenticator, not the predecessor ticket, permitting a deferred,
+application-specific binding.  Timestamps and Kerberos-like
+authenticator caches are employed to determine authenticator acceptance.
+
+The motivation for DASS's login agent was questioned.  This agent was
+described as a means to provide password guessing protection; it was
+noted that other key and password protection schemes can also be used,
+offering different tradeoffs.  The absence of Certificate Revocation
+Lists (CRLs) from the architecture was also questioned; it was noted
+that the intent was to trust the certificate store as a primary and
+rapid revocation mechanism, leading to a discussion of the recognized
+(though not currently implemented) need for authentication of the
+certificate store.  It was also noted that hybrid models accommodating
+CRL as well as store-based revocation were also possible.
+
+The relation between DASS and Privacy-Enhanced Mail (PEM) was discussed.
+At the moment, DASS diverges from the most recent PEM selection of
+signature algorithm representation within X.509 certificates; DASS will
+likely align with PEM. Different hierarchic traversal rules are employed
+(including DASS's use of uplink as well as downlink certificates), but
+DASS and PEM should be able to use a common infrastructure.  Sharing of
+keys and certificate stores should also be possible, given resolution of
+credential management issues.
+
+The DASS usage of uplink as well as downlink certificates has trust
+implications, and builds on a premise that closer points in the trust
+hierarchy will generally be viewed by users and administrators as more
+trusted than more remote points.  Pairwise cross-certification makes it
+possible to manifest pairwise relationships between different
+Certification Authorities (CAs), even if remote from each other in the
+namespace.  Compromise of a high-level CA can compromise a large number
+of authentication paths, but does not impact local or cross-certified
+authentications lower in the tree.
+
+DASS futures include:  DASS/PEM alignment, replacement of the
+Certificate Distribution Center (CDC) with a standard directory,
+serverless ``PEM-like'' modes of operation in which certificates are
+transferred between peers, and supplemental options to the login agent
+mechanism, allowing different security vs.  convenience tradeoffs (it
+was noted that standardization in this area, while useful, is less
+critical than standardization of tokens.  A question arose as to whether
+DASS and PEM should share long-term private keys, given DASS's goal of
+minimizing such keys' exposure and PEM's requirement (unless, e.g., a
+password is demanded for each processed PEM message) to keep such keys
+available and accessible for use.  Questions also exist about the
+logistics of infrastructure sharing with PEM.
+
+Discussion was given to revocation, and how storage and use of CRLs
+could reduce the need to trust the certificate store.  It was asserted
+that store- based revocation is better suited to rapid revocation (e.g.,
+of a terminated employee) than is the (generally schedule-based) CRL
+model.  While unscheduled CRLs can be generated at any time, it is hard
+
+                                   2
+
+
+
+
+
+to assure their propagation to all necessary points.  Multi-tiered
+revocation, including CRLs for highly trusted mid- to long-term
+revocation and store-based short-term revocation, may be an appropriate
+hybrid.
+
+Discussion was given to partial (limited) delegation.  It is desirable
+to constrain the set of delegated rights, but difficult to predetermine
+a useful set of restrictions to be supported or to identify what rights
+particular servers will require in order to carry out user requests.
+Group affiliations are one possibility (as employed, e.g., in the OSF
+DCE). It was noted that delegation crosses the boundary from
+authentication towards authorization.  Kerberos V4 requires password
+re-entry to delegate; in V5, login-time flags permit various
+alternatives, but there is yet little operational experience with what
+flag options will be most used.  Vint Cerf cited a digital library
+service example, motivating the need for delegation by the fact that a
+requester cannot generally determine where actions must be taken in
+order to satisfy their requests; for this example, a controllable
+charging right is desired.
+
+Lower-Function Mechanisms
+
+There are a large range of authentication schemes with lower function
+than the powerful cryptographic schemes so far emphasized within CAT. A
+key controversial question arose:  should such schemes, even at the
+level of unprotected passwords, be construed or explicitly supported
+within the CAT model?  Arguments in favor include easy caller adoption
+with potential migration path to later use of stronger mechanisms.
+Arguments opposed include technical issues which could constrain later
+migration, and the prospect that institutionalization of weak mechanisms
+could in fact deter deployment of stronger security mechanisms within
+the Internet (conflicting with the goal of facilitating deployment of
+stronger authentication within the Internet).
+
+In discussion, most working group attendees opposed recommendation of ]
+unprotected passwords as a CAT mechanism.  It was observed, for example,
+that ``CAT should provide security services matching caller
+expectations'', and that extension down to the level of unprotected
+passwords was not perceived as k qualifying.  There was also an
+assertion that CAT integration within protocol implementations was
+unlikely to be performed if no security benefits would directly result.
+Extension to intermediate mechanisms providing enhancement over
+passwords, but requiring little infrastructure for deployment, was
+received more positively.
+
+Many members of the lower-function mechanism class raise technical
+concerns for CAT integration.  They do not normally authenticate in
+terms of global names, but rather in terms of names local to the
+verifier system.  While it is fairly straightforward to distinguish
+mechanisms to callers in terms of the security services they provide,
+there is no comparable means to rank mechanisms providing a particular
+service in terms of the quality with which that service is provided.  It
+was observed that different classes of mechanisms might be admissible
+into mutually-trusting threat environments such as those for which
+
+                                   3
+
+
+
+
+
+RFC-931 was designed.  It may be appropriate to recognize the
+distinction and ordering between two suggested equivalence classes:
+``non-disclosing'' (cryptographically strong) and ``disclosing''
+mechanisms, even though metrics for ordering of strengths within these
+classes are lacking.
+
+Accommodation of hand-held authenticators and like technologies within
+CAT would require the ability for such a CAT mechanism to call out for
+user input at context establishment time.  The input required varies on
+a basis which is target-specific, in contrast to Kerberos or DASS
+credentials which are typically established in conjunction with user
+login in a target-independent fashion.  Simple passwords could also be
+user-entered at context establishment time on a target-specific basis,
+or an encrypted password file (containing multiple target-specific
+entries) could be unlocked at credential establishment time.
+
+It was noted that Kerberos is the only presently-proposed mechanism
+which does not require the use of patented public-key technology.  NNTP
+(not developed on a product basis) was cited as an interested client
+effectively barred from access to such technology.  [Note:  Plans
+announced at the IETF Privacy Enchanced Mail Working Group by RSA Data
+Security to provide a freely-available public-key implementation may
+modify this situation, should this implementation's interfaces and
+characteristics prove suitable as a basis for CAT usage.]  It was noted
+that users lacking source code for their operating systems are impeded
+from authentication system integration requiring, e.g., modification to
+/bin/login.
+
+A desire was voiced for a ``Strategic Plan for CAT Deployment'' document
+to be developed, documenting the pieces and steps required for this
+process.  It was noted that a perception exists that integration of CAT
+is being construed within the IETF as a prerequisite for advancement of
+an application protocol on the standards track, and that other working
+groups may not be fully cognizant of CAT scope, directions, and
+schedule.  It was also noted that a claim of ``CAT conformance'' is not
+in itself meaningful, but that ``CAT with specific mechanism(s)'' is
+well-formed.
+
+Discussion of Issues List
+
+We discussed identified issues flagged on the CAT mailing list, and
+considered the interface specification suitable for advancement as a
+basis for follow-on work.
+
+[(D1) Suggestion that CAT mechanisms should incorporate additional token
+exchanges into context establishment sequences so as to avoid returning
+COMPLETE status before it is known that the CAT peer has successfully
+accepted the context.]:  It was accepted as a desirable recommendation
+to mechanism designers that context establishment should be
+self-contained and modular, providing full bidirectional peer-entity
+authentication (and assurance of cryptographic token acceptance) without
+need to invoke CAT per-message protection primitives in order to
+validate context setup.
+
+
+                                   4
+
+
+
+
+
+[(D2) Desire to make identification of set of intermediaries involved in
+context establishment available to CAT caller.]:  Such a CAT extension
+would be technically feasible, but its value for mechanism-independent
+interpretation was questioned.  Since its primary advocate was not
+available for discussion, the topic was tabled for the present.
+
+[(D3) Suggested optional overlay of calls to integrate CAT
+authentication with data stream calls, analogous to Kerberos' send_auth
+interface.]:  No new status was reported on this work item.
+
+[(D4) Discussion of alternative coding schemes (character sets, etc.)
+for CAT tokens.]:  This suggestion had been intended as a means to
+support CAT-based integration of password mechanisms in a manner which
+would be interoperable with non-CAT peers implementing like schemes.  It
+was recognized in discussion that CAT's scope cannot extend in general
+to interoperation with peers not supporting CAT and its token exchange
+paradigm.
+
+[(D5) Specifics of shared-mechanism determination approaches, including
+combinations of negotiation, directory entries, configuration data, and
+user/caller input.]:  It was proposed that negotiation schemes be
+considered in follow-on work on an identified ``negotiated'' mechanism,
+which would itself exchange tokens in order to identify a shared
+mechanism and then perform authentication under that shared mechanism.
+
+[(D6) CAT naming portability issues and approaches, in advance of
+IETF-level agreement as cited in (H1)]:  Discussion explored aspects of
+this problematic area and of the GSS-API facilities incorporated for
+portability support absent agreement on a common global naming format.
+
+Attendees
+
+Jim Barnes               barnes@Xylogics.COM
+Charles Bazaar           bazaar@emulex.com
+Larry Blunk              ljb@merit.edu
+Thomas Boorman           tmb@lanl.gov
+David Borman             dab@cray.com
+Ken Carlberg             carlberg@cseic.saic.com
+Lida Carrier             lida@apple.com
+Vinton Cerf              vcerf@nri.reston.va.us
+Jim Clifford             jrc@lanl.gov
+Robert Cooney            cooney@wnyose.nctsw.navy.mil
+Curtis Cox               ccox@wnyose.nctsw.navy.mil
+Stephen Crocker          crocker@tis.com
+Jim DeMarco              jdemarco@ftp.com
+Steve Dusse              spock@rsa.com
+Barbara Fraser           byf@cert.sei.cmu.edu
+L. Dain Gary             ldg@cert.sei.cmu.edu
+Jisoo Geiter             geiter@gateway.mitre.org
+Joseph Godsil            jgodsil@ncsa.uiuc.edu
+Neil Haller              nmh@bellcore.com
+Charles Kaufman          kaufman@dsmail.enet.dec.com
+Stephen Kent             kent@bbn.com
+Peter Kirstein           kirstein@cs.ucl.ac.uk
+
+                                   5
+
+
+
+
+
+Deidre Kostick           dck2@sabre.bellcore.com
+John Linn                linn@zendia.enet.dec.com
+Ellen McDermott          emcd@osf.org
+Glenn McGregor           ghm@merit.edu
+Bill Melohn              melohn@auspex.com
+Andy Nicholson           droid@cray.com
+Brad Passwaters          bjp@sura.net
+Robert Purvy             bpurvy@us.oracle.com
+Jeffrey Schiller         jis@mit.edu
+William Simpson          Bill_Simpson@um.cc.umich.edu
+Richard Smith            smiddy@pluto.dss.com
+Sven Tafvelin            tafvelin@ce.chalmers.se
+Theodore Tso             tytso@mit.edu
+Sally Wilkins            sfw@lanl.gov
+Preston Wilson           preston@i88.isc.com
+C. Philip Wood           cpw@lanl.gov
+
+
+
+                                   6

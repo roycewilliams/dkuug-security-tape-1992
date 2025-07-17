@@ -1,0 +1,33 @@
+
+
+CURRENT_MEETING_REPORT_
+
+
+Reported by James Galvin/TIS
+
+PEM II BOF Minutes
+
+D. James Bidzos, President of RSA DSI, presented a summary of the
+Organizational Agreement that will be required when PEM is made openly
+available to the Internet community.  The status of the Organizational
+Agreement with respect to the IAB standards process was discussed, but
+not resolved.  It was pointed out that previous versions of the
+agreement included security requirements.  These requirements have been
+separated from the agreement and will be presented in a fifth PEM
+related RFC that will be published with the revised RFCs.  The slides
+from Jim's presentation are included below.
+
+Attendees
+
+Jim Bidzos
+Vinton Cerf              vcerf@NRI.Reston.VA.US
+Stephen Crocker          crocker@tis.com
+James Galvin             galvin@tis.com
+Tom Kessler              kessler@sun.com
+John Linn                ULTRA::LINN
+Carl Malamud             carl@malamud.com
+Jeffrey Schiller         jis@mit.edu
+
+
+
+                                   1

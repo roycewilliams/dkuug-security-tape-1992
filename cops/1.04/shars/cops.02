@@ -1,0 +1,1519 @@
+#!/bin/sh
+# this is p4.shar.02 (part 2 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/bug.chk.aix continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 2; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/bug.chk.aix'
+else
+echo 'x - continuing file cops_104/bug.chk.aix'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/bug.chk.aix' &&
+X# Format: Fri Feb  7 14:16:55 PST 1992
+Xif $TEST $# -eq "2" ; then
+X        real_date="$1 $2"
+Xelse
+X        real_date=`$DATE | $AWK '{print $2, $NF}'`
+X        fi
+X
+X# tftpd
+X#
+X#
+X# Fixed in version "1.13.1.3" (do a "what /etc/tftpd")
+Xtftpd="/etc/tftpd"
+Xfix_date="17 Oct 1991"
+Xcert_advis="CA-91:19"
+X#  IBM says to do this; I'm going to go by date, because if I search
+X# for a specific version, I'll be screwed when they change it.
+X# `what /etc/tftpd`
+Xif $TEST -f "$tftpd" ; then
+X	cur_date=`$LS $LS_OPTS $tftpd | $AWK '{print $8, $7, $9}'`
+X	$ECHO $tftpd $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# /usr/etc/rpc.rexd
+X#
+X#
+Xrexd="/usr/etc/rcp.rexd"
+Xfix_date="5 Mar 1992"
+Xcert_advis="CA-92:5"
+X#
+Xif $TEST -f "$rexd" ; then
+X	cur_date=`$LS $LS_OPTS $rexd | $AWK '{print $8, $7, $9}'`
+X	$ECHO $rexd $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# finis
+SHAR_EOF
+echo 'File cops_104/bug.chk.aix is complete' &&
+chmod 0700 cops_104/bug.chk.aix ||
+echo 'restore of cops_104/bug.chk.aix failed'
+Wc_c="`wc -c < 'cops_104/bug.chk.aix'`"
+test 1204 -eq "$Wc_c" ||
+	echo 'cops_104/bug.chk.aix: original size 1204, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/cops ==============
+if test -f 'cops_104/cops' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/cops (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/cops (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/cops' &&
+X:
+X#
+X#  Usage cops [-a architecture] [-b bit_bucket] [-s secure_dir] \
+X#             [-m user] [-f filter_file] [-dxvV]
+X#
+X#  -a specifies the architecure subdirectory you want to run in; you
+X#     must run "make install" to install the appropriate binaries there
+X#
+X#  -b specifies the "bit bucket", where all the error messages go to.
+X#
+X#  -d will mail a report only if there have been changes since the
+X#     last one.  Only makes sense with the -m flag or by setting the
+X#     MMAIL var below.
+X#
+X#  -f specifies the cops filter file, which is used for filtering out
+X#     extraneous warning message.
+X#
+X#  -m tells cops to mail the output to the user specified
+X#
+X#  -s tells cops where the secure directory is; mostly this is used by
+X#     cops itself, when it is run with the -a flag; it will rerun itself
+X#     with the -a flag's argument as an argument to this.
+X#
+X#  -x prints out the version number (running out of letters! :-))
+X#
+X#  -[vV] are the verbose flags.  Small "v" says print whatever program
+X#     is running, when it is executed, in the output file; capital
+X#     "V" says print everything to the screen.
+X#
+X#  Warning!  COPS will get confused if you use a command line arg that
+X# expects an argument and you don't give it one.  Don't say I didn't
+X# warn you :-)
+X#
+X# Overall --
+X#
+X#  Cops will change into the $SECURE/architecture directory, ensure all
+X# the security programs (listed below) indeed do exist, and run all of the
+X# security programs.  If any of the programs find any security problems, it
+X# either sends mail to everyone in the $SECURE_USERS list, or saves the results
+X# in a file $SECURE/architecture/hostname.  It then destroys all temporary
+X# files, and exits the program.  Programs that are run (besides this one):
+X#
+X#	root.chk	dev.chk		group.chk
+X#	home.chk 	rc.chk		passwd.chk
+X#	is_able.chk	pass.chk 	user.chk
+X#	cron.chk	misc.chk	ftp.chk
+X#
+X# The U-kuang system runs these additional programs:
+X#	init_kuang	kuang		addto
+X#	clearfiles	filewriters	members
+X
+X#
+X#  If this is changed to "NO", the report that cops creates
+X# will not be deleted and the results will not be mailed to anyone.
+XMMAIL=NO
+X
+X#
+X# Foreign language users can change this (thanks to Wolfgang Denk!):
+XLANGUAGE=english
+Xexport LANGUAGE
+X
+X#
+X#  If this is changed to "YES", then the report will only be mailed
+X# if it detects a difference between the last report and this one.
+X# Note that this makes no sense unless the mail is set to "YES" as well.
+XONLY_DIFF=YES
+X
+X#
+X#  Do you want to run suid.chk within cops?
+XRUN_SUID=NO
+X
+X# Where is everyone?
+XECHO=/bin/echo
+XTEST=/bin/test
+XRM=/bin/rm
+XCAT=/bin/cat
+XMAIL=/bin/mail
+XDATE=/bin/date
+XCHMOD=/bin/chmod
+XAWK=/bin/awk
+XSED=/bin/sed
+XMV=/bin/mv
+XMKDIR=/bin/mkdir
+X
+X# send errors and verbosity to...
+XBIT_BUCKET=/dev/null
+X# send verbose messages to...
+XVERBUCKET=/dev/null
+X
+X######################
+X#  Change these lines!
+X######################
+XSECURE=/usr/foo/bar
+XSECURE_USERS="foo@bar.edu"
+X######################
+X
+X# arg stuff:
+Xwhile $TEST $# != 0
+X	do      case "$1" in
+X        -a)     arch=$2 ; SECURE=$SECURE"/"$arch ; shift ;;
+X        -b)	BIT_BUCKET=$2 ; flags=$flags" -b $2" ; shift ;;
+X        -d)	ONLY_DIFF=YES ;;
+X	-f)	filter=yes ; cops_filter=$2 ; shift ;;
+X        -m)	SECURE_USERS=$2 ; flags=$flags" -m $2" ; MMAIL=YES ; shift ;;
+X        -s)     SECURE=$2 ; shift ;;
+X        -v)	verbose=yes ; v="-v" ; flags=$flags" -v" ;;
+X        -V)	verbose=yes ; VERBUCKET="/dev/tty" ; RESULT="/dev/tty" ; flags=$flags" -V" ;;
+X        -x)     $AWK '{print "Version 1.0" $NF}' ./patchlevel.h ; exit 0 ;;
+X        *)      $ECHO Usage $0 [-a arch] [-b bit_bucket] [-s sec_dir] [-f filter] [-m user] [-dvVx] ; exit ;;
+X        esac
+X        shift
+X	done
+X
+Xif $TEST "$filter" = "yes" -a ! -s "$cops_filter" ; then
+X	$ECHO "Can't open filter: $cops_filter"
+X	exit 1
+X	fi
+X
+X#  architecture?  change to that dir, and execute cops there:
+Xif $TEST -n "$arch" ; then
+X	if $TEST ! -d "$SECURE" ; then
+X 		$ECHO Architecture directory $1 does not exist
+X 		exit 1
+X 		fi
+X	$CHMOD 700 $SECURE
+X 	cd $SECURE
+X 	./cops -s "." $flags
+X 	exit
+X 	fi
+X
+XSECURE_PROGRAMS="root.chk dev.chk is_able.chk group.chk \
+X                 home.chk rc.chk passwd.chk pass.chk misc.chk ftp.chk \
+X		 cron.chk user.chk init_kuang kuang addto \
+X		 clearfiles filewriters members is_able bug.chk"
+X
+Xif $TEST ! -d "$SECURE" ; then
+X	$ECHO "Error -- Security directory $SECURE doesn't exist"
+X	exit 1
+Xfi
+X
+X$CHMOD 700 $SECURE
+Xcd $SECURE
+X
+Xfor i in $SECURE_PROGRAMS
+X	do
+X	if $TEST ! -s "$i" ; then
+X		$ECHO "Error -- Security program $SECURE/$i doesn't exist"
+X		exit 1
+X	fi
+Xdone
+X
+X# results go:
+Xif $TEST -z "$RESULT" ; then
+X	RESULT=$SECURE/result.$$
+X	fi
+Xif $TEST x"-v" = "x$v" ; then
+X	VERBUCKET=$RESULT
+X	fi
+X
+Xif $TEST -n "$verbose" ; then
+X	$ECHO "**** root.chk ****" > $VERBUCKET ; fi
+X$SECURE/root.chk		>>	$RESULT 2>  $BIT_BUCKET
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** dev.chk ****" >> $VERBUCKET ; fi
+X$SECURE/dev.chk			>>	$RESULT 2>> $BIT_BUCKET
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** is_able.chk ****" >> $VERBUCKET ; fi
+X$SECURE/is_able.chk		>>	$RESULT 2>> $BIT_BUCKET
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** rc.chk ****" >> $VERBUCKET ; fi
+X$SECURE/rc.chk			>>	$RESULT 2>> $BIT_BUCKET
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** cron.chk ****" >> $VERBUCKET ; fi
+X$SECURE/cron.chk		>>	$RESULT 2>> $BIT_BUCKET
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** group.chk ****" >> $VERBUCKET ; fi
+X$SECURE/group.chk		>>	$RESULT 2>> $BIT_BUCKET
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** home.chk ****" >> $VERBUCKET ; fi
+X$SECURE/home.chk		>>	$RESULT 2>> $BIT_BUCKET
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** passwd.chk ****" >> $VERBUCKET ; fi
+X$SECURE/passwd.chk		>>	$RESULT 2>> $BIT_BUCKET
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** user.chk ****" >> $VERBUCKET ; fi
+X$SECURE/user.chk		>>	$RESULT 2>> $BIT_BUCKET
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** misc.chk ****" >> $VERBUCKET ; fi
+X$SECURE/misc.chk		>>	$RESULT 2>> $BIT_BUCKET
+X
+X# use the -a option for checking anon-ftp; e.g., "$SECURE/ftp.chk -a"
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** ftp.chk ****" >> $VERBUCKET ; fi
+X$SECURE/ftp.chk			>>	$RESULT 2>> $BIT_BUCKET
+X
+X#   Optional -- use "pass_diff.chk", instead of "pass.chk" to make your
+X# life easier!
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** pass.chk ****" >> $VERBUCKET ; fi
+X$SECURE/pass.chk -w ./pass.words -b -g -s -c -d -n >> $RESULT 2>> $BIT_BUCKET
+X# $SECURE/pass_diff.chk		>>	$RESULT 2>> $BIT_BUCKET
+X# try it with "-w ./pass.words -b -g -s -c -d -n" flags....
+X
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** kuang ****" >> $VERBUCKET ; fi
+X#   Optional -- use "kuang.pl", instead of "kuang", if you have perl
+X# installed on your system, for extra speed and functionality:
+X$SECURE/kuang			>>	$BIT_BUCKET 2>> $BIT_BUCKET
+X# $SECURE/kuang.pl		>>	$BIT_BUCKET 2>> $BIT_BUCKET
+X
+X# kuang puts it's results in a file called "Success"; check it out:
+X# if $TEST -s "$SECURE/Success" ; then
+X# 	$CAT $SECURE/Success >> $RESULT
+X# fi
+X# $RM -f $SECURE/Success
+X
+X# Optional!  Should use this interactively, with a secret key!
+X# if $TEST -n "$verbose" ; then 
+X# 	$ECHO "**** crc.chk ****" >> $VERBUCKET ; fi
+X# $SECURE/crc.chk	2>> $BIT_BUCKET
+X
+X# crc.chk puts it's results in a file called crc.results; uncomment
+X# this as well:
+X# if $TEST -s "$SECURE/crc_results" ; then
+X# 	$CAT $SECURE/crc_results >> $RESULT
+X# fi
+X# $RM -f $SECURE/crc_results
+X
+X#
+X#  Want to run suid check from within cops?  (Results get mailed separately)
+X# if $TEST "$RUN_SUID" = "YES" ; then
+X#	$SECURE/suid.chk > /dev/null 2>&1
+X# fi
+X
+X#
+X# Bug.chk?  New stuff...
+Xif $TEST -n "$verbose" ; then 
+X	$ECHO "**** bug.chk ****" >> $VERBUCKET ; fi
+X$SECURE/bug.chk		>>	$RESULT 2>> $BIT_BUCKET
+X
+X#
+X#
+X#  Filter results, if used
+Xif $TEST "$filter" = "yes" ; then
+X	$AWK -f $cops_filter $RESULT > $RESULT".FILT"
+X	# if no results are there, don't worry about printing a report...
+X	if $TEST ! -s $RESULT".FILT" ; then
+X		$RM -f $RESULT
+X		exit 0
+X		fi
+X	# else, move the filtered results in the old result location:
+X	$MV $RESULT".FILT" $RESULT
+X	fi
+X
+X#
+X#   Save or Mail the final report to $SECURE_USERS and remove the evidence.
+X#
+X#  (Thanks to Ian Darwin for the next nifty idea!)
+X#  If the result is not mailed, it will be saved in a directory with the
+X# same name as the host, in a file with the name:
+X#
+X#  Year_Month_Day  (for example: $SECURE/ucbvax/1999_Dec_31 )
+X#
+Xif $TEST -s "$RESULT" ; then
+X	# want to put the date and hostname at top; use tmp file: report.$$
+X	REPORT=$SECURE/report.$$
+X
+X	# name of final resting place:
+X	NAME=`$DATE | $AWK '{print $NF"_"$2"_"$3}'`
+X	#
+X	if $TEST -s /bin/hostname ; then
+X		HOSTNAME=`/bin/hostname`
+X	elif $TEST -s /bin/uname ; then
+X		HOSTNAME=`/bin/uname -n`
+X	elif $TEST -s /usr/bin/uuname ; then
+X		HOSTNAME=`/usr/bin/uuname -l`
+X		fi
+X	if $TEST -z "$HOSTNAME" ; then
+X		HOSTNAME="foobar"
+X		fi
+X	HOST=`$ECHO $HOSTNAME | $SED 's/[.].*$//'`
+X
+X	$ECHO                                   >  $REPORT
+X	$ECHO ATTENTION:			>> $REPORT
+X	$ECHO "Security Report for "`$DATE`	>> $REPORT
+X
+X	$ECHO "from host $HOSTNAME"		>> $REPORT
+X	$ECHO					>> $REPORT
+X	$ECHO					>> $REPORT
+X	$CAT $SECURE/result.$$			>> $REPORT
+X
+X
+X	#   figure out where all the old reports are kept, or where the new
+X	# one should be kept; make directories if needed...
+X	if $TEST -d "$SECURE/$HOST" -a "$MMAIL" = "YES" ; then
+X		if $TEST "$ONLY_DIFF" = "YES" ; then
+X			if $TEST -n "`./res_diff $SECURE/$HOST $REPORT`" ; then
+X				$MAIL $SECURE_USERS < $REPORT
+X				$MV $REPORT $SECURE/$HOST/$NAME
+X				fi
+X		else
+X			$MAIL $SECURE_USERS < $REPORT
+X		fi
+X		$RM -f $REPORT
+X	elif $TEST ! -d "$SECURE/$HOST" -a "$MMAIL" = "YES" ; then
+X		$MAIL $SECURE_USERS < $REPORT
+X		if $TEST -n "$HOST" ; then
+X			$MKDIR $SECURE/$HOST 2> /dev/null
+X			$MV $REPORT $SECURE/$HOST/$NAME
+X		else
+X			$MV $REPORT $NAME
+X			fi
+X	else
+X		#  Either saving it to a hostname, in which case move to
+X		# the hostname directory, or just move result to
+X		# the current dir
+X
+X		if $TEST -n "$HOST" ; then
+X			$MKDIR $SECURE/$HOST 2> /dev/null
+X			$MV $REPORT $SECURE/$HOST/$NAME
+X		else
+X			$MV $REPORT $NAME
+X			fi
+X	fi
+Xfi
+X
+X$RM -f $SECURE/result.$$
+X
+X#  end it all....
+Xexit 0
+SHAR_EOF
+chmod 0755 cops_104/cops ||
+echo 'restore of cops_104/cops failed'
+Wc_c="`wc -c < 'cops_104/cops'`"
+test 10003 -eq "$Wc_c" ||
+	echo 'cops_104/cops: original size 10003, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/bug_cmp ==============
+if test -f 'cops_104/bug_cmp' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/bug_cmp (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/bug_cmp (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/bug_cmp' &&
+X#
+X# $0 "bug_name" "fix_date" "cur_date" "cert_advisory_number" \
+X#		"real_date" "greater_than_date"
+X#
+X#  Dates are like "day month year"; e.g.  "6 Dec 1991"
+X#
+X{ 
+Xword_smithing="could have a hole/bug"
+Xmonth["Jan"] =  1;
+Xmonth["Feb"] =  2;
+Xmonth["Mar"] =  3;
+Xmonth["Apr"] =  4;
+Xmonth["May"] =  5;
+Xmonth["Jun"] =  6;
+Xmonth["Jul"] =  7;
+Xmonth["Aug"] =  8;
+Xmonth["Sep"] =  9;
+Xmonth["Oct"] = 10;
+Xmonth["Nov"] = 11;
+Xmonth["Dec"] = 12;
+X
+Xbug_name     = $1
+X
+Xfix_day      = $2
+Xfix_month    = month[$3]
+Xfix_year     = $4
+X# want to accept YY or YYYY. breaks in 2088.  Thanks, wietse!
+Xif (fix_year < 88) fix_year += 2000
+Xelse if (fix_year < 100) fix_year += 1900
+X
+Xcur_day      = $5
+Xcur_month    = month[$6]
+Xcur_year     = $7
+Xcert_advis   = $8
+Xreal_month   = month[$9]
+Xreal_year    = $10
+Xgreat_day    = $11
+Xgreat_month  = month[$12]
+Xgreat_year   = $13
+X
+Xif (index(cur_year, ":")) {
+X	if (cur_month > real_month)
+X		cur_year = real_year - 1
+X	else
+X		cur_year = real_year
+X	}
+X
+X# print "bug-in-question", bug_name
+X# print "fix-DATES", fix_month, fix_day, fix_year
+X# print "cur-DATES", cur_month, cur_day, cur_year
+X# print "real-DATE", real_month, real_year
+X
+Xif ((cur_year < fix_year) || ((cur_year==fix_year) && (cur_month < fix_month)) || ((cur_year==fix_year) && (cur_month==fix_month) && cur_day < fix_day))
+X	printf("Warning!  %s %s!  (%s)\n", bug_name, word_smithing, cert_advis)
+X
+X}
+SHAR_EOF
+chmod 0700 cops_104/bug_cmp ||
+echo 'restore of cops_104/bug_cmp failed'
+Wc_c="`wc -c < 'cops_104/bug_cmp'`"
+test 1364 -eq "$Wc_c" ||
+	echo 'cops_104/bug_cmp: original size 1364, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/cover_letter ==============
+if test -f 'cops_104/cover_letter' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/cover_letter (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/cover_letter (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/cover_letter' &&
+X
+X Women and men of the net, greetings...
+X
+X  Gone are the days when COPS was sleek, trim, and new.  It has joined
+Xthe ranks of modern software -- bloated, overladen with potentially
+Xuseless features, overhyped and underloved.  Here are the latest changes,
+Xadditions, and bug fixes to COPS -- this brings it up to version 1.04, for
+Xthose who care.  I skipped version 1.03 because the beta copy that I put
+Xout is so hopelessly out of date that it didn't make a lot of sense to
+Xcontinue with 1.03.  Anyway, my personal stash (the latest copy) should
+Xbe available via anon-ftp at archive.cis.ohio-state.edu (128.146.8.52),
+Xin ~pub/cops/1.04.  In this header, I'll go through some thoughts,
+Xbackground notes, then finally get to the changes made, so if you don't
+Xwant to listen to me, just unpack the shar files, read the README file,
+Xfollow instructions, and you should be ready to roll.
+X
+X  For those who don't know, COPS is a static security checking tool that
+Xchecks common (mostly) procedural problems of a Un*x system.  It basically
+Xtakes a snapshot of a system, and then generates a report of it's findings.
+XOn a purely empirical basis, over the years it has successfully discovered
+Xproblems that could compromise root on more than 3/4 or more of the systems
+XI've run it on; of course, the idea here is not to break root, but to let
+Xsomeone fix the problems it shows.  Note, of course, that it gives info
+Xindiscriminately, to whoever runs it.  Decide if you do or don't want to
+Xlearn about the information it can give about your system, but remember --
+Xsomeone else probably already has it.
+X
+X  After writing COPS, I started working for CERT.  I had always suspected,
+Xbut didn't know, that most breakins were caused by pretty trivial problems...
+Xnow I *know* it's true (or at least the ones we've found out about :-)).
+XIn the breakins I've seen while working for CERT, using COPS probably could
+Xhave prevented 60-75% of them.  The most common problems?  Poor passwords,
+Xguest accounts, accounts with no passwords, and improperly managed systems
+X(+ in host.equiv, poorly set up remote daemons, etc.)  Interestingly, to
+Xme at least, I wrote the original intro to COPS over two years ago.
+XHow times don't change... I was worried this would be fairly obsolete soon,
+Xbut it looks like it'll be good at least for another few years.
+X
+X   The kit is broken into modules, each one driven by a master shell script;
+Xyou can usually get it running within 30 minutes or less if you've never used
+Xit before (5 or 10 if you only scan the README); if you've used it in the
+Xpast, you can set it up on a new machine in a minute or two.  With no
+Xmodifications, it usually takes somewhere 2 to 30 minutes to generate a
+Xreport; however, the password cracking program can add lots of time to this,
+Xdepending on the options.  There is also a SUID finder, which can also take
+Xa long time (hours) to run, since it does a "find" on "/".  There's a new
+Xoption that tells it not to mail a report if the results are the same as
+Xthe last report, so you can just stuff it into cron and wait until a report
+Xcomes around.  Of course, if someone breaks in, changes cron, and you just
+Xrely on COPS, then you're f*cked anyway.  Use it as a tool, not as a crutch.
+X
+X   Ok, changes... The main thing is that the whole thing (more or less)
+Xhas been ported to perl; both shell and perl versions are included and
+Xwill probably be supported in the future.  They have various differences,
+Xsome intentional, some not, but I have attempted to keep them as similar
+Xas possible.  Tom Christiansen did a large part of the work on this part
+X(thanks again, tom!), but there were several people involved in the perl
+Xwork... see "README.perl" and the perl subdirectory for more info.  Warning;
+Xthe perl version, for a variety of reasons (mostly detailed in "README.2.pl"
+Xis not as robust as the shell version.
+X
+X  There is one new major module here -- "bug.chk" (all of this is
+Xin the subdirectory "bugs").  This takes most of the CERT security
+Xannouncements (those relating to bugs and vulnerabilities, at least) and
+Xattempts to see if your host might have the problem.  Some problems come
+Xup with a good way to check for these problems, not the least of which is
+Xthat I am taking a very conservative route (i.e.  probably not a very good
+Xway of handling it) to see if a host has bugs.  See the man page for
+X"bug.chk" for more details.
+X
+X  In addition, there is a new program, a kind of "personal-cops",
+Xcalled "checkacct" (found in the directory of the same name.)  This 
+Xinteractive program does a variety of checks, some done in cops, some not
+X(searching for individual S[UG]ID files, writable user directories,
+X.rhosts parsing/checking) that can be run by an individual to check
+Xtheir account security.  This was done by some friends at purdue,
+Xmost notably shabbir safdar.
+X
+X  Here are the rest of the major changes I can think of:
+X
+X-- a new program, "carp" (look in the "carp" subdirectory), looks at
+XCOPS output from several machines (presumably from your network) and
+Xattempts to give a kind of scoresheet of what it found wrong with your
+Xsystem, with weighted values.  It outputs either standard text, postscript,
+Xand has an X (as in windows, not that you'll have to be 18 to look at)
+Xpreviewer.  Like all new features, I'm not sure if this is particularily
+Xuseful (perhaps more for impressing management with pretty pictures, but
+Xit might be good for seeing trends or interesting tidbits not otherwise
+Xdiscernable), but time (or, rather, you, the users) will tell.  Let me
+Xknow what you think.  This is *ONLY* useable with "cops -v" output!
+X
+X-- a filter for COPS (originally named by default "cops_filter") makes
+Xit possible to get rid of those pesky "Warning!  /dev/printer is _World_
+Xwritable!" messages.  Use "cops -f cops_filter" to use.
+X
+X-- Code has been cleaned up, tons of flags/options have been added to make
+Xthings easier to use, documentation has been updated.
+X
+X-- a fast crypt is included, stolen right from that wonderful password
+Xcracker everyone knows and loves, Crack.  I'm not about to say you
+Xshould use my password cracker instead of crack -- if you can use crack,
+Xuse it!  However, it might prove to be a easy/painless alternative if
+Xyou decide that crack doesn't fit your time constraints or something.
+XYou can try uncommenting lines 91 and 92 in the makefile for this.
+X
+X-- a more powerful version of perl kuang is included.
+X
+X-- a new directory, "extra_src" has been created, and contains a few
+Xmiscellaneous programs that couldn't quite fit in with the rest of this
+Xrelease, but are fairly important or useful in their own right.  Some
+Xof these programs will go into future versions of COPS.  There is a
+XREADME file that briefly describes the programs there.  BTW, if you use
+Xuucp, make sure you look here!
+X
+X-- two mini-papers have been put in the "extensions" directory.  One
+Xis a very useful article on how to harden your uucp site, the other
+Xis a good paper on how to write a SUID program correctly.
+X
+X   The easiest thing to do is unpack everything, scan the README file,
+Xread either the README.shell or README.perl file (depending on which one
+Xyou'd like to use), and finally look at the README.final file.  Alternately,
+Xyou can read the "quick_start" file if you're impatient.  If you're not totally
+Xsure that the pathnames to the executables are correct, then you should
+Xrun "reconfig" (if you have a sysV based machine, or are just suspicious
+Xof your system, you should do this anyway.)  After all that, just
+Xtype "./cops", and blast off.  Finally, to steal an ending from the README
+Xfile of a few years ago...
+X
+X  "So good luck, and I hope you find COPS useful as we plunge into UNIX
+Xof the 1990's.
+X
+X   dan farmer
+X   January 31, 1989"
+X
+X -- dan
+X   March 6, 1992
+SHAR_EOF
+chmod 0755 cops_104/cover_letter ||
+echo 'restore of cops_104/cover_letter failed'
+Wc_c="`wc -c < 'cops_104/cover_letter'`"
+test 7743 -eq "$Wc_c" ||
+	echo 'cops_104/cover_letter: original size 7743, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/crc.chk ==============
+if test -f 'cops_104/crc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/crc.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/crc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/crc.chk' &&
+X:
+X#
+X#  Usage: crc.chk
+X#
+X#  A CRC generator, checker, slicer and dicer.  See the man page for
+X# lots more verbage.
+X#
+X
+X# commands 'n stuff:
+XAWK=/bin/awk
+XSED=/bin/sed
+XSORT=/usr/bin/sort
+XMV=/bin/mv
+XMAIL=/bin/mail
+XCAT=/bin/cat
+XTEST=/bin/test
+XECHO=/bin/echo
+XRM=/bin/rm
+XDATE=/bin/date
+X
+X# files used:
+Xcrc_list=./crc_list	# lists files used
+Xcrc_seed=./crc_seed	# optional -- contains seed
+Xcrc_old=./crc_old	# old crc values
+Xcrc_tmp=./crc_tmp	# temp storage for the new crc's
+Xcrc_res=./crc_res	# difference between new and old crc's
+Xbit_bucket=/dev/null	# junk goes here
+Xresults=./crc_results	# results go here; deleted & mailed, or
+X			# saved here, depending on the "MAIL" flag.
+X
+X# Do you want it mailed?  If "YES", the results file gets deleted
+XMMAIL=NO
+X# who gets the report?
+XINFORM="foo@bar.edu"
+X
+X#   If you don't use an argument, and don't have a seed file, generate
+X# a semi-random seed:
+Xif $TEST $# -eq 1 ; then
+X	seed=$1
+Xelse
+X	if $TEST ! -s $crc_seed ; then
+X		seed=$$
+X		$ECHO $seed > $crc_seed
+X	else
+X		seed=`$CAT $crc_seed`
+X		fi
+X	fi
+X
+X# AIX has a broken awk.
+X# files=`$AWK '/^#/ {next} {print $1}' $crc_list | $SORT -u`
+Xfiles=`$SED '/^#.*$/d' $crc_list | $SORT -u`
+X
+X# $ECHO crc\'ing, with seed $seed
+Xfor i in $files
+X	do
+X	./crc -v -i $seed $i >> $crc_tmp 2> $bit_bucket
+X	done
+X
+X# First time used, create the database:
+Xif $TEST ! -s $crc_old ; then
+X	$MV $crc_tmp $crc_old
+X	exit 0
+X	fi
+X
+X# any differences?
+X./crc_check $crc_old $crc_tmp > $crc_res
+X
+Xif $TEST -s $crc_res ; then
+X
+X	# get the hostname:
+X	if $TEST -s /bin/hostname ; then
+X                HOSTNAME=`/bin/hostname`
+X        elif $TEST -s /bin/uname ; then
+X                HOSTNAME=`/bin/uname -n`
+X        elif $TEST -s /usr/bin/uuname ; then
+X                HOSTNAME=`/usr/bin/uuname -l`
+X                fi
+X        if $TEST -z "$HOSTNAME" ; then
+X                HOSTNAME="foobar"
+X                fi
+X
+X	$ECHO >> $results
+X	$ECHO ATTENTION:                        >> $results
+X	$ECHO "CRC Security Report for "`$DATE` >> $results
+X	$ECHO "from host $HOSTNAME"             >> $results
+X	$ECHO >> $results
+X	$CAT $crc_res >>$results
+X
+X	if $TEST $MMAIL = "YES" ; then
+X		$MAIL $INFORM < $results
+X		$RM $results
+X		fi
+X	fi
+X
+X$RM -f $crc_tmp $crc_res
+X
+X#  end it all....
+Xexit 0
+SHAR_EOF
+chmod 0755 cops_104/crc.chk ||
+echo 'restore of cops_104/crc.chk failed'
+Wc_c="`wc -c < 'cops_104/crc.chk'`"
+test 2207 -eq "$Wc_c" ||
+	echo 'cops_104/crc.chk: original size 2207, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/crc_list ==============
+if test -f 'cops_104/crc_list' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/crc_list (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/crc_list (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/crc_list' &&
+X#  This lists any/all sensitive files the administration wants to have a
+X# CRC value for.  Comments are lines starting with a "#".
+X#
+X
+X# some key files that might not change too often:
+X/.login
+X/.profile
+X/.cshrc
+X/.rhosts
+X/*unix*
+X/etc/hosts.equiv
+X/usr/lib/crontab
+X/usr/lib/aliases
+X/usr/spool/uucp/L.sys
+X
+X#   some that you might like to keep an eye on, depending on your site
+X# stability and/or paranoia:
+X# /etc/passwd
+X# /etc/group
+X
+X# default is individual files; can use wildcards, or whatever;
+X# here are some examples, using wildcards:
+X/bin/*
+X/usr/bin/*
+X/usr/lib/*
+X# /usr/local/lib/*
+X# /usr/local/bin/*
+X
+X# Alternately, here are individual files that are important:
+X# /bin/fsck
+X# /bin/rrestore
+X# /bin/csh
+X# /bin/login
+X# /bin/ls
+X# /bin/mail
+X# /bin/mount
+X# /bin/passwd
+X# /bin/ps
+X# /bin/sh
+X# /bin/su
+X# /usr/lib/sendmail
+X# /usr/ucb/telnet
+X# /usr/ucb/rlogin
+X# /usr/ucb/ftp
+X# /usr/bin/at
+X# /usr/bin/chgrp
+X# /usr/bin/cu
+X# /usr/bin/df
+X# /usr/bin/login
+X# /usr/bin/mail
+X# /usr/bin/passwd
+X# /usr/bin/ruusend
+X# /usr/bin/su
+X# /usr/bin/tip
+X# /usr/bin/uucp
+X# /usr/bin/uulog
+X# /usr/bin/uuname
+X# /usr/bin/uusend
+X# /usr/bin/uustat
+X# /usr/bin/uux
+X# /usr/bin/xterm
+SHAR_EOF
+chmod 0755 cops_104/crc_list ||
+echo 'restore of cops_104/crc_list failed'
+Wc_c="`wc -c < 'cops_104/crc_list'`"
+test 1143 -eq "$Wc_c" ||
+	echo 'cops_104/crc_list: original size 1143, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/cron.chk ==============
+if test -f 'cops_104/cron.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/cron.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/cron.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/cron.chk' &&
+X:
+X#
+X#  Usage: cron.chk
+X#
+X#  This checks pathnames and files inside the cron files /usr/lib/crontab
+X# for writability.
+X#
+X#  Mechanism:  The commands inside the file /usr/lib/crontab are executed
+X# by root.  This shell script greps for commands/paths that begins with
+X# "/" and takes each potential problem-string and uses the program
+X# "is_writable" to determine if it is world writable.  All results are
+X# echoed to standard output.
+X#  In addition, it throws away everything that has a /tmp, /dev/null, or
+X# tty in the writable string, and everything after a ">"; e.g. if crontab
+X# is writing to a file it doesn't care.
+X#
+X#  Cron.chk will try to find a file in /usr/lib/crontab first (bsd),
+X# and then if it isn't there, it will look in the any alternate
+X# possible locations next -- right now, /usr/spool/cron/crontab -- to
+X# see if a directory exists, and, if it does, it checks all the cron
+X# files in turn.
+X#
+X#  WARNING!
+X#
+X#  Spurious messages can occur; a more stringent method (if perhaps less
+X# careful of a check) would be to test just the 6th field, instead of
+X# all the fields after the fifth.  Also throwing away /tmp, etc. could
+X# be a mistake.
+X#
+X
+X#  Location of stuff:
+XAWK=/bin/awk
+XSED=/bin/sed
+XECHO=/bin/echo
+XEGREP=/usr/bin/egrep
+XTEST=/bin/test
+XCAT=/bin/cat
+X
+X#  Possible location of crontab file:
+Xcron=/usr/lib/crontab
+X#  alternate reality locations of crontab file:
+Xalt_cron="/usr/spool/cron/crontabs"
+X
+Xif $TEST ! -s $cron
+X	then
+X	cron=""
+X	for i in "$alt_cron"
+X		do
+X		if $TEST -d $i
+X			then
+X			cron=`$ECHO $alt_cron/*`
+X			fi
+X		done
+X
+X	if $TEST  -z "$cron"
+X		then
+X		exit
+X		fi
+X	fi
+X
+X# finally, do the checking -- maybe for one, maybe for lots of
+X# cron-ites:
+X
+Xfor cron_kid in $cron
+X	do
+X	./chk_strings $cron_kid
+X	# A typical crontab entry might look something like this:
+X	#
+X	#   0,15,30,45 * * * * /bin/sh /usr/adm/newsyslog
+X	#
+X	risky_stuff=`$AWK '{for (i=6;i<NF;i++) printf("%s ", $i); \
+X		if (NF!=6) printf("%s\n",$NF)}' $cron_kid |
+X			$SED -e 's/>.*//' -e 's/;//g' |
+X			$AWK '{ for (i=1; i<=NF; i++) 
+X					if (substr($i,1,1)=="/") print $i}'`
+X	for i in $risky_stuff ; do
+X		if $TEST `$ECHO $i | $EGREP "/tmp|/dev/null|tty"` ; then
+X			continue
+X			fi
+X		if ./is_writable $i ; then
+X			$ECHO "Warning!  $i (in $cron_kid) is World writable!"
+X			fi
+X		done
+X	done	# for all the cron-kids
+SHAR_EOF
+chmod 0755 cops_104/cron.chk ||
+echo 'restore of cops_104/cron.chk failed'
+Wc_c="`wc -c < 'cops_104/cron.chk'`"
+test 2290 -eq "$Wc_c" ||
+	echo 'cops_104/cron.chk: original size 2290, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/dev.chk ==============
+if test -f 'cops_104/dev.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/dev.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/dev.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/dev.chk' &&
+X:
+X#
+X#  dev.chk [-g]
+X#
+X#   This shell script checks the permissions of all devs listed in the
+X# file /etc/fstab (the "mount" command would be a preferable way of
+X# getting the file system name, but the syntax of the output is variable
+X# from machine to machine), and flags them if they are readable by using
+X# the "is_able" command.  It also checks for unrestricted NFS
+X# mountings.  By default, dev_check will flag devs only if world readable
+X# or writable.  The -g option tells it to print out devs that are also
+X# group readable/writable.
+X#   As an aside, the fact that NFS mounted dirs are world readable isn't
+X# a big deal, but they shouldn't be world writable.  So do two checks here,
+X# instead of one.
+X#
+X# (p.s. /dev/?mem and some misc files used to be checked here, but they
+X# are now checked in is_able.chk)
+X#
+X#  Two types of /etc/fstab formats I've seen so far:
+X#
+X#  spec:file:type:freq:passno:name:options
+X#      NFS are indicated by an "@"
+X#
+X#  fsname dir type opts freq passno
+X#      NFS are indicated by an ":"
+X#
+X#  I check for the second; comment that code out (lines 83-84), and
+X# uncomment the other style (lines 79-80), if you have the first type.
+X#
+XAWK=/bin/awk
+XSED=/bin/sed
+XLS=/bin/ls
+XECHO=/bin/echo
+XTEST=/bin/test
+X
+X# locations of vital stuff...
+Xmtab=/etc/fstab
+Xexports=/etc/exports
+X
+Xgroup=no
+X
+Xif $TEST $# -gt 1 ; then
+X	$ECHO "Usage: $0 [-g]"
+X	exit 2
+Xfi
+X
+Xif $TEST $# -eq 1 ; then
+X	if $TEST "X$1" = "X-g" ; then
+X		group=yes
+X	else
+X		$ECHO "Usage: $0 [-g]"
+X		exit 2
+X	fi
+Xfi
+X
+X#  Testing filesystems and devices for improper read/write permissions...
+X
+X# grab devices from "/etc/fstab"....
+X#  Format of /etc/fstab:
+X#
+X#  spec:file:type:freq:passno:name:options
+X#     NFS mounted:
+X#  uther@foobar.edu:/usr/spaf:ect....
+X#
+X#  Or, the default means of checking:
+X#
+X#  filesystem   directory   type   options   freq   pass
+X#     NFS mounted:
+X#  uther:foobar.edu /usr/spaf....
+X#
+X#   kill comments, then get the device/filesystem in question.
+X#
+X# First style:
+X# nfs_devs=`$SED 's/^#.*//' $mtab | $AWK -F: '/@/ {print $2}'`
+X# local_devs=`$SED -e 's/^#.*$//' -e 's/^.*@.*$//' $mtab|$AWK -F: {print $1}'`
+X
+X# Default style:
+Xnfs_devs=`$SED -e 's/^#.*$//' $mtab | $AWK '/:/ {print $1}'`
+Xlocal_devs=`$SED -e 's/^#.*$//' -e 's/^.*:.*$//' $mtab | $AWK '{print $1}'`
+X
+Xall_devs=$nfs_devs" "$local_devs
+X
+X# Alternate way; grab devices from "mount [-p]"....
+X#   Format of output from mount (some machines use -p option, some
+X# don't.  Check your local man page... you might have to add a "-F:" or
+X# something, depending on your output:
+X# crit_devs=`/etc/mount -p|$AWK 'index($1, "/")==1
+X#					{print $1} \
+X#				}'`
+X# On an IBM/AIX box, you can try something like:
+X# all_devs=`$GREP 'dev.*=' /etc/filesystems | $AWK '{print $NF}'`
+X
+X#
+X# However, do check for single line entries in /etc/exports:
+Xif $TEST -s $exports
+X	then
+X	$SED -e 's/^#.*$//' $exports | $AWK '!/access=/ {
+X		print "Warning!  NFS file system " $1 " exported with no restrictions!"}'
+X	fi
+X
+X#
+X#  Have to get them in the format that "is_able" likes:
+X#
+X#  filename {world|group} {writeable|readable|both}
+X#
+X# all things check world/group writability
+Xfor i in $all_devs
+X	do
+X	./is_able $i w w
+X	if $TEST "$group" = "yes"
+X		then
+X		./is_able $i g w
+X		fi
+X	done
+X
+X#  For local devices, we want to make sure that no one can bypass
+X# security by reading straight from the device:
+Xfor i in $local_devs
+X	do
+X	./is_able $i w r
+X	if $TEST "$group" = "yes"
+X		then
+X		./is_able $i g r
+X		fi
+X	done
+X
+X# end of script
+SHAR_EOF
+chmod 0755 cops_104/dev.chk ||
+echo 'restore of cops_104/dev.chk failed'
+Wc_c="`wc -c < 'cops_104/dev.chk'`"
+test 3443 -eq "$Wc_c" ||
+	echo 'cops_104/dev.chk: original size 3443, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/bug.chk.dec ==============
+if test -f 'cops_104/bug.chk.dec' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/bug.chk.dec (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/bug.chk.dec (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/bug.chk.dec' &&
+X#!/bin/sh
+X#
+X#  DEC module for bug/vulnerability checking
+X#
+XECHO=/bin/echo
+XTEST=/bin/test
+XLS=/bin/ls
+XLS_OPTS="-slagL"
+XARCH=/bin/arch
+XGREP=/bin/grep
+XAWK=/bin/awk
+XBUG="$AWK -f ./bug_cmp"
+X
+Xif $TEST ! -f ./bug_cmp ; then
+X	$ECHO "Must have bug compare module, ./bug_cmp, to run..."
+X	exit 2
+X	fi
+X# what is the date?  We just need the month and year...
+X# Format: Fri Feb  7 14:16:55 PST 1992
+Xif $TEST $# -eq "2" ; then
+X        real_date="$1 $2"
+Xelse
+X        real_date=`$DATE | $AWK '{print $2, $NF}'`
+X        fi
+X
+X# chroot
+X#
+X#   I think you could add a check to see if this was suid root, but
+X# I can't remember...
+X#
+X# Ultrix 4.0 and 4.1
+Xchroot="/usr/bin/chroot"
+Xfix_date="1 May 1991"
+Xcert_advis="CA-91:05"
+X
+Xif $TEST -f "$chroot" ; then
+X	cur_date=`$LS $LS_OPTS $chroot | $AWK '{print $8, $7, $9}'`
+X	$ECHO $chroot $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# /usr/bin/mail
+X#
+X# Fixed in 4.2
+Xmail="/usr/bin/mail"
+Xfix_date="23 Aug 1991"
+Xcert_advis="CA-91:13"
+X
+Xif $TEST -f "$mail" ; then
+X	cur_date=`$LS $LS_OPTS $mail | $AWK '{print $8, $7, $9}'`
+X	$ECHO $mail $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# finis
+SHAR_EOF
+chmod 0700 cops_104/bug.chk.dec ||
+echo 'restore of cops_104/bug.chk.dec failed'
+Wc_c="`wc -c < 'cops_104/bug.chk.dec'`"
+test 1120 -eq "$Wc_c" ||
+	echo 'cops_104/bug.chk.dec: original size 1120, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/disclaimer ==============
+if test -f 'cops_104/disclaimer' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/disclaimer (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/disclaimer (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/disclaimer' &&
+X/***********************************************************************
+X* Copyright 1989, 1990, 1992 by Dan Farmer.  All rights reserved.  Some
+X* individual files may be covered by other copyrights.
+X* 
+X* This material was originally written and compiled by Dan Farmer at
+X* Purdue University in 1989 and 1990, under the direction and sponsorship
+X* of Professor Gene Spafford.  Other material was contributed as noted
+X* elsewhere.  Recently, work has been done at the Software Engineering
+X* Institute.  Even more recently, stuff has been done at Sun Microsystems.
+X*
+X* Redistribution and use in source and binary forms are permitted
+X* provided that this entire copyright notice is duplicated in all such
+X* copies.  No charge, other than an "at-cost" distribution fee, may be
+X* charged for copies, derivations, or distributions of this material
+X* without the express written consent of the copyright holders.
+X*
+X* THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
+X* WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+X* MERCHANTIBILITY AND FITNESS FOR ANY PARTICULAR PURPOSE.
+X************************************************************************/
+SHAR_EOF
+chmod 0755 cops_104/disclaimer ||
+echo 'restore of cops_104/disclaimer failed'
+Wc_c="`wc -c < 'cops_104/disclaimer'`"
+test 1184 -eq "$Wc_c" ||
+	echo 'cops_104/disclaimer: original size 1184, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/COPS.report ==============
+if test ! -d 'cops_104/docs'; then
+    echo 'x - creating directory cops_104/docs'
+    mkdir 'cops_104/docs'
+fi
+if test -f 'cops_104/docs/COPS.report' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/COPS.report (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/COPS.report (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/COPS.report' &&
+X.ps 12
+X.vs 12
+X.PH ````
+X.pn
+X.nr W 78
+X.ce 2
+X\fBCOPS and Robbers
+XUN*X System Security\fP
+X.sp
+X.sp
+X.PP
+XIn the last few years, computer security has received a great deal
+Xmore attention than it has in the past.  Computerized break-ins and
+Xcriminal activity, once merely the product of the imagination of
+Xscience fiction writers,
+Xhas became a fairly common occurence in both commercial and academic
+Xcircles.  In this paper, I will go over the problems that face any
+Xmultiuser computing system, then discuss how these problems apply to UNIX\**
+X.FS
+XAlthough originally designed and developed by Ken Thompson and
+XDennis Ritchie of AT&T, UNIX has grown far beyond its' original
+Xdesign and now numerous companies market their own \*Qflavor\*U of
+XUNIX.  When I use the term UNIX in this paper, I don't mean merely
+XAT&T's version, but instead I mean the majority of the most popular
+Xvarieties, made by developers at Berkely, Sun, and a host of other
+Xmanufacturers.  I believe UNIX is still a trademark of Bell
+XLaboratories.
+X.FE
+Xspecifically, and finally present in detail a suite of programs that
+Xwere developed in an attempt to address some of the main problems
+Xthat could be solved via software.  UNIX, although considered to be
+Xa fairly secure operating system ([Wood 88], [Duff 89], etc), has the
+Xadvantage of having many published works ([Grampp and Morris 84],
+X[Bishop 83], etc) on the problems that a computing site can have with
+Xsecurity, and in addition, on how a UNIX system administrator might
+Xmake his/her system more secure by monitoring various aspects of his/her
+XUNIX site.  This, combined with UNIX's popularity, make it an ideal
+Xtarget for a software security system to operate on.
+X.PP
+XIn this report I am not going to discuss specific ways of breaking
+Xinto a given UNIX machine (for a more detailed description on how to
+Xcompromise UNIX security, see either [Baldwin88], [Bishop83],
+X[Wood & Kochran 86], or [Grampp & Morris 84]) -- instead, I will
+Xconcentrate on how to improve and strengthen the potentially good
+Xsecurity of a generic UNIX system by means of a software toolkit
+Xthat examines the weaker areas of UNIX that are either traditionally
+Xignored (due to the time constraints or ignorance of the system
+Xadministrators) or are simply reoccurring problems that need to be
+Xwatched over.  In addition, this report is not meant for UNIX neophytes
+X-- although a great deal of proficiency is not needed to read
+Xthis report and use the programs described herein, a familiarity with
+Xbasic UNIX features -- the file system and file permission modes for
+Xexample -- and commands such as
+X.ul
+Xawk, grep, sed
+Xas well as a working knowledge of shell and C programming are necessary
+Xto understand the internal workings of the security system described in
+Xthis paper.
+X.PP
+XAlthough there is no reasonable way that all security problems can be
+Xsolved (at least not with a software solution) on any arbitrary UNIX
+Xsystem, administrators and system programs can be assisted by a software
+Xsecurity tool.  The Computer Oracle Password and Security system (COPS)
+Xthat will be described in this paper is just such a device.  The COPS
+Xsystem is a collection of programs and shell scripts that attempt
+Xto address as many of these problems as possible in an efficient,
+Xportable, and above all in a reliable and safe way.  The main goal
+Xof COPS is one of prevention; it tries to anticipate and eliminate
+Xsecurity problems by making sure people don't get a chance to
+Xcompromise security in the first place.  Alerting the
+Xadministrators of a potential intruder or that a virus has infected 
+Xthe system is beyond the scope of the present system, although with 
+Xwork with such capabilities could be added ([Bauer and Koblentz 88]
+Xand [Duff 89].)
+X.PP
+XTo understand the reason COPS might check any specific problem, a
+Xlook at computer security problems in general is in order.  The
+Xproblems listed below are not meant to be inclusive, but they are
+Xindicative of the myriad types of dilemmas a typical computer multiuser
+Xsystem might encounter:
+X.PP
+X1)  Administrators, system programmers, and computer operators.  The
+Xvery people that (should) worry the most about security are sometimes
+Xthe ones that are the
+Xleast concerned.  Carelessness is one of the main culprits; a mistake by a user
+Xmight cause little or no problem, but when someone with no
+Xrestrictions (or almost none) on their computer activity makes a mistake,
+Xa security hole can result.  \*QI can trust my users\*U is a fine
+Xstatement to make -- but can you trust your users' friends?  How about
+Xthe users of computers that are networked to yours?
+XNew software, systems, or procedures
+Xcan facilitate extra problems; a computing staff is often ill or
+Xcompletely non-trained on new techniques and software.
+XToo often \*QRTFM\*U is the only training that they will ever receive.
+XPrograms that are created for in-house use are often ill-documented and
+Xnot debugged thoroughly, and when users other than the author start to
+Xuse/abuse the program, problems can result.  Especially misunderstood,
+Xeven by experienced UNIX system programmers, is the SUID program or,
+Xworse yet, the SUID shell script ([Bishop 83].)
+XWhen a user says that his/her password was forgotten (or any
+Xother account/security related problem), what checks are made to verify
+Xthat the person is really the owner of that account?  Are users that are
+Xsecurity problems kept track of, so that repeated abuses of the system will
+Xresult in punitive action?  Does your site even have a security policy?
+XAnd of course, the last straw is that most system administrators simply
+Xhave too much other work to do than to constantly check
+Xthe system for potential security flaws -- let alone to double-check that
+Xany work done by other system programmers has been done correctly.
+XThese are the actions that often get left unsaid and undone.
+X.PP
+XA UNIX environment has no special defenses against this kind of
+X\*Qattack\*U.  Fortunately, a number of these potential problems (unless
+Xcatastrophic in scope) are not only correctable, but are
+Xeasy to detect with a software toolkit such as COPS.  Even the most
+Xcareful UNIX guru will periodically make a mistake; COPS has been
+Xdesigned to aid in her/his never ending battle against the forces of
+Xdarkness.
+X.PP
+X2)  Physical security.  This is perhaps the most frustrating of all 
+Xpossible problems because it effects all computer systems and is often the
+Xhardest to safeguard against.  Even if the software is secure, even if 
+Xthe system administrators are alert to potential problems, what happens 
+Xif a user walks up to the root console and starts typing?  Does the night
+Xjanitorial staff let anyone into the machine room without proper 
+Xidentification? Who has access to the key that opens up the computing 
+Xcenter?  Are terminals that are logged on left unguarded or unlocked?
+XAre passwords written on or near a users terminal or desk?
+XNo software in the world can help
+Xagainst human nature or carelessness.  Reiterating to your staff and users
+Xthat terminals should not be left alone or unguarded and that passwords
+X(especially root) should not be typed in front of unfriendly (and in
+Xthis case, _everyone_ is your enemy) eyes would be a good start.  A
+Xsimple analogy: since you would never give the keys to the company car
+Xaway, why on earth would you give away the keys to your computer, which
+Xis certainly worth a hell of a lot more time and money (although it may
+Xnot get as good mileage on the interstate.)  Common sense goes a long
+Xways to help prevent this kind of risk.
+X.PP
+X3)  Authentication.  What is authentication?  All modern computing
+Xsystems that have capabilities for multiple users have a means of
+Xidentifying who is
+Xusing the computer at any given time.  A common means of identification
+Xis by using a password; and since the inception of this idea, poor
+Xpasswords have been a perennial problem.  People have a tendency to
+Xuse their own name, or their social security number, or some other
+Xcommon word, name, or phrase for a password.  The problem then arises
+Xwhen an unauthorized user wants to access clandestine information,
+Xhe/she simply tries one of these simple passwords until a successful
+Xmatch is found.
+X.PP
+XOther problems with authentication?  What computer hosts are
+X\*Qtrusted\*U and allow users to log in from other machines without 
+Xany further authentication?  Are incorrect login attempts kept and/or
+Xmonitored so as to allow administrators to keep track of any unusual
+Xactivity?  What about \*QTrojan horses\*U -- programs that can steal
+Xpasswords and the privileges that a user owns -- is there a program or a
+Xadministrative method that detects a potential 'horse?
+X.PP
+XFortunately UNIX systems again have some fairly good tools to aid in
+Xthis fight.  Although finding simple passwords is indeed a trivial
+Xtask, forcing the users on a system to use passwords that are harder to
+Xguess is also
+Xtrivial, by either modifying the mechanism that gets/gives the password
+Xto the user, and/or by having the system administrators run a simple
+Xpassword detector periodically, and notifying users if their password is
+Xdeemed too obvious.  The
+X.ul
+Xcrypt
+Xcommand, although proven to be insecure for a knowledgeable and
+Xresourceful attacker ([Reed and Weinberger 84], [Baldwin 86]), does
+Xoffer an added shield against most unauthorized users.  Logs can be kept
+Xof incorrect login attempts, but as with most security measures, to be
+Xeffective someone (usually the site administrator) must take the time to
+Xexamine the evidence.
+X.PP
+X4)  Bugs/Features.  Massive software designs (such as an operating system)
+Xare usually the result of a team or of teams of developers working together.
+XIt only takes one programmer to make a mistake, and it will almost always
+Xhappen.  \*QBack doors\*U that allow unauthorized entrances are sometimes
+Xpurposefully coded in -- for debugging, maintenance, or other reasons.
+XAnd there are always 
+Xunexpected side effects when thousands of people using the system start
+Xdoing strange (stupid?) things.  The best kind of defense against this
+Xis to report the problems to the developer as they are discovered, and
+Xif possible, to also report a way to fix the problem.  Unfortunately,
+Xin many cases the
+Xsource code is needed to make a bug fix, and especially in non-academic
+Xareas, this is simply not available due to the prohibitive costs involved.
+XCombining this with the reluctance of a (usually) commercial developer
+Xto admit any problems with their product, and the end result is a
+Xsecurity hole that will not be mended unless some kind of financial loss
+Xor gain is at stake -- for the developer of the product, not yours!
+X.PP
+X5)  Ignorance.  Users who don't know or care can be a problem as well.
+XEven if
+Xsomeone doesn't care about their own security, they can unwittingly
+Xcompromise the entire system -- especially if they are a user with
+Xhigh privileges.  Administrators and system operators are not immune to
+Xthis either, but hopefully are better informed, or at least have access
+Xto a means of combating this dysfunction.  It may also be due to apathy,
+Xan unwillingness to learn a new system, a lack of time to explore all of
+Xthe features of a large system, or simply not enough computer savvy to
+Xlearn more about a very complex system, and no one willing to
+Xteach it to the user.  This problem is much like illiteracy; it is a
+Xnever-ending battle that will never go completely away.  And while a 
+Xsoftware toolkit such as COPS can help combat this problem by calling
+Xattention to neglected or misunderstood critical areas, by far and away
+Xthe best weapon against this is education.  An educated user will simply
+Xnot make as many mistakes; and while it may seem impractical to teach
+X_all_ users about (even) the fundamentals of computer security, think of
+Xall the time and resources wasted tracking down the mistakes that keep
+Xrecurring time and time again.
+X.PP
+X6)  Unauthorized permissions or privileges.  Are users given _too much_
+Xfreedom?  Do new computer accounts have any default security at all, or
+Xare the new users expected to know what to do to protect their programs,
+Xdata, and other files.  System files, programs, and data are sometimes
+Xshipped with minimal or no protection when gotten straight from the
+Xmanufacturer; someone at the installation site must have enough
+Xknowledge to \*Qtune\*U the system to be effective and safe.  Password,
+Xmemory, and log files especially should all be carefully monitored,
+Xbut unfortunately an experienced user can often still find out any information
+Xthey want with perseverance and a little luck.  This is
+Xwhere a system such as COPS can really shine.  After a new system is
+Xconfigured, some basic flaws can be uncovered with just a small amount
+Xof effort.  New system problems that somehow slip through the cracks of
+Xthe site installers can be caught and modified before any serious
+Xproblems result.  The key here is to prevent your system users from
+Xgetting a denial of computer service that they need and deserve.  Service
+Xcould mean anything from CPU time, response time, file space, or any
+Xother commodity that a computer has to offer.
+X.PP
+X7)  Crackers/Hackers/Evil twin brothers.  Not much is needed on this
+Xsubject, save to say that they are often not the main problem.
+XProfessional evil-users are a rarity; often harmful acts are done 
+Xby users who \*Qjust wanted to see what would happen\*U or had no idea
+Xof the ramifications of their acts.  Someone who is truly experienced is 
+Xvery difficult to stop, and is certainly outside the realm of any
+Xsoftware security tool as discussed in this paper.  Fortunately, most
+Xevil-doers are fairly inexperienced and ignorant, and when they make a
+Xmistake, a watchful administrator can deal with a problem before it gets
+Xout of hand.  Sometimes they can even reveal security problems that 
+Xwere previously undiscovered.  COPS can help here mostly by reducing an
+Xattacker's options; the less holes to exploit, the better.
+X.PP
+XThe COPS system attempts to help protect as many of the above
+Xitems as possible for a generic UNIX system.  In the proper UNIX spirit,
+Xinstead of having a large program that attempts to solve every possible
+Xproblem, it is composed of several small programs that each check one
+Xor more potential UNIX security holes.
+XThe COPS system uses a variety of these problems to see if there are any
+Xcracks in a given UNIX security wall.  These methods correspond to some
+Xof the problems discussed above; specifically to administrators, system
+Xprogrammers, and computer operators; authentication; ignorance;
+Xunauthorized permissions or privileges; and finally crackers/hackers/evil
+Xtwin brothers (numbers 1,3,5, and 6.)  It is very difficult, almost a
+Xpractical impossibility to give software assistance to problems in
+Xphysical security, and finally bugs or features that are present in a
+Xgiven UNIX system are possible to detect, but are not covered in this
+Xsystem (yet).  The design of most of the the programs were at least
+Xdescribed if not outlined from the following sources:
+X.sp
+XAho, Kernighan, and Weinberger 88
+X.sp
+XBaldwin 87
+X.sp
+XFiedler and Hunter 86
+X.sp
+XGrampp and Morris 84
+X.sp
+XWood and Kochran 86
+X.sp
+X.PP
+XOf course with all of the problems listed below, looking at the actual
+Xsource code of the program is very instructive -- each numbered section
+Xlists the corresponding program that is used to perform the check.  COPS
+Xchecks:
+X.PP
+X1)  \*Qvital\*U system files and directories to see if they
+Xhave dangerous permissions (usually either world-writable, or world-readable.)
+XFiles and directories thought to be critical are in a configuration
+Xfile
+X.ul
+Xis_able.lst.
+XWildcards are useable like in UNIX; indeed, COPS
+Xpasses everything to the shell for expansion.
+X.sp
+XThe program that performs this task is
+X.ul
+Xis_able.chk
+X.PP
+X2)  Check devices for file systems to see if they are world-readable/writable,
+Xplus check for any exported NFS file systems with no restrictions.
+XThe file systems are normally found in /etc/fstab.
+X.sp
+XThe program that performs this task is
+X.ul
+Xdev.chk
+X.PP
+X3)  Check all files in system for SUID status, notifying the COPS user
+Xof any changes in SUID status, and if any SUID files are world-writable,
+Xshell scripts, or non-executable (program) files.
+X.sp
+XThe program that performs this task is
+X.ul
+Xsuid.chk
+Xand was written by Prentiss Riddle.
+X.PP
+X4)  Check the /etc/passwd file (and the yellow pages password database, if
+Xapplicable) for null passwords, improper # of fields, non-unique user-id's,
+Xnon-numeric group id's, blank lines, and non-alphanumeric user-id's.
+X.sp
+XThe program that performs this task is
+X.ul
+Xpasswd.chk
+X.PP
+X5)  Check the /etc/group file (and the yellow pages database, if
+Xapplicable) for groups with passwords, improper # of fields,
+Xduplicate users in groups, blank lines, and non-unique group-id's.
+X.sp
+XThe program that performs this task is
+X.ul
+Xgroup.chk
+SHAR_EOF
+true || echo 'restore of cops_104/docs/COPS.report failed'
+fi
+echo 'End of  part 2'
+echo 'File cops_104/docs/COPS.report is continued in part 3'
+echo 3 > _shar_seq_.tmp
+exit 0
+

@@ -1,0 +1,83 @@
+
+
+CURRENT_MEETING_REPORT_
+
+
+Reported by James Galvin/TIS and Keith McCloghrie/Hughes
+
+SNMPAUTH Minutes
+
+The Working Group met for one evening to discuss the latest revision of
+the documents.  There are currently three documents:
+
+
+  1. SNMP Administrative Model - this document specifies a framework
+     within which the protocols specified above funtion.
+
+  2. SNMP Security Protocols - this document is a combination of what
+     was previously the ``Authentication and Privacy'' document and the
+     ``Administration'' document.  It completely specifies two
+     enhancements to SNMP to support integrity and authentication, and
+     integrity, authentication and privacy.
+
+  3. SNMP Party MIB - this document specifies a set of experimental MIB
+     objects that may be used to support the SNMP administrative model,
+     including the SNMP security protocols specified above.
+
+
+All three documents require some editorial changes, after which they
+will be submitted to the Internet-Drafts directory.  The first document
+is still pending approval from the IESG. Since the protocol document
+depends on the model document, it may not progress to a proposed
+standard until the status of the model document is resolved.
+
+The set of slides used to present the administrative model and the
+changes to the security protocols are included below.
+
+Attendees
+
+Karl Auerbach            karl@eng.sun.com
+Jordan Becker            becker@nis.ans.net
+Steve Bostock            steveb@novell.com
+David Bridgham           dab@asylum.sf.ca.us
+Howard Brown             brown@ctron.com
+Theodore Brunner         tob@thumper.bellcore.com
+Christopher Bucci        bucci@pluto.dss.com
+Jeffrey Case             case@cs.utk.edu
+James Davin              jrd@ptt.lcs.mit.edu
+Kurt Dobbins             dobbins@ctron.com
+Fred Engel               engel@concord.com
+Shari Galitzer           shari@gateway.mitre.org
+
+                                   1
+
+
+
+
+
+
+Shawn Gallagher          gallagher@quiver.enet.dec.com
+Joseph Golio             golio@cray.com
+Martin Gray              mg@spider.co.uk
+Jeremy Greene            greene@coral.com
+Frank Kastenholz         kasten@asherah.clearpoint.com
+Kenneth Key              key@cs.utk.gdy
+Jim Kinder               jdk@fibercom.com
+Stev Knowles             stev@ftp.com
+John Linn                ULTRA::LINN
+Keith McCloghrie         kzm@hls.com
+Lynn Monsanto            monsanto@eng.sun.com
+Michael Patton           map@lcs.mit.edu
+David Perkins            dave_perkins@3com.com
+Jonathan Saperia         saperia@decwrl.enet.dec.com
+Mark Schaefer            schaefer@davidsys.com
+Jim Sheridan             jsherida@ibm.com
+Dror Shindelman          pbrenner@sparta.spartacus.com
+Dean Throop              throop@dg-rtp.dg.com
+Steven Waldbusser        steven.waldbusser@andrew.cmu.edu
+Wengyik Yeong            yeongw@psi.com
+Jeff Young               jsy@cray.com
+
+
+
+                                   2

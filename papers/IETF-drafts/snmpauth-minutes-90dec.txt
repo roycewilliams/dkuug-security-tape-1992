@@ -1,0 +1,81 @@
+
+
+CURRENT_MEETING_REPORT_
+
+
+
+Reported by James Galvin/TIS
+
+SNMPAUTH Minutes
+
+The SNMP Security Working Group met for one day.  Three of the SNMP
+Security Documents are available in the Internet-Drafts directory.  A
+fourth document has been prepared in response to the many comments the
+authors have received, especially those of the PSRG.
+
+A few changes were made to the protocol specification, in response to
+the comments.  These changes are reflected in the fourth document, which
+will be submitted to the Internet-Drafts directory by the year end.
+
+A presentation of the changes was made.  It was decided that the fourth
+document should be short-lived.  Its content will be folded into the
+other three documents, which will be submitted for review and approval
+as proposed drafts at the March IETF meeting.
+
+Attendees
+
+Karl Auerbach            karl@eng.sun.com
+Ken Brinkerhoff
+Philip Budne             phil@shiva.com
+Chris Chiotasso          chris@roswell.spartacus.com
+Anthony Chung            anthony@hls.com
+James (Chuck) Davin      jrd@ptt.lcs.mit.edu
+Kurt Dobbins             dobbins@ctron.com
+Nadya El-Afandi          nadya@network.com
+Fred Engel
+Mike Erlinger            mike@mti.com
+Richard Fox              sytek!rfox@sun.com
+Harley Frazee            harley@t3plus.com
+Karen Frisa              karen.frisa@andrew.cmu.edu
+James Galvin             galvin@tis.com
+Chris Gunner             gunner@osicwg.enet.dec.com
+Joel Jacobs              jdj@mitre.org
+Frank Kastenholz         kasten@interlan.com
+Shimshon Kaufman
+Christopher Kolb         kolb@psi.com
+Cheryl Krupczak          clefor@secola.columbia.ncr.com
+William Kutz             Kutz@dockmaster.ncsc.mil
+Nik Langrind             nik@shiva.com
+Peter Lin                lin@eng.vitalink.com
+John Lunny               jlunny@twg.com
+Keith McCloghrie         kzm@hls.com
+
+                                   1
+
+
+
+
+
+
+Lynn Monsanto            monsanto@sun.com
+Oscar Newkerk            newkerk@decwet.enet.dec.com
+Brad Parker              brad@cayman.com
+David Perkins            dave_perkins@3com.com
+Jim Reinstedler          jimr@ub.com
+Anil Rijsinghani         anil@levers.enet.dec.com
+Jon Saperia              saperia@tcpjon.enet.dec.com
+Sam Sjogren              sjogren@tgv.com
+Mark Stein               marks@eng.sun.com
+Bob Stewart              rlstewart@eng.xyplex.com
+Emil Sturniolo
+Dean Throop              throop@dg-rtp.dg.com
+Maurice Turcotte         dnmrt@rm1.uucp
+David Waitzman           djw@bbn.com
+Steven Waldbusser        waldbusser@andrew.cmu.edu
+Jesse Walker             walker@eider.enet@decpa.dec.com
+Peter Wiedemann          wiedemann@dockmaster
+Fei Xu                   fei@tdd.sj.nec.com
+
+
+
+                                   2

@@ -1,0 +1,2255 @@
+#!/bin/sh
+# this is p-cops.103.02 (part 2 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file beta/glob.pl continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 2; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping beta/glob.pl'
+else
+echo 'x - continuing file beta/glob.pl'
+sed 's/^X//' << 'SHAR_EOF' >> 'beta/glob.pl' &&
+X    }
+X
+X    if ($nextdir = shift @rest) {
+X	local(@newlist) = ();
+X	for (@retlist) {
+X	    push(@newlist,&expand($_,$nextdir,@rest));
+X	} 
+X	@retlist = @newlist;
+X    } 
+X
+X    return @retlist;
+} 
+X
+sub homedir {
+X    local($user) = @_;
+X    local(@pwent);
+X    # global %homedir
+X
+X    if (!$user) {
+X	return $ENV{'HOME'} 		if $ENV{'HOME'};
+X	($user = $ENV{'USER'})  	|| 
+X	    ($user = getlogin) 		|| 
+X	    (($user) = getpwnam($>));
+X	warn "glob'homedir: who are you, user #$>?\n" unless $user;
+X	return '/';
+X    } 
+X    unless (defined $homedir{$user}) {
+X	if (@pwent = getpwnam($user)) {
+X	    $homedir{$user} = $pwent[$#pwent - 1];
+X	} else {
+X	    warn "glob'homedir: who are you, user #$>?\n" unless $user;
+X	    $homedir{$user} = '/';
+X	}
+X    }
+X    return $homedir{$user};
+} 
+X
+X
+1;
+SHAR_EOF
+echo 'File beta/glob.pl is complete' &&
+chmod 0700 beta/glob.pl ||
+echo 'restore of beta/glob.pl failed'
+Wc_c="`wc -c < 'beta/glob.pl'`"
+test 2963 -eq "$Wc_c" ||
+	echo 'beta/glob.pl: original size 2963, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/group.chk ==============
+if test -f 'beta/group.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/group.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/group.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/group.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#   group.chk.pl
+#
+# Perl version: composer@chem.bu.edu
+# Based on original shell script, group.chk
+#
+#  Check group file -- /etc/group -- for incorrect number of fields,
+# duplicate groups, non-alphanumeric group names, and non-numeric group
+# id's.
+#
+#   Mechanism:  Group.check uses awk to ensure that each line of the group
+# has 4 fields, as well as examining each line for any duplicate groups or
+# any duplicate user id's in a given group by using "sort -u" to ferret
+# out any duplications.  It also checks to make sure that the password
+# field (the second one) is a "*", meaning the group has no password (a
+# group password is usually not necessary because each member listed on 
+# the line has all the privilages that the group has.)  All results are
+# echoed to standard output.  Finally it ensures that the group names
+# are alphanumeric, that the group id's are numeric, and that there are
+# no blank lines.  For yellow pages groups, it does the same checking,
+# but in order to get a listing of all members of the groups, it does a
+# "ypcat group".
+#
+#   The /etc/group file has a very specific format, making the task
+# fairly simple.  Normally it has lines with 4 fields, each field
+# separated by a colon (:).  The first field is the group name, the second
+# field is the encrypted password (an asterix (*) means the group has no
+# password, otherwise the first two characters are the salt), the third
+# field is the group id number, and the fourth field is a list of user
+# ids in the group.  If a line begins with a plus sign (+), it is a yellow
+# pages entry.  See group(5) for more information.
+#
+X
+# should get below config stuff from cops.cf file
+package main;
+X
+die "Usage: $0\n" if @ARGV;
+X
+require 'pathconf.pl';
+X
+#   Used for Sun C2 security group file.  FALSE (default) will flag
+# valid C2 group syntax as an error, TRUE attempts to validate it.
+# Thanks to Pete Troxell for pointing this out.
+#
+# moved to cops.cf
+X
+package group_chk;
+X
+$etc_group = $'GROUP || '/etc/group';
+X
+# Testing $etc_group for potential problems....
+open (Group, "< $etc_group") || warn "$0: Can't open $etc_group: $!\n";
+&chk_group_file_format('Group');
+close Group;
+X
+# Testing ypcat group for potential problems
+$yp=0;
+if (-s $'YPCAT && -x _) {
+X    open(YGroup, "$'YPCAT group 2>/dev/null |")
+X	|| die "$0: Can't popen $'YPCAT: $!\n";
+X    $yp=1;
+X    &chk_group_file_format('YGroup');
+X    close(YGroup);
+}
+X
+# usage: &chk_group_file_format('Filehandle-name');
+# skips over lines that begin with "+:"
+# It really should check for correct yellow pages syntax....
+#
+# this routine checks lines read from a filehandle for potential format
+# problems .. should be matching group(5)
+#
+# checks for duplicate users in a group as it reads the lines instead
+# of after (as the original shell script does)
+X
+sub chk_group_file_format {
+X    local($file) = @_;
+X    local($W) = "Warning!  $file file,";
+X    undef %groups;
+X
+X    while (<$file>) {
+X	# should really check for correct YP syntax
+X	next if /^[-+]:/;   # skipping YP lines for now
+X	print "$W line $., is blank\n" if /^\s*$/;
+X	($group,$pass,$gid,$users) = split(?:?);
+X	$groups{$group}++;   # keep track of dups
+X	print "$W line $., does not have 4 fields:\n\t$_" if (@_ != 4);
+X	print "$W line $., nonalphanumeric group name:\n\t$_"
+X	    if $group !~ /^[A-Za-z0-9-]+$/;
+X	if ($pass && $pass ne '*') {
+X	    if ( ! $C2 || $yp ) {
+X		print "$W line $., group has password:\n\t$_"
+X		    if length($pass) == 13;
+X	    } else {
+X		print "$W line $., group has invalid field for C2:\n\t$_"
+X		    if $pass ne "#\$$user";
+X	    }
+X	}
+X	print "$W line $., nonnumeric group id: $_" if $_[2] !~ /^\d+$/;
+X
+X	# look for duplicate users in a group
+X	# kinda ugly, but it works .. and I have too much other work right
+X	# now to clean it up.  maybe later.. ;-)
+X	chop($users);	# down here, 'cos split gets rid of final null fields
+X	@users = sort split(/\s*,\s*/, $users);
+X	# %users = # of times user is in group, $dup_user = duplicate found
+X	undef %users;  $dup_user=0;
+X	grep(!($users{$_}++) && 0, @users);
+X	for (keys %users) {
+X	    (print "Warning!  Group $group has duplicate user(s):\n"),
+X		$dup_user=1 if !$dup_user && $users{$_} > 1;
+X	    print "$_ " if $users{$_} > 1;
+X	}
+X	print "\n" if $dup_user;
+X
+X    }
+X    # find duplicate group names 
+X    # not the best way, but it works..
+X    # boy, this is ugly too .. but, not as bad as above.. :)
+X    $dup_warned = 0;
+X    for (sort keys %groups) {
+X	(print "Warning!  Duplicate Group(s) found in $file:\n"), $dup_warned++
+X	    if !$dup_warned && $groups{$_} > 1;
+X	print "$_ " if $groups{$_} > 1;
+X    }
+X    print "\n" if $dup_warned;
+}
+X
+1;
+# end
+SHAR_EOF
+chmod 0700 beta/group.chk ||
+echo 'restore of beta/group.chk failed'
+Wc_c="`wc -c < 'beta/group.chk'`"
+test 4819 -eq "$Wc_c" ||
+	echo 'beta/group.chk: original size 4819, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/hostname.pl ==============
+if test -f 'beta/hostname.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/hostname.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/hostname.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/hostname.pl' &&
+#
+# file: hostname.pl
+# usage: $hostname = &'hostname;
+#
+# purpose: get hostname -- try method until we get an answer 
+#	or return "Amnesiac!"
+#
+X
+package hostname;
+X
+sub main'hostname {
+X    if (!defined $hostname) {
+X	$hostname =  ( -x '/bin/hostname'   && `/bin/hostname` ) 
+X		  || ( -x '/bin/uname'      && `/bin/uname -n` )
+X		  || ( -x '/usr/bin/uuname' && `/usr/bin/uuname -l`)
+X		  || 'Amnesiac! ';  # trailing space is for chop
+X	chop $hostname;
+X    }
+X    $hostname;
+}
+X
+1;
+SHAR_EOF
+chmod 0700 beta/hostname.pl ||
+echo 'restore of beta/hostname.pl failed'
+Wc_c="`wc -c < 'beta/hostname.pl'`"
+test 475 -eq "$Wc_c" ||
+	echo 'beta/hostname.pl: original size 475, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/is_able.chk ==============
+if test -f 'beta/is_able.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/is_able.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/is_able.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/is_able.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#  is_able.chk
+#
+#   This shell script checks the permissions of all files and directories
+# listed in the configuration file "is_able.lst", and prints warning messages
+# according to the status of files.  You can specify world or group readability
+# or writeability.  See the config file for the format of the configuration
+# file.
+#
+#   Mechanism:  This shell script parses each line from the configure file
+# and uses the "is_able.pl" program to check if any of
+# the directories in question are writable by world/group.
+#
+X
+require 'is_able.pl';
+require 'file_mode.pl';
+require 'glob.pl';
+X
+if ($ARGV[0] eq '-d') {
+X    shift;
+X    $debug = $glob'debug = 1;  # maybe should turn off glob'debug afterwards
+}
+X
+unshift (@ARGV, "is_able.lst" ) unless @ARGV;
+X
+while (<>) {
+X    next if /^\s*#/;
+X    split;
+X    next unless @_ == 3;
+X    ($file, $x, $y) = @_;
+X    @files = $file =~ /[\[?*]/ ? &'glob($file) : ($file);
+X    for $file (@files) {
+X	print STDERR "is_able $file $x $y\n" if $debug;
+X	&'is_able($file, $x, $y);
+X    }
+}
+X
+1;
+SHAR_EOF
+chmod 0700 beta/is_able.chk ||
+echo 'restore of beta/is_able.chk failed'
+Wc_c="`wc -c < 'beta/is_able.chk'`"
+test 1235 -eq "$Wc_c" ||
+	echo 'beta/is_able.chk: original size 1235, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/is_able.lst ==============
+if test -f 'beta/is_able.lst' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/is_able.lst (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/is_able.lst (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/is_able.lst' &&
+#  This lists any/all sensitive files the administration wants to ensure
+# non-read/writability of.  Comments are lines starting with a "#".
+#
+# USE FULL PATHNAMES!
+#
+#   Lines are of the format:
+#
+# /path/to/{dir|file}	World/Group	Read/Write/Both
+#
+# as above		{w|g}		{r|w|b}
+#
+/			w		w
+/etc			w		w
+/usr			w		w
+/bin			w		w
+/dev			w		w
+/usr/bin		w		w
+/usr/etc		w		w
+/usr/adm		w		w
+/usr/lib		w		w
+/usr/spool		w		w
+/usr/spool/mail		w		w
+/usr/spool/news		w		w
+/usr/spool/uucp		w		w
+/usr/spool/at		w		w
+/usr/local		w		w
+/usr/local/bin		w		w
+/usr/local/lib		w		w
+/usr/users		w		w
+/Mail			w		w
+X
+# some Un*x's put shadowpass stuff here:
+/etc/security		w		r
+X
+# /.login /.profile /.cshrc /.rhosts
+/.*			w		w
+X
+#   I think everything in /etc should be !world-writable, as a rule; but
+# if you're selecting individual files, do at *least* these:
+#   /etc/passwd /etc/group /etc/inittab /etc/rc /etc/rc.local /etc/rc.boot
+#   /etc/hosts.equiv /etc/profile /etc/syslog.conf /etc/export /etc/utmp
+#   /etc/wtmp
+/etc/*			w		w
+X
+/bin/*			w		w
+/usr/bin/*		w		w
+/usr/etc/*		w		w
+/usr/adm/*		w		w
+/usr/lib/*		w		w
+/usr/local/lib/*	w		w
+/usr/local/bin/*	w		w
+/usr/etc/yp*		w		w
+/usr/etc/yp/*		w		w
+X
+# individual files:
+/usr/lib/crontab	w		b
+/usr/lib/aliases	w		w
+/usr/lib/sendmail	w		w
+/usr/spool/uucp/L.sys	w		b
+X
+#  NEVER want these readable!
+/dev/kmem		w		b
+/dev/mem		w		b
+X
+#   Optional List of assorted files that shouldn't be
+# write/readable (mix 'n match; add to the list as desired):
+/usr/adm/sulog		w		r
+/.netrc			w		b
+# HP-UX and others:
+/etc/btmp		w		b
+/etc/securetty		w		b
+# Sun-fun
+/dev/drum		w		b
+/dev/nit		w		b
+SHAR_EOF
+chmod 0700 beta/is_able.lst ||
+echo 'restore of beta/is_able.lst failed'
+Wc_c="`wc -c < 'beta/is_able.lst'`"
+test 1603 -eq "$Wc_c" ||
+	echo 'beta/is_able.lst: original size 1603, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/kuang ==============
+if test -f 'beta/kuang' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/kuang (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/kuang (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/kuang' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/users/df/bin/perl.sun4 -S $0 $argv:q'
+X        if 0;
+# & eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+#
+# kuang - rule based analysis of Unix security
+#
+# Perl version by Steve Romig of the CIS department, The Ohio State
+# University, October 1990. 
+# 
+# Based on the shell script version by Dan Farmer from his COPS
+# package, which in turn is based on a shell version by Robert
+# Baldwin. 
+#
+#-----------------------------------------------------------------------------
+# Players:
+#	romig	Steve Romig, romig@cis.ohio-state.edu
+#	tjt	Tim Tessin, tjt@cirrus.com
+#
+# History:
+# 4/25/91  tjt, romig	Various fixes to filewriters (better messages about 
+#			permission problems) and don't update the DBM cache 
+#			with local file info.
+# 11/1/90  romig	Major rewrite - generic lists, nuking get_entry 
+#			and put_entry, moved rules to separate file.
+#
+X
+#
+# Options
+#
+# -l		list uid's that can access the given target, directly
+#		or indirectly
+# -d		debug
+# -V 		verbose
+#
+# -k file	load the list of known CO's
+# -f file	preload file information from the named file.
+# -p file	preload passwd info from the named file.
+# -Y		preload passwd info from ypcat + /etc/passwd
+# -g group	preload group info from the named file.
+# -G		preload group info from ypcat + /etc/group
+# 
+# NOTE:
+#   If you know where perl is and your system groks #!, put its
+# pathname at the top to make this a tad faster.
+#
+# the following magic is from the perl man page
+# and should work to get us to run with perl 
+# even if invoked as an sh or csh or foosh script.
+# notice we don't use full path cause we don't
+# know where the user has perl on their system.
+#
+X
+$options = "ldVk:p:g:f:YG";
+$usage = "usage: kuang [-l] [-d] [-v] [-k known] [-f file] [-Y] [-G] [-p passwd] [-g group] [u.username|g.groupname]\n";
+X
+$add_files_to_cache = 1;		# Whether to update the %files cache
+X					# with local file info or not.
+X
+#
+# Terminology:
+#
+#   An "op" is an operation, such as uid, gid, write, or replace. 
+#   'uid' means to gain access to some uid, 'gid' means to gain access 
+#   to some gid.  'write' and 'replace' refer to files - replace means
+#   that we can delete a file and replace it with a new one somehow
+#   (for example, if we could write the directory it is in).
+#
+#   An object is a uid, gid or pathname.  
+#
+#   A Controlling Operation (CO) is a (operation, object) pair
+#   represented as "op object": "uid 216" (become uid 216) or "replace
+#   /.rhosts" (replace file /.rhosts).  These are represented
+#   internally as "c value", where "c" is a character representing an
+#   operation (u for uid, g for gid, r for replace, w for write) and
+#   value is a uid, gid or pathname.
+#
+#   A plan is a chain of CO's that are connected to each other.  If
+#   /.login were writeable by uid 216, we might have a plan such as:
+#
+#	uid 216 => write /.login => uid 0
+#
+#   which means (in English) "if we can become uid 216, then write 
+#   /.login which gives you access to uid 0 (when root next logs in)."
+#   Plans are represented in several ways: as arrays:
+#
+#	("u 0", "w /.login", "u 216")
+#
+#   Note that the order is reversed.  As a string:
+#
+#	"u 0\034w /.login\034u 216"
+#
+#   The target is the object that we are trying to gain (a uid, gid or
+#   file, typically u.root or some other UID).
+#
+# Data Structures
+#
+#   %known		An assocc array, indexed by CO.  This lists
+#			the COs that we already have access to.  If we
+#                       find a plan that leads from a CO in the known
+#                       list to the target, we've succeeded in
+#                       finding a major security flaw.  
+#
+#   @new		An array of plans that are to be evaluated in
+#			the next cycle. 
+#
+#   @old		An array of plans that we are currently
+#			evaluating. 
+#
+#   %beendone		An assoc array that lists the plans that have
+#			already been tried.  Used to prevent loops.
+#
+#   @accessible		An array of the uids that can reach the
+#			target. 
+#
+#   %files		An assoc array, indexed by file name, contains
+#			cached file info.  value is of form "uid gid
+#			mode". 
+#
+# From pwgrid:
+#
+#   %uname2shell	Assoc array, indexed by user name, values are
+#			shells. 
+#
+#   %uname2dir		Assoc array, indexed by user name, values are
+#			home directories.
+#
+#   %uname2uid		Assoc array, indexed by name, values are uids.
+#			
+#   %uid2names		Assoc array, indexed by uid, value is list of
+#			user names with that uid, in form "name name
+#			name...". 
+#
+#   %gid2members	Assoc array, indexed by gid, value is list of
+#			group members (user names).
+#
+#   %gname2gid		Assoc array, indexed by group name, values are
+#			matching gids.
+#
+#   %gid2names		Assoc array, indexed by gid, values are
+#			matching group names.
+#
+X
+do 'yagrip.pl' ||
+X  die "can't do yagrip.pl";
+X
+# do 'pwgrid.pl' ||
+#   die "can't do pwgrid.pl";
+do 'pass.cache.pl' ||
+X  die "can't do pass.cache.pl";
+X
+do 'rules.pl' ||
+X  die "can't do rules.pl";
+X
+X
+#
+# Turns a string of the form "operation value" or "value" into
+# standard "CO" form ("operation value").  Converts user or group
+# names into corresponding uid and gid values. 
+#
+# Returns nothing if it isn't parseable.
+#
+X
+sub canonicalize {
+X    local($string) = @_;
+X    local($op, $value);
+X
+X    if ($string =~ /^([ugrw]) ([^ \t\n]+)$/) { # of form "op value"
+X	$op = $1;
+X	$value = $2;
+X    } elsif ($string =~ /^[^ \t\n]+$/) {       # of form "value"
+X        $value = $string;
+X	$op = "u";
+X    } else {
+X	return();
+X    }
+X
+X    if ($op eq "u" && $value =~ /^[^0-9]+$/) { # user name, not ID
+X        if (defined($uname2uid{$value})) {
+X	    $value = $uname2uid{$value};
+X	} else {
+X	    printf(stderr "There's no user named '%s'.\n", $value);
+X	    return();
+X	}
+X    } elsif ($op eq "g" && $value =~/^[^0-9]+$/) {
+X	if (defined($gname2gid{$value})) {
+X	    $value = $gname2gid{$value};
+X	} else {
+X	    printf(stderr "There's no group named '%s'.\n", $value);
+X	    return();
+X	}
+X    }
+X
+X    return($op, $value);
+}
+X
+X
+#
+# Preload file information from a text file or DBM database.  
+# If $opt_f.dir exists, then we just shadow %files from a DBM
+# database.  Otherwise, open the file and read the entries into 
+# %files.  
+#
+# $add_files_to_cache is set to 0 if we get the info from 
+# DBM since we wouldn't want to pollute update our DBM cache
+# with local file info which wouldn't apply to other hosts.
+#
+X
+sub preload_file_info {
+X    local($count, $f_type, $f_uid, $f_gid, $f_mode, $f_name);
+X
+X    if (defined($opt_d)) {
+X	printf("loading file info...\n");
+X    }
+X
+X    if (-f "$opt_f.dir") {
+X	$add_files_to_cache = 0;
+X
+X	dbmopen(files, $opt_f, 0644) ||
+X	  die sprintf("can't open DBM file '%s'", $opt_f);
+X    } else {
+X	open(FILEDATA, $opt_f) || 
+X	  die sprintf("kuang: can't open '%s'", $opt_f);
+X
+X	$count = 0;
+X	while (<FILEDATA>) {
+X	    $count++;
+X
+X	    chop;
+X	    ($f_type, $f_uid, $f_gid, $f_mode, $f_name) = split;
+X	    
+X	    if ($count % 1000 == 0) {
+X		printf("line $count, reading entry for $f_name\n");
+X	    }
+X	    $files{$f_name} = join(' ', $f_uid, $f_gid, $f_mode);
+X	}
+X
+X	close(FILEDATA);
+X    }
+}
+X
+#
+# Preload the known information.  Reads data from a file, 1 entry per line,
+# each entry is a CO that we "know" can be used.
+#
+X
+sub preload_known_info {
+X    local($file_name) = @_;
+X    local($op, $value, $co);
+X
+X    open(FILE, $file_name) ||
+X      die sprintf("kuang: can't open '%s'", $file_name);
+X
+X  known_loop:
+X    while (<FILE>) {
+X	chop;
+X	if ((($op, $value) = &canonicalize($_)) == 2) {
+X	    $co = sprintf("%s %s", $op, $value);
+X	    $known{$co} = 1;
+X	} else {
+X	    printf(stderr "kuang: invalid entry in known list: line %d '%s'.\n",
+X		   $.,
+X		   $_);
+X	}
+X    }
+X
+X    close(FILE);
+}
+X    
+X
+#
+# Do various initialization type things.
+#
+X
+sub init_kuang {
+X    local($which, $name, $uid, $gid);
+X    local($op, $value, $co);
+X
+X    #
+X    # Deal with args...
+X    #
+X
+X    &getopt($options) ||
+X      die $usage;
+X
+X    if ($#ARGV == -1) {
+X	push(@ARGV, "u root");
+X    }
+X
+X    #
+X    # Preload anything...
+X    #
+X    if (defined($opt_f)) {
+X	&preload_file_info();
+X    }
+X
+X    if (defined($opt_d)) {
+X	printf("load passwd info...\n");
+X    }
+X
+X    if (defined($opt_p)) {
+X	if (defined($opt_Y)) {
+X	    printf(stderr "You can only specify one of -p or -P, not both.\n");
+X	    exit(1);
+X	}
+X
+X	&load_passwd_info(0, $opt_p);
+X    } elsif (defined($opt_Y)) {
+X	&load_passwd_info(0);
+X    } else {
+X	&load_passwd_info(1);
+X    }
+X
+X    if (defined($opt_d)) {
+X	printf("load group info...\n");
+X    }
+X
+X    if (defined($opt_g)) {
+X	if (defined($opt_G)) {
+X	    printf(stderr "You can only specify one of -g or -G, not both.\n");
+X	    exit(1);
+X	}
+X
+X	&load_group_info(0, $opt_g);
+X    } elsif (defined($opt_G)) {
+X	&load_group_info(0);
+X    } else {
+X	&load_group_info(1);
+X    }
+X
+X    #
+X    # Need some of the password and group stuff.  Suck in passwd and 
+X    # group info, store by uid and gid in an associative array of strings
+X    # which consist of fields corresponding to the passwd and group file 
+X    # entries (and what the heck, we'll use : as a delimiter also...:-)
+X    #
+X    $uname2shell{"OTHER"} = "";
+X    $uname2dir{"OTHER"} = "";
+X    $uname2uid{"OTHER"} = -1;
+X    $uid2names{-1} = "OTHER";
+X
+X    $known{"u -1"} = 1;		# We can access uid OTHER
+X
+X    if (defined($opt_k)) {
+X	&preload_known_info($opt_k);
+X    }
+X
+X    #
+X    # Create the target list from the remaining (non-option) args...
+X    #
+X    while ($#ARGV >= 0) {
+X	$elt = pop(@ARGV);
+X	if ((($op, $value) = &canonicalize($elt)) == 2) {
+X	    $co = sprintf("%s %s", $op, $value);
+X	    push(@targets, $co);
+X	} else {
+X	    printf(stderr "target '%s' isn't of correct form\n", $elt);
+X	}
+X    }
+}
+X
+X
+#
+# Call this to set things up for a new target.  Resets old, new, beendone 
+# and accessible.  
+#
+sub set_target {
+X    local($target) = @_;
+X
+X    @old = ();
+X    @new = ();
+X    %beendone = ();
+X    @accessible = ();
+# fixme: reset known?
+X
+X    if ($target =~ /^([ugrw]) ([^ \t]+)$/) {
+X	&addto($1, $2);
+X	return(0);
+X    } else {
+X	printf(stderr "kuang: bad target '%s'\n", $target);
+X	return(1);
+X    }
+}
+X
+#
+# Break a CO into an (operation, value) pair and return it.  If it
+# isn't in "operation value" form, return ().
+#
+sub breakup {
+X    local($co) = @_;
+X    local($operation, $value);
+X
+X    if ($co =~ /^([ugrw]) ([^ \t]+)$/) {
+X	$operation = $1;
+X	$value = $2;
+X    } else {
+X	printf(stderr "Yowza, breakup failed on '%s'\n",
+X		$co);
+X	exit(1);
+X    }
+X
+X    return($operation, $value);
+}
+X
+#
+# Get the writers of the named file - return as (UID, GID, OTHER)
+# triplet.  Owner can always write, since he can chmod the file if he
+# wants. 
+#
+# (fixme) are there any problems in this sort of builtin rule?  should
+# we make this knowledge more explicit?
+#
+sub filewriters {
+X    local($name) = @_;
+X    local($tmp, $mode, $uid, $gid, $other);
+X    
+X    #
+X    # Check the file cache - avoid disk lookups for performance and 
+X    # to avoid shadows...
+X    #
+X    if (defined($files{$name})) {
+X	$cache_hit++;
+X	
+X	($uid, $gid, $mode, $tmp) = split(/ /, $files{$name});
+X    } else {
+X	$cache_miss++;
+X
+X	unless (-e $name) {
+X	    if ($add_files_to_cache) {
+X		$files{$name} = "";
+X	    }
+X	    # ENOTDIR = 20 
+X	    ($! == 20) && print "Warning: Illegal Path: '$name'\n";
+X	    # EACCES = 13
+X	    ($! == 13) && print "Warning: Permission Denied: '$name'\n";
+X	    # all values are returned "" here.
+X	    return;
+X	}
+X
+X	($tmp,$tmp,$mode,$tmp,$uid,$gid) = stat(_);
+X	if ($add_files_to_cache) {
+X	    $files{$name} = join(' ', "$uid", "$gid", "$mode");
+X	}
+X    }
+X
+X    if (($mode & 020) != 020) {
+X	$gid = "";
+X    }
+X    
+X    if (($mode & 02) == 02) {
+X	$other = 1;
+X    } else {
+X	$other = 0;
+X    }
+X
+X    return($uid, $gid, $other);
+}
+X
+X
+sub ascii_plan {
+X    local(@plan) = @_;
+X    local($op, $value, $result);
+X
+X    for ($i = $#plan; $i >= 0; $i--) {
+X	($op, $value) = &breakup($plan[$i]);
+X
+X      case: 
+X	{
+X	    if ($op eq "g") {
+X		$op = "grant gid";
+X		last case;
+X	    }
+X
+X	    if ($op eq "u") {
+X		$op = "grant uid";
+X		last case;
+X	    }
+X
+X	    if ($op eq "r") {
+X		$op = "replace";
+X		last case;
+X	    }
+X
+X	    if ($op eq "w") {
+X		$op = "write";
+X		last case;
+X	    }
+X
+X	    printf(stderr "Bad op '%s' in plan '%s'\n",
+X		   $op,
+X		   join(';', @plan));
+X	    last case;
+X	}
+X
+X	$result .= "$op $value ";
+X    }
+X
+X    return($result);
+}
+X
+#
+# Add a plan to the list of plans to check out.
+#
+sub addto {
+X    local($op, $value, @plan) = @_;
+X    local($co);
+X
+X    $co = sprintf("%s %s",
+X		  $op,
+X		  $value);
+X
+X    #
+X    # See if the op and value is "uid root" - if so, and if the @plan 
+X    # isn't empty, then don't bother checking - if the target isn't root, 
+X    # its silly to pursue plans that require becoming root since if we can 
+X    # become root, we can become anything.  If the target is root, then 
+X    # this would be a loop anyway.
+X    #
+X    if ($op eq "u" && $value eq "0" && $#plan >= 0) {
+X	if (defined($opt_d)) {
+X	    printf("addto: aborted root plan '%s'\n",
+X		   &ascii_plan(@plan, $co));
+X	}
+X	return;
+X    }
+X
+X    #
+X    # See whether there's an entry for $co in the known list.
+X    # If so - success, we've found a suitable breakin plan.
+X    #
+X    # Yes, we want to check to see whether the whole Controlling Operation 
+X    # is one that is known to us, rather than just the object.  I
+X    # might have a hole that allows me to "replace /bin/foo" which is
+X    # somewhat different than "write /bin/foo"  
+X    #
+X    if (! defined($opt_l) && defined($known{$co})) {
+X	printf("Success! %s\n",
+X	       &ascii_plan(@plan, $co));
+X    }
+X
+X    #
+X    # Check for loops -- if the new CO is part of the plan that we're
+X    # adding it to, this is a loop.
+X    #
+X    foreach $entry (@plan) {
+X	if ($entry eq $co) {
+X	    if (defined($opt_d)) {
+X		printf("addto: aborted loop in plan '%s'\n",
+X		       &ascii_plan(@plan, $co));
+X	    }
+X	    return;
+X	}
+X    }
+X
+X    #
+X    # Add this CO to the plan array...
+X    #
+X    push(@plan, $co);
+X
+X    #
+X    # Make an ascii version of sorts...
+X    #
+X    $text_plan = join($;, @plan);
+X
+X    #
+X    # Check to see if the new plan has been done.
+X    #
+X    if (defined($beendone{$text_plan})) {
+X	if (defined($opt_d)) {
+X	    printf("addto: plan's been done - '%s'\n",
+X		   &ascii_plan(@plan));
+X	}
+X	return;
+X    }
+X
+X    #
+X    # If we made it this far, its a new plan and isn't a loop.  
+X    #
+X
+X    #
+X    # Add to the beendone list...
+X    #
+X    $beendone{$text_plan} = 1;
+X
+X    #
+X    # Add to new plan list...
+X    #
+X    push(@new, $text_plan);
+X
+X    if (defined($opt_V)) {
+X	printf("addto: %s\n", 
+X	       &ascii_plan(@plan));
+X    }
+X
+X    #
+X    # If this is a uid goal, then add the plan to the accessible list.
+X    #
+X    if ($op eq "u" && $value ne "0" && defined($opt_l)) {
+X	push(@accessible, $value);
+X    }
+}
+X
+#
+#----------------------------------------------------------------------
+#Main program follows...initialize and loop till we're done.
+#
+X
+&init_kuang();
+X
+target_loop:
+foreach $target (@targets) {
+X    if (&set_target($target)) {
+X	next target_loop;
+X    }
+X
+X    while ($#new >= 0) {
+X	@old = @new;
+X	@new = ();
+X
+X	foreach $t_plan (@old) {
+X	    @plan = split(/\034/, $t_plan);
+X	    ($op, $value) = &breakup($plan[$#plan]);
+X
+X	    &apply_rules($op, $value, @plan);
+X	}
+X    }
+X
+X    if (defined($opt_l)) {
+X	foreach $elt (@accessible) {
+X	    printf("$elt\n");
+X	}
+X    }
+}
+X
+if (defined($opt_d)) {
+X    printf("File info cache hit/access ratio: %g\n", 
+X   	    ($cache_hit + $cache_miss > 0) 
+X	        ? $cache_hit / ($cache_hit + $cache_miss)
+X	        : 0.0);
+}
+X
+1;
+SHAR_EOF
+chmod 0700 beta/kuang ||
+echo 'restore of beta/kuang failed'
+Wc_c="`wc -c < 'beta/kuang'`"
+test 15363 -eq "$Wc_c" ||
+	echo 'beta/kuang: original size 15363, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/is_able.pl ==============
+if test -f 'beta/is_able.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/is_able.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/is_able.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/is_able.pl' &&
+#
+#  (This takes the place of the C program is_able.c, BTW.)
+# 
+#  is_able filename {w|g|s|S}       {r|w|B|b|s}
+#      (world/group/SUID/SGID   read/write/{read&write}/{suid&write}/s[ug]id)
+# 
+#     The second arg of {r|w} determines whether a file is (group or world
+#   depending on the first arg of {w|g}) writable/readable, or if it is
+#   SUID/SGID (first arg, either s or S, respectively), and prints out a
+#   short message to that effect.
+# 
+#  So:
+#     is_able w w		# checks if world writable
+#     is_able g r		# checks if group readable
+#     is_able s s		# checks if SUID
+#     is_able S b		# checks if world writable and SGID
+X
+package main;
+require 'file_mode.pl';
+X
+package is_able;
+X
+# package statics
+#
+%wg = ( 
+X	'w', 00006,
+X	'g', 00060,
+X	's', 04000,
+X	'S', 02000,
+X       );
+X
+%rwb= (
+X	'r', 00044,
+X	'w', 00022,
+X	'B', 00066,
+X	'b', 04022,
+X	's', 06000,
+X      );
+X
+$silent = 0;  # for suppressing diagnostic messages
+X
+X
+sub main'is_able {
+X    local($file, $wg, $rwb) = @_;
+X
+X    local ( 
+X	   $mode, 			# file mode
+X           $piece,			# 1 directory component
+X	   @pieces, 			# all the pieces
+X	   @dirs, 			# all the directories
+X	   $p, 				# punctuation; (*) mean writable
+X	   				#       due to writable parent
+X	   $retval,			# true if vulnerable
+X	   $[				# paranoia
+X	  );
+X
+X    &usage, return undef	if @_ != 3 || $file eq '';
+X
+X    &usage, return undef	unless defined $wg{$wg} && defined $rwb{$rwb};
+X
+X    if (&'Mode($file) eq 'BOGUS' && $noisy) {
+X	warn "is_able: can't stat $file: $!\n";
+X	return undef;
+X    }
+X
+X    $retval = 0;
+X
+X    if ($rwb{$rwb} & $rwb{'w'}) {
+X	@pieces = split(m#/#, $file);
+X	for ($i = 1; $i <= $#pieces; $i++) {
+X	    push(@dirs, join('/', @pieces[0..$i]));
+X	}
+X    } else {
+X	@dirs = ( $file );
+X    } 
+X
+X    for $piece ( reverse @dirs ) {
+X
+X	next unless $mode = &'Mode($piece);
+X	next if $mode eq 'BOGUS';
+X
+X	next unless $mode &= 07777 & $wg{$wg} & $rwb{$rwb};
+X
+X	$retval = 1;
+X
+X	$p = $piece eq $file ? '!' : '! (*)';
+X
+X	$parent_is_writable = $p eq '! (*)'; # for later
+X
+X	next if $silent; # for &is_writable
+X
+X	print "Warning!  $file is group readable$p\n"	if $mode & 00040; 
+X	print "Warning!  $file is _World_ readable$p\n"	if $mode & 00004; 
+X	print "Warning!  $file is group writable$p\n"	if $mode & 00020; 
+X	print "Warning!  $file is _World_ writable$p\n"	if $mode & 00002; 
+X	print "Warning!  $file is SUID!\n"		if $mode & 04000; 
+X	print "Warning!  $file is SGID!\n"		if $mode & 02000; 
+X
+X	last if $piece ne $file;  # only complain on first writable parent
+X    }
+X    $retval;
+}
+X
+sub main'is_writable {
+X    local($silent) = 1;
+X    &'is_able($_[0], 'w', 'w') 
+X	? $parent_is_writable 
+X	     ? "writable (*)"
+X	     : "writable" 
+X	: 0;
+} 
+X
+sub main'is_readable {
+X    local($silent) = 1;
+X    &'is_able($_[0], 'w', 'r');
+}
+X
+sub usage { 
+X    warn <<EOF;
+Usage: is_able file {w|g|S|s} {r|w|B|b|s}
+X (not: is_able @_)
+EOF
+}
+X
+1;
+SHAR_EOF
+chmod 0700 beta/is_able.pl ||
+echo 'restore of beta/is_able.pl failed'
+Wc_c="`wc -c < 'beta/is_able.pl'`"
+test 2835 -eq "$Wc_c" ||
+	echo 'beta/is_able.pl: original size 2835, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/kuang.1 ==============
+if test -f 'beta/kuang.1' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/kuang.1 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/kuang.1 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/kuang.1' &&
+.TH KUANG 1 "4 October 1990"
+.SH NAME
+kuang \- find security problems through rule based analysis
+.SH SYNOPSIS
+.B kuang
+.RB "[\|" \-v  "\|]"
+.RB "[\|" \-d "\|]"
+.RB "[\|" \-l "\|]"
+.RB "[\|" \-k known"\|]"
+.RB "[\|" \-f filedata "\|]"
+.RB "[\|" \-P "\|]"
+.RB "[\|" \-G "\|]"
+.RB "[\|" \-p passwd "\|]"
+.RB "[\|" \-g group "\|]"
+.RB "[\|" 
+.IR u.username | g.groupname "\|]"
+.br
+.SH DESCRIPTION
+.LP
+.B kuang
+uses rule based analysis to examine the current security configuration
+of a site and determine whether certain security problems exist.
+X
+.B kuang 
+contains embedded rules that describe the projection model and
+some of the attacker tricks used on Unix systems.  It uses these rules
+to reason backward from a desired goal (such as "grant u.root"),
+generating potential "attack" plans from the rules and file system
+state and then evaluating them to see whether they are reachable
+according to the state recorded in the password and group files and in
+the ownership and modes of the file systems.
+X
+By default, 
+.B kuang 
+uses "grant u.root" as its initial goal.  You can change that by
+specifying a username (u.username) or groupname (g.groupname) on the
+command line.  Normally 
+.B kuang
+determines a plan to be successful if it determines that anyone
+(u.other) can become the initial goal.  
+X
+The 
+.B \-v
+option causes 
+.B kuang
+to print a message about every plan added to the evaluation list.
+This can help one to understand how 
+.B kuang 
+works.  The 
+.B \-d 
+option causes 
+.B kuang
+to print a message when it evaluates a plan to determine whether to
+retain it and add onto it or ignore it.  Beware - these options will often
+produce lots of output.
+X
+Normally 
+.B kuang
+only registers success when it finds that everyone on the system can
+become the target uid or gid.  With the 
+.B \-l
+option, 
+.B kuang
+will list every uid that can access the goal.  This provides a more
+complete picture of the state of security - you might deem it a
+problem if several users can become root, even if u.other cannot.  
+With the
+.B \-k
+option, it reads users that are known to be compromised (guessed
+password, writeable startup files, or whatever) into a file, like:
+X
+u 216
+u romig
+df
+g staff
+X
+and so on.  Then start kuang as "kuang -k known".  If you omit the u
+or g, it defaults to uid.  You can give names or IDs for uids and
+groups.  You can also list files.  This gets put on a list that is 
+used to decide whether a plan is successful or not.  If a plan 
+reaches an step that is in the known list, it succeeds.
+X
+One might adopt the view that each uid should only be accessible by
+itself and root, and that each gid should be accessible only by the
+members of that group and root.  One can then compare the expected
+access list for a given uid or gid against the 
+.B kuang
+generated list to find security problems that 
+.B kuang
+wouldn't ordinarily tell you about.
+X
+The goals that 
+.B kuang
+use seem cryptic, but are really pretty straightforward.  Each goal
+consists of a list of <action> <object> pairs.  Typical actions are
+user, group, write and replace.  Typical objects are user names,
+group names and file names.  The goal
+"user root" (or u.root) means to have access to the root UID (0), or
+in other words, to be able to run any program using that uid.  
+Similarly,
+"group staff" (or g.staff) means to have access to group staff.
+The long goal
+"user bill  group graphics replace /n/shoe/0/fred replace
+/n/shoe/0/fred/.profile user fred group staff" means become
+user bill, get access to the graphics group, replace the file
+/n/shoe/0/fred, replace /n/shoe/0/fred/.profile, become fred,
+grant access to the staff group.  The problem that allows this to
+happen is that the /n/shoe/0 directory is writeable by the graphics
+group, meaning that anyone in that group can replace the .profile file
+for the fred user and gain access to that account and the groups it
+belongs to when fred next logs in.  Ooops.
+X
+To do a thorough job, 
+.B kuang 
+really needs to be able to access all of
+the controlling files of all users.  In some environments, home
+directories are located in NFS mounted file systems where the client
+doesn't have root access.  
+X
+The problem is that some home directories may be
+protected so that group foo can read/write them, but OTHER can't.
+.B kuang 
+running as some user not in group foo won't be able to read or
+search the directory, creating a blind spot that may hide security
+problems (for example, if group foo can write that user's .login and
+gain access to some other important priv...)  Running 
+.B kuang
+as root
+won't help unless we are running on the server that exports that
+file system, since root==nobody through NFS here.  Of course, then
+you'll find other blind spots on other servers, meaning that you'll
+never be able to see a complete picture of how things are from any
+spot on the net.  Running 
+.B kuang
+on every machine might not even
+help, since the blind spots might prevent them from seeing viable
+paths to Success on any of the machines.  Sigh.
+X
+Soooo we've added a 
+.B -f 
+option that causes 
+.B kuang 
+to preload owner, group and mode information for a list of files.
+Each line of the file should be of the form "type uid gid mode name".
+.B type
+is ignored by 
+.B kuang.
+.B uid 
+and 
+.B gid
+are the user and group ID numbers, in decimal.
+.B mode
+is the permissions for the file, in octal.  And 
+.B name
+is the name of the file.  We've also added a program called
+.B get-cf
+that can be run as root on a server to create a file of the above form
+for the control files for the user's with home directories on that
+server.  Then you can run 
+.B get-cf 
+on every server as root, concatenate all the data together, and
+preload it into Perl.  This will fix the shadow problems mentioned
+above and should also speed things up since you won't need to do all
+the file system references.
+.B kuang -f file
+will use a DBM database in place of a text file if file.dir exists.
+X
+.B Kuang
+needs to read the entire password and group databases before it
+starts, so that it has a complete idea of what users are in what groups
+and so on.  This can be somewhat slow on systems using YP, since by
+default 
+.B kuang
+uses the getpwent and getgrent routines to get the information (which
+is tedious on a YP client).  
+The 
+.B -P
+and 
+.B -G
+options cause 
+.B kuang
+to read /etc/passwd (/etc/group) and to use ypcat to read the rest of
+the passwd (group) YP maps, which can be much faster.  In addition, 
+the 
+.B -p 
+and 
+.B -g 
+options cause 
+.B kuang 
+to read the named files instead of /etc/passwd.
+X
+.SH "SEE ALSO"
+"Rule Based Analysis of Computer Security", Robert W. Baldwin, MIT,
+June 1987.
+X
+The README file that comes with 
+.B kuang
+describes many of the design considerations, problems and future
+plans.
+X
+.SH NOTES
+.LP
+This version of 
+.B kuang
+is based on the shell script versions that Dan Farmer included with
+the 
+.B COPS 
+security package, which in turn were based on code written by  Robert
+Baldwin himself.
+X
+You should read the other documentation that should come with this
+version and modify the rules in 
+.B kuang
+to suite your site.
+X
+.SH BUGS
+.LP
+Probably many.
+X
+The 
+.B -P
+and 
+.B -G 
+options don't work right if you use +@ constructions with YP.  They do
+work right if you use a simple "+:" entry, however.
+X
+SHAR_EOF
+chmod 0600 beta/kuang.1 ||
+echo 'restore of beta/kuang.1 failed'
+Wc_c="`wc -c < 'beta/kuang.1'`"
+test 7253 -eq "$Wc_c" ||
+	echo 'beta/kuang.1: original size 7253, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/misc.chk ==============
+if test -f 'beta/misc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/misc.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/misc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/misc.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#  Usage: misc.chk.pl [-d]
+#
+# composer@chem.bu.edu
+# based on original shell script
+#
+#  This shell script checks a variety of miscellaneous potential
+# security problems that really don't belong anywhere else.
+#
+#  Right now this looks for to see if tftp & rexd are enabled,
+# to check if the uudecode alias is in the mail alias file and
+# not commented out, and if uudecode can create a SUID file.
+#
+#  Mechanism:  tftp.chk will try to get /etc/motd from the localhost.
+# Not much too it; just connect and try to get it.  For rexd, just
+# look in the /etc/inetd.conf file to see if it's enabled (e.g., not
+# commented out).
+#
+#  Warning:  it may take a minute or so to complete the test, since tftp
+# might take a while to get the test file, or it may take a while to time
+# out the connection (which is what usually happens if the test fails.)
+X
+package main;
+require 'chk_strings.pl';
+require 'fgrep.pl';
+require 'hostname.pl';
+X
+if ($ARGV[0] eq '-d') {
+X    #$chk_strings'debug = 1;  # verbose debugging
+X    $misc_chk'debug = 1;
+X    shift;
+}
+X
+die "Usage: $0 [-d]\n" if @ARGV > 0;
+X
+X
+$TFTP="/usr/ucb/tftp" unless defined $TFTP;
+$UUDECODE="/usr/bin/uudecode" unless defined $UUDECODE; 
+X
+package misc_chk;
+X
+# look for uudecode alias in $aliases
+#$aliases="/usr/lib/aliases" if -f "/usr/lib/aliases";
+$aliases = ( -f '/usr/lib/aliases' && '/usr/lib/aliases' )
+X	|| ( -f '/etc/aliases'	   && '/etc/aliases' )
+X	|| 'BOGUS';
+$uu="decode";
+X
+# look for rexd in $inetd; this file could be "/etc/servers", too!
+if (!defined($inetd)) {
+X	$inetd = ( -f '/etc/inetd.conf' && '/etc/inetd.conf') ||
+X		 ( -f '/etc/servers' && '/etc/servers') ||
+X		 'BOGUS';
+X	}
+$rexd="rexecd";
+X
+# tmp and target file (for tftp test)
+$target="/etc/motd";
+$tmp="./tmp.$$";
+X
+# should probably generalize routine for chking for pats in file at some point
+X
+#  Read from $inetd to see if daemons are running.
+# Comments are lines starting with a "#", so ignore.
+# Checking for rexd:
+#
+print "Checking for $rexd in $inetd\n" if $debug;
+if (@matches = grep(!/^\s*#/, &'fgrep($inetd, $rexd))) {
+X    print "Warning!  $rexd is enabled in $inetd!\n";
+}
+X
+# Check to see if anything started inetd.conf is writable;
+print "Checking for writable dirs in $inetd\n" if $debug;
+&'chk_strings($inetd);
+X
+# Checking for uudecode alias:
+print "Checking for $uu alias in $aliases\n" if $debug;
+print "Warning!  $uu is enabled in $aliases!\n"
+X    if &'fgrep($aliases, "^\s*$uu:");
+X
+# uucode stuff -- thanks to pete shipley...
+print "Checking uudecode out\n" if $debug;
+if (-x $'UUDECODE) {
+X    open(UU, "| $'UUDECODE");
+X    print UU <<EOD_;
+begin 4755 ./foobar.$$
+X 
+end
+EOD_
+X    close(UU);
+}
+X
+&'is_able($'UUDECODE,'s','s');	# check if uudecode is SUID
+$is_able'silent = 1;
+print "Warning!  $'UUDECODE creates setuid files!\n"
+X   if &'is_able("./foobar.$$",'s','s');
+$is_able'silent = 0;
+unlink("./foobar.$$");
+X
+#  The rest is all for tftp stuff:
+#
+#   Get the local hostname...
+$hostname = &'hostname;
+X
+#   Do the dirty work -- check tftp for the localhost, if it was found;
+# this might take a bit, since tftp might have to time out.
+X
+print "Checking out tftp on $hostname\n" if $debug;
+if (-x $'TFTP) {
+X    open(SAVOUT, ">&STDOUT");	# suppress file not found
+X    open(SAVERR, ">&STDERR");	# it's not as bad as it looks..
+X    open(STDOUT, ">/dev/null") || die "Can't redirect stdout: $!\n";
+X    open(STDERR, ">&STDOUT") || die "Can't dup stdout: $!\n";
+X    close(STDOUT); close(STDERR);
+X    open(TFTP, "| $'TFTP");
+print TFTP <<_XXX_;
+connect $hostname
+get $target $tmp
+quit
+_XXX_
+X    close(TFTP);
+X    open(STDERR, ">&SAVERR"); close(SAVERR);
+X    open(STDOUT, ">&SAVOUT"); close(SAVOUT);
+} # > /dev/null 2> /dev/null
+X
+print "Warning!  tftp is enabled on $hostname!\n" if -s $tmp;
+unlink $tmp;
+X
+# end of script
+X
+1;
+SHAR_EOF
+chmod 0700 beta/misc.chk ||
+echo 'restore of beta/misc.chk failed'
+Wc_c="`wc -c < 'beta/misc.chk'`"
+test 3967 -eq "$Wc_c" ||
+	echo 'beta/misc.chk: original size 3967, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/pass.cache.pl ==============
+if test -f 'beta/pass.cache.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/pass.cache.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/pass.cache.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/pass.cache.pl' &&
+#
+#   Routines for reading and caching user and group information.  These
+# are used in multiple programs... it caches the info once, then hopefully
+# won't be used again.
+#
+#  Steve Romig, May 1991.
+#
+# Provides a bunch of routines and a bunch of arrays.  Routines 
+# (and their usage):
+#
+#    load_passwd_info($use_getent, $file_name)
+#
+#	loads user information into the %uname* and %uid* arrays 
+#	(see below).  
+#
+#	If $use_getent is non-zero:
+#	    get the info via repeated 'getpwent' calls.  This can be
+#	    *slow* on some hosts, especially if they are running as a
+#	    YP (NIS) client.
+#	If $use_getent is 0:
+#	    if $file_name is "", then get the info from reading the 
+#	    results of "ypcat passwd" and from /etc/passwd.  Otherwise, 
+#	    read the named file.  The file should be in passwd(5) 
+#	    format.
+#
+#    load_group_info($use_gentent, $file_name)
+#
+#	is similar to load_passwd_info.
+#
+# Information is stored in several convenient associative arrays:
+#
+#   %uname2shell	Assoc array, indexed by user name, value is 
+#			shell for that user name.
+#
+#   %uname2dir		Assoc array, indexed by user name, value is
+#			home directory for that user name.
+#
+#   %uname2uid		Assoc array, indexed by name, value is uid for 
+#			that uid.
+#			
+#   %uname2passwd	Assoc array, indexed by name, value is password
+#			for that user name.
+#
+#   %uid2names		Assoc array, indexed by uid, value is list of
+#			user names with that uid, in form "name name
+#			name...". 
+#
+#   %gid2members	Assoc array, indexed by gid, value is list of
+#			group members in form "name name name..."
+#
+#   %gname2gid		Assoc array, indexed by group name, value is
+#			matching gid.
+#
+#   %gid2names		Assoc array, indexed by gid, value is the
+#			list of group names with that gid in form 
+#			"name name name...".
+#
+# You can also use routines named the same as the arrays - pass the index 
+# as the arg, get back the value.  If you use this, get{gr|pw}{uid|gid|nam} 
+# will be used to lookup entries that aren't found in the cache.
+#
+# To be done:
+#    probably ought to add routines to deal with full names.
+#    maybe there ought to be some anal-retentive checking of password 
+#	and group entries.
+#    probably ought to cache get{pw|gr}{nam|uid|gid} lookups also.
+#    probably ought to avoid overwriting existing entries (eg, duplicate 
+#       names in password file would collide in the tables that are 
+#	indexed by name).
+#
+# Disclaimer:
+#    If you use YP and you use netgroup entries such as 
+#	+@servers::::::
+#	+:*:::::/usr/local/utils/messages
+#    then loading the password file in with &load_passwd_info(0) will get 
+#    you mostly correct YP stuff *except* that it won't do the password and 
+#    shell substitutions as you'd expect.  You might want to use 
+#    &load_passwd_info(1) instead to use getpwent calls to do the lookups, 
+#    which would be more correct.
+#
+X
+package main;
+X
+$PASSWD = '/etc/passwd' unless defined $PASSWD;
+X
+require 'pathconf.pl';
+X
+%uname2shell = ();
+%uname2dir = ();
+%uname2uid = ();
+%uname2passwd = ();
+%uid2names = ();
+%gid2members = ();
+%gname2gid = ();
+%gid2names = ();
+X
+$DOMAINNAME = "/bin/domainname" unless defined $DOMAINNAME;
+$YPCAT = "/bin/ypcat" unless defined $YPCAT;
+X
+$yptmp = "./yptmp.$$";
+X
+$passwd_loaded = 0;		# flags to use to avoid reloading everything
+$group_loaded = 0;		# unnecessarily...
+X
+#
+# We provide routines for getting values from the data structures as well.
+# These are named after the data structures they cache their data in.  Note 
+# that they will all generate password and group file lookups via getpw* 
+# and getgr* if they can't find info in the cache, so they will work
+# "right" even if load_passwd_info and load_group_info aren't called to 
+# preload the caches.
+#
+# I should point out, however, that if you don't call load_*_info to preload
+# the cache, uid2names, gid2names and gid2members *will not* be complete, since 
+# you must read the entire password and group files to get a complete picture.
+# This might be acceptable in some cases, so you can skip the load_*_info
+# calls if you know what you are doing...
+#
+sub uname2shell {
+X    local($key) = @_;
+X
+X    if (! defined($uname2shell{$key})) {
+X	&add_pw_info(getpwnam($key));
+X    }
+X
+X    return($uname2shell{$key});
+}
+X
+sub uname2dir {
+X    local($key) = @_;
+X    local(@pw_info);
+X
+X    if (! defined($uname2dir{$key})) {
+X	&add_pw_info(getpwnam($key));
+X    }
+X
+X    return($uname2dir{$key});
+}
+X
+sub uname2uid {
+X    local($key) = @_;
+X    local(@pw_info);
+X
+X    if (! defined($uname2uid{$key})) {
+X	&add_pw_info(getpwnam($key));
+X    }
+X
+X    return($uname2uid{$key});
+}
+X
+sub uname2passwd {
+X    local($key) = @_;
+X    local(@pw_info);
+X
+X    if (! defined($uname2passwd{$key})) {
+X	&add_pw_info(getpwnam($key));
+X    }
+X
+X    return($uname2passwd{$key});
+}
+X
+sub uid2names {
+X    local($key) = @_;
+X    local(@pw_info);
+X
+X    if (! defined($uid2names{$key})) {
+X	&add_pw_info(getpwuid($key));
+X    }
+X
+X    return($uid2names{$key});
+}
+X
+sub gid2members {
+X    local($key) = @_;
+X    local(@gr_info);
+X
+X    if (! defined($gid2members{$key})) {
+X	&add_gr_info(getgrgid($key));
+X    }
+X
+X    return($gid2members{$key});
+}
+X
+sub gname2gid {
+X    local($key) = @_;
+X    local(@gr_info);
+X
+X    if (! defined($gname2gid{$key})) {
+X	&add_gr_info(getgrnam($key));
+X    }
+X
+X    return($gname2gid{$key});
+}
+X
+sub gid2names {
+X    local($key) = @_;
+X    local(@gr_info);
+X
+X    if (! defined($gid2names{$key})) {
+X	&add_gr_info(getgrgid($key));
+X    }
+X
+X    return($gid2names{$key});
+}
+X
+#
+# Update user information for the user named $name.  We cache the password, 
+# uid, login group, home directory and shell.
+#
+X
+sub add_pw_info {
+X    local($name, $passwd, $uid, $gid) = @_;
+X    local($dir, $shell);
+X
+#
+# Ugh!  argh...yech...sigh.  If we use getpwent, we get back 9 elts, 
+# if we parse /etc/passwd directly we get 7.  Pick off the last 2 and 
+# assume that they are the $directory and $shell.  
+#
+X    $num = ( $#_ >= 7 ? 8 : 6 );
+X    $dir = $_[$num - 1];
+X    $shell = $_[$num] || '/bin/sh';
+X
+X
+X    if ($name ne "") {
+X	$uname2shell{$name} = $shell;
+X	$uname2dir{$name} = $dir;
+X	$uname2uid{$name} = $uid;
+X	$uname2passwd{$name} = $passwd;
+X
+X	if ($gid ne "") {
+X	    # fixme: should probably check for duplicates...sigh
+X
+X	    if (defined($gid2members{$gid})) {
+X		$gid2members{$gid} .= " $name";
+X	    } else {
+X		$gid2members{$gid} = $name;
+X	    }
+X	}
+X
+X	if ($uid ne "") {
+X	    if (defined($uid2names{$uid})) {
+X		$uid2names{$uid} .= " $name";
+X	    } else {
+X		$uid2names{$uid} = $name;
+X	    }
+X	}
+X    }
+}
+X
+#
+# Update group information for the group named $name.  We cache the gid 
+# and the list of group members.
+#
+X
+sub add_gr_info {
+X    local($name, $passwd, $gid, $members) = @_;
+X
+X    if ($name ne "") {
+X	$gname2gid{$name} = $gid;
+X
+X	if ($gid ne "") {
+X	    if (defined($gid2names{$gid})) {
+X		$gid2names{$gid} .= " $name";
+X	    } else {
+X		$gid2names{$gid} = $name;
+X	    }
+X
+X	    # fixme: should probably check for duplicates
+X
+X	    $members = join(' ', split(/[, \t]+/, $members));
+X
+X	    if (defined($gid2members{$gid})) {
+X		$gid2members{$gid} .= " " . $members;
+X	    } else {
+X		$gid2members{$gid} = $members;
+X	    }
+X	}
+X    }
+}
+X
+#
+# We need to suck in the entire group and password files so that we can 
+# make the %uid2names, %gid2members and %gid2names lists complete.  Otherwise,
+# we would just read the entries as needed with getpw* and cache the results.
+# Sigh.
+#
+# There are several ways that we might find the info.  If $use_getent is 1, 
+# then we just use getpwent and getgrent calls to read the info in.
+#
+# That isn't real efficient if you are using YP (especially on a YP client), so
+# if $use_getent is 0, we can use ypcat to get a copy of the passwd and
+# group maps in a fairly efficient manner.  If we do this we have to also read
+# the local /etc/{passwd,group} files to complete our information.  If we aren't 
+# using YP, we just read the local pasword and group files.
+#
+sub load_passwd_info {
+X    local($use_getent, $file_name) = @_;
+X    local(@pw_info);
+X
+X    if ($passwd_loaded) {
+X	return;
+X    }
+X
+X    $passwd_loaded = 1;
+X
+X    if ($'GET_PASSWD) {
+X	open(GFILE, "$'GET_PASSWD|") || die "can't $'GET_PASSWD";
+X	while (<GFILE>) {
+X		chop;
+X		&add_pw_info(split(/:/));
+X		}
+X	close(GFILE);
+X	}
+X    else {
+X
+X    if ($use_getent) {
+X	#
+X	# Use getpwent to get the info from the system, and add_pw_info to 
+X	# cache it.
+X	#
+X	while (@pw_info = getpwent) {
+X	    &add_pw_info(@pw_info);
+X	}
+X
+X	endpwent;
+X
+X	return;
+X    } elsif ($file_name eq "") {
+X	chop($has_yp = `$DOMAINNAME`);
+X	if ($has_yp) {
+X	    #
+X	    # If we have YP (NIS), then use ypcat to get the stuff from the 
+X	    # map.@
+X	    #
+X	    system("$YPCAT passwd > $yptmp 2> /dev/null");
+X	    if (-s $yptmp) {
+X	    	open(FILE, "$YPCAT passwd|") ||
+X	      	die "can't 'ypcat passwd'";
+X	    	while (<FILE>) {
+X			chop;
+X			&add_pw_info(split(/:/));
+X	    		}
+X	    	}
+X	    close(FILE);
+X	}
+X
+X	#
+X	# We have to read /etc/passwd no matter what...
+X	#
+X	$file_name = "/etc/passwd";
+X    }
+X
+X    open(FILE, $file_name) ||
+X      die "can't open $file_name";
+X
+X    while (<FILE>) {
+X	chop;
+X	    
+X	if ($_ !~ /^\+/) {
+X	    &add_pw_info(split(/:/));
+X	}
+X
+X	# fixme: if the name matches +@name, then this is a wierd 
+X	# netgroup thing, and we aren't dealing with it right.  might want
+X	# to warn the poor user...suggest that he use the use_getent 
+X	# method instead.
+X    }
+X    }
+X
+X    close(FILE);
+}
+X
+sub load_group_info {
+X    local($use_getent, $file_name) = @_;
+X    local(@gr_info);
+X
+X    if ($group_loaded) {
+X	return;
+X    }
+X
+X    $group_loaded = 1;
+X
+X    if ($use_getent) {
+X	#
+X	# Use getgrent to get the info from the system, and add_gr_info to 
+X	# cache it.
+X	#
+X	while ((@gr_info = getgrent()) != 0) {
+X	    &add_gr_info(@gr_info);
+X	}
+X
+X	endgrent();
+X
+X	return();
+X    } elsif ($file_name eq "") {
+X	chop($has_yp = `$DOMAINNAME`);
+X	if ($has_yp) {
+X	    #
+X	    # If we have YP (NIS), then use ypcat to get the stuff from the 
+X	    # map.
+X	    #
+X	    system("$YPCAT passwd > $yptmp 2> /dev/null");
+X	    if (-s $yptmp) {
+X	    	open(FILE, "$YPCAT group|") ||
+X	      	die "can't 'ypcat group'";
+X	    	while (<FILE>) {
+X			chop;
+X			&add_gr_info(split(/:/));
+X	    		}
+X	    	close(FILE);
+X		}
+X	}
+X
+X	#
+X	# We have to read /etc/group no matter what...
+X	#
+X	$file_name = "/etc/group";
+X    }
+X
+X    open(FILE, $file_name) ||
+X      die "can't open $file_name";
+X
+X    while (<FILE>) {
+X	chop;
+X	if ($_ !~ /^\+/) {
+X	    &add_gr_info(split(/:/));
+X	}
+X
+X	# fixme: if the name matches +@name, then this is a wierd 
+X	# netgroup thing, and we aren't dealing with it right.  might want
+X	# to warn the poor user...suggest that he use the use_getent 
+X	# method instead.
+X    }
+X
+X    close(FILE);
+}
+X
+# Load the password stuff -- Do NOT take this out!
+&'load_passwd_info(0,$PASSWD);
+X
+unlink $yptmp;
+X
+1;
+SHAR_EOF
+chmod 0700 beta/pass.cache.pl ||
+echo 'restore of beta/pass.cache.pl failed'
+Wc_c="`wc -c < 'beta/pass.cache.pl'`"
+test 10640 -eq "$Wc_c" ||
+	echo 'beta/pass.cache.pl: original size 10640, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/pass.chk ==============
+if test -f 'beta/pass.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/pass.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/pass.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'beta/pass.chk' &&
+#!/bin/sh -- need to mention perl here to avoid recursion
+'true' || eval 'exec perl -S $0 $argv:q';
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+#
+#  Pass.chk -- a password guesser.  Functionally equivalent to the original
+# cops password guesser.  The -P option doesn't work right now (alpha release,
+# don't you know :-), since we're doing funky things with password caching,
+# but this will change soon.
+#
+#  Usage: $0 [options] dictionary
+#
+#	-P pfile	password file (not working)
+#	-p		print found passwords (incompatible with -M)
+#       -d		check prefix/suffix of digits [0-9]
+#       -g		check all words in gcos, plan, project, signature files
+#	-r 		reverse the word tests
+#	-s 		check all single chars as passwords
+#	-u 		output the current user being checked
+#	-U 		try uppercase word tests
+#	-v		verbose, print advisory information
+#	-x 		check guess+prefix/suffix with strange chars added on
+#	-0 (zero)	change all o's ("oh"'s) to 0 (zeros)
+#	-m 		misspell words -- chop off first and last chars,
+#			if > 3 chars.  E.g. "dinner" ==> "inner" and "dinne"
+#
+# Originally written by Tim Tessin with lots more features, etc., etc., etc.
+# I ripped out all of his extra functionality that duplicated some of the
+# other cops stuff, and some things that just didn't fit, and added some
+# code to finish the simulation of the old checker. -- dan
+# 
+X
+require "getopts.pl";
+require "pass.cache.pl";
+$Passwd = "/etc/passwd";
+@strange_things = (" ", ";", ",", ".", "!", "@", "#", "$",
+X                     "%", "^", "&", "*", "(", ")", "-", "_", 
+X                     "=", "+", "[", "]", "{", "}", "'", "\"",
+X                     "|", "`", "~", ">", "<");
+X
+# can probably just do "|| &usage;" since &usage is only used once. ;-)
+&Getopts("p0dgrsuUvlPm") || print STDERR "Usage: $0 -p0xdgrsuUPvm\n";
+X
+# sanity checks
+$opt_P = $Passwd unless $opt_P;
+-r $opt_P || die "Can't read passwd file $opt_P\n";
+X
+# unbuffer output
+select (STDOUT); $| = 1;
+X
+$dups = 0;		# duplicate name entries
+$new = 0;		# new entries
+$changed = 0;		# password (and other data) changed
+$deleted = 0;		# deleted entries
+$updated = 0;		# data other than password changed
+$nlog = 0;		# number of log entries, used for print decisions
+$ntest = 0;
+$ndone = 0;
+X
+for $uid (keys %uname2passwd) {
+X	next if length($pass = $uname2passwd{$uid}) != 13;
+X	next unless $pass; # shall we report null passwd's, too?  ;-)
+X	if ($try = &dopwd()) {
+X		$pwd = ($opt_p) ? $try : "";
+X		# printf "Username: %-8s  <password guessed>  $pwd\n",$P[0];
+X		printf "Warning!  $uid password Problem: Guessed: %s\t\t$pwd\n",$P[0];
+X		}
+X	$ndone++;
+X	}
+X
+1;
+# end of program
+X
+X
+######################## Support Subroutines ###########################
+# dopwd tests each password entry against several simple checks and all
+# the words in the dictionaries specified.  The simple checks consists
+# of trying the username as the password ('joe' accounts), words derived
+# from the gecos fields (usually first and last names).
+X
+sub dopwd {
+X    $tries = 0;
+X
+X    print "$uid\n" if ($opt_u);
+X
+X    # try user name
+X    ($try = &testpwd($uid,$pass)) && return $try;
+X    # try uiduid
+X    if (length($uid) < 8) {
+X	($try = &testpwd($uid . $uid,$pass)) && return $try;
+X	}
+X
+X    # do gcos field?
+X    if ($opt_g) {
+X	@gcos = split(/[.,& -]/,$uname2gcos{$uid});
+X	foreach $i (@gcos) {
+X	    next unless $i;		# skip null split values
+X	    ($try = &testpwd($i,$pass)) && return $try;
+X	}
+X
+X	# Try names from misc files
+X	#
+X	undef %words;
+X	# files to check
+X	@files2chk = ("/.project", "/.plan", "/.signature");
+X	$home = $uname2dir{$uid};
+X	for $i (@files2chk) {
+X	    open (FOOFILE, $home . $i);
+X	    while (<FOOFILE>) {
+X		chop;
+X		@line = split(/([.,;\s])/);
+X		for $j (@line) {
+X		    $words{$j}=$j unless $j=~/[\s]/;
+X		}
+X	    }
+X	    close FOOFILE;
+X	}
+X	for $k (values %words) {
+X	    # print "word $k\n";
+X	    ($try = &testpwd($k,$pass)) && return $try;
+X	}
+X    }
+X
+# do dictionaries
+# save state of upper/reverse so individual dicts can temporarily
+# override.
+foreach $i (@ARGV) {
+X	if (open (DICT,$i)) {
+X		while (<DICT>) {
+X			chop;
+X			if ($try = &testpwd($_,$pass)) {
+X				close DICT;
+X				return $try;
+X				}
+X			}
+X		close DICT;
+X		}
+X	}
+return 0;
+}
+X
+X
+# small subroutines to help the main password cracker.  All are labeled
+# p_xxx, where xxx is the identifying name.
+#
+X
+# if leading character is upper-case, also try lower case version
+sub p_lc {
+X    local($try) = @_;
+X    local($ntry);
+X    if ( $try =~ /^[A-Z]/ ) {
+X	($ntry = $try) =~ y/A-Z/a-z/;
+X	push(@total_guesses, $ntry);
+X    }
+}
+X
+# reverse check
+sub p_rev {
+X    local($try) = @_;
+X    local($ntry);
+X    $ntry = reverse $try;
+X    if ($ntry ne $try) {
+X	push(@total_guesses, $ntry);
+X    }
+}
+X
+# uppercase check
+sub p_up {
+X    local($try) = @_;
+X    local($ntry);
+X    ($ntry = $try) =~ y/a-z/A-Z/;
+X    if ($ntry ne $try) { push(@total_guesses, $ntry); }
+SHAR_EOF
+true || echo 'restore of beta/pass.chk failed'
+fi
+echo 'End of  part 2'
+echo 'File beta/pass.chk is continued in part 3'
+echo 3 > _shar_seq_.tmp
+exit 0

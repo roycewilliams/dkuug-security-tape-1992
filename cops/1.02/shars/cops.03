@@ -1,0 +1,1752 @@
+#!/bin/sh
+# This is part 03 of cops
+# ============= cops/cover_letter ==============
+if test ! -d 'cops'; then
+    echo 'x - creating directory cops'
+    mkdir 'cops'
+fi
+if test -f 'cops/cover_letter' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/cover_letter (File already exists)'
+else
+echo 'x - extracting cops/cover_letter (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/cover_letter' &&
+X
+X To all women and men of the net, greetings...
+X
+X  Here are the latest changes, additions, and bug fixes to COPS; this brings
+Xit up to version 1.02, for those who care.  My personal stash (the latest
+Xcopy) should always be available via anon-ftp at cert.sei.cmu.edu
+X(128.237.253.5), in ~pub/cops.  In this header, I'll go through some
+Xthoughts, background notes, then finally get to the changes made, so if
+Xyou don't want to listen to me, just unpack the shar files, read the README
+Xfile, follow instructions, and you should be ready to roll.
+X
+X  For those who don't know, COPS is a static security checking tool that
+Xchecks common procedural (non-bug) problems of a Un*x system.  It basically
+Xtakes a snapshot of a system, and then generates a report of it's findings.
+XOn a purely empirical basis, it has successfully discovered problems that
+Xcould compromise root on over 3/4 or more of the systems I've run it on; of
+Xcourse, the idea here is not to break root, but to let someone fix the
+Xproblems it shows.  Note, of course, that it gives info indiscriminately, to
+Xwhoever runs it.  Decide if you do or don't want to learn about the
+Xinformation it can give about your system, but remember -- someone else
+Xprobably already has it.
+X
+X  After writing COPS, I started working for CERT.  I had always suspected,
+Xbut didn't know, that most breakins were caused by pretty trivial problems...
+Xnow I *know* it's true (or at least the ones we've found out about :-)).
+XIn the breakins I've seen while working for CERT, using COPS probably could
+Xhave prevented 60-75% of them.  The most common problems?  Poor passwords,
+Xguest accounts, accounts with no passwords, and improperly managed systems
+X(+ in host.equiv, poorly set up remote daemons, etc.)  Interestingly, to
+Xme at least, I wrote the original intro to COPS exactly one year ago today.
+XHow times don't change... I was worried this would be fairly obsolete soon,
+Xbut it looks like it'll be good at least for another few years.
+X
+X   The kit is broken into modules, each one driven by a master shell script;
+Xyou can usually get it running within 30 minutes or so if you've never used
+Xit before (5 or 10 if you only scan the README); if you've used it in the
+Xpast, you can set it up on a new machine in a minute or two.  With no
+Xmodifications, it takes perhaps 2 to 30 minutes to generate a report;
+Xhowever, the password cracking program can add lots of time to this,
+Xdepending on the options.  There is also a SUID finder, which can also take
+Xa long time (hours) to run, since it does a "find" on "/".  There's a new
+Xoption that tells it not to mail a report if the results are the same as
+Xthe last report, so you can just stuff it into cron and wait until a report
+Xcomes around.  Of course, if someone breaks in, changes cron, and you just
+Xrely on COPS, then you're f*cked anyway.  Use it as a tool, not as a crutch.
+X
+X   Ok, changes... there are a couple of totally new modules here.  One is
+Xsimply labled "misc.chk"; this checks for a potpourri of things -- right
+Xnow it checks for unrestricted tftp, uuencode & decode problems (including
+Xthe "decode" alias) writability of things in /etc/inetd.conf|/etc/services,
+Xand to see if rexd is enabled.  The second is a CRC generator, called,
+Xamazingly enough, "crc.chk" (Jon Zeef was kind enough to let me use his
+Xversion).  It's similar to the SUID trouble finder, in that you run it once,
+Xcreate a database, then compare future runs against that standard.  It
+Xreports any changes that are found.  There are some problems with this -- 
+Xnothing is functionally wrong with the program, as far as I know, but there
+Xare a few operational hazards -- for more information, read the README file,
+Xand the man page.
+X
+X   Now the rest... I'll try to put the more important things at the top,
+Xbut perceptions vary, of course.  Here are the major changes I can remember:
+X
+X-- a newer, faster, better, more powerful version of kuang, in perl, is
+X   included.
+X
+X-- an anonymous ftp setup checker (ftp.chk -a)
+X
+X-- the SUID finding program now also flags any world writable SUID files and
+X   SUID shell scripts.
+X
+X-- you can optionally check only passwords that have changed since the last
+X   time they were checked (pass_diff.chk.)
+X
+X-- optionally, cops will mail you a report only if things have changed since
+X   last report.
+X
+X-- the password cruncher can chew on arbitrary password files now, plus some
+X   bugs fixed.  Interesting how this program, the main one I didn't write/port,
+X   generates more little bugs than all the others... the original program
+X   worked fine (written by Craig Leres and Jef Poskanzer), but the more
+X   features that were added by different people over the years, the more
+X   things broke.  I should have just included my perl version instead.
+X
+X-- checks made for world writable files now looks at the parent directory
+X   structure of a path, instead of just the file.
+X
+X-- New, optional directory structure (for multiple machine/binary sites) for
+X   the entire system.  Reports are now saved in a file with the name
+X   "year_month_day", and by default, are saved in a directory with the
+X   same name as the host.  Looks something like:
+X
+X   $SECURE/cops
+X               | -- docs
+X               | -- src
+X               |--- archtype1 binaries (sun, or whatever)
+X               |             |
+X               |             | - results for sun workstation 1
+X               |             | - results for sun workstation 2
+X               |       
+X               |--- archtype2 binaries(dec)
+X               |             |
+X               |             | - results for dec workstation 1
+X               |             | - results for dec workstation 2
+X               |            
+X               |--- archtype3 binaries(vax)
+X                             |
+X                             | - results for vax 1
+X                             | - results for vax 2
+X
+X   You run "cops archtype", and it would cd into the binary directory,
+X   use those binaries, and put any results in a subdirectory of the
+X   appropriate host name.  Results would be stored with a date as the title,
+X   not some stupid number.  Alternately, you can just run "cops", and it will
+X   take your hostname as a directory to store the results.  More in the
+X   README file, under "How to Configure/Install COPS".
+X
+X-- user.chk checks .logout and .rhosts files (was .rhost) now, too, as well
+X   as reporting if any .netrc files are readable.
+X
+X-- file.chk and dir.chk have been replaced by is_able.chk, which performs
+X   the same function, with hopefully more flexibility and ease of use.
+X
+X-- scripts now start with a ":" on line 1 instead of #!/bin/sh, since it
+X   didn't work on some stupid machines.
+X
+X
+X   The easiest thing to do is unpack everything, scan the README file,
+Xchange whatever it tells you, run "reconfig", if you have a sysV based machine,
+Xor are just suspicious of your system, then blast off.  Finally, to steal an
+Xending from the README file of a year ago...
+X
+X  "So good luck, and I hope you find COPS useful as we plunge into UNIX
+Xof the 1990's.
+X
+X   dan farmer
+X   January 31, 1989"
+X
+X
+X -- dan
+X   jan 31, 1990
+X
+SHAR_EOF
+chmod 0600 cops/cover_letter ||
+echo 'restore of cops/cover_letter failed'
+Wc_c="`wc -c < 'cops/cover_letter'`"
+test 7085 -eq "$Wc_c" ||
+	echo 'cops/cover_letter: original size 7085, current size' "$Wc_c"
+fi
+# ============= cops/crc.chk ==============
+if test -f 'cops/crc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/crc.chk (File already exists)'
+else
+echo 'x - extracting cops/crc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/crc.chk' &&
+X:
+X
+X# commands 'n stuff:
+XAWK=/bin/awk
+XSED=/bin/sed
+XSORT=/usr/bin/sort
+XMV=/bin/mv
+XMAIL=/bin/mail
+XCAT=/bin/cat
+XTEST=/bin/test
+XECHO=/bin/echo
+XRM=/bin/rm
+XDATE=/bin/date
+X
+X# files used:
+Xcrc_list=./crc_list	# lists files used
+Xcrc_seed=./crc_seed	# optional -- contains seed
+Xcrc_old=./crc_old	# old crc values
+Xcrc_tmp=./crc_tmp	# temp storage for the new crc's
+Xcrc_res=./crc_res	# difference between new and old crc's
+Xbit_bucket=/dev/null	# junk goes here
+Xresults=./crc_results	# results go here; deleted & mailed, or
+X			# saved here, depending on the "MAIL" flag.
+X
+X# Do you want it mailed?  If "YES", the results file gets deleted
+XMMAIL=NO
+X# who gets the report?
+XINFORM="foo@bar.edu"
+X
+X#   If you don't use an argument, and don't have a seed file, generate
+X# a semi-random seed:
+Xif $TEST $# -eq 1 ; then
+X	seed=$1
+Xelse
+X	if $TEST ! -s $crc_seed ; then
+X		seed=$$
+X		$ECHO $seed > $crc_seed
+X	else
+X		seed=`$CAT $crc_seed`
+X		fi
+X	fi
+X
+X# AIX has a broken awk.
+X# files=`$AWK '/^#/ {next} {print $1}' $crc_list | $SORT -u`
+Xfiles=`$SED '/^#.*$/d' $crc_list | $SORT -u`
+X
+X# $ECHO crc\'ing, with seed $seed
+Xfor i in $files
+X	do
+X	./crc -v -i $seed $i >> $crc_tmp 2> $bit_bucket
+X	done
+X
+X# First time used, create the database:
+Xif $TEST ! -s $crc_old ; then
+X	$MV $crc_tmp $crc_old
+X	exit 0
+X	fi
+X
+X# any differences?
+X./crc_check $crc_old $crc_tmp > $crc_res
+X
+Xif $TEST -s $crc_res ; then
+X
+X	# get the hostname:
+X	if $TEST -s /bin/hostname ; then
+X                HOSTNAME=`/bin/hostname`
+X        elif $TEST -s /bin/uname ; then
+X                HOSTNAME=`/bin/uname -n`
+X        elif $TEST -s /usr/bin/uuname ; then
+X                HOSTNAME=`/usr/bin/uuname -l`
+X                fi
+X        if $TEST -z "$HOSTNAME" ; then
+X                HOSTNAME="foobar"
+X                fi
+X
+X	$ECHO >> $results
+X	$ECHO ATTENTION:                        >> $results
+X	$ECHO "CRC Security Report for "`$DATE` >> $results
+X	$ECHO "From host $HOSTNAME"             >> $results
+X	$ECHO >> $results
+X	$CAT $crc_res >>$results
+X
+X	if $TEST $MMAIL = "YES" ; then
+X		$MAIL $INFORM < $results
+X		$RM $results
+X		fi
+X	fi
+X
+X$RM -f $crc_tmp $crc_res
+X
+X#  end it all....
+Xexit 0
+SHAR_EOF
+chmod 0700 cops/crc.chk ||
+echo 'restore of cops/crc.chk failed'
+Wc_c="`wc -c < 'cops/crc.chk'`"
+test 2093 -eq "$Wc_c" ||
+	echo 'cops/crc.chk: original size 2093, current size' "$Wc_c"
+fi
+# ============= cops/crc_list ==============
+if test -f 'cops/crc_list' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/crc_list (File already exists)'
+else
+echo 'x - extracting cops/crc_list (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/crc_list' &&
+X#  This lists any/all sensitive files the administration wants to have a
+X# CRC value for.  Comments are lines starting with a "#".
+X#
+X
+X# some key files that might not change too often:
+X/.login
+X/.profile
+X/.cshrc
+X/.rhosts
+X/etc/hosts.equiv
+X/usr/lib/crontab
+X/usr/lib/aliases
+X/usr/spool/uucp/L.sys
+X
+X#   some that you might like to keep an eye on, depending on your site
+X# stability and/or paranoia:
+X# /etc/passwd
+X# /etc/group
+X
+X# default is individual files; can use wildcards, or whatever;
+X# here are some examples, using wildcards:
+X# /bin/*
+X# /usr/bin/*
+X# /usr/lib/*
+X# /usr/local/lib/*
+X# /usr/local/bin/*
+X
+X# Here are individual files:
+X/bin/fsck
+X/bin/rrestore
+X/bin/csh
+X/bin/login
+X/bin/ls
+X/bin/mail
+X/bin/mount
+X/bin/passwd
+X/bin/ps
+X/bin/sh
+X/bin/su
+X/usr/lib/sendmail
+X/usr/ucb/telnet
+X/usr/ucb/rlogin
+X/usr/ucb/ftp
+X/usr/bin/at
+X/usr/bin/chgrp
+X/usr/bin/cu
+X/usr/bin/df
+X/usr/bin/login
+X/usr/bin/mail
+X/usr/bin/passwd
+X/usr/bin/ruusend
+X/usr/bin/su
+X/usr/bin/tip
+X/usr/bin/uucp
+X/usr/bin/uulog
+X/usr/bin/uuname
+X/usr/bin/uusend
+X/usr/bin/uustat
+X/usr/bin/uux
+X/usr/bin/xterm
+SHAR_EOF
+chmod 0600 cops/crc_list ||
+echo 'restore of cops/crc_list failed'
+Wc_c="`wc -c < 'cops/crc_list'`"
+test 1045 -eq "$Wc_c" ||
+	echo 'cops/crc_list: original size 1045, current size' "$Wc_c"
+fi
+# ============= cops/cron.chk ==============
+if test -f 'cops/cron.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/cron.chk (File already exists)'
+else
+echo 'x - extracting cops/cron.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/cron.chk' &&
+X:
+X#
+X#  Usage: cron.chk
+X#
+X#  This checks pathnames and files inside the cron files /usr/lib/crontab
+X# for writability.
+X#
+X#  Mechanism:  The commands inside the file /usr/lib/crontab are executed
+X# by root.  This shell script greps for commands/paths that begins with
+X# "/" and takes each potential problem-string and uses the program
+X# "is_writable" to determine if it is world writable.  All results are
+X# echoed to standard output.
+X#  In addition, it throws away everything that has a /tmp, /dev/null, or
+X# tty in the writable string, and everything after a ">"; e.g. if crontab
+X# is writing to a file it doesn't care.
+X#
+X#  Cron.chk will try to find a file in /usr/lib/crontab first (bsd),
+X# and then if it isn't there, it will look in the any alternate
+X# possible locations next -- right now, /usr/spool/cron/crontab -- to
+X# see if a directory exists, and, if it does, it checks all the cron
+X# files in turn.
+X#
+X#  WARNING!
+X#
+X#  Spurious messages can occur; a more stringent method (if perhaps less
+X# careful of a check) would be to test just the 6th field, instead of
+X# all the fields after the fifth.  Also throwing away /tmp, etc. could
+X# be a mistake.
+X#
+X
+X#  Location of stuff:
+XAWK=/bin/awk
+XSED=/bin/sed
+XECHO=/bin/echo
+XEGREP=/usr/bin/egrep
+XTEST=/bin/test
+XCAT=/bin/cat
+X
+X#  Possible location of crontab file:
+Xcron=/usr/lib/crontab
+X#  alternate reality locations of crontab file:
+Xalt_cron="/usr/spool/cron/crontabs"
+X
+Xif $TEST ! -s $cron
+X	then
+X	cron=""
+X	for i in "$alt_cron"
+X		do
+X		if $TEST -d $i
+X			then
+X			cron=`$ECHO $alt_cron/*`
+X			fi
+X		done
+X
+X	if $TEST  -z "$cron"
+X		then
+X		exit
+X		fi
+X	fi
+X
+X# finally, do the checking -- maybe for one, maybe for lots of
+X# cron-ites:
+X
+Xfor cron_kid in $cron
+X	do
+X	# A typical crontab entry might look something like this:
+X	#
+X	#   0,15,30,45 * * * * /bin/sh /usr/adm/newsyslog
+X	#
+X	risky_stuff=`$AWK '{for (i=6;i<NF;i++) printf("%s ", $i);
+X		if (NF!=6) printf("%s\n",$NF)}' $cron_kid | $SED -e 's/>.*//' |
+X		$AWK '{for (i=1;i<=NF;i++) if (substr($i,1,1)=="/") print $i}'`
+X
+X	for i in $risky_stuff
+X		do
+X		if $TEST `echo $i | $EGREP "/tmp|/dev/null|tty"`
+X			then
+X			continue
+X			fi
+X		if ./is_writable $i
+X			then
+X			$ECHO "Warning!  $i (in $cron_kid) is World writable!"
+X			fi
+X		done
+X	done	# for all the cron-kids
+SHAR_EOF
+chmod 0700 cops/cron.chk ||
+echo 'restore of cops/cron.chk failed'
+Wc_c="`wc -c < 'cops/cron.chk'`"
+test 2240 -eq "$Wc_c" ||
+	echo 'cops/cron.chk: original size 2240, current size' "$Wc_c"
+fi
+# ============= cops/dev.chk ==============
+if test -f 'cops/dev.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/dev.chk (File already exists)'
+else
+echo 'x - extracting cops/dev.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/dev.chk' &&
+X:
+X#
+X#  dev.chk [-g]
+X#
+X#   This shell script checks the permissions of all devs listed in the
+X# file /etc/fstab (the "mount" command would be a preferable way of
+X# getting the file system name, but the syntax of the output is variable
+X# from machine to machine), and flags them if they are readable by using
+X# the "is_readable" command.  It also checks for unrestricted NFS
+X# mountings.  By default, dev_check will flag devs only if world readable
+X# or writable.  The -g option tells it to print out devs that are also
+X# group readable/writable.
+X#   As an aside, the fact that NFS mounted dirs are world readable isn't
+X# a big deal, but they shouldn't be world writable.  So do two checks here,
+X# instead of one.
+X#
+X# (p.s. /dev/?mem and some misc files used to be checked here, but they
+X# are now checked in is_able.chk)
+X#
+X#  Two types of /etc/fstab formats I've seen so far:
+X#
+X#  spec:file:type:freq:passno:name:options
+X#      NFS are indicated by an "@"
+X#
+X#  fsname dir type opts freq passno
+X#      NFS are indicated by an ":"
+X#
+X#  I check for the second; comment that code out (lines 83-84), and
+X# uncomment the other style (lines 79-80), if you have the first type.
+X#
+XAWK=/bin/awk
+XSED=/bin/sed
+XLS=/bin/ls
+XECHO=/bin/echo
+XTEST=/bin/test
+X
+X# locations of vital stuff...
+Xmtab=/etc/fstab
+Xexports=/etc/exports
+X
+Xgroup=no
+X
+Xif $TEST $# -gt 1
+X	then
+X	$ECHO "Usage: $0 [-g]"
+X	exit 2
+Xfi
+X
+Xif $TEST $# -eq 1
+X	then
+X	if $TEST "X$1" = "X-g"
+X		then
+X		group=yes
+X	else
+X		$ECHO "Usage: $0 [-g]"
+X		exit 2
+X	fi
+Xfi
+X
+X#  Testing filesystems and devices for improper read/write permissions...
+X
+X# grab devices from "/etc/fstab"....
+X#  Format of /etc/fstab:
+X#
+X#  spec:file:type:freq:passno:name:options
+X#     NFS mounted:
+X#  uther@foobar.edu:/usr/spaf:ect....
+X#
+X#  Or, the default means of checking:
+X#
+X#  filesystem   directory   type   options   freq   pass
+X#     NFS mounted:
+X#  uther:foobar.edu /usr/spaf....
+X#
+X#   kill comments, then get the device/filesystem in question.
+X#
+X# First style:
+X# nfs_devs=`$SED 's/^#.*//' $mtab | $AWK -F: '/@/ {print $2}'`
+X# local_devs=`$SED 's/^#.*//' $mtab | $AWK -F: '/@/ {continue}{print $1}'`
+X#
+X# Default style:
+Xnfs_devs=`$SED 's/^#.*//' $mtab | $AWK '/:/ {print $2}'`
+Xlocal_devs=`$SED 's/^#.*//' $mtab | $AWK '/:/ {continue}{print $1}'`
+X
+Xall_devs=$nfs_devs" "$local_devs
+X
+X# Alternate way; grab devices from "mount [-p]"....
+X#   Format of output from mount (some machines use -p option, some
+X# don't.  Check your local man page... you might have to add a "-F:" or
+X# something, depending on your output:
+X# crit_devs=`/etc/mount -p|$AWK 'index($1, "/")==1
+X#					{print $1} \
+X#				}'`
+X
+X#
+X# However, do check for single line entries in /etc/exports:
+Xif $TEST -s $exports
+X	then
+X	$AWK '{while(getline >0) if ($0 !~ /^#/ && NF == 1) \
+X		printf("Warning!  NFS file system %s exported with no restrictions.\n",$0)}' $exports
+X	fi
+X
+X#
+X#  Have to get them in the format that "is_able" likes:
+X#
+X#  filename {world|group} {writeable|readable|both}
+X#
+X# all things check world/group writability
+Xfor i in $all_devs
+X	do
+X	./is_able $i w w
+X	if $TEST "$group" = "yes"
+X		then
+X		./is_able $i g w
+X		fi
+X	done
+X
+X#  For local devices, we want to make sure that no one can bypass
+X# security by reading straight from the device:
+Xfor i in $local_devs
+X	do
+X	./is_able $i w r
+X	if $TEST "$group" = "yes"
+X		then
+X		./is_able $i g r
+X		fi
+X	done
+X
+X# end of script
+SHAR_EOF
+chmod 0700 cops/dev.chk ||
+echo 'restore of cops/dev.chk failed'
+Wc_c="`wc -c < 'cops/dev.chk'`"
+test 3332 -eq "$Wc_c" ||
+	echo 'cops/dev.chk: original size 3332, current size' "$Wc_c"
+fi
+# ============= cops/README.C2 ==============
+if test -f 'cops/README.C2' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/README.C2 (File already exists)'
+else
+echo 'x - extracting cops/README.C2 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/README.C2' &&
+X
+XDan,
+X
+X  Please find enclose four (4) files: passwd.chk, passwd.file.chk, group.chk,
+Xand group.file.chk. These are the files to allow checking of the Sun C2
+Xsecurity variations of SunOS. They will perform checking of the yellow pages
+Xversion if so selected by the TEST_YP variable being TRUE in the passwd.chk
+Xand group.chk files. The testing of the SUN C2 security is performed by setting
+Xthe SUN_SECURITY variable to TRUE in the passwd.chk and group.chk files. 
+X
+XPete Troxell
+X
+X#!/bin/sh
+X# This is a shell archive (produced by shar 3.49)
+X# To extract the files from this archive, save it to a file, remove
+X# everything above the "!/bin/sh" line above, and type "sh file_name".
+X#
+X# made 01/08/1991 02:50 UTC by df@death.cert.sei.cmu.edu
+X#
+X# existing files will NOT be overwritten unless -c is specified
+X#
+X# This shar contains:
+X# length  mode       name
+X# ------ ---------- ------------------------------------------
+X#   1609 -rwx------ group.chk
+X#   6191 -rwx------ group.file.chk
+X#   1650 -rwx------ passwd.chk
+X#   7715 -rwx------ passwd.file.chk
+X#
+X# ============= group.chk ==============
+Xif test -f 'group.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping group.chk (File already exists)'
+Xelse
+Xecho 'x - extracting group.chk (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'group.chk' &&
+X#!/bin/sh
+X#
+X#   group.chk
+X#
+X#  Check group file -- /etc/group -- for incorrect number of fields,
+X# duplicate groups, non-alphanumeric group names, and non-numeric group
+X# id's.
+X#
+XECHO=/bin/echo
+XRM=/bin/rm
+XTEST=/bin/test
+XYPCAT=/usr/bin/ypcat
+XX
+X#
+X# Enhanced Security Features addes by Pete Troxell:
+X#
+X#   Used for Sun C2 security group file.  FALSE (default) will flag
+X# valid C2 group syntax as an error, TRUE attempts to validate it. When
+X# using this option the script must be executed as root or su since the file
+X# /etc/security/group.adjunct is read protected from everybody except root.
+X#
+XSUN_SECURITY=FALSE
+XX
+X#
+X# Enable/Disable testing of the Yellow Pages group file(s)
+X#
+XTEST_YP=FALSE
+XX
+X#
+X# Important files:
+X#
+Xetc_group=/etc/group
+Xetc_secure_group=/etc/security/group.adjunct
+Xyp_group=./grp$$
+Xyp_secure_group=./sgrp$$
+XX
+Xyp=false
+Xyp_secure=false
+XX
+X#
+X# Testing $yp_group for potential problems....
+X#
+Xif $TEST -f $YPCAT -a $TEST_YP = "TRUE"
+XX	then
+Xif $TEST -s $YPCAT
+XX	then
+XX	$YPCAT group > $yp_group 2>/dev/null
+XX	if $TEST $? -eq 0
+XX		then
+XX		yp=true
+XX	fi
+XX	if $TEST $yp = "true" -a $SUN_SECFURITY = "TRUE"
+XX		then
+XX		$YPCAT -t group.adjunct.byname > $yp_secure_group 2>/dev/null
+XX		if $TEST $? -eq 0
+XX			then
+XX			yp_secure=true
+XX		fi
+XX	fi
+Xfi
+Xfi
+XX
+X#
+X# Test the system group file
+X#
+Xgroup.file.chk $etc_group $etc_secure_group $SUN_SECURITY
+XX
+X#
+X# Test yellow pages password file
+X#
+Xif $TEST "$yp" = "true"
+XX	then
+XX	$ECHO
+XX	$ECHO "***** Testing the Yellow Pages password file(s) ******"
+XX	$ECHO
+XX	group.file.chk $yp_group $yp_secure_group $SUN_SECURITY
+XX	fi
+XX
+X#
+X# Clean up after ourselfs
+X#
+X$RM -f $yp_group
+X$RM -f $yp_secure_group
+X# end
+XSHAR_EOF
+Xchmod 0700 group.chk ||
+Xecho 'restore of group.chk failed'
+XWc_c="`wc -c < 'group.chk'`"
+Xtest 1609 -eq "$Wc_c" ||
+X	echo 'group.chk: original size 1609, current size' "$Wc_c"
+Xfi
+X# ============= group.file.chk ==============
+Xif test -f 'group.file.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping group.file.chk (File already exists)'
+Xelse
+Xecho 'x - extracting group.file.chk (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'group.file.chk' &&
+X#!/bin/sh
+X#
+X#   group.file.chk
+X#
+X# Awk part based on _passwd_ from _The AWK Programming Language_, page 78
+X#
+X#   Mechanism:  Group.check uses awk to ensure that each line of the group
+X# has 4 fields, as well as examining each line for any duplicate groups or
+X# any duplicate user id's in a given group by using "sort -u" to ferret
+X# out any duplications.  It also checks to make sure that the password
+X# field (the second one) is a "*", meaning the group has no password (a
+X# group password is usually not necessary because each member listed on 
+X# the line has all the privilages that the group has.)  All results are
+X# echoed to standard output.  Finally it ensures that the group names
+X# are alphanumeric, that the group id's are numeric, and that there are
+X# no blank lines.  For yellow pages groups, it does the same checking,
+X# but in order to get a listing of all members of the groups, it does a
+X# "ypcat group > ./$$" and uses that temporary file for a groupfile.
+X# It removes the tmp file after using it, of course.
+X#   The /etc/group file has a very specific format, making the task
+X# fairly simple.  Normally it has lines with 4 fields, each field
+X# separated by a colon (:).  The first field is the group name, the second
+X# field is the encrypted password (an asterix (*) means the group has no
+X# password, otherwise the first two characters are the salt), the third
+X# field is the group id number, and the fourth field is a list of user
+X# ids in the group.  If a line begins with a plus sign (+), it is a yellow
+X# pages entry.  See group(5) for more information.
+X#   The SUN /etc/security/group.adjunct file also has a very specific
+X# format, makeing the check task simple. Each entry has 2 fields separated 
+X# by a colon (:). THe first field is the user name which matches the user
+X# name contained in the /etc/group file. The second field is the encrypted
+X# password (an asterix (*) means the group has no password, otherwise the 
+X# first two characters are the salt). The password contained in the 
+X# /etc/group file is comprised of the #$user_id where the user_id matches
+X# the entry of the first field in both group files.
+X#
+XX
+X#
+X# Parameters
+X#
+Xgroup_file=$1
+Xgroup_adjunct_file=$2
+XSUN_SECURITY=$3
+XX
+X#
+X# Utilities
+X#
+XAWK=/bin/awk
+XDIFF=/usr/bin/diff
+XECHO=/bin/echo
+XJOIN=/usr/bin/join
+XRM=/bin/rm
+XSORT=/usr/bin/sort
+XTEST=/bin/test
+XUNIQ=/usr/bin/uniq
+XX
+X#
+X# Important files:
+X#
+Xjoin_group_1=./grp$$.1.join
+Xjoin_group_2=./grp$$.2.join
+Xsort_group=./grp$$.sort
+Xsort_secure_group=./sgrp$$.sort
+XX
+X#
+X# Testing the group file for problems
+X#
+Xresult=`$AWK -F: '{print $1}' $group_file | $SORT |$UNIQ -d`
+Xif $TEST "$result"
+XX	then
+XX	$ECHO "Warning!  Duplicate gid(s) found in group file:"
+XX	for USER in $result
+XX	do
+XX		$ECHO "	$USER"
+XX	done
+Xfi
+XX
+X#
+X#   First line is for a yellow pages entry in the group file.
+X# It really should check for correct yellow pages syntax....
+X#
+X$AWK 'BEGIN {FS = ":" } {
+XX	if (substr($1,1,1) != "+") { \
+XX	if ($0 ~ /^[ 	]*$/) { printf("Warning!  Group file, line %d, is blank\n", NR) } else {
+XX	if (NF != 4) { printf("Warning!  Group file, line %d, does not have 4 fields: \n\t%s\n", NR, $0) } \
+XX	if ($1 !~ /[A-Za-z0-9]/) {
+XX		printf("Warning!  Group file, line %d, nonalphanumeric user id: \n\t%s\n", NR, $0) } \
+XX	if ($2 != "" && $2 != "*") {
+XX		if ("'$SUN_SECURITY'" != "TRUE")
+XX			printf("Warning!  Group file, line %d, has password: \n\t%s\n", NR, $0)
+XX		else {
+XX			if ("#$"$1 != $2)
+XX				printf("Warning!  Group file, line %d, invalid password field for SUN C2 Security: \n\t%s\n", NR, $0) } \
+XX		} \
+XX	if ($3 !~ /[0-9]/) {
+XX		printf("Warning!  Group file, line %d, nonnumeric group id: \n\t%s\n", NR, $0) \
+XX	}}}} ' $group_file
+XX
+X#
+X# Ignore all groups with less than two members.
+X#
+Xawk -F: '
+XX	split($4, users, ",") > 1 {
+XX		ct = 0
+XX		for (i in users) {
+XX			curuser = users[i]
+XX			for (j in users) {
+XX				if (j > i && curuser == users[j]) {
+XX					if (ct++ == 0) print "Warning!  Group "$1" has duplicate user(s):"
+XX					print curuser
+XX				}
+XX			}
+XX		}
+XX	}
+XX	' $group_file
+XX
+X#
+X# Perform checks on the security enhanced version of SUNOS
+X#
+Xif $TEST $SUN_SECURITY = "TRUE"
+XX	then
+XX	result=`$AWK -F: '{print $1}' $group_adjunct_file | $SORT -t: | $UNIQ -d`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Duplicate uid(s) found in group adjunct file:"
+XX		for USER in $result
+XX		do
+XX			$ECHO "	$USER"
+XX		done
+XX	fi
+XX	#
+XX	# Check that for each entry in the group file that there is a matching
+XX	# entry in the group.adjunct file.
+XX	#
+XX	$SORT -t: -o $sort_group $group_file
+XX	$SORT -t: -o $sort_secure_group $group_adjunct_file
+XX	$JOIN -t: $sort_group $sort_secure_group > $join_group_1
+XX	$JOIN -t: -a1 $sort_group $sort_secure_group > $join_group_2
+XX	result=`$DIFF $join_group_1 $join_group_2`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Matching record(s) in group adjunct file not found for"
+XX		$ECHO "these records in group file:"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Check that for each entry in the group.adjunct file that there is a 
+XX	# matching entry in the group file.
+XX	#
+XX	$RM -f $join_group_2
+XX	$JOIN -t: -a2 $sort_group $sort_secure_group > $join_group_2
+XX	result=`$DIFF $join_group_1 $join_group_2`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Matching record(s) in group file not found for"
+XX		$ECHO "these records in group adjunct file"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Test the fields in the group.adjunct file for validity
+XX	#
+XX	$AWK 'BEGIN {FS = ":" } \
+XX		{if (substr($1,1,1) != "+") { \
+XX		if ($0 ~ /^[ 	]*$/) { printf("\nWarning!  Group adjunct file, line %d, is blank\n", NR) } else {
+XX		if (NF != 2) {
+XX			printf("\nWarning!  Group adjunct file, line %d, does not have 2 fields: \n\t%s\n", NR, $0) } \
+XX		if ($1 !~ /[A-Za-z0-9]/) {
+XX			printf("\nWarning!  Group adjunct file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+XX		if ($2 != "" && $2 != "*") {
+XX			printf("\nWarning!  Group adjunct file, line %d, has password: \n\t%s\n", NR, $0) } \
+XX		}}}' $group_adjunct_file
+Xfi
+XX
+X#
+X# Clean up after ourself
+X#
+X$RM -f $join_group_1
+X$RM -f $join_group_2
+X$RM -f $sort_group
+X$RM -f $sort_secure_group
+X# end
+XSHAR_EOF
+Xchmod 0700 group.file.chk ||
+Xecho 'restore of group.file.chk failed'
+XWc_c="`wc -c < 'group.file.chk'`"
+Xtest 6191 -eq "$Wc_c" ||
+X	echo 'group.file.chk: original size 6191, current size' "$Wc_c"
+Xfi
+X# ============= passwd.chk ==============
+Xif test -f 'passwd.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping passwd.chk (File already exists)'
+Xelse
+Xecho 'x - extracting passwd.chk (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'passwd.chk' &&
+X#!/bin/sh
+X#
+X#   passwd.chk
+X#
+X#  Check passsword file -- /etc/passswd -- for incorrect number of fields,
+X# duplicate uid's, non-alphanumeric uids, and non-numeric group id's.
+X#
+X#
+XECHO=/bin/echo
+XRM=/bin/rm
+XTEST=/bin/test
+XYPCAT=/usr/bin/ypcat
+XX
+X#
+X# Enhanced Security Features added by Pete Troxell:
+X#
+X#   Used for Sun C2 security password adjunct file.  FALSE (default) will flag
+X# valid SUN C2 passwd syntax as an error, TRUE attempts to validate it. When 
+X# using this option, the script must be executed as root or su since the file
+X# /etc/security/passwd.adjunct is read protected from everybody except root.
+X#
+XSUN_SECURITY=FALSE
+XX
+X#
+X# Enable/Disable testing of the Yellow Pages password file(s)
+X#
+XTEST_YP=FALSE
+XX
+X#
+X# Important files:
+X#
+Xetc_passwd=/etc/passwd
+Xetc_secure_passwd=/etc/security/passwd.adjunct
+Xyp_passwd=./pwd$$
+Xyp_secure_passwd=./spwd$$
+XX
+Xyp=false
+Xyp_secure=false
+XX
+X#
+X# Testing $yp_passwd for potential problems....
+X#
+Xif $TEST -f $YPCAT -a $TEST_YP = "TRUE"
+XX	then
+Xif $TEST -s $YPCAT
+XX	then
+XX	$YPCAT passwd > $yp_passwd 2>/dev/null
+XX	if $TEST $? -eq 0
+XX		then
+XX		yp=true
+XX	fi
+XX	if $TEST $yp = "true" -a $SUN_SECURITY = "TRUE"
+XX		then
+XX		$YPCAT -t passwd.adjunct.byname > $yp_secure_passwd 2>/dev/null
+XX		if $TEST $? -eq 0
+XX			then
+XX			yp_secure=true
+XX		fi
+XX	fi
+Xfi
+Xfi
+XX
+X#
+X# Test the system password file
+X#
+Xpasswd.file.chk $etc_passwd $etc_secure_passwd $SUN_SECURITY
+XX
+X#
+X# Test yellow pages password file
+X#
+Xif $TEST "$yp" = "true"
+XX	then
+XX	$ECHO
+XX	$ECHO "***** Testing the Yellow Pages password file(s) *****"
+XX	$ECHO
+XX	passwd.file.chk $yp_passwd $yp_secure_passwd $SUN_SECURITY
+XX	fi
+XX
+X#
+X# Clean up after ourselfs
+X#
+X$RM -f $yp_passwd
+X$RM -f $yp_secure_passwd
+X# end
+XSHAR_EOF
+Xchmod 0700 passwd.chk ||
+Xecho 'restore of passwd.chk failed'
+XWc_c="`wc -c < 'passwd.chk'`"
+Xtest 1650 -eq "$Wc_c" ||
+X	echo 'passwd.chk: original size 1650, current size' "$Wc_c"
+Xfi
+X# ============= passwd.file.chk ==============
+Xif test -f 'passwd.file.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping passwd.file.chk (File already exists)'
+Xelse
+Xecho 'x - extracting passwd.file.chk (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'passwd.file.chk' &&
+X#!/bin/sh
+X#
+X#   passwd.file.chk
+X#
+X#  Check passsword file -- /etc/passswd -- for incorrect number of fields,
+X# duplicate uid's, non-alphanumeric uids, and non-numeric group id's.
+X#
+X# Awk part from _The AWK Programming Language_, page 78
+X#
+X#  Mechanism:  Passwd.check uses awk to ensure that each line of the file
+X# has 7 fields, as well as examining the file for any duplicate users
+X# by using "sort -u".  It also checks to make sure that the password
+X# field (the second one) is either a "*", meaning the group has no password,
+X# or a non-null field (which would mean that the account has a null
+X# password.)  It then checks to ensure that all uids are alphanumeric,
+X# and that all user id numbers are indeed numeric.  For yellow pages
+X# passwords, it does the same checking, but in order to get a listing of
+X# all members of the password file, it does a "ypcat passwd > ./$$" and
+X# uses that temporary file for a passfile.  It removes the tmp file after
+X# using it, of course.
+X#   The /etc/passwd file has a very specific format, making the task
+X# fairly simple.  Normally it has lines with 7 fields, each field
+X# separated by a colon (:).  The first field is the user id, the second
+X# field is the encrypted password (an asterix (*) means the user id has no
+X# password, otherwise the first two characters are the salt), the third
+X# field is the user id number, the fourth field is the group id number,
+X# the fifth field is the GECOS field (basically holds miscellaneous
+X# information, varying from site to site), the sixth field is the home
+X# directory of the user, and lastly the seventh field is the login shell
+X# of the user.  No blank lines should be present.
+X#   The SUN /etc/security/passwd.adjunct file also has a very specific 
+X# format, making the check task simple. Each entry has 7 fields, each field 
+X# separated by a colon (:). The first field is the user name which matches 
+X# the user name contained in the /etc/passwd file. The second field is the 
+X# encrypted password (an asterix (*) means the user login is disabled,
+X# otherwise the first two characters are the salt). The password contained
+X# in the /etc/passwd file is comprised of ##user_id where the user_id 
+X# matches the entry of the first field in both password files. The third
+X# through fifth specify the minimum, maximum, and default security labels
+X# for the user. The sixth and seventh fields specify which auditing flags
+X# should be always or never monitored.
+X#   If a line begins with a plus sign (+), it is a yellow pages entry.
+X# See passwd(5) for more information, if this applies to your site.
+X#
+XX
+X#
+X# Parameters
+X#
+Xpasswd_file=$1
+Xpasswd_adjunct_file=$2
+XSUN_SECURITY=$3
+XX
+X#
+X# Utilities
+X#
+XAWK=/bin/awk
+XDIFF=/usr/bin/diff
+XECHO=/bin/echo
+XJOIN=/usr/bin/join
+XRM=/bin/rm
+XSORT=/usr/bin/sort
+XTEST=/bin/test
+XUNIQ=/usr/bin/uniq
+XX
+X#
+X# Important files:
+X#
+Xjoin_passwd_1=./pwd$$.1.join
+Xjoin_passwd_2=./pwd$$.2.join
+Xsort_passwd=./pwd$$.sort
+Xsort_secure_passwd=./spwd$$.sort
+XX
+X#
+X# Testing the passwd file for problems
+X#
+Xresult=`$AWK -F: '{print $1}' $passwd_file | $SORT -t: | $UNIQ -d`
+Xif $TEST "$result"
+XX	then
+XX	$ECHO
+XX	$ECHO "Warning!  Duplicate uid(s) found in password file:"
+XX	for USER in $result
+XX	do
+XX		$ECHO "	$USER"
+XX	done
+Xfi
+XX
+X#
+X#   First line is for a yellow pages entry in the password file.
+X# It really should check for correct yellow pages syntax....
+X#
+X$AWK 'BEGIN {FS = ":" } \
+XX	{if (substr($1,1,1) != "+") { \
+XX	if ($0 ~ /^[ 	]*$/) { printf("\nWarning!  Password file, line %d, is blank\n", NR) } else {
+XX	if (NF != 7) {
+XX		printf("\nWarning!  Password file, line %d, does not have 7 fields: \n\t%s\n", NR, $0) } \
+XX	if ($1 !~ /[A-Za-z0-9]/) {
+XX		printf("\nWarning!  Password file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+XX	if ($2 == "") {
+XX		printf("\nWarning!  Password file, line %d, no password: \n\t%s\n", NR, $0) } \
+XX 	if ("'$SUN_SECURITY'" == "TRUE" && "##"$1 != $2) {
+XX		printf("\nWarning!  Password file, line %d, invalid password field for SUN C2 Security: \n\t%s\n", NR, $0) } \
+XX	if ($3 !~ /[0-9]/) {
+XX		printf("\nWarning!  Password file, line %d, nonnumeric user id: \n\t%s\n", NR, $0) } \
+XX	if ($3 == "0" && $1 != "root") {
+XX		printf("\nWarning!  Password file, line %d, user %s has uid = 0 and is not root\n\t%s\n", NR, $1, $0) } \
+XX	if ($4 !~ /[0-9]/) {
+XX		printf("\nWarning!  Password file, line %d, nonnumeric group id: \n\t%s\n", NR, $0) } \
+XX	if ($6 !~ /^\//) {
+XX		printf("\nWarning!  Password file, line %d, invalid login directory: \n\t%s\n", NR, $0) } \
+XX	}}}' $passwd_file
+XX
+X#
+X# Perform checks on the security enhanced version of SUNOS
+X#
+Xif $TEST $SUN_SECURITY = "TRUE"
+XX	then
+XX	result=`$AWK -F: '{print $1}' $passwd_adjunct_file | $SORT -t: | $UNIQ -d`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Duplicate uid(s) found in password adjunct file:"
+XX		for USER in $result
+XX		do
+XX			$ECHO "	$USER"
+XX		done
+XX	fi
+XX	#
+XX	# Check that for each entry in the passwd file that there is a matching
+XX	# entry in the passwd.adjunct file.
+XX	#
+XX	$SORT -t: -o $sort_passwd $passwd_file
+XX	$SORT -t: -o $sort_secure_passwd $passwd_adjunct_file
+XX	$JOIN -t: $sort_passwd $sort_secure_passwd > $join_passwd_1
+XX	$JOIN -t: -a1 $sort_passwd $sort_secure_passwd > $join_passwd_2
+XX	result=`$DIFF $join_passwd_1 $join_passwd_2`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Matching record(s) in password adjunct file not found for"
+XX		$ECHO "these records in password file:"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Check that for each entry in the passwd.adjunct file that there is a 
+XX	# matching entry in the passwd file.
+XX	#
+XX	$RM -f $join_passwd_2
+XX	$JOIN -t: -a2 $sort_passwd $sort_secure_passwd > $join_passwd_2
+XX	result=`$DIFF $join_passwd_1 $join_passwd_2`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Matching record(s) in password file not found for"
+XX		$ECHO "these records in password adjunct file"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Test the fields in the passwd.adjunct file for validity
+XX	#
+XX	$AWK 'BEGIN {FS = ":" } \
+XX		{if (substr($1,1,1) != "+") { \
+XX		if ($0 ~ /^[ 	]*$/) { printf("\nWarning!  Password adjunct file, line %d, is blank\n", NR) } else {
+XX		if (NF != 7) {
+XX			printf("\nWarning!  Password adjunct file, line %d, does not have 7 fields: \n\t%s\n", NR, $0) } \
+XX		if ($1 !~ /[A-Za-z0-9]/) {
+XX			printf("\nWarning!  Password adjunct file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+XX		if ($2 == "") {
+XX			printf("\nWarning!  Password adjunct file, line %d, no password: \n\t%s\n", NR, $0) } \
+XX		#
+XX		# Fields 3-5 are ignored since they deal with labels which are
+XX		# currently unused on the SUN (perhaps a future B-level??)
+XX		#
+XX		# Fields 6+7 contain audit flags for the user and are selected
+XX		# from the following: dr, dw, dc, da, lo, ad, p0, p1, and all.
+XX		# More than 1 flag can be selected by separating flags with a 
+XX		# comma (,).
+XX		#
+XX		if ($6 != "") {
+XX			j=1
+XX			len=length($6)
+XX			for (i=1; i<=len; i++) {
+XX				if ((substr($6,i,1) != ",") && (i < len)) 
+XX					continue
+XX				if (i == len)
+XX					token=substr($6,j,i-j+1)
+XX				else
+XX					token=substr($6,j,i-j)
+XX				j=i+1
+XX				if (token == "dr") continue
+XX				if (token == "dw") continue
+XX				if (token == "dc") continue
+XX				if (token == "da") continue
+XX				if (token == "lo") continue
+XX				if (token == "ad") continue
+XX				if (token == "p0") continue
+XX				if (token == "p1") continue
+XX				if (token == "all") continue
+XX			printf("\nWarning!  Password adjunct file, line %d, invalid audit flag: %s\n\t%s\n", NR, token, $0) } \
+XX			}
+XX		}}}' $passwd_adjunct_file
+Xfi
+XX
+X#
+X# Clean up after ourself
+X#
+X$RM -f $join_passwd_1
+X$RM -f $join_passwd_2
+X$RM -f $sort_passwd
+X$RM -f $sort_secure_passwd
+X# end
+XSHAR_EOF
+Xchmod 0700 passwd.file.chk ||
+Xecho 'restore of passwd.file.chk failed'
+XWc_c="`wc -c < 'passwd.file.chk'`"
+Xtest 7715 -eq "$Wc_c" ||
+X	echo 'passwd.file.chk: original size 7715, current size' "$Wc_c"
+Xfi
+Xexit 0
+SHAR_EOF
+chmod 0700 cops/README.C2 ||
+echo 'restore of cops/README.C2 failed'
+Wc_c="`wc -c < 'cops/README.C2'`"
+test 20290 -eq "$Wc_c" ||
+	echo 'cops/README.C2: original size 20290, current size' "$Wc_c"
+fi
+# ============= cops/disclaimer ==============
+if test -f 'cops/disclaimer' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/disclaimer (File already exists)'
+else
+echo 'x - extracting cops/disclaimer (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/disclaimer' &&
+X/***********************************************************************
+X* Copyright 1989, 1990 by Dan Farmer.  All rights reserved.  Some
+X* individual files may be covered by other copyrights.
+X* 
+X* This material was originally written and compiled by Dan Farmer at
+X* Purdue University in 1989 and 1990, under the direction and sponsorship
+X* of Professor Gene Spafford.  Other material was contributed as noted
+X* elsewhere.  Recently, development has been done at the Software
+X* Engineering Institute.
+X*
+X* Redistribution and use in source and binary forms are permitted
+X* provided that this entire copyright notice is duplicated in all such
+X* copies.  No charge, other than an "at-cost" distribution fee, may be
+X* charged for copies, derivations, or distributions of this material
+X* without the express written consent of the copyright holders.
+X*
+X* THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
+X* WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+X* MERCHANTIBILITY AND FITNESS FOR ANY PARTICULAR PURPOSE.
+X************************************************************************/
+SHAR_EOF
+chmod 0600 cops/disclaimer ||
+echo 'restore of cops/disclaimer failed'
+Wc_c="`wc -c < 'cops/disclaimer'`"
+test 1123 -eq "$Wc_c" ||
+	echo 'cops/disclaimer: original size 1123, current size' "$Wc_c"
+fi
+# ============= cops/ftp.chk ==============
+if test -f 'cops/ftp.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/ftp.chk (File already exists)'
+else
+echo 'x - extracting cops/ftp.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/ftp.chk' &&
+X:
+X#
+X#  Usage: ftp.chk [-a]
+X#
+X#   This shell script checks to see if you've set up (mainly anonymous)
+X# ftp correctly.  The "-a" option checks your anon-ftp setup; without that,
+X# this script doesn't do a whole lot -- just check to see if your ftpusers
+X# file doesn't have any root accounts in it.  There seems to be some different
+X# types of ftp's around; for instance, some allow "chmod" -- and if the home
+X# dir is owned by "ftp", you're toast.  So I've tried to err on the side of
+X# safety...
+X#
+X#   See the man page for a more detailed description, here's what this
+X# checks for:
+X#
+X# - User ftp exists in the password file.
+X# - root (or all root equivalents) are in ftpusers file.
+X# - Home directory for ftp should exist, and not be /
+X# - The ~ftp/etc/{passwd|group} should not be the same as the real ones.
+X# - Various critical files/directories should exist, and have correct
+X#   permissions and owners; variables "$primary" and "$owner" can be set
+X# to whomever you want owning the files:
+X#
+X#  File/Dir          Perms           Owner      Other
+X#  =========         ======          ======     ======
+X#  ~ftp              non-w.w.        root
+X#           or
+X#  ~ftp              555             ftp	if no chmod command exists
+X#
+X#     All of these are ftp owned iff no chmod exists...
+X#
+X#  ~ftp/bin          non-w.w.        root/ftp
+X#  ~ftp/bin/ls       111             root/ftp
+X#  ~ftp/etc          non-w.w.        root/ftp
+X#  ~ftp/etc/passwd   non-w.w.        root/ftp   0 size or nonexistant
+X#  ~ftp/etc/group    non-w.w.        root/ftp   0 size or nonexistant
+X#  ~ftp/pub          non-w.w.        root/ftp
+X#  ~ftp/incoming     world-writable  root/ftp   This can be set to "pub"
+X#  ~ftp/.rhosts      non-w.w.        root       0 size, is optional
+X#  ~ftp/*            non-w.w.                   other dirs/files in ~ftp
+X#
+X
+X#  If an argument is present, it should be an "a"
+XTEST=/bin/test
+XECHO=/bin/echo
+Xif $TEST $# -gt 1 ; then
+X	$ECHO Usage: $0 [-a]
+X	exit 1
+X	fi
+Xif $TEST $# -eq 1 ; then
+X	if $TEST $1 = "-a" ; then
+X			anonymous=yes
+X	else
+X		$ECHO Usage: $0 [-a]
+X		exit 1
+X		fi
+X	fi
+X
+X#   Primary and secondary owners of the ftp files/dirs; if you *don't* have
+X# chmod, you can probably change the secondary owner to "ftp".  If you have
+X# chmod in your ftp, definitely have secondary to some other account (root
+X# is fine for this.)
+Xprimary=root
+Xsecondary=root
+X
+X# some might have this as ftpd; is the account in /etc/passwd
+Xftpuid=ftp
+X
+X# Where is everyone?
+XAWK=/bin/awk
+XEGREP=/usr/bin/egrep
+XLS=/bin/ls
+XCMP=/bin/cmp
+XRM=/bin/rm
+XYPCAT=/usr/bin/ypcat
+X
+X# system files
+Xftpusers=/etc/ftpusers
+Xpasswd=/etc/passwd
+Xgroup=/etc/group
+X
+X#  A pox on YP/NIS, making life tougher for me :-)  Thanks to Rob Kolstad
+X# for pointing this out -- you need to use ypcat to get the password file,
+X# if you run yp:
+X
+X# Scratch files for testing:
+Xyp_passwd=./p.$$
+Xyp_group=./g.$$
+X
+X# generic test to check for yp use?
+Xif $TEST -f $YPCAT -a -s $YPCAT ; then
+X	$YPCAT passwd > $yp_passwd
+X	if $TEST $? -eq 0 ; then
+X		$YPCAT group > $yp_group
+X		yp=true
+X	else
+X		yp=false
+X		fi
+X	fi
+X
+Xif $TEST "$yp" = "true" ; then
+X	passwd=$yp_passwd
+X	group=$yp_group
+X	fi
+X
+X#   ftp's files:
+Xftproot=`$AWK -F: '/^'"$ftpuid"':/{print $6}' $passwd`
+X
+X#   if the user ftp doesn't exist, no-anon stuff....
+Xif $TEST -z $ftproot -a "$anonymous" = "yes" ; then
+X	$ECHO Warning!  Need user $ftp for anonymous ftp to work!
+X	$RM -f $yp_passwd $yp_group
+X	exit 1
+X	fi
+X
+Xftprhosts=$ftproot/.rhosts
+Xftpbin=$ftproot"/bin"
+Xftpls=$ftpbin"/ls"
+Xftpetc=$ftproot"/etc"
+Xftppasswd=$ftpetc"/passwd"
+Xftpgroup=$ftpetc"/group"
+X
+X#   the pub/incoming stuff; by default, pub is *not* world writable, incoming
+X# is; if you want pub to be world writable, just change incoming to "pub"
+Xincoming=incoming
+Xftppub=$ftproot"/pub"
+X
+Xcrit_files="$ftpgroup $ftppasswd $ftpls"
+X
+Xif $TEST -s "$ftpusers" ; then
+X	# check to see if root (or root equivalents) is in ftpusers file
+X	all_roots=`$AWK -F: '{if ($3==0 && length($2)==13) printf("%s ", $1)}' $passwd`
+X	if $TEST -n "$all_roots" ; then
+X		for i in $all_roots
+X			do
+X			if $TEST ! "`$EGREP '^'"$i"'$' $ftpusers`"
+X				then
+X				$ECHO Warning!  $i should be in $ftpusers!
+X				fi
+X			done
+X		fi
+X	fi
+X
+X#  do the anonymous ftp checking stuff now
+Xif $TEST -n "$anonymous" ; then
+X	#
+X	#  ftp's home dir checking
+X	if $TEST ! -d "$ftproot" -o -z "$ftproot"; then
+X		$ECHO Warning!  Home directory for ftp doesn\'t exist!
+X		fi
+X	if $TEST "$ftproot" = "/" ; then
+X		$ECHO Warning!  $ftproot ftp\'s home directory should not be \"/\"!
+X		fi
+X	#
+X	#  Don't want the passwd and group files to be the real ones!
+X	if $TEST "$passwd" != "$ftppasswd" ; then
+X		if $TEST "`$CMP $passwd $ftppasswd 2> /dev/null`" ; then
+X			:
+X		else $ECHO ftp-Warning!  $ftppasswd and $passwd are the same!
+X			fi
+X		fi
+X	if $TEST "$group" != "$ftpgroup" ; then
+X		if $TEST "`$CMP $group $ftpgroup 2> /dev/null`" ; then
+X			:
+X		else $ECHO ftp-Warning!  $ftpgroup and $group are the same!
+X			fi
+X		fi
+X
+X	#   want to check all the critical files and directories for correct
+X	# ownership.
+X	#
+X	#  This is what a "/bin/ls -l" of a file should look like:
+X	# ---x--x--x  1 root        81920 Dec 31  1999 /bin/ls
+X	#  So in awk, $3 is the owner, $1 is the permission.
+X	#
+X	#   some versions don't need much of anything... no etc directory or
+X	# password/group files.
+X	# crit_files=$ftpls
+X	#   others need etc directory & password/group files.  Experiment.
+X	crit_files=$crit_files" "$ftpbin" "$ftpetc
+X	for i in $crit_files
+X		do
+X		if $TEST ! -f $i -a ! -d $i; then
+X			$ECHO ftp-Warning!  File $i is missing!
+X			fi
+X
+X		owner=`$LS -Lld $i | $AWK '{print $3}'`
+X		if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X			:
+X		else
+X			$ECHO ftp-Warning!  $i should be owned by $primary or $secondary!
+X			fi
+X		done
+X
+X	#   ftproot is special; if owned by root; should be !world writable;
+X	# if owned by ftp, should be mode 555
+X	owner=`$LS -Lld $ftproot | $AWK '{print $3}'`
+X	perms=`$LS -Lld $ftproot | $AWK '{print $1}'`
+X	if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X		:
+X	else
+X		$ECHO ftp-Warning!  $ftproot should be owned by $primary or $secondary!
+X	fi
+X
+X	# ftp-root should not be world-writable:
+X	./is_able $ftproot w w
+X
+X	# if ftp owns root-dir, then mode should be 555:
+X	if $TEST "$owner" = "$ftpuid" -a "$perms" != "dr-xr-xr-x" ; then
+X		$ECHO ftp-Warning!  $ftproot should be mode 555!
+X		fi
+X
+X	#
+X	# check the .rhosts file:
+X	if $TEST -f $ftprhosts ; then
+X		if $TEST -s $ftprhosts ; then
+X			$ECHO ftp-Warning!  $ftprhosts should be be empty!
+X			fi
+X		owner=`$LS -Lld $ftprhosts | $AWK '{print $3}'`
+X		if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X			:
+X		else
+X			$ECHO ftp-Warning!  $ftprhosts should be owned by $primary or $secondary!
+X			fi
+X		fi
+X
+X	#
+X	# finally, some permissions of miscellaneous files:
+X	perms=`$LS -Lld $ftpls | $AWK '{print $1}'`
+X	if $TEST "$perms" != "---x--x--x" ; then
+X		$ECHO ftp-Warning!  Incorrect permissions on \"ls\" in $ftpbin!
+X		fi
+X
+X	perms=`$LS -Lld $ftppasswd | $AWK '{print $1}'`
+X	if $TEST "$perms" != "-r--r--r--" ; then
+X		$ECHO ftp-Warning!  Incorrect permissions on \"passwd\" in $ftpetc!
+X		fi
+X
+X	perms=`$LS -Lld $ftpgroup | $AWK '{print $1}'`
+X	if $TEST "$perms" != "-r--r--r--" ; then
+X		$ECHO ftp-Warning!  Incorrect permissions on \"group\" in $ftpetc!
+X		fi
+X
+X	#   Finally, the ~ftp/{pub|incoming|whatever} stuff:
+X	all_dirs=`$LS -Lal $ftproot | $AWK '{if (NF >= 8) print $NF}'`
+X	for i in $all_dirs
+X		do
+X		if $TEST -n "`is_able $ftproot/$i w w`" -a $i != "$incoming" ; then
+X			$ECHO Warning!  Anon-ftp directory $i is World Writable!
+X			fi
+X		done
+X	fi
+X
+X# get rid of any yp evidence
+X$RM -f $yp_passwd $yp_group
+X# end of script
+SHAR_EOF
+chmod 0700 cops/ftp.chk ||
+echo 'restore of cops/ftp.chk failed'
+Wc_c="`wc -c < 'cops/ftp.chk'`"
+test 7580 -eq "$Wc_c" ||
+	echo 'cops/ftp.chk: original size 7580, current size' "$Wc_c"
+fi
+# ============= cops/group.chk ==============
+if test -f 'cops/group.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/group.chk (File already exists)'
+else
+echo 'x - extracting cops/group.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/group.chk' &&
+X:
+X#
+X#   group.chk
+X#
+X#  Check group file -- /etc/group -- for incorrect number of fields,
+X# duplicate groups, non-alphanumeric group names, and non-numeric group
+X# id's.
+X#
+X# Awk part based on _passwd_ from _The AWK Programming Language_, page 78
+X#
+X#   Mechanism:  Group.check uses awk to ensure that each line of the group
+X# has 4 fields, as well as examining each line for any duplicate groups or
+X# any duplicate user id's in a given group by using "sort -u" to ferret
+X# out any duplications.  It also checks to make sure that the password
+X# field (the second one) is a "*", meaning the group has no password (a
+X# group password is usually not necessary because each member listed on 
+X# the line has all the privilages that the group has.)  All results are
+X# echoed to standard output.  Finally it ensures that the group names
+X# are alphanumeric, that the group id's are numeric, and that there are
+X# no blank lines.  For yellow pages groups, it does the same checking,
+X# but in order to get a listing of all members of the groups, it does a
+X# "ypcat group > ./$$" and uses that temporary file for a groupfile.
+X# It removes the tmp file after using it, of course.
+X#   The /etc/group file has a very specific format, making the task
+X# fairly simple.  Normally it has lines with 4 fields, each field
+X# separated by a colon (:).  The first field is the group name, the second
+X# field is the encrypted password (an asterix (*) means the group has no
+X# password, otherwise the first two characters are the salt), the third
+X# field is the group id number, and the fourth field is a list of user
+X# ids in the group.  If a line begins with a plus sign (+), it is a yellow
+X# pages entry.  See group(5) for more information.
+X#
+X#
+XAWK=/bin/awk
+XSED=/bin/sed
+XECHO=/bin/echo
+XTEST=/bin/test
+XSORT=/usr/bin/sort
+XUNIQ=/usr/bin/uniq
+XYPCAT=/usr/bin/ypcat
+XRM=/bin/rm
+X
+X#   Used for Sun C2 security group file.  FALSE (default) will flag
+X# valid C2 group syntax as an error, TRUE attempts to validate it.
+X# Thanks to Pete Troxell for pointing this out.
+XC2=FALSE
+X
+Xetc_group=/etc/group
+Xyp_group=./$$
+Xyp=false
+X
+Xif $TEST -f $YPCAT
+X	then
+Xif $TEST -s $YPCAT
+X	then
+X	$YPCAT group > $yp_group
+X	if $TEST $? -eq 0
+X		then
+X		yp=true
+X		fi
+X	fi
+Xfi
+X
+X# Testing $etc_group for potential problems....
+X
+X#   First line is for a yellow pages entry in the group file.
+X# It really should check for correct yellow pages syntax....
+X$AWK 'BEGIN {FS = ":" } {
+X	if (substr($1,1,1) != "+") { \
+X	if ($0 ~ /^[ 	]*$/) { printf("Warning!  Group file, line %d, is blank\n", NR) } else {
+X	if (NF != 4) { printf("Warning!  Group file, line %d, does not have 4 fields: %s\n", NR, $0) } \
+X	if ($1 !~ /[A-Za-z0-9]/) {
+X		printf("Warning!  Group file, line %d, nonalphanumeric user id: %s\n", NR, $0) } \
+X	if ($2 != "" && $2 != "*") {
+X		if ("'$C2'" != "TRUE") {
+X			if (length($2) == 13)
+X				printf("Warning!  Group file, line %d, group has password: %s\n", NR, $0) }
+X		else {
+X			if ("#$"$1 != $2)
+X				printf("Warning!  Group file, line %d, group has invalid field for C2:\n%s\n", NR, $0) } \
+X		} \
+X	if ($3 !~ /[0-9]/) {
+X		printf("Warning!  Group file, line %d, nonnumeric group id: %s\n", NR, $0) }}}} ' $etc_group
+X
+X#
+X#  Look for duplications in groups in $etc_group
+X#
+Xresult=`$AWK -F: '{print $1}' $etc_group | $SORT |$UNIQ -d`
+Xif $TEST "$result"
+X	then
+X	$ECHO "Warning!  Duplicate Group(s) found in $etc_group:"
+X	$ECHO $result
+Xfi
+X
+X#
+X#   Next, check for duplicate users in a group in /etc/group.  Let
+X# awk do all the work (thanks, adri!)
+X#
+X
+X# Ignore all groups with less than two members.
+X#
+Xawk -F: '
+X	split($4, users, ",") > 1 {
+X		ct = 0
+X		for (i in users) {
+X			curuser = users[i]
+X			for (j in users) {
+X				if (j > i && curuser == users[j]) {
+X					if (ct++ == 0) print "Warning!  Group "$1" has duplicate user(s):"
+X					print curuser
+X				}
+X			}
+X		}
+X	}
+X	' $etc_group
+X
+X
+X#
+X# Test yellow pages groups as well
+Xif $TEST "$yp" = "true"
+X	then
+X$AWK 'BEGIN {FS = ":" } {
+X	if ($0 ~ /^[ 	]*$/) { printf("Warning!  YGroup file, line %d, is blank\n", NR) } else {
+X	if (NF != 4) { printf("Warning!  YGroup file, line %d, does not have 4 fields: %s\n", NR, $0) } \
+X	if ($1 !~ /[A-Za-z0-9]/) {
+X		printf("Warning!  YGroup file, line %d, nonalphanumeric user id: %s\n", NR, $0) } \
+X	if ($2 != "" && $2 != "*") {
+X		if (length($2) == 13)
+X			printf("Warning!  YGroup file, line %d, group has password: %s\n", NR, $0) } \
+X	if ($3 !~ /[0-9]/) {
+X		printf("Warning!  YGroup file, line %d, nonnumeric group id: %s\n", NR, $0) }}} ' $yp_group
+X
+X#
+X#  Look for duplications in groups in yellow pages groups
+X#
+X	yresult=`$AWK -F: '{print $1}' $yp_group | $SORT |$UNIQ -d`
+X	if $TEST "$yresult"
+X		then
+X		$ECHO "Warning!  Duplicate Group(s) found in yellow pages group:"
+X		$ECHO $result
+X	fi
+X#
+X#   Next, check for duplicate users in a group in yellow groups.  Let
+X# awk do all the work (thanks, adri!) 
+X
+X# ignore all groups with one member.
+X#
+X	awk -F: '
+X	split($4, users, ",") > 1 {
+X		ct = 0
+X		for (i in users) {
+X			curuser = users[i]
+X			for (j in users) {
+X				if (j > i && curuser == users[j]) {
+X					if (ct++ == 0) print "Warning!  YGroup "$1" has duplicate user(s):"
+X					print curuser
+X				}
+X			}
+X		}
+X	}
+X	' $yp_group
+X
+Xfi
+X
+X$RM -f $yp_group
+X
+X# end
+SHAR_EOF
+chmod 0700 cops/group.chk ||
+echo 'restore of cops/group.chk failed'
+Wc_c="`wc -c < 'cops/group.chk'`"
+test 5147 -eq "$Wc_c" ||
+	echo 'cops/group.chk: original size 5147, current size' "$Wc_c"
+fi
+true || echo 'restore of cops/init_kuang failed'
+echo End of part 3, continue with part 4
+exit 0

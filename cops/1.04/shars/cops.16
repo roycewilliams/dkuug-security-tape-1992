@@ -1,0 +1,2043 @@
+#!/bin/sh
+# this is p4.shar.16 (part 16 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/perl/cron.chk continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 16; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/perl/cron.chk'
+else
+echo 'x - continuing file cops_104/perl/cron.chk'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/perl/cron.chk' &&
+Xrequire 'chk_strings.pl';
+Xrequire 'pathconf.pl';
+X
+X# should also add args to override default crontab locations
+Xdie "Usage: $0 [-rd]\n" unless &Getopts('rd') && !@ARGV;
+X
+X$chk_strings'debug = $opt_d;
+X$chk_strings'recurse = $opt_r;
+X
+Xpackage cron_chk;
+X
+X#  Possible location of crontab file:
+X$cron = "/usr/lib/crontab";
+X#  alternate reality locations of crontab file:
+X@alt_cron = ("/usr/spool/cron/crontabs");
+X
+Xif ( ! -s $cron) {
+X    for (@alt_cron) {
+X	# are there ever multiple crontab directories?
+X	(@crons = &'glob("$_/*")), last if -d;
+X    }
+X    die "No crontabs?\n" if ! @crons;
+X}
+X@crons = ($cron) unless @crons;
+X
+X# ignore /tmp /dev/null and tty stuff
+X# &'chk_strings ignores all of above
+X# STILL NEED to ignore stuff after `>'  ??
+X#   when we add @ignore stuff to &'chk_strings
+X# @ignore stuff is in &'chk_strings now, do we want to ignore filenames
+X#   being redirected into .. might as well leave them, let the user decide.
+X
+X# finally, do the checking -- maybe for one, maybe for lots of cron-ites:
+Xfor (@crons) {
+X    if (! -e) {
+X	warn "$0: $_: $!\n";
+X	next;
+X    }
+X    &'chk_strings($_);
+X}
+X
+X1;
+SHAR_EOF
+echo 'File cops_104/perl/cron.chk is complete' &&
+chmod 0700 cops_104/perl/cron.chk ||
+echo 'restore of cops_104/perl/cron.chk failed'
+Wc_c="`wc -c < 'cops_104/perl/cron.chk'`"
+test 2199 -eq "$Wc_c" ||
+	echo 'cops_104/perl/cron.chk: original size 2199, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/dev.chk ==============
+if test -f 'cops_104/perl/dev.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/dev.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/dev.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/dev.chk' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#
+X#  dev.chk [-g]
+X#
+X#   This shell script checks the permissions of all devs listed in the
+X# file /etc/fstab (the "mount" command would be a preferable way of
+X# getting the file system name, but the syntax of the output is variable
+X# from machine to machine), and flags them if they are readable by using
+X# the "is_readable" command.  It also checks for unrestricted NFS
+X# mountings.  By default, dev_check will flag devs only if world readable
+X# or writable.  The -g option tells it to print out devs that are also
+X# group readable/writable.
+X#   As an aside, the fact that NFS mounted dirs are world readable isn't
+X# a big deal, but they shouldn't be world writable.  So do two checks here,
+X# instead of one.
+X#
+X#  Two types of /etc/fstab formats I've seen so far:
+X#
+X# "old" --
+X#  spec:file:type:freq:passno:name:options
+X#      NFS are indicated by an "@"
+X#
+X# "new" --
+X#  fsname dir type opts freq passno
+X#      NFS are indicated by an ":"
+X#
+X# tchrist@convex.com
+X#
+X
+Xrequire 'is_able.pl';
+X
+X$MTAB    = '/etc/fstab' unless defined $MTAB;
+X$EXPORTS = '/etc/exports' unless defined $EXPORTS;
+X$TAB_STYLE = 'new' unless defined $TAB_STYLE;  # or 'old'  
+X
+X&usage if @ARGV > 1;
+X
+Xsub usage { die "Usage: $0 [-g]\n"; }
+X
+Xif (@ARGV == 1) {
+X    if ($ARGV[0] eq '-g') {
+X	$group++;
+X    } else {
+X	&usage;
+X    } 
+X} 
+X
+X
+Xopen MTAB || die "can't open $MTAB: $!\n";
+X
+Xwhile (<MTAB>) {
+X    next if /^#/;
+X    chop;
+X    if ($TAB_STYLE eq 'new') {
+X	($dev, $fs) = split;
+X	next unless $fs;
+X	if ($dev =~ /:/) {
+X	    push(@nfs_devs, $fs);
+X	} else {
+X	    push(@local_devs, $dev);
+X	} 
+X    } else {
+X	($dev, $fs) = split(/:/);
+X	next unless $fs;
+X	if ($dev =~ /@/) {
+X	    push(@nfs_devs, $fs);
+X	} else {
+X	    push(@local_devs, $dev);
+X	} 
+X    } 
+X
+X} 
+X
+Xif (open EXPORTS) {
+X    while (<EXPORTS>) {
+X	next if /^\s*#/;
+X	next if /\S\s+\S/;
+X	next if /^\s*$/;
+X	chop;
+X	print "Warning!  NFS file system $_ exported with no restrictions.\n";
+X    } 
+X} 
+X
+X# WARNING: we may hang if server down....
+X#
+Xfor (@nfs_devs, @local_devs) {
+X    &is_able($_, 'w', 'w');
+X    next unless $group;
+X    &is_able($_, 'g', 'w');
+X} 
+X
+Xfor (@local_devs) {
+X    &is_able($_, 'w', 'r');
+X    next unless $group;
+X    &is_able($_, 'g', 'r');
+X} 
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/dev.chk ||
+echo 'restore of cops_104/perl/dev.chk failed'
+Wc_c="`wc -c < 'cops_104/perl/dev.chk'`"
+test 2378 -eq "$Wc_c" ||
+	echo 'cops_104/perl/dev.chk: original size 2378, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/fgrep.pl ==============
+if test -f 'cops_104/perl/fgrep.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/fgrep.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/fgrep.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/fgrep.pl' &&
+X#
+X#  Just a quick perl fgrep...
+X#
+Xpackage fgrep;
+X
+Xsub main'fgrep {
+X    local($file, @exprs) = @_;
+X    local(@list);
+X
+X    if (open file) {
+X	$code = "while (<file>) {\n\tchop;\n";
+X	for (@exprs) {
+X	    $code .= "\tpush(\@list, \$_), next if m\201${_}\201;\n";
+X	} 
+X	$code .= "}\n";
+X	warn "fgrep code is $code" if $debug;
+X	eval $code;
+X	warn "fgrep @exprs $file: $@\n" if $@;
+X    } elsif ($debug) {
+X	warn "main'fgrep: can't open $file: $!\n";
+X    } 
+X
+X    @list;
+X} 
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/fgrep.pl ||
+echo 'restore of cops_104/perl/fgrep.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/fgrep.pl'`"
+test 463 -eq "$Wc_c" ||
+	echo 'cops_104/perl/fgrep.pl: original size 463, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/file_mode.pl ==============
+if test -f 'cops_104/perl/file_mode.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/file_mode.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/file_mode.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/file_mode.pl' &&
+X#
+X#  This retrieves a possibly cached mode on file.
+X# If it returns "BOGUS", it means that the stat failed.
+X#
+X# tchrist@convex.com
+X
+Xpackage main;
+Xrequire 'stat.pl';
+X
+Xpackage file_mode;
+X
+Xsub main'Mode {
+X    local($file) = @_;
+X
+X    if (!defined $modes{$file}) {
+X       if (&'Stat($file)) {
+X           $modes{$file} = $'st_mode;
+X       } else {
+X           $modes{$file} = 'BOGUS';
+X       }
+X    }
+X    $modes{$file};
+X}
+SHAR_EOF
+chmod 0700 cops_104/perl/file_mode.pl ||
+echo 'restore of cops_104/perl/file_mode.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/file_mode.pl'`"
+test 414 -eq "$Wc_c" ||
+	echo 'cops_104/perl/file_mode.pl: original size 414, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/file_owner.pl ==============
+if test -f 'cops_104/perl/file_owner.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/file_owner.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/file_owner.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/file_owner.pl' &&
+X#
+X#   This retrieves possibly cached owner of a file.
+X# If it returns "BOGUS", it means that the stat failed.
+X
+Xpackage main;
+Xrequire 'stat.pl';
+X
+Xpackage file_owner;
+X
+Xsub main'Owner {
+X    local($file) = @_;
+X
+X    if (!defined $owners{$file}) {
+X       if (&'Stat($file)) {
+X           $owners{$file} = $'st_uid;
+X       } else {
+X           $owners{$file} = 'BOGUS';
+X       }
+X    }
+X    $owners{$file};
+X}
+SHAR_EOF
+chmod 0700 cops_104/perl/file_owner.pl ||
+echo 'restore of cops_104/perl/file_owner.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/file_owner.pl'`"
+test 398 -eq "$Wc_c" ||
+	echo 'cops_104/perl/file_owner.pl: original size 398, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/ftp.chk ==============
+if test -f 'cops_104/perl/ftp.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/ftp.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/ftp.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/ftp.chk' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#  Usage: ftp.chk
+X#
+X#   This shell script checks to see if you've set up (mainly anonymous)
+X# ftp correctly.  There seems to be some different types of ftp's 
+X# around; for instance, some allow "chmod" -- and if the home dir is 
+X# owned by "ftp", you're toast.  So I've tried to err on the side of
+X# safety...
+X#
+X#   See the man page for a more detailed description, here's what this
+X# checks for:
+X#
+X# - User ftp exists in the password file.
+X# - root (or all root equivalents) are in ftpusers file.
+X# - Home directory for ftp should exist, and not be /
+X# - The ~ftp/etc/{passwd|group} should not be the same as the real ones.
+X# - Various critical files/directories should exist, and have correct
+X#   permissions and owners; variables "$primary" and "$secondary" can be set
+X# to whomever you want owning the files:
+X#
+X#  File/Dir          Perms           Owner      Other
+X#  =========         ======          ======     ======
+X#  ~ftp              non-w.w.        root
+X#           or
+X#  ~ftp              555             ftp	if no chmod command exists
+X#
+X#     All of these are ftp owned iff no chmod exists...
+X#
+X#  ~ftp/bin          non-w.w.        root/ftp
+X#  ~ftp/bin/ls       111             root/ftp
+X#  ~ftp/etc          non-w.w.        root/ftp
+X#  ~ftp/etc/passwd   non-w.w.        root/ftp   0 size or nonexistant
+X#  ~ftp/etc/group    non-w.w.        root/ftp   0 size or nonexistant
+X#  ~ftp/pub          non-w.w.        root/ftp
+X#  ~ftp/incoming     world-writable  root/ftp   This can be set to "pub"
+X#  ~ftp/.rhosts      non-w.w.        root       0 size, is optional
+X#  ~ftp/*            non-w.w.                   other dirs/files in ~ftp
+X#
+X#
+X
+Xrequire 'is_able.pl';
+Xrequire 'file_mode.pl';
+Xrequire 'glob.pl';
+Xrequire 'fgrep.pl';
+Xrequire 'pass.cache.pl';
+Xrequire 'file_owner.pl';
+Xrequire 'pathconf.pl';
+X
+X$CMP="/bin/cmp" unless defined $CMP;
+X
+Xpackage ftp;
+X
+X#   Primary and secondary owners of the ftp files/dirs; if you *don't* have
+X# chmod, you can probably change the secondary owner to "ftp".  If you have
+X# chmod in your ftp, definitely have secondary to some other account (root
+X# is fine for this.)
+X$primary = "root" unless defined $primary;
+X$secondary = "ftp" unless defined $secondary;
+X
+X# some might have this as ftpd; is the account in /etc/passwd
+X$ftpuid = "ftp";
+X
+X# system files
+X$ftpusers = "/etc/ftpusers";
+X$passwd = $'PASSWD || "/etc/passwd";
+X$group = $'GROUP || "/etc/group";
+X
+X#   ftp's home:
+X$ftproot = &'uname2dir($ftpuid);
+X$anonymous = $ftproot ne '';
+X
+X$ftprhosts = "$ftproot/.rhosts";
+X$ftpbin = "$ftproot/bin";
+X$ftpls = "$ftpbin/ls";
+X$ftpetc = "$ftproot/etc";
+X$ftppasswd = "$ftpetc/passwd";
+X$ftpgroup = "$ftpetc/group";
+X
+X$W = 'Warning!  ' unless defined $W;
+X
+X#   the pub/incoming stuff; by default, pub is *not* world writable, incoming
+X# is; if you want pub to be world writable, just change incoming to "pub"
+X$incoming = "pub";
+X
+X@crit_files=($ftpgroup,
+X	     $ftppasswd,
+X	     $ftpls);
+X
+Xif (-s $ftpusers) {
+X    # check to see if root (or root equivalents) is in ftpusers file
+X    @all_roots = split(" ", $'uid2names{0});
+X    for $i (@all_roots) {
+X	if (length($user2passwd{$i}) == 13 && ! &'fgrep($ftpusers, "^$i$")) {
+X	    print "Warning!  $i should be in $ftpusers!\n";
+X	}
+X    }
+X}
+X
+X#  do the anonymous ftp checking stuff now?
+Xdie unless $anonymous;
+X
+X#   if the user ftp doesn't exist, no-anon stuff....
+X# if $TEST -z $ftproot -a "$anonymous" = "yes" ; then
+X
+Xdie "${W}Need user $ftpuid for anonymous ftp to work!\n" if ($ftpuid eq "");
+X
+X#   if the user ftp doesn't exist, no-anon stuff....
+Xif (! -d $ftproot || $ftproot eq "") {
+X    die "${W}Home directory for ftp doesn\'t exist!\n";
+X}
+Xif ($ftproot eq "/") {
+X    print qq:${W}$ftproot ftp's home directory should not be "/"!\n:;
+X}
+X
+X#   want to check all the critical files and directories for correct
+X# ownership.  Some versions of ftp don't need much of anything... no 
+X# etc directory or password/group files.
+X#   others need etc directory & password/group files.  Experiment.
+X#
+Xpush(@crit_files, $ftpbin, $ftpetc);
+Xfor $i (@crit_files) {
+X    $owner = &'Owner($i);
+X
+X    if ($owner eq 'BOGUS') {
+X	print "${W}Critical anon-ftp file $i is missing!\n";
+X	next;
+X    }
+X
+X    $owner = $'uid2names{$owner};
+X
+X    if ($owner !~ /\b$primary\b|\b$secondary\b/) {
+X       print "${W}$i should be owned by $primary or $secondary, not $owner!\n";
+X    }
+X}
+X
+X#  Don't want the passwd and group files to be the real ones!
+Xif (&'Owner($ftppasswd) ne 'BOGUS' &&
+X    $passwd ne $ftppasswd && 
+X    ! system "$CMP -s $passwd $ftppasswd") 
+X{
+X    print "${W}$ftppasswd and $passwd are the same!\n";
+X}
+X
+Xif (&'Owner($ftpgroup) ne 'BOGUS' &&
+X    $group ne $ftpgroup && 
+X    ! system "$CMP -s $passwd $ftpgroup") 
+X{
+X    print "${W}$ftpgroup and $group are the same!\n";
+X}
+X
+X#   ftproot is special; if owned by root; should be !world writable;
+X# if owned by ftp, should be mode 555
+X
+Xif (&'Owner($ftproot) ne 'BOGUS') {
+X    $owner = $'uid2names{&'Owner($ftproot)};
+X    $perms=&'Mode($ftproot);
+X    if ($owner !~ /\b$primary\b|\b$secondary\b/) {
+X	print "${W}$ftproot should be owned by $primary or $secondary, not $owner!\n";
+X    }
+X
+X    # ftp-root should not be world-writable:
+X    &'is_able($ftproot, "w", "w");
+X
+X    # if ftp owns root-dir, then mode should be 555:
+X    if ($owner eq $ftpuid && $perms ne 00555) {
+X	print "${W}$ftproot should be mode 555!\n";
+X    }
+X}
+X
+X#
+X# check the .rhosts file:
+Xif (-f $ftprhosts) {
+X    if (-s $ftprhosts) {
+X	print "${W}$ftprhosts should be be empty!\n";
+X    }
+X    $owner=$'uid2names{&'Owner($ftprhosts)};
+X    if ($owner ne $primary && $owner ne $secondary) {
+X	print "${W}$ftprhosts should be owned by $primary or $secondary!\n";
+X    }
+X}
+X
+X# finally, some permissions of miscellaneous files:
+Xif (($perms=&'Mode($ftpls)) & 0666) {
+X    printf "${W}Incorrect permissions (%04o) on $ftpls!\n", $perms;
+X}
+X
+Xif (($perms=&'Mode($ftppasswd)) & 0333) {
+X    printf "${W}Incorrect permissions (%04o) on $ftppasswd!\n", $perms;
+X}
+X
+X
+Xif (($perms=&'Mode($ftpgroup)) & 0333) {
+X    printf "${W}Incorrect permissions (%04o) on $ftpgroup!\n", $perms;
+X}
+X
+X#   Finally, the ~ftp/{pub|incoming|whatever} stuff:
+Xopendir(FTPDIR, $ftproot) || die "can't opendir $ftproot: $!\n";
+X
+X@all_dirs=grep(-d, readdir(FTPDIR));
+X
+Xlocal($is_able'silent) = 1;  
+Xfor $i (@all_dirs) {
+X    if ($i ne $incoming && &'is_able($ftproot . "/$i", "w", "w")) {
+X	print "${W}Anon-ftp directory $i is World Writable!\n";
+X    }
+X}
+X
+X1;
+X# end of script
+SHAR_EOF
+chmod 0700 cops_104/perl/ftp.chk ||
+echo 'restore of cops_104/perl/ftp.chk failed'
+Wc_c="`wc -c < 'cops_104/perl/ftp.chk'`"
+test 6582 -eq "$Wc_c" ||
+	echo 'cops_104/perl/ftp.chk: original size 6582, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/get-cf ==============
+if test -f 'cops_104/perl/get-cf' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/get-cf (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/get-cf (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/get-cf' &&
+X#! /usr/local/bin/perl
+X
+X@dot_files = (
+X    ".login", ".logout", ".cshrc",			# csh, cshe or tcsh
+X    ".profile",						# ksh, sh
+X    ".env",						# ksh
+X    ".alias", ".aliases",				# common for all shells
+X    "user.ps", ".user.ps", "tools.ps", ".tools.ps",
+X	"startup.ps", ".startup.ps",			# NeWS
+X    ".mgrc",						# MGR
+X    ".X11init", ".awmrc", ".twmrc", ".xinitrc",		# X11
+X    ".emacs"						# emacs
+X);
+X
+X%seen = {};
+X
+Xopen(HOST, "/bin/hostname |") || die "can't get the hostname";
+Xchop($hostname=<HOST>);
+Xclose(HOST);
+X
+Xuser_loop:
+X    for (($name,$passwd,$uid,$gid,$quota,$comment,$gcos,$dir,$shell) = getpwent();
+X         $name ne "";
+X         ($name,$passwd,$uid,$gid,$quota,$comment,$gcos,$dir,$shell) = getpwent()) {
+X
+X	#
+X	# If the user has a home directory on this server, get the info 
+X	# about the directory, his CF's and so on.
+X	#
+X	if ($dir =~ m,^/n/$hostname/,) {
+X	    if (! -d $dir) {
+X		printf(stderr "home directory '%s' for user '%s' doesn't exist.\n",
+X			$dir,
+X			$name);
+X		next user_loop;
+X	    }
+X
+X	    ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+X                    $atime,$mtime,$ctime,$blksize,$blocks)
+X                        = stat(_);
+X	    $mode = $mode & 07777;
+X
+X	    &spit_it_out("d", $uid, $gid, $mode, $dir);
+X
+X	    foreach $file (@dot_files) {
+X		$path = "$dir/$file";
+X
+X		if (-f $path) {
+X		    ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+X                        $atime,$mtime,$ctime,$blksize,$blocks)
+X                            = stat(_);
+X		    $mode = $mode & 07777;
+X
+X		    &spit_it_out("f", $uid, $gid, $mode, $dir);
+X		}
+X	    }
+X	}
+X    }
+X
+X
+X
+X
+Xsub spit_it_out {
+X    local($type, $uid, $gid, $mode, $name) = @_;
+X
+X    if (defined($seen{$name})) {
+X	return;
+X    }
+X
+X    printf("%s %d %d 0%o %s\n", $type, $uid, $gid, $mode, $name);
+X    $seen{$name} = 1;
+X}
+X
+SHAR_EOF
+chmod 0700 cops_104/perl/get-cf ||
+echo 'restore of cops_104/perl/get-cf failed'
+Wc_c="`wc -c < 'cops_104/perl/get-cf'`"
+test 1776 -eq "$Wc_c" ||
+	echo 'cops_104/perl/get-cf: original size 1776, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/getopts.pl ==============
+if test -f 'cops_104/perl/getopts.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/getopts.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/getopts.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/getopts.pl' &&
+X;# getopts.pl - a better getopt.pl
+X
+X;# Usage:
+X;#      do Getopts('a:bc');  # -a takes arg. -b & -c not. Sets opt_* as a
+X;#                           #  side effect.
+X
+Xsub Getopts {
+X    local($argumentative) = @_;
+X    local(@args,$_,$first,$rest,$errs);
+X    local($[) = 0;
+X
+X    @args = split( / */, $argumentative );
+X    while(($_ = $ARGV[0]) =~ /^-(.)(.*)/) {
+X	($first,$rest) = ($1,$2);
+X	$pos = index($argumentative,$first);
+X	if($pos >= $[) {
+X	    if($args[$pos+1] eq ':') {
+X		shift(@ARGV);
+X		if($rest eq '') {
+X		    $rest = shift(@ARGV);
+X		}
+X		eval "\$opt_$first = \$rest;";
+X	    }
+X	    else {
+X		eval "\$opt_$first = 1";
+X		if($rest eq '') {
+X		    shift(@ARGV);
+X		}
+X		else {
+X		    $ARGV[0] = "-$rest";
+X		}
+X	    }
+X	}
+X	else {
+X	    print STDERR "Unknown option: $first\n";
+X	    ++$errs;
+X	    if($rest ne '') {
+X		$ARGV[0] = "-$rest";
+X	    }
+X	    else {
+X		shift(@ARGV);
+X	    }
+X	}
+X    }
+X    $errs == 0;
+X}
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/getopts.pl ||
+echo 'restore of cops_104/perl/getopts.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/getopts.pl'`"
+test 902 -eq "$Wc_c" ||
+	echo 'cops_104/perl/getopts.pl: original size 902, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/glob.pl ==============
+if test -f 'cops_104/perl/glob.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/glob.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/glob.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/glob.pl' &&
+X#
+X#  This does shell or perl globbing without resorting
+X# to the shell -- we were having problems with the shell blowing
+X# up with extra long pathnames and lots of file names.  set $glob'debug 
+X# for trace information.
+X#
+X# tom christiansen <tchrist@convex.com>
+X
+Xpackage glob;
+X
+Xsub main'glob { 
+X    local($expr) = @_;
+X    local(@files);
+X
+X    $? = 0;
+X    open(SAVERR, ">&STDERR"); close(STDERR);  # suppress args too long
+X    @files = <${expr}>;
+X    if ($?) {
+X	print SAVERR "shell glob blew up on $expr\n" if $debug;
+X	@files = &SHglob($expr);
+X    }
+X    open (STDERR, ">&SAVERR");
+X    # if (@files == 1 && $files[0] eq $expr) { @files = ''; } # sh foo
+X    @files;
+X}
+X
+Xsub main'SHglob {
+X    local($expr) = @_;
+X    local(@retlist) = ();
+X    local($dir);
+X
+X    print "SHglob: globbing $expr\n" if $debug;
+X
+X    $expr =~ s/([.{+\\])/\\$1/g;
+X    $expr =~ s/\*/.*/g;
+X    $expr =~ s/\?/./g;
+X
+X    for $dir (split(' ',$expr)) {
+X	push(@retlist, &main'REglob($dir));
+X    } 
+X
+X    return sort @retlist;
+X} 
+X
+Xsub main'REglob {
+X    local($path) = @_;
+X    local($_);
+X    local(@retlist) = ();
+X    local($root,$expr,$pos);
+X    local($relative) = 0;
+X    local(@dirs);
+X    local($user);
+X
+X    $haveglobbed = 0;
+X
+X    @dirs = split(/\/+/, $path);
+X
+X    if ($dirs[$[] =~ m!~(.*)!) {
+X	$dirs[$[] = &homedir($1);
+X	return @retlist unless $dirs[$[];
+X    } elsif ($dirs[$[] eq '') {
+X	$dirs[$[] = '/' unless $dirs[$[] =~ m!^\.{1,2}$!;
+X    } else {
+X	unshift(@dirs, '.');
+X	$relative = 1;
+X    } 
+X
+X    printf "REglob: globbing %s\n", join('/',@dirs) if $debug;
+X
+X    @retlist = &expand(@dirs);
+X
+X    for (@retlist) {
+X	if ($relative) {
+X	    s!^\./!!o;
+X	}
+X	s!/{2,}!/!g;
+X    } 
+X
+X    return sort @retlist;
+X}
+X
+Xsub expand {
+X    local($dir, $thisdir, @rest) = @_;
+X    local($nextdir);
+X    local($_);
+X    local(@retlist) = ();
+X    local(*DIR);
+X
+X    unless ($haveglobbed || $thisdir =~ /([^\\]?)[?.*{[+\\]/ && $1 ne '\\') {
+X	@retlist = ($thisdir);
+X    } else {
+X	unless (opendir(DIR,$dir)) {
+X	    warn "glob: can't opendir $dir: $!\n" if $debug;
+X	} else {
+X		@retlist = grep(/^$thisdir$/,readdir(DIR));
+X		@retlist = grep(!/^\./, @retlist) unless $thisdir =~ /^\\\./;
+X		$haveglobbed++;
+X	} 
+X	closedir DIR;
+X    } 
+X
+X    for (@retlist) {
+X	$_ = $dir . '/' . $_;
+X    }
+X
+X    if ($nextdir = shift @rest) {
+X	local(@newlist) = ();
+X	for (@retlist) {
+X	    push(@newlist,&expand($_,$nextdir,@rest));
+X	} 
+X	@retlist = @newlist;
+X    } 
+X
+X    return @retlist;
+X} 
+X
+Xsub homedir {
+X    local($user) = @_;
+X    local(@pwent);
+X    # global %homedir
+X
+X    if (!$user) {
+X	return $ENV{'HOME'} 		if $ENV{'HOME'};
+X	($user = $ENV{'USER'})  	|| 
+X	    ($user = getlogin) 		|| 
+X	    (($user) = getpwnam($>));
+X	warn "glob'homedir: who are you, user #$>?\n" unless $user;
+X	return '/';
+X    } 
+X    unless (defined $homedir{$user}) {
+X	if (@pwent = getpwnam($user)) {
+X	    $homedir{$user} = $pwent[$#pwent - 1];
+X	} else {
+X	    warn "glob'homedir: who are you, user #$>?\n" unless $user;
+X	    $homedir{$user} = '/';
+X	}
+X    }
+X    return $homedir{$user};
+X} 
+X
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/glob.pl ||
+echo 'restore of cops_104/perl/glob.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/glob.pl'`"
+test 2963 -eq "$Wc_c" ||
+	echo 'cops_104/perl/glob.pl: original size 2963, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/group.chk ==============
+if test -f 'cops_104/perl/group.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/group.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/group.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/group.chk' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#
+X#   group.chk.pl
+X#
+X# Perl version: composer@chem.bu.edu
+X# Based on original shell script, group.chk
+X#
+X#  Check group file -- /etc/group -- for incorrect number of fields,
+X# duplicate groups, non-alphanumeric group names, and non-numeric group
+X# id's.
+X#
+X#   Mechanism:  Group.check uses awk to ensure that each line of the group
+X# has 4 fields, as well as examining each line for any duplicate groups or
+X# any duplicate user id's in a given group by using "sort -u" to ferret
+X# out any duplications.  It also checks to make sure that the password
+X# field (the second one) is a "*", meaning the group has no password (a
+X# group password is usually not necessary because each member listed on 
+X# the line has all the privilages that the group has.)  All results are
+X# echoed to standard output.  Finally it ensures that the group names
+X# are alphanumeric, that the group id's are numeric, and that there are
+X# no blank lines.  For yellow pages groups, it does the same checking,
+X# but in order to get a listing of all members of the groups, it does a
+X# "ypcat group".
+X#
+X#   The /etc/group file has a very specific format, making the task
+X# fairly simple.  Normally it has lines with 4 fields, each field
+X# separated by a colon (:).  The first field is the group name, the second
+X# field is the encrypted password (an asterix (*) means the group has no
+X# password, otherwise the first two characters are the salt), the third
+X# field is the group id number, and the fourth field is a list of user
+X# ids in the group.  If a line begins with a plus sign (+), it is a yellow
+X# pages entry.  See group(5) for more information.
+X#
+X
+X# should get below config stuff from cops.cf file
+Xpackage main;
+X
+Xdie "Usage: $0\n" if @ARGV;
+X
+Xrequire 'pathconf.pl';
+X
+X#   Used for Sun C2 security group file.  FALSE (default) will flag
+X# valid C2 group syntax as an error, TRUE attempts to validate it.
+X# Thanks to Pete Troxell for pointing this out.
+X#
+X# moved to cops.cf
+X
+Xpackage group_chk;
+X
+X$etc_group = $'GROUP || '/etc/group';
+X
+X# Testing $etc_group for potential problems....
+Xopen (Group, "< $etc_group") || warn "$0: Can't open $etc_group: $!\n";
+X&chk_group_file_format('Group');
+Xclose Group;
+X
+X# Testing ypcat group for potential problems
+X$yp=0;
+Xif (-s $'YPCAT && -x _) {
+X    open(YGroup, "$'YPCAT group 2>/dev/null |")
+X	|| die "$0: Can't popen $'YPCAT: $!\n";
+X    $yp=1;
+X    &chk_group_file_format('YGroup');
+X    close(YGroup);
+X}
+X
+X# usage: &chk_group_file_format('Filehandle-name');
+X# skips over lines that begin with "+:"
+X# It really should check for correct yellow pages syntax....
+X#
+X# this routine checks lines read from a filehandle for potential format
+X# problems .. should be matching group(5)
+X#
+X# checks for duplicate users in a group as it reads the lines instead
+X# of after (as the original shell script does)
+X
+Xsub chk_group_file_format {
+X    local($file) = @_;
+X    local($W) = "Warning!  $file file,";
+X    undef %groups;
+X
+X    while (<$file>) {
+X	# should really check for correct YP syntax
+X	next if /^[-+]:/;   # skipping YP lines for now
+X	print "$W line $., is blank\n" if /^\s*$/;
+X	($group,$pass,$gid,$users) = split(?:?);
+X	$groups{$group}++;   # keep track of dups
+X	print "$W line $., does not have 4 fields:\n\t$_" if (@_ != 4);
+X	print "$W line $., nonalphanumeric group name:\n\t$_"
+X	    if $group !~ /^[_A-Za-z0-9-]+$/;
+X	if ($pass && $pass ne '*') {
+X	    if ( ! $C2 || $yp ) {
+X		print "$W line $., group has password:\n\t$_"
+X		    if length($pass) == 13;
+X	    } else {
+X		print "$W line $., group has invalid field for C2:\n\t$_"
+X		    if $pass ne "#\$$user";
+X	    }
+X	}
+X	# print "$W line $., nonnumeric group id: $_" if $_[2] !~ /^\d+$/;
+X	if ($gid !~ /^\d+$/) {
+X		if ($uid < 0) {
+X			print "$W line $., negative group id:\n\t$_";
+X			}
+X		else { print "$W line $., nonnumeric group id:\n\t$_"; }
+X		}
+X
+X	# look for duplicate users in a group
+X	# kinda ugly, but it works .. and I have too much other work right
+X	# now to clean it up.  maybe later.. ;-)
+X	chop($users);	# down here, 'cos split gets rid of final null fields
+X	@users = sort split(/\s*,\s*/, $users);
+X	# %users = # of times user is in group, $dup_user = duplicate found
+X	undef %users;  $dup_user=0;
+X	grep(!($users{$_}++) && 0, @users);
+X	for (keys %users) {
+X	    (print "Warning!  Group $group has duplicate user(s):\n"),
+X		$dup_user=1 if !$dup_user && $users{$_} > 1;
+X	    print "$_ " if $users{$_} > 1;
+X	}
+X	print "\n" if $dup_user;
+X
+X    }
+X    # find duplicate group names 
+X    # not the best way, but it works..
+X    # boy, this is ugly too .. but, not as bad as above.. :)
+X    $dup_warned = 0;
+X    for (sort keys %groups) {
+X	(print "Warning!  Duplicate Group(s) found in $file:\n"), $dup_warned++
+X	    if !$dup_warned && $groups{$_} > 1;
+X	print "$_ " if $groups{$_} > 1;
+X    }
+X    print "\n" if $dup_warned;
+X}
+X
+X1;
+X# end
+SHAR_EOF
+chmod 0700 cops_104/perl/group.chk ||
+echo 'restore of cops_104/perl/group.chk failed'
+Wc_c="`wc -c < 'cops_104/perl/group.chk'`"
+test 4981 -eq "$Wc_c" ||
+	echo 'cops_104/perl/group.chk: original size 4981, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/hostname.pl ==============
+if test -f 'cops_104/perl/hostname.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/hostname.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/hostname.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/hostname.pl' &&
+X#
+X# file: hostname.pl
+X# usage: $hostname = &'hostname;
+X#
+X# purpose: get hostname -- try method until we get an answer 
+X#	or return "Amnesiac!"
+X#
+X
+Xpackage hostname;
+X
+Xsub main'hostname {
+X    if (!defined $hostname) {
+X	$hostname =  ( -x '/bin/hostname'   && `/bin/hostname` ) 
+X		  || ( -x '/bin/uname'      && `/bin/uname -n` )
+X		  || ( -x '/usr/bin/uuname' && `/usr/bin/uuname -l`)
+X		  || 'Amnesiac! ';  # trailing space is for chop
+X	chop $hostname;
+X    }
+X    $hostname;
+X}
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/hostname.pl ||
+echo 'restore of cops_104/perl/hostname.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/hostname.pl'`"
+test 475 -eq "$Wc_c" ||
+	echo 'cops_104/perl/hostname.pl: original size 475, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/is_able.chk ==============
+if test -f 'cops_104/perl/is_able.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/is_able.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/is_able.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/is_able.chk' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X#
+X#  is_able.chk
+X#
+X#   This shell script checks the permissions of all files and directories
+X# listed in the configuration file "is_able.lst", and prints warning messages
+X# according to the status of files.  You can specify world or group readability
+X# or writeability.  See the config file for the format of the configuration
+X# file.
+X#
+X#   Mechanism:  This shell script parses each line from the configure file
+X# and uses the "is_able.pl" program to check if any of
+X# the directories in question are writable by world/group.
+X#
+X
+Xrequire 'is_able.pl';
+Xrequire 'file_mode.pl';
+Xrequire 'glob.pl';
+X
+Xif ($ARGV[0] eq '-d') {
+X    shift;
+X    $debug = $glob'debug = 1;  # maybe should turn off glob'debug afterwards
+X}
+X
+Xunshift (@ARGV, "is_able.lst" ) unless @ARGV;
+X
+Xwhile (<>) {
+X    next if /^\s*#/;
+X    split;
+X    next unless @_ == 3;
+X    ($file, $x, $y) = @_;
+X    @files = $file =~ /[\[?*]/ ? &'glob($file) : ($file);
+X    for $file (@files) {
+X	print STDERR "is_able $file $x $y\n" if $debug;
+X	&'is_able($file, $x, $y);
+X    }
+X}
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/is_able.chk ||
+echo 'restore of cops_104/perl/is_able.chk failed'
+Wc_c="`wc -c < 'cops_104/perl/is_able.chk'`"
+test 1235 -eq "$Wc_c" ||
+	echo 'cops_104/perl/is_able.chk: original size 1235, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/is_able.lst ==============
+if test -f 'cops_104/perl/is_able.lst' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/is_able.lst (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/is_able.lst (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/is_able.lst' &&
+X#  This lists any/all sensitive files the administration wants to ensure
+X# non-read/writability of.  Comments are lines starting with a "#".
+X#
+X# USE FULL PATHNAMES!
+X#
+X#   Lines are of the format:
+X#
+X# /path/to/{dir|file}	World/Group	Read/Write/Both
+X#
+X# as above		{w|g}		{r|w|b}
+X#
+X/			w		w
+X/etc			w		w
+X/usr			w		w
+X/bin			w		w
+X/dev			w		w
+X/usr/bin		w		w
+X/usr/etc		w		w
+X/usr/adm		w		w
+X/usr/lib		w		w
+X/usr/include		w		w
+X/usr/spool		w		w
+X/usr/spool/mail		w		w
+X/usr/spool/news		w		w
+X/usr/spool/uucp		w		w
+X/usr/spool/at		w		w
+X/usr/local		w		w
+X/usr/local/bin		w		w
+X/usr/local/lib		w		w
+X/usr/users		w		w
+X/Mail			w		w
+X
+X# some Un*x's put shadowpass stuff here:
+X/etc/security		w		r
+X
+X# /.login /.profile /.cshrc /.rhosts
+X/.*			w		w
+X
+X#   I think everything in /etc should be !world-writable, as a rule; but
+X# if you're selecting individual files, do at *least* these:
+X#   /etc/passwd /etc/group /etc/inittab /etc/rc /etc/rc.local /etc/rc.boot
+X#   /etc/hosts.equiv /etc/profile /etc/syslog.conf /etc/export /etc/utmp
+X#   /etc/wtmp
+X/etc/*			w		w
+X
+X/bin/*			w		w
+X/usr/bin/*		w		w
+X/usr/etc/*		w		w
+X/usr/adm/*		w		w
+X/usr/lib/*		w		w
+X/usr/include/*		w		w
+X/usr/local/lib/*	w		w
+X/usr/local/bin/*	w		w
+X/usr/etc/yp*		w		w
+X/usr/etc/yp/*		w		w
+X
+X# individual files:
+X/usr/lib/crontab	w		b
+X/usr/lib/aliases	w		w
+X/usr/lib/sendmail	w		w
+X/usr/spool/uucp/L.sys	g		b
+X
+X#  NEVER want these writeable/readable!
+X/dev/kmem		w		b
+X/dev/mem		w		b
+X
+X#   Optional List of assorted files that shouldn't be
+X# write/readable (mix 'n match; add to the list as desired):
+X/usr/adm/sulog		w		r
+X/.netrc			w		b
+X# HP-UX and others:
+X/etc/btmp		w		b
+X/etc/securetty		w		b
+X# Sun-fun
+X/dev/drum		w		b
+X/dev/nit		w		b
+X/etc/sunlink/dni/rc	w		w
+SHAR_EOF
+chmod 0700 cops_104/perl/is_able.lst ||
+echo 'restore of cops_104/perl/is_able.lst failed'
+Wc_c="`wc -c < 'cops_104/perl/is_able.lst'`"
+test 1678 -eq "$Wc_c" ||
+	echo 'cops_104/perl/is_able.lst: original size 1678, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/kuang ==============
+if test -f 'cops_104/perl/kuang' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/kuang (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/kuang (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/kuang' &&
+X#!/bin/sh -- need to mention perl here to avoid recursion
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/users/df/bin/perl.sun4 -S $0 $argv:q'
+X        if 0;
+X# & eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X#
+X# kuang - rule based analysis of Unix security
+X#
+X# Perl version by Steve Romig of the CIS department, The Ohio State
+X# University, October 1990. 
+X# 
+X# Based on the shell script version by Dan Farmer from his COPS
+X# package, which in turn is based on a shell version by Robert
+X# Baldwin. 
+X#
+X#-----------------------------------------------------------------------------
+X# Players:
+X#	romig	Steve Romig, romig@cis.ohio-state.edu
+X#	tjt	Tim Tessin, tjt@cirrus.com
+X#
+X# History:
+X# 4/25/91  tjt, romig	Various fixes to filewriters (better messages about 
+X#			permission problems) and don't update the DBM cache 
+X#			with local file info.
+X# 11/1/90  romig	Major rewrite - generic lists, nuking get_entry 
+X#			and put_entry, moved rules to separate file.
+X#
+X
+X#
+X# Options
+X#
+X# -l		list uid's that can access the given target, directly
+X#		or indirectly
+X# -d		debug
+X# -V 		verbose
+X#
+X# -k file	load the list of known CO's
+X# -f file	preload file information from the named file.
+X# -p file	preload passwd info from the named file.
+X# -Y		preload passwd info from ypcat + /etc/passwd
+X# -g group	preload group info from the named file.
+X# -G		preload group info from ypcat + /etc/group
+X# 
+X# NOTE:
+X#   If you know where perl is and your system groks #!, put its
+X# pathname at the top to make this a tad faster.
+X#
+X# the following magic is from the perl man page
+X# and should work to get us to run with perl 
+X# even if invoked as an sh or csh or foosh script.
+X# notice we don't use full path cause we don't
+X# know where the user has perl on their system.
+X#
+X
+X$options = "ldVk:p:g:f:YG";
+X$usage = "usage: kuang [-l] [-d] [-v] [-k known] [-f file] [-Y] [-G] [-p passwd] [-g group] [u.username|g.groupname]\n";
+X
+X$add_files_to_cache = 1;		# Whether to update the %files cache
+X					# with local file info or not.
+X
+X#
+X# Terminology:
+X#
+X#   An "op" is an operation, such as uid, gid, write, or replace. 
+X#   'uid' means to gain access to some uid, 'gid' means to gain access 
+X#   to some gid.  'write' and 'replace' refer to files - replace means
+X#   that we can delete a file and replace it with a new one somehow
+X#   (for example, if we could write the directory it is in).
+X#
+X#   An object is a uid, gid or pathname.  
+X#
+X#   A Controlling Operation (CO) is a (operation, object) pair
+X#   represented as "op object": "uid 216" (become uid 216) or "replace
+X#   /.rhosts" (replace file /.rhosts).  These are represented
+X#   internally as "c value", where "c" is a character representing an
+X#   operation (u for uid, g for gid, r for replace, w for write) and
+X#   value is a uid, gid or pathname.
+X#
+X#   A plan is a chain of CO's that are connected to each other.  If
+X#   /.login were writeable by uid 216, we might have a plan such as:
+X#
+X#	uid 216 => write /.login => uid 0
+X#
+X#   which means (in English) "if we can become uid 216, then write 
+X#   /.login which gives you access to uid 0 (when root next logs in)."
+X#   Plans are represented in several ways: as arrays:
+X#
+X#	("u 0", "w /.login", "u 216")
+X#
+X#   Note that the order is reversed.  As a string:
+X#
+X#	"u 0\034w /.login\034u 216"
+X#
+X#   The target is the object that we are trying to gain (a uid, gid or
+X#   file, typically u.root or some other UID).
+X#
+X# Data Structures
+X#
+X#   %known		An assocc array, indexed by CO.  This lists
+X#			the COs that we already have access to.  If we
+X#                       find a plan that leads from a CO in the known
+X#                       list to the target, we've succeeded in
+X#                       finding a major security flaw.  
+X#
+X#   @new		An array of plans that are to be evaluated in
+X#			the next cycle. 
+X#
+X#   @old		An array of plans that we are currently
+X#			evaluating. 
+X#
+X#   %beendone		An assoc array that lists the plans that have
+X#			already been tried.  Used to prevent loops.
+X#
+X#   @accessible		An array of the uids that can reach the
+X#			target. 
+X#
+X#   %files		An assoc array, indexed by file name, contains
+X#			cached file info.  value is of form "uid gid
+X#			mode". 
+X#
+X# From pwgrid:
+X#
+X#   %uname2shell	Assoc array, indexed by user name, values are
+X#			shells. 
+X#
+X#   %uname2dir		Assoc array, indexed by user name, values are
+X#			home directories.
+X#
+X#   %uname2uid		Assoc array, indexed by name, values are uids.
+X#			
+X#   %uid2names		Assoc array, indexed by uid, value is list of
+X#			user names with that uid, in form "name name
+X#			name...". 
+X#
+X#   %gid2members	Assoc array, indexed by gid, value is list of
+X#			group members (user names).
+X#
+X#   %gname2gid		Assoc array, indexed by group name, values are
+X#			matching gids.
+X#
+X#   %gid2names		Assoc array, indexed by gid, values are
+X#			matching group names.
+X#
+X
+Xdo 'yagrip.pl' ||
+X  die "can't do yagrip.pl";
+X
+X# do 'pwgrid.pl' ||
+X#   die "can't do pwgrid.pl";
+Xdo 'pass.cache.pl' ||
+X  die "can't do pass.cache.pl";
+X
+Xdo 'rules.pl' ||
+X  die "can't do rules.pl";
+X
+X
+X#
+X# Turns a string of the form "operation value" or "value" into
+X# standard "CO" form ("operation value").  Converts user or group
+X# names into corresponding uid and gid values. 
+X#
+X# Returns nothing if it isn't parseable.
+X#
+X
+Xsub canonicalize {
+X    local($string) = @_;
+X    local($op, $value);
+X
+X    if ($string =~ /^([ugrw]) ([^ \t\n]+)$/) { # of form "op value"
+X	$op = $1;
+X	$value = $2;
+X    } elsif ($string =~ /^[^ \t\n]+$/) {       # of form "value"
+X        $value = $string;
+X	$op = "u";
+X    } else {
+X	return();
+X    }
+X
+X    if ($op eq "u" && $value =~ /^[^0-9]+$/) { # user name, not ID
+X        if (defined($uname2uid{$value})) {
+X	    $value = $uname2uid{$value};
+X	} else {
+X	    printf(stderr "There's no user named '%s'.\n", $value);
+X	    return();
+X	}
+X    } elsif ($op eq "g" && $value =~/^[^0-9]+$/) {
+X	if (defined($gname2gid{$value})) {
+X	    $value = $gname2gid{$value};
+X	} else {
+X	    printf(stderr "There's no group named '%s'.\n", $value);
+X	    return();
+X	}
+X    }
+X
+X    return($op, $value);
+X}
+X
+X
+X#
+X# Preload file information from a text file or DBM database.  
+X# If $opt_f.dir exists, then we just shadow %files from a DBM
+X# database.  Otherwise, open the file and read the entries into 
+X# %files.  
+X#
+X# $add_files_to_cache is set to 0 if we get the info from 
+X# DBM since we wouldn't want to pollute update our DBM cache
+X# with local file info which wouldn't apply to other hosts.
+X#
+X
+Xsub preload_file_info {
+X    local($count, $f_type, $f_uid, $f_gid, $f_mode, $f_name);
+X
+X    if (defined($opt_d)) {
+X	printf("loading file info...\n");
+X    }
+X
+X    if (-f "$opt_f.dir") {
+X	$add_files_to_cache = 0;
+X
+X	dbmopen(files, $opt_f, 0644) ||
+X	  die sprintf("can't open DBM file '%s'", $opt_f);
+X    } else {
+X	open(FILEDATA, $opt_f) || 
+X	  die sprintf("kuang: can't open '%s'", $opt_f);
+X
+X	$count = 0;
+X	while (<FILEDATA>) {
+X	    $count++;
+X
+X	    chop;
+X	    ($f_type, $f_uid, $f_gid, $f_mode, $f_name) = split;
+X	    
+X	    if ($count % 1000 == 0) {
+X		printf("line $count, reading entry for $f_name\n");
+X	    }
+X	    $files{$f_name} = join(' ', $f_uid, $f_gid, $f_mode);
+X	}
+X
+X	close(FILEDATA);
+X    }
+X}
+X
+X#
+X# Preload the known information.  Reads data from a file, 1 entry per line,
+X# each entry is a CO that we "know" can be used.
+X#
+X
+Xsub preload_known_info {
+X    local($file_name) = @_;
+X    local($op, $value, $co);
+X
+X    open(FILE, $file_name) ||
+X      die sprintf("kuang: can't open '%s'", $file_name);
+X
+X  known_loop:
+X    while (<FILE>) {
+X	chop;
+X	if ((($op, $value) = &canonicalize($_)) == 2) {
+X	    $co = sprintf("%s %s", $op, $value);
+X	    $known{$co} = 1;
+X	} else {
+X	    printf(stderr "kuang: invalid entry in known list: line %d '%s'.\n",
+X		   $.,
+X		   $_);
+X	}
+X    }
+X
+X    close(FILE);
+X}
+X    
+X
+X#
+X# Do various initialization type things.
+X#
+X
+Xsub init_kuang {
+X    local($which, $name, $uid, $gid);
+X    local($op, $value, $co);
+X
+X    #
+X    # Deal with args...
+X    #
+X
+X    &getopt($options) ||
+X      die $usage;
+X
+X    if ($#ARGV == -1) {
+X	push(@ARGV, "u root");
+X    }
+X
+X    #
+X    # Preload anything...
+X    #
+X    if (defined($opt_f)) {
+X	&preload_file_info();
+X    }
+X
+X    if (defined($opt_d)) {
+X	printf("load passwd info...\n");
+X    }
+X
+X    if (defined($opt_p)) {
+X	if (defined($opt_Y)) {
+X	    printf(stderr "You can only specify one of -p or -P, not both.\n");
+X	    exit(1);
+X	}
+X
+X	&load_passwd_info(0, $opt_p);
+X    } elsif (defined($opt_Y)) {
+X	&load_passwd_info(0);
+X    } else {
+X	&load_passwd_info(1);
+X    }
+X
+X    if (defined($opt_d)) {
+X	printf("load group info...\n");
+X    }
+X
+X    if (defined($opt_g)) {
+X	if (defined($opt_G)) {
+X	    printf(stderr "You can only specify one of -g or -G, not both.\n");
+X	    exit(1);
+X	}
+X
+X	&load_group_info(0, $opt_g);
+X    } elsif (defined($opt_G)) {
+X	&load_group_info(0);
+X    } else {
+X	&load_group_info(1);
+X    }
+X
+X    #
+X    # Need some of the password and group stuff.  Suck in passwd and 
+X    # group info, store by uid and gid in an associative array of strings
+X    # which consist of fields corresponding to the passwd and group file 
+X    # entries (and what the heck, we'll use : as a delimiter also...:-)
+X    #
+X    $uname2shell{"OTHER"} = "";
+X    $uname2dir{"OTHER"} = "";
+X    $uname2uid{"OTHER"} = -1;
+X    $uid2names{-1} = "OTHER";
+X
+X    $known{"u -1"} = 1;		# We can access uid OTHER
+X
+X    if (defined($opt_k)) {
+X	&preload_known_info($opt_k);
+X    }
+X
+X    #
+X    # Create the target list from the remaining (non-option) args...
+X    #
+X    while ($#ARGV >= 0) {
+X	$elt = pop(@ARGV);
+X	if ((($op, $value) = &canonicalize($elt)) == 2) {
+X	    $co = sprintf("%s %s", $op, $value);
+X	    push(@targets, $co);
+X	} else {
+X	    printf(stderr "target '%s' isn't of correct form\n", $elt);
+X	}
+X    }
+X}
+X
+X
+X#
+X# Call this to set things up for a new target.  Resets old, new, beendone 
+X# and accessible.  
+X#
+Xsub set_target {
+X    local($target) = @_;
+X
+X    @old = ();
+X    @new = ();
+X    %beendone = ();
+X    @accessible = ();
+X# fixme: reset known?
+X
+X    if ($target =~ /^([ugrw]) ([^ \t]+)$/) {
+X	&addto($1, $2);
+X	return(0);
+X    } else {
+X	printf(stderr "kuang: bad target '%s'\n", $target);
+X	return(1);
+X    }
+X}
+X
+X#
+X# Break a CO into an (operation, value) pair and return it.  If it
+X# isn't in "operation value" form, return ().
+X#
+Xsub breakup {
+X    local($co) = @_;
+X    local($operation, $value);
+X
+X    if ($co =~ /^([ugrw]) ([^ \t]+)$/) {
+X	$operation = $1;
+X	$value = $2;
+X    } else {
+X	printf(stderr "Yowza, breakup failed on '%s'\n",
+X		$co);
+X	exit(1);
+X    }
+X
+X    return($operation, $value);
+X}
+X
+X#
+X# Get the writers of the named file - return as (UID, GID, OTHER)
+X# triplet.  Owner can always write, since he can chmod the file if he
+X# wants. 
+X#
+X# (fixme) are there any problems in this sort of builtin rule?  should
+X# we make this knowledge more explicit?
+X#
+Xsub filewriters {
+X    local($name) = @_;
+X    local($tmp, $mode, $uid, $gid, $other);
+X    
+X    #
+X    # Check the file cache - avoid disk lookups for performance and 
+X    # to avoid shadows...
+X    #
+X    if (defined($files{$name})) {
+X	$cache_hit++;
+X	
+X	($uid, $gid, $mode, $tmp) = split(/ /, $files{$name});
+X    } else {
+X	$cache_miss++;
+X
+X	unless (-e $name) {
+X	    if ($add_files_to_cache) {
+X		$files{$name} = "";
+X	    }
+X	    # ENOTDIR = 20 
+X	    ($! == 20) && print "Warning: Illegal Path: '$name'\n";
+X	    # EACCES = 13
+X	    ($! == 13) && print "Warning: Permission Denied: '$name'\n";
+X	    # all values are returned "" here.
+X	    return;
+X	}
+X
+X	($tmp,$tmp,$mode,$tmp,$uid,$gid) = stat(_);
+X	if ($add_files_to_cache) {
+X	    $files{$name} = join(' ', "$uid", "$gid", "$mode");
+X	}
+X    }
+X
+X    if (($mode & 020) != 020) {
+X	$gid = "";
+X    }
+X    
+X    if (($mode & 02) == 02) {
+X	$other = 1;
+X    } else {
+X	$other = 0;
+X    }
+X
+X    return($uid, $gid, $other);
+X}
+X
+X
+Xsub ascii_plan {
+X    local(@plan) = @_;
+X    local($op, $value, $result);
+X
+X    for ($i = $#plan; $i >= 0; $i--) {
+X	($op, $value) = &breakup($plan[$i]);
+X
+X      case: 
+X	{
+X	    if ($op eq "g") {
+X		$op = "grant gid";
+X		last case;
+X	    }
+X
+X	    if ($op eq "u") {
+X		$op = "grant uid";
+X		last case;
+X	    }
+X
+X	    if ($op eq "r") {
+X		$op = "replace";
+X		last case;
+X	    }
+X
+X	    if ($op eq "w") {
+X		$op = "write";
+X		last case;
+X	    }
+X
+X	    printf(stderr "Bad op '%s' in plan '%s'\n",
+X		   $op,
+X		   join(';', @plan));
+X	    last case;
+X	}
+X
+X	$result .= "$op $value ";
+X    }
+X
+X    return($result);
+X}
+X
+X#
+X# Add a plan to the list of plans to check out.
+X#
+Xsub addto {
+X    local($op, $value, @plan) = @_;
+X    local($co);
+X
+X    $co = sprintf("%s %s",
+X		  $op,
+X		  $value);
+X
+X    #
+X    # See if the op and value is "uid root" - if so, and if the @plan 
+X    # isn't empty, then don't bother checking - if the target isn't root, 
+X    # its silly to pursue plans that require becoming root since if we can 
+X    # become root, we can become anything.  If the target is root, then 
+X    # this would be a loop anyway.
+X    #
+X    if ($op eq "u" && $value eq "0" && $#plan >= 0) {
+X	if (defined($opt_d)) {
+X	    printf("addto: aborted root plan '%s'\n",
+X		   &ascii_plan(@plan, $co));
+X	}
+X	return;
+X    }
+X
+X    #
+X    # See whether there's an entry for $co in the known list.
+X    # If so - success, we've found a suitable breakin plan.
+X    #
+X    # Yes, we want to check to see whether the whole Controlling Operation 
+X    # is one that is known to us, rather than just the object.  I
+X    # might have a hole that allows me to "replace /bin/foo" which is
+X    # somewhat different than "write /bin/foo"  
+X    #
+X    if (! defined($opt_l) && defined($known{$co})) {
+X	printf("Success! %s\n",
+X	       &ascii_plan(@plan, $co));
+X    }
+X
+X    #
+X    # Check for loops -- if the new CO is part of the plan that we're
+X    # adding it to, this is a loop.
+X    #
+X    foreach $entry (@plan) {
+X	if ($entry eq $co) {
+X	    if (defined($opt_d)) {
+X		printf("addto: aborted loop in plan '%s'\n",
+X		       &ascii_plan(@plan, $co));
+X	    }
+X	    return;
+X	}
+X    }
+X
+X    #
+X    # Add this CO to the plan array...
+X    #
+X    push(@plan, $co);
+X
+X    #
+X    # Make an ascii version of sorts...
+X    #
+X    $text_plan = join($;, @plan);
+X
+X    #
+X    # Check to see if the new plan has been done.
+X    #
+X    if (defined($beendone{$text_plan})) {
+X	if (defined($opt_d)) {
+X	    printf("addto: plan's been done - '%s'\n",
+X		   &ascii_plan(@plan));
+X	}
+X	return;
+X    }
+X
+X    #
+X    # If we made it this far, its a new plan and isn't a loop.  
+X    #
+X
+X    #
+X    # Add to the beendone list...
+X    #
+X    $beendone{$text_plan} = 1;
+X
+X    #
+X    # Add to new plan list...
+X    #
+X    push(@new, $text_plan);
+X
+X    if (defined($opt_V)) {
+X	printf("addto: %s\n", 
+X	       &ascii_plan(@plan));
+X    }
+X
+X    #
+X    # If this is a uid goal, then add the plan to the accessible list.
+X    #
+X    if ($op eq "u" && $value ne "0" && defined($opt_l)) {
+X	push(@accessible, $value);
+X    }
+X}
+X
+X#
+X#----------------------------------------------------------------------
+X#Main program follows...initialize and loop till we're done.
+X#
+X
+X&init_kuang();
+X
+Xtarget_loop:
+Xforeach $target (@targets) {
+X    if (&set_target($target)) {
+X	next target_loop;
+X    }
+X
+X    while ($#new >= 0) {
+X	@old = @new;
+X	@new = ();
+X
+X	foreach $t_plan (@old) {
+X	    @plan = split(/\034/, $t_plan);
+X	    ($op, $value) = &breakup($plan[$#plan]);
+X
+X	    &apply_rules($op, $value, @plan);
+X	}
+X    }
+X
+X    if (defined($opt_l)) {
+X	foreach $elt (@accessible) {
+X	    printf("$elt\n");
+X	}
+X    }
+X}
+X
+Xif (defined($opt_d)) {
+X    printf("File info cache hit/access ratio: %g\n", 
+X   	    ($cache_hit + $cache_miss > 0) 
+X	        ? $cache_hit / ($cache_hit + $cache_miss)
+X	        : 0.0);
+X}
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/kuang ||
+echo 'restore of cops_104/perl/kuang failed'
+Wc_c="`wc -c < 'cops_104/perl/kuang'`"
+test 15363 -eq "$Wc_c" ||
+	echo 'cops_104/perl/kuang: original size 15363, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/is_able.pl ==============
+if test -f 'cops_104/perl/is_able.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/is_able.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/is_able.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/is_able.pl' &&
+X#
+X#  (This takes the place of the C program is_able.c, BTW.)
+X# 
+X#  is_able filename {w|g|s|S}       {r|w|B|b|s}
+X#      (world/group/SUID/SGID   read/write/{read&write}/{suid&write}/s[ug]id)
+X# 
+X#     The second arg of {r|w} determines whether a file is (group or world
+X#   depending on the first arg of {w|g}) writable/readable, or if it is
+X#   SUID/SGID (first arg, either s or S, respectively), and prints out a
+X#   short message to that effect.
+X# 
+X#  So:
+X#     is_able w w		# checks if world writable
+X#     is_able g r		# checks if group readable
+X#     is_able s s		# checks if SUID
+X#     is_able S b		# checks if world writable and SGID
+X
+Xpackage main;
+Xrequire 'file_mode.pl';
+X
+Xpackage is_able;
+X
+X# package statics
+X#
+X%wg = ( 
+X	'w', 00006,
+X	'g', 00060,
+X	's', 04000,
+X	'S', 02000,
+X       );
+X
+X%rwb= (
+X	'r', 00044,
+X	'w', 00022,
+X	'B', 00066,
+X	'b', 04022,
+X	's', 06000,
+X      );
+X
+X$silent = 0;  # for suppressing diagnostic messages
+X
+X
+Xsub main'is_able {
+X    local($file, $wg, $rwb) = @_;
+X
+X    local ( 
+X	   $mode, 			# file mode
+X           $piece,			# 1 directory component
+X	   @pieces, 			# all the pieces
+X	   @dirs, 			# all the directories
+X	   $p, 				# punctuation; (*) mean writable
+X	   				#       due to writable parent
+X	   $retval,			# true if vulnerable
+X	   $[				# paranoia
+X	  );
+X
+X    &usage, return undef	if @_ != 3 || $file eq '';
+X
+X    &usage, return undef	unless defined $wg{$wg} && defined $rwb{$rwb};
+X
+X    if (&'Mode($file) eq 'BOGUS' && $noisy) {
+X	warn "is_able: can't stat $file: $!\n";
+X	return undef;
+X    }
+X
+X    $retval = 0;
+X
+X    if ($rwb{$rwb} & $rwb{'w'}) {
+X	@pieces = split(m#/#, $file);
+X	for ($i = 1; $i <= $#pieces; $i++) {
+X	    push(@dirs, join('/', @pieces[0..$i]));
+X	}
+X    } else {
+X	@dirs = ( $file );
+X    } 
+X
+X    for $piece ( reverse @dirs ) {
+X
+X	next unless $mode = &'Mode($piece);
+X	next if $mode eq 'BOGUS';
+X
+X	next unless $mode &= 07777 & $wg{$wg} & $rwb{$rwb};
+X
+X	$retval = 1;
+X
+X	$p = $piece eq $file ? '!' : '! (*)';
+X
+X	$parent_is_writable = $p eq '! (*)'; # for later
+X
+X	next if $silent; # for &is_writable
+X
+X	print "Warning!  $file is group readable$p\n"	if $mode & 00040; 
+X	print "Warning!  $file is _World_ readable$p\n"	if $mode & 00004; 
+X	print "Warning!  $file is group writable$p\n"	if $mode & 00020; 
+X	print "Warning!  $file is _World_ writable$p\n"	if $mode & 00002; 
+X	print "Warning!  $file is SUID!\n"		if $mode & 04000; 
+X	print "Warning!  $file is SGID!\n"		if $mode & 02000; 
+X
+X	last if $piece ne $file;  # only complain on first writable parent
+X    }
+X    $retval;
+X}
+X
+Xsub main'is_writable {
+X    local($silent) = 1;
+X    &'is_able($_[0], 'w', 'w') 
+X	? $parent_is_writable 
+X	     ? "writable (*)"
+X	     : "writable" 
+X	: 0;
+X} 
+X
+Xsub main'is_readable {
+X    local($silent) = 1;
+X    &'is_able($_[0], 'w', 'r');
+X}
+X
+Xsub usage { 
+X    warn <<EOF;
+XUsage: is_able file {w|g|S|s} {r|w|B|b|s}
+X (not: is_able @_)
+XEOF
+X}
+X
+X1;
+SHAR_EOF
+chmod 0700 cops_104/perl/is_able.pl ||
+echo 'restore of cops_104/perl/is_able.pl failed'
+Wc_c="`wc -c < 'cops_104/perl/is_able.pl'`"
+test 2835 -eq "$Wc_c" ||
+	echo 'cops_104/perl/is_able.pl: original size 2835, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/perl/kuang.1 ==============
+if test -f 'cops_104/perl/kuang.1' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/perl/kuang.1 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/perl/kuang.1 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/perl/kuang.1' &&
+X.TH KUANG 1 "4 October 1990"
+X.SH NAME
+Xkuang \- find security problems through rule based analysis
+X.SH SYNOPSIS
+X.B kuang
+X.RB "[\|" \-v  "\|]"
+X.RB "[\|" \-d "\|]"
+X.RB "[\|" \-l "\|]"
+X.RB "[\|" \-k known"\|]"
+X.RB "[\|" \-f filedata "\|]"
+X.RB "[\|" \-P "\|]"
+X.RB "[\|" \-G "\|]"
+X.RB "[\|" \-p passwd "\|]"
+X.RB "[\|" \-g group "\|]"
+X.RB "[\|" 
+X.IR u.username | g.groupname "\|]"
+X.br
+X.SH DESCRIPTION
+X.LP
+X.B kuang
+Xuses rule based analysis to examine the current security configuration
+Xof a site and determine whether certain security problems exist.
+X
+X.B kuang 
+Xcontains embedded rules that describe the projection model and
+Xsome of the attacker tricks used on Unix systems.  It uses these rules
+SHAR_EOF
+true || echo 'restore of cops_104/perl/kuang.1 failed'
+fi
+echo 'End of  part 16'
+echo 'File cops_104/perl/kuang.1 is continued in part 17'
+echo 17 > _shar_seq_.tmp
+exit 0
+

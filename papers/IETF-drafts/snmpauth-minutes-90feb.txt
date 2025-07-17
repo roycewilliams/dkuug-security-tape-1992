@@ -1,0 +1,119 @@
+
+
+CURRENT_MEETING_REPORT_
+
+
+Reported by James Davin/MIT
+
+AGENDA
+
+The business of the meeting was the consideration of three documents
+describing proposed mechanisms for authenticating SNMP management
+operations:
+
+  1. Galvin, McCloghrie, and Davin.  Authentication and Privacy in the
+     SNMP.
+  2. Davin, Galvin, and McCloghrie.  Administration of SNMP Communities.
+  3. McCloghrie, Davin, and Galvin.  Experimental Definitions of Managed
+     Objects for Administration of SNMP Communities.
+
+MINUTES
+
+The first portion of the meeting was devoted to presentations by Jim
+Galvin and Keith McCloghrie that summarized the substance of the three
+documents.
+
+These presentations were followed by a lively discussion of relevant
+issues:
+
+  1. Timeliness --- The single issue that elicited the most discussion
+     was the problem of ensuring the "timeliness" of messages exchanged
+     in the protocol.  Concerns were voiced about several aspects of
+     this problem:
+
+     (a) The implications of the described timeliness mechanisms with
+         respect to authentication communities of more than one
+         management station need to be clarified.
+     (b) Concern was voiced about potential problems involved with the
+         setting of community clock values as described in the
+         administration document.  The idea was expressed that this
+         mechanism for clock synchronization may be suboptimal in terms
+         of both the state required in an agent and vulnerability to
+         denial of service attack.
+     (c) The possibility that subnet duplication of protocol messages
+         could entail reversal of a community clock was suggested.
+     (d) The implications of clock drift for the protocol were
+         discussed.  Although some concern remains on this topic, many
+         felt that signficant problems are associated only with clock
+         drifts several orders of magnitude larger than those typically
+         experienced.
+
+  2. Key Distribution Options --- The limitations of using SNMP as a key
+     distribution mechanism were recognized, and the possibility of
+     exploring other mechanisms was suggested.  In particular, the role
+     of multiple management stations in the key distribution process
+
+                                   1
+
+
+
+
+
+
+     needs clarification.
+  3. Algorithm Correctness --- The desirability of algorithms with
+     either sound formal foundations or reputations based on broad
+     review and experience was noted.  The desirability of citing
+     relevant literature was also noted.
+  4. Liability Issues --- Concern was raised about the legal liabilities
+     that may accrue to a promulgating standards body by its choice of
+     an algorithm.
+  5. Coordination --- the desirability of coordinating this effort with
+     other relevant efforts was acknowledged.
+
+The meeting concluded with a consensus that the three documents should
+be introduced into the IETF process for consideration as possible
+standards with Elective status.
+
+Action Items:
+
+  1. Chuck agreed to prepare minutes and be responsible for augmenting
+     the AWG mailing list (awg@bitsy.mit.edu) to reflect any newcomers
+     to the effort.
+  2. The document authors agreed to revise their documents to reflect
+     the concerns raised at this meeting and to (re-)introduce them into
+     the IETF Drafts repository for further review.
+
+ATTENDEES
+
+    Doug Bagnall                  bagnall_d@apollo.hp.com
+    Scott Bradner                 sob@harvisr.harvard.edu
+    Ted Brunner                   tob@thumper.bellcore.com
+    Jeff Case                     case@utkcs.cs.utk.edu
+    Steve Crocker                 crocker@tis.com
+    James R. Davin                jrd@ptt.lcs.mit.edu
+    Stan Froyd                    sfroyd@salt.acc.com
+    James M. Galvin               galvin@tis.com
+    Steven Hunter                 hunter@ccc.nmfecc.gov
+    Phil Jensen                   jensen@fsu1.cc.fsu.edu
+    Tony Lauck                    lauck@tl.enet.dec.com
+    Walt Lazear                   lazear@gateway.mitre.org
+    Keith McCloghrie              sytek!kzm@hplabs.hp.com
+    Greg Minshall                 minshall@kinetics.com
+    Jeff Mogul                    mogul@decwrl.dec.com
+    Dave Monaebello               dave@pluto.dss.com
+    Oscar Newkerk                 newkerk@decwet.enet.dec.com
+    Dave Perkins                  dave_perkins@3com.com
+    Jim Robertson                 jar@esd.3com.com
+    Jon Saperia                   saperia@tcpjon.enet.dec.com
+    Tom Seaver                    tas@mcnc.org
+    Frank Solensky                solensky@interlan.com
+    Mike St.  Johns               stjohns@umd5.umd.edu
+    Dean Throop                   throop@dg-rtp.dg.com
+    Sudhanshu Verma               verma@hpindbu.hp.com
+    Steve Waldbusser              waldbusser@andrew.cmu.edu
+    Brian Yasaki                  bky@twg.com
+
+
+
+                               3

@@ -1,0 +1,1785 @@
+#!/bin/sh
+# this is p4.shar.13 (part 13 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/extra_src/pass.mail continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 13; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/extra_src/pass.mail'
+else
+echo 'x - continuing file cops_104/extra_src/pass.mail'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/extra_src/pass.mail' &&
+Xpasswords per second (most machines can try  less  than  one
+Xhundred per second), would require, on the average, over one
+Xhundred years to complete.  With this as our  goal,  and  by
+Xusing the information in the preceding text, a set of guide-
+Xlines for password selection can be constructed:
+X
+X     o    Don't use your login  name  in  any  form  (as-is,
+X          reversed, capitalized, doubled, etc.).
+X
+X     o    Don't use your first or last name in any form.
+X
+X     o    Don't use your spouse's or child's name.
+X
+X     o    Don't use other information easily obtained  about
+X          you.   This  includes license plate numbers, tele-
+X          phone numbers, social security numbers, the  brand
+X          of  your  automobile,  the  name of the street you
+X          live on, etc.
+X
+X     o    Don't use a password of all  digits,  or  all  the
+X          same  letter.   This  significantly  decreases the
+X          search time for a cracker.
+X
+X     o    Don't use a word contained in (English or  foreign
+X          language)  dictionaries,  spelling lists, or other
+X          lists of words.
+X
+X     o    Don't use a password shorter than six characters.
+X
+X     o    Do use a password with mixed-case alphabetics.
+X
+X     o    Do use a password with  nonalphabetic  characters,
+X          e.g., digits or punctuation.
+X
+X     o    Do use a password that is easy to remember, so you
+X          don't have to write it down.
+X
+X     o    Do use a  password  that  you  can  type  quickly,
+X          without  having  to  look  at  the keyboard.  This
+X          makes it harder for someone to steal your password
+X          by watching over your shoulder.
+X
+X     Although this list may seem to restrict passwords to an
+Xextreme,  there  are  several  methods  for choosing secure,
+Xeasy-to-remember passwords that obey the above rules.   Some
+Xof these include the following:
+X
+X     o    Choose a line or two from a song or poem, and  use
+X          the  first letter of each word.  For example, ``In
+X          Xanadu did Kubla  Kahn  a  stately  pleasure  dome
+X          decree'' becomes ``IXdKKaspdd.''
+X
+X     o    Alternate between one consonant  and  one  or  two
+X          vowels,  up  to  eight  characters.  This provides
+X          nonsense words that are usually pronounceable, and
+X          thus  easily remembered.  Examples include ``rout-
+X          boo,'' ``quadpop,'' and so on.
+X
+X     o    Choose  two  short  words  and  concatenate   them
+X          together with a punctation character between them.
+X          For    example:    ``dog;rain,''     ``book+mug,''
+X          ``kid?goat.''
+X
+X     The importance  of  obeying  these  password  selection
+Xrules  cannot be overemphasized.  The Internet worm, as part
+Xof its strategy for breaking into new machines, attempted to
+Xcrack  user passwords.
+XEND_OF_NOTE
+X
+Xdone
+SHAR_EOF
+echo 'File cops_104/extra_src/pass.mail is complete' &&
+chmod 0755 cops_104/extra_src/pass.mail ||
+echo 'restore of cops_104/extra_src/pass.mail failed'
+Wc_c="`wc -c < 'cops_104/extra_src/pass.mail'`"
+test 4982 -eq "$Wc_c" ||
+	echo 'cops_104/extra_src/pass.mail: original size 4982, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extra_src/uucp_1.shar ==============
+if test -f 'cops_104/extra_src/uucp_1.shar' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extra_src/uucp_1.shar (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extra_src/uucp_1.shar (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extra_src/uucp_1.shar' &&
+X#!/bin/sh
+X# This is a shell archive (produced by shar 3.49)
+X# To extract the files from this archive, save it to a file, remove
+X# everything above the "!/bin/sh" line above, and type "sh file_name".
+X#
+X# made 02/06/1992 09:19 UTC by zen@death
+X# Source directory /big/zen/COPS/test/extra_src
+X#
+X# existing files will NOT be overwritten unless -c is specified
+X#
+X# This shar contains:
+X# length  mode       name
+X# ------ ---------- ------------------------------------------
+X#   1307 -rw------- Makefile
+X#   6411 -rw------- filecheck.c
+X#   4080 -rwx------ uucp.chk
+X#   3236 -rw------- uufiles.list
+X#
+X# ============= Makefile ==============
+Xif test -f 'Makefile' -a X"$1" != X"-c"; then
+X	echo 'x - skipping Makefile (File already exists)'
+Xelse
+Xecho 'x - extracting Makefile (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'Makefile' &&
+XX
+X# %Z% %M% %I% %E% %U%
+X# Makefile for "filecheck" (generated by /local/bin/makemake version 1.00.10)
+X# Created by chip@chinacat on Tue Jun 25 17:52:12 CDT 1991
+XX
+XSHELL = /bin/sh
+XCC = cc
+XDEFS = 
+XCOPTS = -O
+XLOPTS = 
+XLIBS = 
+XDEBUG = -g -DDEBUG
+XLINTFLAGS = -DLINT -DNO_PROTOTYPE
+XX
+XTARG = filecheck
+XOTHERS = 
+XX
+XSRCS = filecheck.c
+XX
+XOBJS = filecheck.o
+XX
+X# Any edits below this line will be lost if "makemake" is rerun!
+X# Commands may be inserted after the '#%custom' line at the end of this file.
+XX
+XCFLAGS = $(COPTS) $(DEFS) # $(DEBUG)
+XLDFLAGS = $(LOPTS) # $(DEBUG)
+XX
+Xall:		$(TARG) $(OTHERS)
+Xclean:			; rm -f $(TARG) $(OTHERS) *.o a.out core $(TARG).lint
+Xlint:		$(TARG).lint
+XX
+X$(TARG):	$(OBJS)
+XX		$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+XX
+X$(TARG).lint:	$(TARG)
+XX		lint $(LINTFLAGS) $(DEFS) $(SRCS) $(LIBS) > $@
+XX
+Xfilecheck.o: filecheck.c
+XX
+Xmake:		;
+XX		/local/bin/makemake -i -v1.00.10 -aMakefile \
+XX		    -DSHELL='$(SHELL)' -DCC='$(CC)' -DDEFS='$(DEFS)' \
+XX		    -DCOPTS='$(COPTS)' -DLOPTS='$(LOPTS)' -DLIBS='$(LIBS)' \
+XX		    -DDEBUG='$(DEBUG)' -DLINTFLAGS='$(LINTFLAGS)' \
+XX		    -DOTHERS='$(OTHERS)' $(TARG) $(SRCS)
+XX
+X#%custom - commands below this line will be maintained if 'makemake' is rerun
+XX
+XSHFILES = uucp.chk filecheck.c uufiles.list Makefile
+XSHAR = cops-uucp.sh
+XX
+Xshar : $(SHAR)
+XX
+X$(SHAR) : $(SHFILES)
+XX	shar $(SHFILES) >$@
+XX
+XSHAR_EOF
+Xchmod 0600 Makefile ||
+Xecho 'restore of Makefile failed'
+XWc_c="`wc -c < 'Makefile'`"
+Xtest 1307 -eq "$Wc_c" ||
+X	echo 'Makefile: original size 1307, current size' "$Wc_c"
+Xfi
+X# ============= filecheck.c ==============
+Xif test -f 'filecheck.c' -a X"$1" != X"-c"; then
+X	echo 'x - skipping filecheck.c (File already exists)'
+Xelse
+Xecho 'x - extracting filecheck.c (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'filecheck.c' &&
+X/*
+XX * filecheck - check ownership/permissions of a set of files
+XX *
+XX * A list of file specifications is read, one specification per line, and
+XX * check given by the specification is performed.  If the check fails, a
+XX * message is printed to stdout.  If no failures occur, this program
+XX * terminates with a zero exit status, otherwize nonzero if any checks failed.
+XX *
+XX * A specification is in the following format:
+XX *
+XX *		pathname    [!]key-list    uid-list    gid-list    perms
+XX *
+XX * pathname		Full pathname of the file to check.
+XX *
+XX * key-list		A list of keys, seperated by colons, to which this spec
+XX *				applies.  The key is specified by the "-k" command line
+XX *				options, or "all" if none given.  If the given key is
+XX *				contained in the key-list, then this spec is checked.  If the
+XX *				given key does not match then this specification is ignored.
+XX *
+XX *				For example, if the specification contains a key-list of
+XX *				"xenix:usg" and we run "filecheck -k xenix", then the spec
+XX *				will be checked.  If we run "filecheck -k sun" then the spec
+XX *				will be ignored.
+XX *
+XX *				If the given key is "all" (or none is specified since this is
+XX *				the default), then all specifications are checked.  If the
+XX *				key-list for a specification contains "all", then it will be
+XX *				checked regardless of the key given on the command line.
+XX *
+XX *				If a "!" appears at the front of the key-list, then a
+XX *				complaint will be issued if the file specified by "pathname"
+XX *				does not exist.  Otherwise, if the file does not exist the
+XX *				specification is ignored.
+XX *
+XX * uid-list		A colon delimited list of user names.  If the file is not
+XX *				owned by a user in this list, then a complaint is generated.
+XX *				If the value of this field is "-" then the user ownership
+XX *				check is suppressed.
+XX *
+XX * gid-list		A colon delimited list of group names.  If the file is not
+XX *				owned by a group in this list, then a complaint is generated.
+XX *				If the value of this field is "-" then the group ownership
+XX *				check is suppressed.
+XX *
+XX * perms		A maximum set of permissions which this file should have.
+XX *				For example, if the specification says "755" and the
+XX *				file is actually "555" then it is OK.  However, if the
+XX *				file is actually "775" then a complaint will be issued
+XX *				because the group write privilge is enabled.  If the value
+XX *				of this field is "-" then the permissions check is suppressed.
+XX */
+XX
+X#include <stdio.h>
+X#include <string.h>
+X#include <sys/types.h>
+X#include <sys/stat.h>
+X#include <pwd.h>
+X#include <grp.h>
+XX
+X#define USAGE	"usage: [-k key] [file]\n"
+XX
+X#define TRUE	1
+X#define FALSE	0
+XX
+Xint check_key();
+Xint check_uid();
+Xint check_gid();
+Xint check_perms();
+XX
+Xextern struct passwd *getpwnam(), *getpwuid();
+Xextern struct group *getgrnam(), *getgrgid();
+Xlong strtol();
+XX
+Xmain(argc, argv)
+Xint argc;
+Xchar *argv[];
+X{
+XX	char *f_pathname, *f_key, *f_uname, *f_gname, *f_perms;
+XX	char buf[512], *selkey;
+XX	int must_exist, status, lineno, i;
+XX	struct stat sbuf;
+XX	extern int optind;
+XX	extern char *optarg;
+XX
+XX	selkey = "all";
+XX	while ((i = getopt(argc, argv, "k:")) != EOF) {
+XX		switch (i) {
+XX		case 'k':
+XX			selkey = optarg;
+XX			break;
+XX		default:
+XX			fprintf(stderr, USAGE, argv[0]);
+XX			exit(1);
+XX		}
+XX	}
+XX
+XX	switch (argc-optind) {
+XX	case 0:
+XX		break;
+XX	case 1:
+XX		if (freopen(argv[optind], "r", stdin) == NULL) {
+XX			perror(argv[optind]);
+XX			exit(1);
+XX		}
+XX		break;
+XX	default:
+XX		fprintf(stderr, USAGE, argv[0]);
+XX		exit(1);
+XX	}
+XX
+XX	lineno = 0;
+XX	status = 0;
+XX	while (++lineno, fgets(buf, sizeof(buf), stdin) != NULL) {
+XX
+XX		/*
+XX		 * Break up the line.  Skip comments and blank lines.
+XX		 */
+XX		if ((f_pathname = strtok(buf, " \t\n")) == NULL || *f_pathname == '#' )
+XX			continue;
+XX		if (
+XX			(f_key = strtok((char *)NULL, " \t\n")) == NULL ||
+XX			(f_uname = strtok((char *)NULL, " \t\n")) == NULL ||
+XX			(f_gname = strtok((char *)NULL, " \t\n")) == NULL ||
+XX			(f_perms = strtok((char *)NULL, " \t\n")) == NULL ||
+XX			strtok((char *)NULL, " \t\n") != NULL
+XX		) {
+XX			printf("%s(%d): bad line ignored\n", f_pathname, lineno);
+XX			status = 1;
+XX			continue;
+XX		}
+XX
+XX		/*
+XX		 * See if we want to insist that this file exists.
+XX		 */
+XX		must_exist = (*f_key == '!');
+XX		if (must_exist)
+XX			++f_key;
+XX
+XX		/*
+XX		 * See if we want to do this entry.
+XX		 */
+XX		if (!check_key(selkey, f_key))
+XX			continue;
+XX
+XX		/*
+XX		 * Get info on this file.
+XX		 */
+XX		if (stat(f_pathname, &sbuf) != 0) {
+XX			if (must_exist) {
+XX				fprintf(stderr, "%s: could not access file\n", f_pathname);
+XX				status = 1;
+XX			}
+XX			continue;
+XX		}
+XX
+XX		/*
+XX		 * Perform checks.
+XX		 */
+XX		if (!check_uid(f_pathname, f_uname, &sbuf))
+XX			status = 1;
+XX		if (!check_gid(f_pathname, f_gname, &sbuf))
+XX			status = 1;
+XX		if (!check_perms(f_pathname, f_perms, &sbuf))
+XX			status = 1;
+XX
+XX	}
+XX
+XX	exit(status);
+XX	/*NOTREACHED*/
+X}
+XX
+XX
+Xint check_key(key, klist)
+Xchar *key, *klist;
+X{
+XX	char *k;
+XX	if (key == NULL || klist == NULL || strcmp("all", key) == 0)
+XX		return TRUE;
+XX	while ((k = strtok(klist, ": \t\n")) != NULL) {
+XX		if (strcmp(k, key) == 0 || strcmp(k, "all") == 0)
+XX			return TRUE;
+XX		klist = NULL;
+XX	}
+XX	return FALSE;
+X}
+XX
+XX
+Xint check_uid(fname, ulist, s)
+Xchar *fname;
+Xchar *ulist;
+Xstruct stat *s;
+X{
+XX	struct passwd *pw;
+XX	char buf[256];
+XX	char *up, *u;
+XX
+XX	if (strcmp(ulist, "-") == 0)
+XX		return TRUE;
+XX	up = strcpy(buf, ulist);
+XX	while ((u = strtok(up, ": \t\n")) != NULL) {
+XX		if ((pw = getpwnam(u)) != NULL && s->st_uid == pw->pw_uid)
+XX			return TRUE;
+XX		up = NULL;
+XX	}
+XX	pw = getpwuid(s->st_uid);
+XX	printf("%s: uid is %s(%d), expected %s\n",
+XX		fname, (pw == NULL ? "<unknown>" : pw->pw_name), s->st_uid, ulist);
+XX	return FALSE;
+X}
+XX
+XX
+Xint check_gid(fname, glist, s)
+Xchar *fname;
+Xchar *glist;
+Xstruct stat *s;
+X{
+XX	struct group *gr;
+XX	char buf[256];
+XX	char *gp, *g;
+XX
+XX	if (strcmp(glist, "-") == 0)
+XX		return TRUE;
+XX	gp = strcpy(buf, glist);
+XX	while ((g = strtok(gp, ": \t\n")) != NULL) {
+XX		if ((gr = getgrnam(g)) != NULL && s->st_gid == gr->gr_gid)
+XX			return TRUE;
+XX		gp = NULL;
+XX	}
+XX	gr = getgrgid(s->st_gid);
+XX	printf("%s: gid is %s(%d), expected %s\n",
+XX		fname, (gr == NULL ? "<unknown>" : gr->gr_name), s->st_gid, glist);
+XX	return FALSE;
+X}
+XX
+XX
+Xint check_perms(fname, perms, s)
+Xchar *fname;
+Xchar *perms;
+Xstruct stat *s;
+X{
+XX	int perms_want, perms_act;
+XX
+XX	if (strcmp(perms, "-") == 0)
+XX		return TRUE;
+XX	perms_want = (int) strtol(perms, (char *)NULL, 8);
+XX	perms_act = s->st_mode & 07777;
+XX	if ((perms_act & perms_want) == perms_act)
+XX		return TRUE;
+XX
+XX	printf("%s: permissions are %04o, should be at least %04o\n",
+XX		fname, perms_act, perms_want);
+XX	return FALSE;
+X}
+XX
+XSHAR_EOF
+Xchmod 0600 filecheck.c ||
+Xecho 'restore of filecheck.c failed'
+XWc_c="`wc -c < 'filecheck.c'`"
+Xtest 6411 -eq "$Wc_c" ||
+X	echo 'filecheck.c: original size 6411, current size' "$Wc_c"
+Xfi
+X# ============= uucp.chk ==============
+Xif test -f 'uucp.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping uucp.chk (File already exists)'
+Xelse
+Xecho 'x - extracting uucp.chk (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'uucp.chk' &&
+X:
+XX
+X#
+X# site-specific customizations
+X#
+X# OK_DIRS	Colon-delimited list of directories uucp accounts are
+X#		allowed to access.
+X#
+X# OK_CMDS	Colon-delimited list of commands uucp accounts are allowed
+X#		to execute.
+X#
+XX
+XOK_DIRS="/tmp:/usr/tmp:/usr/spool/uucppublic"
+XOK_CMDS="rmail:rnews:lp:who:uucp:rsmtp:rcsmtp"
+XX
+X# if [ -f /usr/lib/uucp/Systems ] ; then
+Xif [ -f /etc/uucp/Systems ] ; then
+XX	uutype=bnu
+Xelif [ -f /usr/lib/uucp/L.sys ] ; then
+XX	uutype=v2
+Xelse
+XX	echo "$0: cannot figure out type of uucp system" 1>&2
+XX	exit 1
+Xfi
+XX
+X#
+X# If "uucheck" is available then run it.
+X#
+Xif [ -x /usr/lib/uucp/uucheck ] ; then
+XX	/usr/lib/uucp/uucheck
+Xfi
+XX
+X#
+X# Check the file permissions.
+X#
+X./filecheck -k $uutype ./uufiles.list
+XX
+X#
+X# Various checks specific to BNU uucp.
+X#
+Xif [ $uutype = bnu ] ; then
+XX
+XX	#
+XX	# "remote.unknown" must be executable to prevent unknown machines
+XX	# from logging in.
+XX	#
+XX	if [ ! -x /usr/lib/uucp/remote.unknown ] ; then
+XX		echo "warning - no executable 'remote.unknown' - unknown machine logins allowed"
+XX	fi
+XX
+XX	#
+XX	# ".Admin/foreign" must be writable for login attempts by unknown
+XX	# machines to be logged.
+XX	#
+XX	cd /usr/spool/uucp/.Admin
+XX	if [ -f foreign ] ; then
+XX		set X `ls -l foreign`
+XX		perms="$2"
+XX		owner="$4"
+XX		if [ "$owner" != "uucp" ] ; then
+XX			echo "warning - .Admin/foreign is not owned by uucp"
+XX		fi
+XX		case "$perms" in
+XX		-?w???????)
+XX			;;
+XX		*)
+XX			echo "warning - .Admin/foreign is not writable by uucp"
+XX			;;
+XX		esac
+XX		case "$perms" in
+XX		-??????r??)
+XX			echo "warning - .Admin/foreign is readable by world"
+XX			;;
+XX		esac
+XX	else
+XX		su uucp -c 'echo testing > foreign' 2>/dev/null
+XX		if [ -f foreign ] ; then
+XX			rm foreign
+XX		else
+XX			echo "warning - .Admin/foreign cannot be created by uucp"
+XX		fi
+XX	fi
+Xfi
+XX
+X#
+X# Check access permissions granted (BNU).
+X#
+Xif [ -f /usr/lib/uucp/Permissions ] ; then
+XX	awk '
+XX
+XX	$1 ~ /^#/ { rec = "" ; next }
+XX
+XX	{
+XX		for ( i = 1 ; i <= NF ; ++i ) {
+XX			if ( substr($i,1,8) == "MACHINE=" ) {
+XX				rec = rec " " $i
+XX				continue
+XX			}
+XX			if ( substr($i,1,8) == "LOGNAME=" ) {
+XX				rec = rec " " $i
+XX				continue
+XX			}
+XX			if ( substr($i,1,5) == "READ=" ) {
+XX				mode = "read"
+XX				n = split(substr($i,6,9999), x, ":")
+XX				n_ok = split(OK_DIRS, ok, ":")
+XX			} else if ( substr($i,1,6) == "WRITE=" ) {
+XX				mode = "write"
+XX				n = split(substr($i,7,9999), x, ":")
+XX				n_ok = split(OK_DIRS, ok, ":")
+XX			} else if ( substr($i,1,9) == "COMMANDS=" ) {
+XX				mode = "execute"
+XX				n = split(substr($i,10,9999), x, ":")
+XX				n_ok = split(OK_CMDS, ok, ":")
+XX			} else {
+XX				continue
+XX			}
+XX			for ( j = 1 ; j <= n ; ++j ) {
+XX				for ( k = 1 ; k <= n_ok && x[j] != ok[k] ; ++k )
+XX					;
+XX				if ( k > n_ok )
+XX					printf("warning - Permissions grants %s access to \"%s\" for%s\n", mode, x[j], rec)
+XX			}
+XX		}
+XX	}
+XX
+XX	$NF != "\\" { rec = "" }
+XX
+XX	' OK_DIRS="$OK_DIRS" OK_CMDS="$OK_CMDS" /usr/lib/uucp/Permissions
+Xfi
+XX
+X#
+X# Check access permissions granted (V2).
+X#
+X#	Important note - there are so many freaking variants of how to
+X#	obtain default username/machine info from USERFILE, that I just
+X#	punted here.  Unfortunately, USERFILE is a gawdawful wretched
+X#	mess (the best reason for BNU existing IMHO), so one could argue
+X#	that these checks are the most important things this could do.
+X#
+Xif [ -f /usr/lib/uucp/USERFILE ] ; then
+XX
+XX	awk '
+XX
+XX	BEGIN {
+XX		num_ok_dirs = split(OK_DIRS, ok_dir, ":")
+XX	}
+XX
+XX	$1 ~ /^#/ { rec = "" ; next }
+XX
+XX	{
+XX		if ( $2 == "c" )				# skip callback flag
+XX			j = 2
+XX		else
+XX			j = 1
+XX		while ( ++j <= NF ) {
+XX			for ( k = 1 ; k <= num_ok_dirs && ok_dir[k] != $j ; ++k )
+XX				;
+XX			if ( k > num_ok_dirs )
+XX				printf("warning - USERFILE grants access to \"%s\" for %s\n", $j, $1)
+XX		}
+XX	}
+XX
+XX	' OK_DIRS="$OK_DIRS" /usr/lib/uucp/USERFILE
+XX
+Xfi
+XX
+X#
+X# Check execute permissions granted (V2).
+X#
+Xcd /usr/lib/uucp
+Xfor file in L.cmds L-cmds uuxqtcmds ; do
+XX    if [ -f $file ] ; then
+XX	    awk '
+XX	    BEGIN { num_ok_cmds = split(OK_CMDS, ok_cmd, ":") }
+XX	    $1 ~ /^PATH=/ { next }
+XX	    {
+XX		for ( i = 1 ; i <= num_ok_cmds && ok_cmd[i] != $0 ; ++i )
+XX			;
+XX		if ( i > num_ok_cmds )
+XX		    printf("warning - %s grants execute access to \"%s\"\n", FILENAME, $0)
+XX	    }
+XX	    ' OK_CMDS="$OK_CMDS" $file
+XX    fi
+Xdone
+XX
+XXexit 0
+XX
+XSHAR_EOF
+Xchmod 0700 uucp.chk ||
+Xecho 'restore of uucp.chk failed'
+XWc_c="`wc -c < 'uucp.chk'`"
+Xtest 4080 -eq "$Wc_c" ||
+X	echo 'uucp.chk: original size 4080, current size' "$Wc_c"
+Xfi
+X# ============= uufiles.list ==============
+Xif test -f 'uufiles.list' -a X"$1" != X"-c"; then
+X	echo 'x - skipping uufiles.list (File already exists)'
+Xelse
+Xecho 'x - extracting uufiles.list (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'uufiles.list' &&
+XX
+X#
+X# file				key	user	group		perms
+X#
+XX
+X/usr/bin/uucp			!all	uucp	uucp:daemon	4111
+X/usr/bin/cu			!all	uucp	uucp:daemon	4111
+X/usr/bin/uudecode		all	-	-		 755
+X/usr/bin/uuencode		all	-	-		 755
+X/usr/bin/uuname			!all	uucp	uucp:daemon	4111
+X/usr/bin/uusend			all	-	-		 755
+X/usr/bin/uustat			!all	uucp	uucp:daemon	4111
+X/usr/bin/uuto			all	-	-		 755
+X/usr/bin/uux			!all	uucp	uucp:daemon	4111
+XX
+X/usr/lib/uucp			!all	uucp	uucp:daemon	 755
+X/usr/lib/uucp/.XQTDIR		!v2	uucp	uucp:daemon	 555
+X/usr/lib/uucp/Devices		!bnu	uucp	uucp:daemon	 640
+X/usr/lib/uucp/Dialcodes		!bnu	uucp	uucp:daemon	 640
+X/usr/lib/uucp/Dialers		!bnu	uucp	uucp:daemon	 640
+X/usr/lib/uucp/FWDFILE		v2	uucp	uucp:daemon	 640
+X/usr/lib/uucp/L-cmds		v2	uucp	uucp:daemon	 640
+X/usr/lib/uucp/L-devices		!v2	uucp	uucp:daemon	 640
+X/usr/lib/uucp/L-dialcodes	!v2	uucp	uucp:daemon	 640
+X/usr/lib/uucp/L.cmds		v2	uucp	uucp:daemon	 640
+X/usr/lib/uucp/L.sys		!v2	uucp	uucp:daemon	 640
+X/usr/lib/uucp/L_stat		v2	uucp	uucp:daemon	 644
+X/usr/lib/uucp/L_sub		v2	uucp	uucp:daemon	 644
+X/usr/lib/uucp/Maxuuscheds	!bnu	uucp	uucp:daemon	 644
+X/usr/lib/uucp/Maxuuxqts		!bnu	uucp	uucp:daemon	 644
+X/usr/lib/uucp/ORIGFILE		v2	uucp	uucp:daemon	 640
+X/usr/lib/uucp/Permissions	!bnu	uucp	uucp:daemon	 640
+X/usr/lib/uucp/Poll		!bnu	uucp	uucp:daemon	 644
+X/usr/lib/uucp/SEQF		v2	uucp	uucp:daemon	 640
+X/usr/lib/uucp/SQFILE		v2	uucp	uucp:daemon	 640
+X/usr/lib/uucp/Systems		!bnu	uucp	uucp:daemon	 640
+X/usr/lib/uucp/USERFILE		!v2	uucp	uucp:daemon	 640
+X/usr/lib/uucp/remote.unknown	!bnu	uucp	uucp:daemon	 755
+X/usr/lib/uucp/uucheck		all	uucp	uucp:daemon	 110
+X/usr/lib/uucp/uucico		!all	uucp	uucp:daemon	4111
+X/usr/lib/uucp/uuclean		all	uucp	uucp:daemon	4110
+X/usr/lib/uucp/uucleanup		bnu	uucp	uucp:daemon	 110
+X/usr/lib/uucp/uudemon.admin	bnu	uucp	uucp:daemon	 555
+X/usr/lib/uucp/uudemon.clean	bnu	uucp	uucp:daemon	 555
+X/usr/lib/uucp/uudemon.day	bnu	uucp	uucp:daemon	 500
+X/usr/lib/uucp/uudemon.hour	bnu	uucp	uucp:daemon	 555
+X/usr/lib/uucp/uudemon.hr	v2	uucp	uucp:daemon	 500
+X/usr/lib/uucp/uudemon.poll	bnu	uucp	uucp:daemon	 555
+X/usr/lib/uucp/uudemon.wk	v2	uucp	uucp:daemon	 500
+X/usr/lib/uucp/uulog		all	uucp	uucp:daemon	 555
+X/usr/lib/uucp/uupick		all	uucp	uucp:daemon	 555
+X/usr/lib/uucp/uusched		!bnu	uucp	uucp:daemon	4111
+X/usr/lib/uucp/uusub		all	uucp	uucp:daemon	 755
+X/usr/lib/uucp/uuto		all	uucp	uucp:daemon	 555
+X/usr/lib/uucp/uutry		all	uucp	uucp:daemon	 755
+X/usr/lib/uucp/uuxqt		!all	uucp	uucp:daemon	4111
+X/usr/lib/uucp/uuxqtcmds		v2	uucp	uucp:daemon	 640
+XX
+X/usr/spool/uucp			!all	uucp	uucp:daemon	 775
+X/usr/spool/uucp/.Admin		!bnu	uucp	uucp:daemon	 775
+X/usr/spool/uucp/.Admin/audit	bnu	uucp	uucp:daemon	 660
+X/usr/spool/uucp/.Admin/errors	bnu	uucp	uucp:daemon	 660
+X/usr/spool/uucp/.Admin/foreign	bnu	uucp	uucp:daemon	 660
+X/usr/spool/uucp/.Corrupt	!bnu	uucp	uucp:daemon	 775
+X/usr/spool/uucp/.Log		!bnu	uucp	uucp:daemon	 775
+X/usr/spool/uucp/.Old		!bnu	uucp	uucp:daemon	 775
+X/usr/spool/uucp/.Sequence	!bnu	uucp	uucp:daemon	 775
+X/usr/spool/uucp/.Status		!bnu	uucp	uucp:daemon	 775
+X/usr/spool/uucp/.Workspace	!bnu	uucp	uucp:daemon	 775
+X/usr/spool/uucp/.Xqtdir		!bnu	uucp	uucp:daemon	 775
+X/usr/spool/uucp/ERRLOG		v2	uucp	uucp:daemon	 644
+X/usr/spool/uucp/LOGFILE		v2	uucp	uucp:daemon	 664
+X/usr/spool/uucp/SYSLOG		v2	uucp	uucp:daemon	 664
+XX
+XSHAR_EOF
+Xchmod 0600 uufiles.list ||
+Xecho 'restore of uufiles.list failed'
+XWc_c="`wc -c < 'uufiles.list'`"
+Xtest 3236 -eq "$Wc_c" ||
+X	echo 'uufiles.list: original size 3236, current size' "$Wc_c"
+Xfi
+Xexit 0
+SHAR_EOF
+chmod 0600 cops_104/extra_src/uucp_1.shar ||
+echo 'restore of cops_104/extra_src/uucp_1.shar failed'
+Wc_c="`wc -c < 'cops_104/extra_src/uucp_1.shar'`"
+test 17694 -eq "$Wc_c" ||
+	echo 'cops_104/extra_src/uucp_1.shar: original size 17694, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/Article ==============
+if test ! -d 'cops_104/checkacct'; then
+    echo 'x - creating directory cops_104/checkacct'
+    mkdir 'cops_104/checkacct'
+fi
+if test -f 'cops_104/checkacct/Article' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/Article (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/Article (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/Article' &&
+X[The entire text of this article appeared in the Engineering Computer
+X Network's (ECN) "No Name Newsletter" September 1991]
+X
+X                 Guide to Account Security
+X                      Philip R. Moyer
+X                      ------ -  -----
+X
+X1   WHAT IS AN ACCOUNT?
+X-   ---- -- -- -------
+XAccounts allow people to use the computer.  When you get an
+Xaccount, you are given a password and a home directory.  The
+Xhome directory is a place on a disk where you can put your
+Xfiles.  Each account has a login associated with it.  There
+Xis one login per account.  For example, my login is "prm".
+X
+XEach account has unique information associated with it.  One
+Xof these data is the user id (or uid). It is a number that
+Xidentifies the login.  All files created by you will have
+Xyour uid attached to them.
+X
+XThe operating system keeps track of who is logged on at any
+Xgiven time.  It also keeps track of which commands you
+Xexecute and how much time it takes to execute them.  It also
+Xkeeps track of where you logged in.  In some cases, the
+Xoperating system can keep track of who creates or modifies
+Xfiles.
+X
+X It is very important that you keep your account secure; any
+Xuser who has access to your login and password can
+Xmasquerade as you.  If that person does something illegal,
+Xyou could get blamed.  He or she could also remove or modify
+Xyour files.
+X
+X2   LOGGING IN AND LOGGING OUT
+XWhen you want to work on the computer, you must first
+Xidentify yourself to the computer and prove you are who you
+Xsay you are.  This process of identification and identity
+Xverification is called "logging in".  First, the computer
+Xidentifies itself and prompts you for a login.  Here is an
+Xexample:
+X
+X       dynamo.ecn.purdue.edu  login:
+X
+XYou would then type in your login and the computer would
+Xprompt for a password:
+X
+X        dynamo.ecn.purdue.edu  login: prm
+X        Password:
+X
+XYou then type in your password.  The computer won't print
+Xthe password as it is typed so other users can't see it on
+Xthe screen.  After the computer checks to see that the
+Xpassword matches the one associated with the given login, it
+Xstarts a shell and grants you access to the machine.
+X
+XYou log in differently depending on what shell you are
+Xusing.  If you are using Bourne shell (your prompt is "$"),
+Xyou log out by typing the control key and the "d" key at the
+Xsame time.  If you are using csh, type the word "exit" or
+X"logout" and you will be logged out.  The computer records
+Xthe times you logged in and logged out.
+X
+X3   PASSWORDS
+XChoosing a good password is very important, because
+Xunauthorized users are often able to steal accounts or gain
+Xaccess to a system by guessing passwords.  People who try to
+Xgain unauthorized access to a computer or a specific account
+Xare called "crackers".  If your account is compromised,
+Xbecause of either a bad password or other means, the cracker
+Xcan not only remove or modify any of your files, but he/she
+Xcan also attack other users on the system, or other systems
+Xon the network.
+X
+XGood passwords are difficult to create; care and thought
+Xshould go into each one.  Here are some guidelines for
+Xchoosing passwords.
+X
+XBad passwords are:
+X   - your login in any form
+X            (as-is, reversed, capitalized, doubled, etc)
+X   - any first or last name, yours or someone else's
+X             (regardless of ordering or capitalization)
+X   - license plate numbers
+X   - phone numbers
+X   - social security numbers
+X   - brands or styles of automobiles
+X   - street, city, state or country names
+X   - all digits or all of the same letter
+X   - any word found in a dictionary, English or other
+X   - passwords shorter than six characters
+X   - famous product names (Budweiser, Ruffles, etc)
+X   - cartoon characters
+X
+XGood passwords are usually pieces of several words, with odd
+Xcapitalizations.  A good password may include punctuation or
+Xother non-alphabetic characters.  Using digits in unexpected
+Xlocations can make a password better.
+X
+XUse the passwd command to change your password.  Just type
+Xand you will be prompted for your old password (to verify
+Xthat you are authorized to change it) and a new password.
+XThen you will be prompted for the new password again, to
+Xmake sure you didn't mis-type the new password.  
+X
+X4   KEEPING YOUR PASSWORD SECURE
+XYou should change your password as soon as you get an
+Xaccount, and then you should change it once every one or two
+Xmonths, just to be sure it isn't being used by anyone else.
+X
+XDon't tell anyone what your password is, under any
+Xcircumstances. Let me emphasize that.  Don't tell ANYONE.
+XUnder ANY circumstances.  There are crackers who have been
+Xknown to send mail that appears to be from the system
+Xadministrator, asking you to change your password to
+Xsomething they give you.  DON'T EVER DO THIS!  There is *no*
+Xlegitimate reason for ANYONE to ask for your password.  If
+Xyou ever get mail like this, go to your site specialist and
+Xreport the incident.
+X
+XDon't write your password down.  It's too easy for someone
+Xto discover it.  You should choose a password that you can
+Xremember.  If, however, you absolutely must write down your
+Xpassword, don't write it anywhere obvious, like on a post-it
+Xnote stuck to your terminal, on the front of your notebook,
+Xor on a piece of paper next to the terminal.  Write it on
+Xsomething in your wallet and then be tricky by changing the
+Xwritten password in some way (like leaving out two key
+Xletters); so you can still remember it, but it is harder for
+Xa someone who sees the paper to get into the account.  Don't
+Xever write your login and password on the same piece of
+Xpaper.
+X
+XYou should also be very careful that someone isn't watching
+Xyou when you log in.  Many people can tell what you are
+Xtyping just by watching your fingers on the keyboard.
+X
+X5   DIRECTORIES AND FILES
+XAll information on the computer is stored in files.  A file
+Xis just what it sounds like, a container for data.  A
+Xdirectory is a special file that contains other files or
+Xdirectories.  You can list which files are in a directory
+Xusing the ls command. For example, here's what ls says about
+X          --                                   --
+Xthe directory (/home/harbor3/prm/pub/articles) where I'm
+Xlocated.
+X
+XRFC1147.ps    acct.sec    imp.tech     new.security
+Xorange-book   privacy     pu.environ   ritalin
+Xs.serv        s.serv.tr   style        wwarticle
+Xzap
+X
+XYou can use ls to find out additional information about
+X            --
+Xfiles by using the "-l" option.  For example, if I wanted
+Xmore information about the file acct.sec in the list above,
+XI would type Here is what happens when I do that:
+X
+X-rw-r--r--  1 prm  8058 Aug 19 11:22 acct.sec
+X
+X   - The first field shown as, "-rw-r--r--", is the file
+X     type and permission bits.  More information about
+X     permission codes is given below.
+X
+X   - The second field, "1", is the number of links to the
+X     file.  In this case, the file has only one name.  Other
+X     links can be made with the "ln" command.
+X
+X   - The third field, "prm", is the file's owner.  The login
+X     prm owns this file.
+X
+X   - The fourth field, "8058", is the size of the file in
+X     number of characters.
+X
+X   - The fifth field, "Aug 19 11:22", is the time the file
+X     was last modified.
+X
+X   - The last field is the name of the file.
+X
+XPermission Codes
+XThe first character in the type/permission field is the file
+Xtype.  If the file is a directory, the first character will
+Xbe a "d".  If it is a regular file, the first character will
+Xbe "-".
+X
+XThe next nine characters are access permission flags.  The
+Xleftmost three are owner permissions, the middle three are
+Xgroup permissions, and the rightmost three are world
+Xpermissions.  The letter "r" grants read permission, the
+Xletter "w" grants write permission, and the letter "x"
+Xgrants execute permission.
+X
+XIn the above example, the permissions for the owner, "prm",
+Xare "rw-".  That means the owner "prm" can read and write
+Xthe file, but not execute it.  The permissions for the
+Xfile's group are "r--", as they are for the world.  
+XIf a file has modes "rw-rw----" and is owned by group other, 
+Xeveryone on the computer can write to the file!  You can see 
+Xgroup ownership on a file by using the "g" option with the "l" 
+Xoption to ls.
+X          --
+XFor example, when I type "ls" I get the following:
+X
+X-rw-r--r--  1 prm  other  8058 Aug 19 11:22 acct.sec
+X
+XThe "other" is the group owner of the file.
+X
+XYou can use the chmod command to change file permissions.
+X                -----
+XThe character "+" means add permission and the character "-"
+Xmeans deny permission.  For example, if I wanted to let
+Xpeople in group "other" write on my file, I would type
+XWhereas if I want to deny other people permission to look at
+Xthis file, I could type and the read permission on the file
+Xwould be revoked.
+X
+XThere is a shorthand way of representing file modes.  Each
+Xpermission category (owner, group, and world) is given a
+Xnumber which represents the bits set in the permission
+Xfield. Here is a table that explains this numbering system:
+X
+X             _________________________________
+X            |           Owner   Group   World|
+X             _________________________________
+X            | Read       400     40       4  |
+X            | Write      200     20       2  |
+X            | Execute    100     10       1  |
+X              None         0      0       0
+X            |________________________________+
+X
+XTo use this table, merely add up the permissions you want.
+XFor example, a file that is mode 644 has owner read and
+Xwrite permission (400 + 200), group read permission (40),
+Xand world read permission (4).
+X
+XYou can use this shorthand with chmod as well.  Just use the
+X                                -----
+Xnumber instead of the symbolic representation.  If you want
+Xto change the mode of your .login from 755 to 644, you can
+X                            -----
+Xtype:
+X	/bin/chmod 0644 .login
+X
+XYour home directory should be mode 700, 711, or 755.  You
+Xshould not allow others write permission to your directory!
+XThat would give them permission to create or destroy files
+Xat will.
+X
+XImportant files should be mode 644 or 600.  Only rarely is
+Xit important to make a file mode 666, which is world-
+Xwritable.
+X
+X6   IMPORTANT FILES
+XMost accounts have special files called "dot" files.  These
+Xfiles control the startup, environment, and execution of the
+Xshell and some programs.  It is very, very important that
+Xthese files not be writable by anyone but you!  If someone
+Xelse can write those files, they can take control of your
+Xaccount in a matter of minutes!  Then they'll be you, which
+Xmeans they can do anything you can do: read, write or modify
+Xfiles; send mail; talk to other users; print documents.
+XMake sure that permissions on these files are set to 644,
+Xor, better yet, 600:
+X
+X
+X
+X               .login     .logout    .cshrc
+X               .bashrc    .kshrc     .xinitrc
+X               .exrc      .dbxinit   .profile
+X               .sunview   .mwmrc     .twmrc
+X
+X7   PHYSICAL SECURITY
+XTry to be aware of physical security.  When you are logged
+Xin on a terminal or workstation, don't leave it without
+Xlocking the screen.  Often, this means that you shouldn't
+Xeven go to the next room to get output without locking your
+Xscreen.  It only takes two commands ("cp and chmod") for
+Xsomeone to steal access to your account if they can find it
+Xlogged in and unattended, so be careful!
+X
+X8   ACCOUNT SHARING
+XYou may, at one time or another, feel you need to give
+Xsomeone else access to your account.  There are several ways
+Xyou could go about doing this, the most common of which are
+X.rhosts files, giving the person your password, and making
+X ------
+Xyour directory mode 777.  Please don't give anyone else
+Xaccess to your account.  It's too easy for them to do
+Xsomething malicious.  Don't let a friend set up a dot file
+Xfor you.  Don't use programs in other people's directories.
+XDon't trust people to leave your account alone.  If you let
+Xsomeone edit your .login because you don't really understand
+X                   -----
+Xhow a .login works, you've essentially given them your
+X       -----
+Xaccount, even if you change the password.
+SHAR_EOF
+chmod 0600 cops_104/checkacct/Article ||
+echo 'restore of cops_104/checkacct/Article failed'
+Wc_c="`wc -c < 'cops_104/checkacct/Article'`"
+test 12030 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/Article: original size 12030, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/Intro ==============
+if test -f 'cops_104/checkacct/Intro' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/Intro (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/Intro (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/Intro' &&
+X
+XThis is the locally developed program chkacct(1L) (an abbreviation for
+X'check account').  Its purpose is to check the files in your Unix
+Xaccount for security problems which, if left as they are, might make it
+Xpossible for someone to break into your account.  chkacct(1L) will
+Xpresent each problem to you along with a short explanation as to why it
+Xis a danger.  You will then be asked if you wish to ignore the problem,
+Xsee more information about the problem, or have chkacct(1L) fix the
+Xproblem for you.
+X
+XIf you simply press RETURN/NEWLINE whenever prompted, chkacct(1L) will
+Xalways choose to fix the problem in the most security-conscious
+Xmanner.
+X
+XThere are three steps to chkacct(1L), if you do not see one of the
+Xsteps, then please see a PUCC General Consultant.
+X
+SHAR_EOF
+chmod 0600 cops_104/checkacct/Intro ||
+echo 'restore of cops_104/checkacct/Intro failed'
+Wc_c="`wc -c < 'cops_104/checkacct/Intro'`"
+test 769 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/Intro: original size 769, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/Makefile ==============
+if test -f 'cops_104/checkacct/Makefile' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/Makefile (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/Makefile (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/Makefile' &&
+X#	$Id: Makefile,v 1.1 91/12/04 13:43:49 shabby Exp Locker: shabby $
+X#
+X#	Makefile for chkacct
+X#
+X
+XDESTDIR=	/usr/local
+XPROG=	chkacct
+XBIN=	${DESTDIR}/bin
+XLIB=	${DESTDIR}/lib/chkacct
+XDOC=	${DESTDIR}/man
+X
+XINSTALLFLAGSLIB=	-r -D -cm 0444
+XINSTALLFLAGSBIN=	-r -D -cm 0755
+X
+XSRCs=	ca.src
+XM4SRC=	defines.m4
+XMAN=	chkacct.1l
+XPERLSRC=	rhosts.pl
+XOTHER=	README
+XSRCl=	dotwrite effect.dotwrit effect.owners effect.read effect.rhosts\
+X	effect.setuid effect.write Intro owners readable rhosts setuid write\
+X	prompt.help Article
+X
+XSOURCE=	Makefile ${M4SRC} ${OTHER} ${MAN} ${SRCl} ${SRCs} ${PERLSRC}
+X
+Xall: ${SRCl} ${PROG}
+X
+X${PROG}: ${SRCs}
+X	m4 ${M4SRC} ${SRCs} > $@
+X	chmod 755 $@
+X
+X${M4SRC}:	
+X	echo "Remember to get a copy of the right m4 file.!";
+X
+Xclean: FRC
+X	rm -f Makefile.bak ${PROG} a.out core errs lint.out tags
+X
+Xdepend: FRC
+X
+Xinstall: all FRC
+X	install ${INSTALLFLAGSLIB} ${SRCl} ${LIB}
+X	install ${INSTALLFLAGSBIN} ${PERLSRC} ${LIB}
+X	install ${INSTALLFLAGSBIN} ${PROG} ${BIN}
+X
+Xlint: FRC
+X
+Xmkcat: ${MAN} ${DOC} FRC
+X	mkcat -r${DOC} ${MAN}
+X
+Xprint: source FRC
+X	lpr -J'${PROG} source' ${SOURCE}
+X
+Xsource: ${SOURCE}
+X
+Xspotless: clean
+X	rcsclean ${SOURCE}
+X
+Xtags: FRC
+X
+X${SOURCE}:
+X	co -q $@
+X
+XFRC:
+X
+X# DO NOT DELETE THIS LINE - make depend DEPENDS ON IT
+X
+X# *** Do not add anything here - It will go away. ***
+SHAR_EOF
+chmod 0600 cops_104/checkacct/Makefile ||
+echo 'restore of cops_104/checkacct/Makefile failed'
+Wc_c="`wc -c < 'cops_104/checkacct/Makefile'`"
+test 1275 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/Makefile: original size 1275, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/README.FIRST ==============
+if test -f 'cops_104/checkacct/README.FIRST' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/README.FIRST (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/README.FIRST (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/README.FIRST' &&
+XThis is chkacct v1.0:
+X
+XOk, four steps to making this run at your site:
+X
+X1) Change the path names and the guru dude in .m4 file if they're
+Xdifferent for your site.
+X
+X2) Make a link named "defines.m4" to the appropriate m4 file, "bsd.m4", 
+X"sysV.m4".
+X
+X3) Change the installation path in the Makefile from /usr/local/ to
+Xthe directory you wish to install it in.
+X
+X4) Change the pathname at the top of the perl script, "rhosts.pl", to
+Xreflect your site's PERL location.
+X
+XThe most cryptic part about this package is probably the m4(1) defines
+Xused to tailor the shell script to a variety of Unix platforms.  What
+XI'm shooting for is a single set of source which will be run through m4(1)
+Xand will output a nice, architecture specific shell script.  I account
+Xfor differences in things like ls(1) and find(1) options by using
+Xm4(1) macros which depend on some other variable passed to m4(1).
+X
+XThis would be a good time to thank Dan Trinkle of the Purdue CS Dept.
+XHe took the time to make some detailed suggestions about chkacct, all
+Xof which I believe made it to this version.  Implementing Dan's
+Xsuggestions widened the potential audience of sysadmin users of
+Xchkacct, and I am grateful for his time.
+X
+XShabbir J. Safdar
+XPurdue University Computer Center
+X(shabby@cc.purdue.edu)
+SHAR_EOF
+chmod 0600 cops_104/checkacct/README.FIRST ||
+echo 'restore of cops_104/checkacct/README.FIRST failed'
+Wc_c="`wc -c < 'cops_104/checkacct/README.FIRST'`"
+test 1270 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/README.FIRST: original size 1270, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/bsd.m4 ==============
+if test -f 'cops_104/checkacct/bsd.m4' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/bsd.m4 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/bsd.m4 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/bsd.m4' &&
+Xundefine(eval)dnl()
+Xchangequote(%,^)dnl()
+Xdnl()
+Xdnl() At some sites, a group is given to each user, rendering group
+Xdnl()	permissions somewhat moot.  If your site is like this, then you
+Xdnl()	want to tell chkacct to act as if group permissions don't matter.
+Xdnl()   To do this, set smallgroups to be 1
+Xdnl()
+Xdefine(SmallGroups,%1^)dnl()
+Xdefine(FindPermRead,
+X	ifelse(SmallGroups, %0^, %-perm -4 -o -perm -40^, %-perm -4^))dnl()
+Xdefine(FindPermWrite,
+X	ifelse(SmallGroups, %0^, %-perm -2 -o -perm -20^, %-perm -2^))dnl()
+Xdefine(ChmodPermSymbol,
+X	ifelse(SmallGroups, %0^, %go^, %o^))dnl()
+Xdefine(FindPermSuid,
+X	ifelse(SmallGroups, %0^, %-perm -2000 -o -perm -4000^, %-perm -4000^))dnl()
+Xdefine(ChmodPermSuidSymbol,
+X	ifelse(SmallGroups, %0^, %ug^, %u^))dnl()
+Xdnl()
+Xdnl()
+Xdnl() Set cshpath() to be the tail end of whatever it takes to pipe standard
+Xdnl() input to the shell.  It will be used in the following way:
+Xdnl()		HOMEDIR=`echo "echo ~${USERID}" | cshpath()`
+Xdnl() On some bsd systems, cshpath() needs to be "/bin/csh -".  
+Xdnl() On some sysV systems, cshpath() needs to be "/bin/csh".  
+Xdnl()
+Xdefine(perlpath,%/usr/unsup/bin/perl^)dnl()
+Xdefine(catpath,%/bin/cat^)dnl()
+Xdefine(cshpath,%/bin/csh -^)dnl()
+Xdefine(pagerpath,%"/usr/ucb/more"^)dnl()
+Xdefine(gurudude,%"PUCC General Consultant"^)dnl()
+Xdefine(installpath,%/usr/local/^)dnl()
+Xdefine(echownl,%/bin/echo -n "^$1%"^)dnl()
+Xdefine(lsopt,%g^)dnl()
+Xdefine(findopts,%-follow^)dnl()
+SHAR_EOF
+chmod 0600 cops_104/checkacct/bsd.m4 ||
+echo 'restore of cops_104/checkacct/bsd.m4 failed'
+Wc_c="`wc -c < 'cops_104/checkacct/bsd.m4'`"
+test 1433 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/bsd.m4: original size 1433, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/ca.src ==============
+if test -f 'cops_104/checkacct/ca.src' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/ca.src (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/ca.src (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/ca.src' &&
+X#!/bin/sh
+X#
+X# paths to some important programs
+X#
+X
+X#
+X# This is the language used to parse the .rhosts file.  If you rewrite the
+X# parser in a different language, you should change this.  If it doesn't
+X# exist, that's "ok".  chkacct will notice that.
+X#
+XPERL=perlpath()
+X
+X#
+X# This is the program used to parse the .rhosts file.  If you rewrite it, you
+X# should change PERL1 to be the location of your new program.  You should also
+X# send me a copy because I'm a packrat for stuff like this.
+X#
+XPERL1=installpath()lib/chkacct/rhosts.pl
+X
+X#
+X# This directory contains the info and effect files that chkacct(1L) references.
+X#
+XDOCPATH=installpath()lib/chkacct
+X
+X# default variable values prevent nasty surprises
+X# (its good style, too)
+X#
+X
+X# The title of the guru to send customers to  (maybe your name if you work at a 
+X#  small company..)
+XGURU=gurudude()
+X
+X#
+X# The name of the security article
+X#
+XARTICLE=Article
+X
+X#
+X# The name of the pager you want to use to display info files.  This is 
+X# probably "more" or "less" at most sites, but never cat, because things
+X# scroll off the screen too quickly.
+X# 
+XPAGER=pagerpath()
+X
+X#
+X# miscellaneous stuff
+X#
+XCAT=catpath()
+XTHISSHELL=$$
+XEXITCOND=0
+XUNIQUE=1
+Xtrap 'echo "Exiting."; %eval^ $stop_dots; exit;' 0;
+Xtrap 'echo "Exiting."; %eval^ $stop_dots; exit;' 1;
+Xtrap 'echo "Exiting."; %eval^ $stop_dots; exit;' 2;
+Xtrap 'echo "Exiting."; %eval^ $stop_dots; exit;' 3;
+X
+X# an example shell command line parser that conforms to the getopt	(ksb)
+X# standard, Kevin Braunsdorf, ksb@cc.purdue.edu
+X
+X# our program name and usage message
+Xprogname=`basename $0`
+Xusage="$progname: usage [-ehinqrv] [-f <startdir>] [-m <homedir>] [-s <username]"
+X
+X# how to slide a single letter option off the beginning of a bundle
+X# -barf -> -arf
+Xslide='P=$1; %shift^; set _ -`expr "$P" : '\''-.\(.*\)'\''` ${1+"$@"}; %shift^'
+Xparam='if [ $# -lt 2 ]; then echo "$progname: missing value for $1" 1>&2 ; exit 1; fi'
+X
+X# default values for all the flags, or leave unset for a ${flag-value) form
+X
+X# verbose by default
+XVERBOSE=1
+X# interactive by default
+XINTERACTIVE=1
+X# cavalier by default
+XHARMLESS=0
+X# check .rhosts file by default
+XRHOSTS=1
+X
+X# read an environment variable as well as the command line options:
+X# protect this script from leading -x's with a bogus underbar, then remove it
+Xset _ $ZZZ ${1+"$@"}
+X%shift^
+X
+X# get the options from the command line (+ any variables)
+Xwhile [ $# -gt 0 ]
+Xdo
+X	case "$1" in
+X	-e)
+X		INTERACTIVE=0
+X		%shift^
+X		;;
+X	-e*)
+X		INTERACTIVE=0
+X		%eval^ "$slide"
+X		;;
+X	-f)
+X		%eval^ "$param"
+X                START_DIR=$2
+X                %shift^ ; %shift^
+X		;;
+X	-f*)
+X		START_DIR=`expr "$1" : '-.\(.*\)'`
+X                %shift^
+X		;;
+X	-i)
+X		INTERACTIVE=1
+X		%shift^
+X		;;
+X	-i*)
+X		INTERACTIVE=1
+X		%eval^ "$slide"
+X		;;
+X	-m)
+X		%eval^ "$param"
+X                HOME=$2
+X                %shift^ ; %shift^
+X		;;
+X	-m*)
+X		HOME=`expr "$1" : '-.\(.*\)'`
+X                %shift^
+X		;;
+X	-n)
+X		HARMLESS=1
+X		%shift^
+X		;;
+X	-n*)
+X		HARMLESS=1
+X		%eval^ "$slide"
+X		;;
+X	-q)
+X		VERBOSE=0
+X		%shift^
+X		;;
+X	-q*)
+X		VERBOSE=0
+X		%eval^ "$slide"
+X		;;
+X	-r)
+X		RHOSTS=0
+X		%shift^
+X		;;
+X	-r*)
+X		RHOSTS=0
+X		%eval^ "$slide"
+X		;;
+X	-s)
+X		%eval^ "$param"
+X		ME=$2
+X		HOME=`echo "echo ~${ME}" | cshpath() `;
+X		%shift^ ; %shift^
+X		;;
+X	-s*)
+X		ME=`expr "$1" : '-.\(.*\)'`
+X		HOME=`echo "echo ~${ME}" | cshpath() `;
+X		%shift^
+X		;;
+X	-v)
+X		VERBOSE=1
+X		%shift^
+X		;;
+X	-v*)
+X		VERBOSE=1
+X		%eval^ "$slide"
+X		;;
+X	--)
+X		%shift^
+X		break
+X		;;
+X	-h|-h*)
+X		cat <<HERE
+X$usage
+Xe		expert (non-interactive) do not ask the user any questions
+Xf <startdir>	specify the directory in which to begin the general file check
+X			(\${HOME} is the default)
+Xh		print this help message
+Xi		interactive mode - ask the user about every file (default)
+Xm <home dir>	specify a home directory (\${HOME} is the default)
+Xn		do not actually alter any file permissions or files
+Xq		perform actions quietly
+Xr		do not check of \${HOME}/.rhosts file
+Xs <username>	run chkacct as if my userid were <username> (also sets \${HOME} to ~username)
+Xv		perform actions verbosely (this is the default)
+XHERE
+X		exit 0
+X		;;
+X	-*)
+X		echo "$usage" 1>&2 
+X		exit 1
+X		;;
+X	*)
+X		# process and continue for intermixed options & args
+X		break
+X		;;
+X	esac
+Xdone
+X
+X# set my identity if it hasn't been done yet
+Xif [ -z "${ME}" ]; then
+X
+X	ME=`whoami`;
+X	if [ \( -z "${ME}" \) -o \( $? -ne 0 \) ]; then
+X		echo "Cannot determine your identity - exiting, nothing checked.";
+X		EXITCOND=1;
+X		exit ${EXITCOND};
+X	fi;
+Xfi;
+X
+X# set my home directory if it hasn't been set yet
+Xif [ -z "${HOME}" ]; then
+X
+X	HOME=`echo "echo ~${ME}" | cshpath() `;
+X	if [ -z "${HOME}" ]; then
+X		echo "Cannot determine your home directory - exiting, nothing checked.";
+X		EXITCOND=1;
+X		exit ${EXITCOND};
+X	fi;
+Xfi;
+X
+X# search only in the home dir by default
+Xif [ -z "${START_DIR}" ]; then
+X
+X	START_DIR=${HOME};
+Xfi
+X
+X#
+X# For debugging, silly.
+X#
+X# echo "Performing account check with username = ${ME}, home dir = ${HOME}, and";
+X# echo "starting directory ${START_DIR}";
+X
+X#
+X# Ok, this is actually checkacct.
+X#
+X
+X#
+X# Define a routine which will display files.  If sites have their own favorite
+X# pager or display method, it can be specified here.  If you just wanted
+X# to use a simple pager, you would define PAGER to be equal to it, and then
+X# you would change the line below that display it to be:
+X#   ${PAGER} ${DOCPATH}/${DISPLAY};
+X# 
+X# REMEMBER!  Before you call this routine, you must set DISPLAYFILE to be
+X# the file you want displayed
+X#
+Xdisplay_file='
+Xif [ -f ${DOCPATH}/${DISPLAYFILE} ]; then
+X
+X	${PAGER} ${DOCPATH}/${DISPLAYFILE};
+Xfi;'
+X
+X#
+X# Its crucial that we don't leave shell variables like $* set 
+X# when we're not expecting it.  For that reason, here's a small routine
+X# to clear the contents of $* by shift'ing.  For some reason, each set
+X# successively lengthens $*.
+X#
+Xclear_args='
+Xfor i
+Xdo
+X	%shift^;
+Xdone;'
+X
+X#
+X#  Before each situation where the user might be queried as to the action,
+X#  one needs to remember to set the following shell variables:
+X#
+X#  FIX - the shell command to fix it with \$TARGET to be the file to
+X#	 be operated upon
+X#  MANPAGES - a list of man pages it will tell you to look at
+X#  INFO - The name of the info file in which more info is to be found (if any)
+X#  EFFECT - The name of the file which describes the effect of the fix
+X#  PROBLEM - This is the problem string -- it may be printed several times.
+X#
+X# define the prompt/decision routine which will make the fix if necessary, print
+X# out specific info, refer someone to a manual page.
+Xprompt='
+XFIXED=0;
+Xwhile [ ${FIXED} -eq 0 ]; do
+X	echo "";
+X	echo "${PROBLEM}";
+X	echo "The output of the command \"ls -lsopt()ld ${PROBLEMFILE}\" is:";
+X	/bin/ls -lsopt()ld ${PROBLEMFILE};
+X	echo "";
+X	echo "The suggested fix for this is to execute the command:";
+X	echo "	${FIX}";
+X
+X	if [ ${VERBOSE} -eq 1 ]; then
+X		if [ \( -f ${DOCPATH}/${EFFECT} \) -a \( ! -d  ${DOCPATH}/${EFFECT} \) ]; then
+X			${CAT} ${DOCPATH}/${EFFECT};
+X		fi;
+X	fi;
+X
+X	if [ ${INTERACTIVE} -eq 1 ]; then
+X		echo ""; 
+X		echo "Press a letter (a) to enter automatic mode (no more questions), (f)ix problem,";
+X		echo "(h)elp me out with this menu, (i)gnore problem, (m)ore info";
+X		echownl(%Press RETURN/NEWLINE to fix the problem and go on> ^);
+X		read input;
+X	else
+X		input="f";
+X	fi;
+X
+X	case $input in
+X		a*)
+X			echo "";
+X			echo "This will put you into automatic mode.  No more questions will be asked,";
+X			echo "and all problems will be automatically fixed unless you specified the";
+X			echo "\"harmless(-n)\" option on startup.";
+X			echo "";
+X			echownl(%Press \"yes\" to enter automatic mode> ^);
+X			read confirm;
+X			if [ \( ! -z "$confirm" \) -a \( "$confirm" = "yes" \) ]; then
+X				echo "Beginning automatic mode.";
+X				INTERACTIVE=0;
+X				echo "";
+X			fi;
+X			;;
+X		h*)
+X			DISPLAYFILE="prompt.help";
+X			%eval^ $display_file;
+X			;;
+X		m*)
+X			DISPLAYFILE=${INFO};
+X			%eval^ $display_file;
+X			if [ -n "$MANPAGES" -a ${VERBOSE} -eq 1 ]; then
+X				echo "";
+X				echo "For additional information, read the manual page for the following";
+X				echo "program(s): ${MANPAGES}";
+X				echo "The command man <name of program> will show you the manual page.";
+X				echo "";
+X			fi;
+X			;;
+X		i*)
+X			echo "Ignoring problem -- taking no action.";
+X			FIXED=1;
+X			;;
+X		*|f*) 
+X			if [ ${HARMLESS} -eq 0 ]; then
+X				echownl(%Fixing problem...^);
+X				%eval^ ${FIX};
+X				echo "Done.";
+X			else
+X				echo "In \"harmless\" (-n) mode, ignoring problem.";
+X			fi;
+X			FIXED=1;
+X			;;
+X	   esac;
+Xdone;'
+X
+X#
+X# define the waiting routine that prints those neat dots
+X#
+Xmake_dots='
+Xif [ ${VERBOSE} -eq 1 ]; then
+X	(touch /tmp/makedots${THISSHELL};while [ -f /tmp/makedots${THISSHELL} ]; do echownl(%.^); sleep 1; done)& 2>&1 >/dev/null;
+Xfi;'
+X
+Xstop_dots='sleep 1; /bin/rm -rf /tmp/makedots${THISSHELL};'
+X
+Xif [ 1 -eq $VERBOSE ]; then
+X
+X	DISPLAYFILE="Intro";
+X	%eval^ $display_file;
+X
+Xfi
+X
+Xif [ ${INTERACTIVE} -eq 1 ]; then
+X	echownl(%Press RETURN/NEWLINE to begin> ^); read input;
+Xfi;
+X
+XNO_WRITE="rhosts profile login logout cshrc bashrc bash_profile inputrc";
+XNO_WRITE="$NO_WRITE screenrc kshrc tcshrc netrc forward dbxinit distfile";
+XNO_WRITE="$NO_WRITE exrc emacsrc remote mh_profile xinitrc xsession Xdefaults";
+XNO_WRITE="$NO_WRITE Xresources rninit mwmrc twmrc emacs rhosts";
+XNO_READ="badpass netrc"
+X
+X#
+X# First, are any of the dot files writable & does the user own every dot file?
+X#
+XPERMLINE="FindPermWrite()";
+X
+Xif [ ${VERBOSE} -eq 1 ]; then
+X	echo ""
+X	echo "Step one (three total) - Evaluating your account's dot files."
+Xfi
+X
+X%eval^ $make_dots;
+Xfor i in ${NO_WRITE}
+Xdo
+X	TARGET=${HOME}/.$i;
+X	if [ -f ${TARGET} -o -d ${TARGET} ]; then
+X		while [ -f ${HOME}/dangerous.${i}.${UNIQUE} ];
+X		do
+X			UNIQUE=`echo "${UNIQUE} + 1" | bc -l`;
+X		done;
+X		FIX="/bin/mv -i ${TARGET} ${HOME}/dangerous.${i}.${UNIQUE}";
+X		MANPAGES="chmod"
+X		EFFECT="effect.owners"
+X		INFO="owners"
+X		RESULT=`/bin/ls -ld ${TARGET}`;
+X		%eval^ $clear_args;
+X		set $*=${RESULT};
+X		if [ $3 != ${ME} ]; then
+X			PROBLEM="File '${TARGET}' is owned by user $3.";
+X			PROBLEMFILE=${TARGET};
+X			EXITCOND=1;
+X			%eval^ $stop_dots;
+X			%eval^ $prompt;
+X			%eval^ $make_dots;
+X			continue;
+X		fi
+X		TEMP="`find ${TARGET} ! -type l \( ${PERMLINE} \) -print`"
+X		EFFECT="dotwrite";
+X		INFO="effect.dotwrit";
+X		FIX="/bin/chmod ChmodPermSymbol()-w ${TARGET};"
+X		if [ -n "${TEMP}" ]; then
+X			PROBLEM="File '${TARGET}' is world or group writable.";
+X			PROBLEMFILE=${TARGET};
+X			EXITCOND=1;
+X			%eval^ $stop_dots;
+X			%eval^ $prompt;
+X			%eval^ $make_dots;
+X		fi
+X	fi
+Xdone
+X
+XPERMLINE="FindPermRead()";
+XEFFECT="effect.read";
+XINFO="readable";
+X
+Xfor i in ${NO_READ}
+Xdo
+X	TARGET=${HOME}/.${i};
+X	if [ -f ${TARGET} ]; then
+X		FIX="/bin/chmod ChmodPermSymbol()-r ${TARGET};"
+X		if [ -n "`find ${TARGET} \( ${PERMLINE} \) -exec /bin/ls {} \;`" ]; then
+X			PROBLEM="File '${TARGET}' is world or group readable.";
+X			PROBLEMFILE=${TARGET};
+X			EXITCOND=1;
+X			%eval^ $stop_dots;
+X			%eval^ $prompt;
+X			%eval^ $make_dots;
+X		fi
+X	fi
+Xdone
+X%eval^ $stop_dots;
+X
+Xif [ ${VERBOSE} -eq 1 ]; then
+X	echo "Step one complete."
+X	echo ""
+X	echo "Step two (three total) - Evaluating the file permissions in your account."
+Xfi
+X
+X#
+X# Second, do we have any writable files or directories?
+X#
+X%eval^ $make_dots
+XPERMLINE="FindPermWrite()";
+XRESULT=`(cd ${HOME}; find . -user ${ME} ! -type l \( ${PERMLINE} \) -print)`;
+XEFFECT="effect.write";
+XINFO="write";
+X%eval^ $stop_dots
+X
+Xfor i in ${RESULT}
+Xdo
+X	FIX="/bin/chmod ChmodPermSymbol()-w ${i};"
+X	if [ -d $i ]; then
+X		PROBLEM="Your directory $i is world or group writable.";
+X		PROBLEMFILE=$i;
+X		EXITCOND=1;
+X		%eval^ $prompt;
+X	else
+X		PROBLEM="Your file $i is world or group writable.";
+X		PROBLEMFILE=$i;
+X		EXITCOND=1;
+X		%eval^ $prompt;
+SHAR_EOF
+true || echo 'restore of cops_104/checkacct/ca.src failed'
+fi
+echo 'End of  part 13'
+echo 'File cops_104/checkacct/ca.src is continued in part 14'
+echo 14 > _shar_seq_.tmp
+exit 0
+

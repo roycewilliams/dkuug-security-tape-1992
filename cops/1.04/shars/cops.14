@@ -1,0 +1,1472 @@
+#!/bin/sh
+# this is p4.shar.14 (part 14 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/checkacct/ca.src continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 14; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/checkacct/ca.src'
+else
+echo 'x - continuing file cops_104/checkacct/ca.src'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/checkacct/ca.src' &&
+X	fi
+Xdone
+X
+X%eval^ $make_dots
+XPERMLINE="FindPermSuid()";
+XRESULT=`(cd ${HOME} ; find . -user ${ME} ! \( -type l -o -type d \) \( ${PERMLINE} \) -print)`;
+XEFFECT="effect.setuid";
+XINFO="setuid";
+X
+Xfor i in ${RESULT}
+Xdo
+X	FIX="/bin/chmod ChmodPermSuidSymbol()-s ${i};"
+X	PROBLEM="Your file $i is user or group setuid.";
+X	PROBLEMFILE=$i;
+X	EXITCOND=1;
+X	%eval^ $stop_dots
+X	%eval^ $prompt;
+X	%eval^ $make_dots
+Xdone
+X
+Xsleep 1
+X%eval^ $stop_dots
+X
+Xif [ ${VERBOSE} -eq 1 ]; then
+X	echo "Step two complete."
+X	echo ""
+X	echo "Step three (three total) - Checking the contents of your rhosts file."
+Xfi
+X
+XFIX="/bin/mv -i ${HOME}/.rhosts ${HOME}/rhosts.$$;"
+XEFFECT="effect.rhosts";
+XINFO="rhosts";
+XMANPAGES="hosts.equiv rlogin";
+X#
+X# Third, does our rhost file contain any glaring dangers?
+X# see "man hosts.equiv"
+X#
+Xif [ ${RHOSTS} -eq 0 ]; then
+X
+X	echo "The file ${HOME}/.rhosts will not be checked (as requested).";
+X
+Xelif [ -f ${HOME}/.rhosts ]; then
+X	if [ ! -x ${PERL} ]; then
+X		echo "${PERL} does not exist on your system -- skipping .rhosts check.";
+X		echo "If you are unfamiliar with the uses of a .rhosts file, you should";
+X		echo "definately have a ${GURU} take a look at it.";
+X	else
+X		${PERL1} ${HOME}/.rhosts;
+X		if [ $? -ne 0 ]; then
+X			PROBLEM="Your .rhosts file is unsafe.";
+X			PROBLEMFILE=${HOME}/.rhosts;
+X			EXITCOND=1;
+X			%eval^ $prompt;
+X		else
+X			if [ ${VERBOSE} -eq 1 ]; then
+X				echo "Your .rhosts file doesn't appear to be a security hole.";
+X			fi;
+X		fi;
+X	fi;
+Xelse
+X	if [ ${VERBOSE} -eq 1 ]; then
+X		echo "Congratulations!  You don't have a .rhosts file!";
+X		echo "(If I had a cookie, I would give you one.)";
+X	fi;
+Xfi;
+X
+X%eval^ $stop_dots
+X
+Xif [ ${VERBOSE} -eq 1 ]; then
+X	echo "Step 3 complete."
+X	echo "";
+X	echo "Checkacct is complete.  If you still have questions about this program,";
+X	echo "please see a ${GURU}." ;
+X	echo "";
+X	if [ ${INTERACTIVE} -eq 1 ]; then
+X		echo "If you are interested in reading an article on Unix";
+X		echo "security, type \"yes\" and hit RETURN/NEWLINE now.";
+X		echownl(%If not, simply hit RETURN/NEWLINE and checkacct will exit.> ^);
+X		read input;
+X		if [ \( ! -z "$input" \) -a \( "$input" = "yes" \) ]; then
+X			DISPLAYFILE=${ARTICLE};
+X			%eval^ $display_file;
+X		fi;
+X	fi;
+Xfi;
+Xif [ \( ${EXITCOND} -eq 0 \) -a \( ${VERBOSE} -eq 1 \) ]; then
+X	echo "There were no obvious problems with your Unix account.";
+X	echo "(I owe you a cookie.)";
+Xfi;
+Xexit ${EXITCOND};
+SHAR_EOF
+echo 'File cops_104/checkacct/ca.src is complete' &&
+chmod 0600 cops_104/checkacct/ca.src ||
+echo 'restore of cops_104/checkacct/ca.src failed'
+Wc_c="`wc -c < 'cops_104/checkacct/ca.src'`"
+test 13845 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/ca.src: original size 13845, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/chkacct.1l ==============
+if test -f 'cops_104/checkacct/chkacct.1l' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/chkacct.1l (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/chkacct.1l (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/chkacct.1l' &&
+X.TH CHKACCT 1L LOCAL
+X.SH NAME
+Xchkacct \- Check and fix simple security problems in your account 
+X.SH SYNOPSIS
+X.B chkacct
+X[
+X.B -ehinqrv
+X]
+X[
+X.B -f
+X.I starting directory
+X]
+X[
+X.B -m
+X.I home directory
+X]
+X[
+X.B -s
+X.I username
+X]
+X.br
+X.SH DESCRIPTION
+X.PP
+X.I chkacct
+X(short for check account) is a program which checks your account for
+Xunsafe file permissions.
+X.I chkacct
+Xdescends through your account
+Xexamining the permissions on each file.  If the permissions on the file
+Xare unsafe then the user is presented with a proposed fix in the form of
+Xa 
+X.ux
+Xcommand and an accompanying explanation as to the effect of that command.
+XThe user is then given the choice of ignoring the potential
+Xproblem, fixing it, or viewing a more in-depth informational file about
+Xsimilar security problems.
+X.PP
+X\fIchkacct\fP examines your account in three phases.  The first phase checks
+Xthe permissions of all \*(lqdot\*(rq files (files such as
+X.I .login, .rhosts, .cshrc, .profile
+Xetc. etc)  Working under the assumption that
+Xall \*(lqdot\*(rq files contain sensitive information, \fIchkacct\fP warns the
+Xuser about \*(lqdot\*(rq files which should not be either readable or writable.
+X\fIchkacct\fP also flags any \*(lqdot\*(rq files residing in the user's home directory,
+Xbut owned by someone other than the user running \fIchkacct\fP.
+X.PP
+XThe second phase examines all files owned by the user running \fIchkacct\fP
+X(including directories) for writability, setuid (set user id),
+Xor setgid (set group id) permissions.
+X.PP
+XThe third phase of \fIchkacct\fP is a \fIperl\fP(1u) script which attempts to
+Xparse apart the user's \fI.rhosts\fR file, if it exists.  If it exists and
+Xis found to be unsafe, \fIchkacct\fP offers to move it to another name so it
+Xwill not allow any password-less logins.
+X.PP
+XLastly, \fIchkacct\fP offers to display an article about
+X.ux
+Xaccount security.  The article is written for novice users.
+X.SH OPTIONS
+X.PP
+XOptions are parsed in the order the user specifies them on the command
+Xline.  If you specify options with conflicting effects, the last option
+Xwill take precedence.
+X.TP
+X.B \-e
+XExpert (non-interactive) mode -- do not ask the user any questions.
+X.TP
+X.BI \-f\ startdir
+XSpecify the directory in which to begin the general file search to be
+X.I startdir
+X.TP
+X.B \-h
+XPrint a help message explaining each option.
+X.TP
+X.B \-i
+XInteractive mode -- ask the user about an action for every questionable file.
+XThis is the default.
+X.TP
+X.BI \-m\ homedir
+XUse
+X.I homedir
+Xas the home directory rather than the default, ${HOME}
+X.TP
+X.B \-n
+XDo not actually perform any changes to file names or permissions.
+X.TP
+X.B \-q
+XPerform actions as silently as possible.  \fIchkacct\fP will only print anything
+Xif the user needs to be queried about a security problem.  This is not the
+Xdefault.
+X.TP
+X.B \-r
+XDo not check the file \fI${HOME}/.rhosts\fR.
+X.TP
+X.BI \-s\ username
+XRun \fIchkacct\fP as if your were user
+X.I username
+Xinstead of your current userid.  This option will also set ${HOME} to be
+Xthe home directory of
+X.I username.
+X.TP
+X.B \-v
+XPerform actions verbosely, giving as much guidance to the user as possible.
+XThis is the default action.
+X.SH EXAMPLES
+X.PP
+Xchkacct -f /
+X.IP
+XIf you call \fIchkacct\fP with these options, a thorough search of the
+Xfile system for files owned by you will be performed.
+X.PP
+Xchkacct -q -f /
+X.IP
+XIf you call \fIchkacct\fP with these options, \fIchkacct\fP will look everywhere
+Xfor files owned by you.  It will not print anything if it does not find any
+Xsecurity problems.
+X.PP
+Xchkacct -en
+X.IP
+XIf you call \fIchkacct\fP with these options, \fIchkacct\fP will not prompt
+Xyou for any input, but will display (without fixing) every problem it
+Xencounters.  This might be useful for mailing to yourself.
+X.DE
+X.SH BUGS
+X.PP
+X\fIchkacct\fP is written in Bourne shell (without functions)
+Xbecause it is intended
+Xto be run in a heterogenous computing environment under many different
+Xflavors of Unix.  The result of this is that \fIchkacct\fP is limited by those
+Xtools and their options which appear as standard tools.
+X.SH FILES
+X.PP
+X/usr/local/bin/chkacct
+X.br
+X/usr/local/lib/chkacct/* for informational files displayed by \fIchkacct\fP
+X.SH AUTHORS
+X.PP
+XThe writing of \fIchkacct\fP was made much easier by Kevin S. Braunsdorf's
+X(ksb@cc.purdue.edu) Bourne Shell implementation of the getopts package.
+XPhillip R. Moyer (prm@ecn.purdue.edu) of the Purdue Engineering Computer
+XNetwork provided the security article which made up the text of many of
+Xthe informational files.
+X.LP
+XShabbir J. Safdar, Purdue University UNIX Group
+X.SH SEE ALSO
+X.LP
+Xsh(1), perl(1u), find(1), test(1), ls(1), chmod(1), mv(1)
+SHAR_EOF
+chmod 0600 cops_104/checkacct/chkacct.1l ||
+echo 'restore of cops_104/checkacct/chkacct.1l failed'
+Wc_c="`wc -c < 'cops_104/checkacct/chkacct.1l'`"
+test 4581 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/chkacct.1l: original size 4581, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/dotwrite ==============
+if test -f 'cops_104/checkacct/dotwrite' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/dotwrite (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/dotwrite (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/dotwrite' &&
+X
+XMost accounts have special files called "dot" files.  These files
+Xcontrol the startup, environment, and execution of the shell and some
+Xprograms.  It is very important that these files not be writable
+Xor owned by anyone but you!  If someone else owns or can write those
+Xfiles, they can take control of your account in a matter of minutes!
+XThen they'll be you, which means they can do anything you can do: read,
+Xwrite or modify files; send mail; talk to other users; print
+Xdocuments.  Make sure that permissions on these files are set to 644,
+Xor, better yet, 600:
+X
+X.login     .logout    .cshrc    .bashrc    .kshrc     .xinitrc
+X.dbxinit   .profile   .sunview  .mwmrc     .twmrc     .exrc
+X
+X[Excerpted from "Guide to Account Security"]
+SHAR_EOF
+chmod 0600 cops_104/checkacct/dotwrite ||
+echo 'restore of cops_104/checkacct/dotwrite failed'
+Wc_c="`wc -c < 'cops_104/checkacct/dotwrite'`"
+test 734 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/dotwrite: original size 734, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/effect.dotwrit ==============
+if test -f 'cops_104/checkacct/effect.dotwrit' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/effect.dotwrit (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/effect.dotwrit (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/effect.dotwrit' &&
+Xwhich will prevent anyone from writing to your "dot" file.  You should
+Xthen check the contents of this file to make sure no one has altered it
+Xin any way.
+SHAR_EOF
+chmod 0600 cops_104/checkacct/effect.dotwrit ||
+echo 'restore of cops_104/checkacct/effect.dotwrit failed'
+Wc_c="`wc -c < 'cops_104/checkacct/effect.dotwrit'`"
+test 155 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/effect.dotwrit: original size 155, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/effect.owners ==============
+if test -f 'cops_104/checkacct/effect.owners' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/effect.owners (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/effect.owners (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/effect.owners' &&
+Xwhich will change the file to have a name of the form, "dangerous.<oldname>.x"
+Xwhere <oldname> is the original name of the file, and 'x' is an integer.
+XFor example, if your .profile was owned by another user, the fix would be
+Xto rename it to be "dangerous.profile.1", assuming that file did not
+Xalready exist.  If it did, it would try "dangerous.profile.2", and so on,
+Xuntil it acquired a file name which was not already taken.
+SHAR_EOF
+chmod 0600 cops_104/checkacct/effect.owners ||
+echo 'restore of cops_104/checkacct/effect.owners failed'
+Wc_c="`wc -c < 'cops_104/checkacct/effect.owners'`"
+test 428 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/effect.owners: original size 428, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/effect.read ==============
+if test -f 'cops_104/checkacct/effect.read' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/effect.read (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/effect.read (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/effect.read' &&
+Xwhich will remove read permission for group and other users.  This means that
+Xno one but you will be able to read this file.
+SHAR_EOF
+chmod 0600 cops_104/checkacct/effect.read ||
+echo 'restore of cops_104/checkacct/effect.read failed'
+Wc_c="`wc -c < 'cops_104/checkacct/effect.read'`"
+test 125 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/effect.read: original size 125, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/effect.rhosts ==============
+if test -f 'cops_104/checkacct/effect.rhosts' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/effect.rhosts (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/effect.rhosts (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/effect.rhosts' &&
+Xwhich will prevent anyone from logging into your account without a password.
+XAfter talking to a PUCC Consultant (available in the basement of Math-Science
+Xor at 49-41787) you can edit this file, rhosts.xxxxx and move it back to be 
+Xyour effective rhosts file.
+SHAR_EOF
+chmod 0600 cops_104/checkacct/effect.rhosts ||
+echo 'restore of cops_104/checkacct/effect.rhosts failed'
+Wc_c="`wc -c < 'cops_104/checkacct/effect.rhosts'`"
+test 260 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/effect.rhosts: original size 260, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/effect.setuid ==============
+if test -f 'cops_104/checkacct/effect.setuid' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/effect.setuid (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/effect.setuid (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/effect.setuid' &&
+Xwhich means that when someone else executes this file, they will NOT gain
+Xyour account permissions.
+SHAR_EOF
+chmod 0600 cops_104/checkacct/effect.setuid ||
+echo 'restore of cops_104/checkacct/effect.setuid failed'
+Wc_c="`wc -c < 'cops_104/checkacct/effect.setuid'`"
+test 100 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/effect.setuid: original size 100, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/effect.write ==============
+if test -f 'cops_104/checkacct/effect.write' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/effect.write (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/effect.write (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/effect.write' &&
+Xwhich will prevent anyone (except yourself) from writing to this file.
+SHAR_EOF
+chmod 0600 cops_104/checkacct/effect.write ||
+echo 'restore of cops_104/checkacct/effect.write failed'
+Wc_c="`wc -c < 'cops_104/checkacct/effect.write'`"
+test 71 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/effect.write: original size 71, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/owners ==============
+if test -f 'cops_104/checkacct/owners' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/owners (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/owners (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/owners' &&
+X
+XHaving someone else own one of your files is just as bad as leaving it 
+Xwritable to the world.  Because they own it, they can alter its contents
+Xat will.  You can check the output of "ls -al" to see if any of your files
+Xare owned by someone else.  The third column shows the owner of the file.
+X
+SHAR_EOF
+chmod 0600 cops_104/checkacct/owners ||
+echo 'restore of cops_104/checkacct/owners failed'
+Wc_c="`wc -c < 'cops_104/checkacct/owners'`"
+test 296 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/owners: original size 296, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/prm.mm ==============
+if test -f 'cops_104/checkacct/prm.mm' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/prm.mm (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/prm.mm (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/prm.mm' &&
+X.ce 2
+X\f(Hn\s+2Guide to Account Security\s-2
+X\fIPhilip R. Moyer
+X.sp
+X\f(HN1   WHAT IS AN ACCOUNT?\fR
+X.br
+XAccounts allow people to use the computer.  When you get an
+Xaccount, you are given a password and a home directory.  The home directory
+Xis a place on a disk where you can put your files.  Each account has a login
+Xassociated with it.  There is one login per account.  For example, my
+Xlogin is "prm".
+X.sp
+XEach account has unique information associated with it.  One of
+Xthese data is the user id (or uid).  
+XIt is a number that identifies the login.
+XAll files created by you will have your uid attached to them.
+X.sp
+XThe operating system keeps track of who is logged on at any given
+Xtime.  It also keeps track of which commands you execute and how much time
+Xit takes to execute them.  It also keeps track of where you logged in.
+XIn some cases, the operating system can keep track of who creates or modifies
+Xfiles.
+X.sp
+X It is very important that you keep your account secure; any user
+Xwho has access to your login and password can masquerade as you.  If that
+Xperson does something illegal, you could get blamed.  He or she could also
+Xremove or modify your files.
+X.sp
+X\f(HN2   LOGGING IN AND LOGGING OUT\fR
+X.br
+XWhen you want to work on the computer, you must first identify
+Xyourself to the computer and prove you are who you say you are.  This
+Xprocess of identification and identity verification is called "logging in".
+XFirst, the computer identifies itself and prompts you for a login.  Here is
+Xan example:
+X.sp .5
+X       \fBdynamo.ecn.purdue.edu  login:\fR
+X.sp .5
+XYou would then type in your login and the computer would prompt for a
+Xpassword:
+X.sp .5
+X        \fBdynamo.ecn.purdue.edu  login:\fC prm\fB
+X        Password:\fR
+X.sp .5
+XYou then type in your password.  The computer won't print the password
+Xas it is typed so other users can't see it on the screen.  After the computer
+Xchecks to see that the password matches the one associated with the given
+Xlogin, it starts a shell and grants you access to the machine.
+X.sp
+XYou log in differently depending on what shell you are using.
+XIf you are using Bourne shell (your prompt is "$"), you log
+Xout by typing the control key and the "d" key at the same time.
+XIf you are using csh, type the word "exit" or "logout" and you
+Xwill be logged out.  The computer records the times you
+Xlogged in and logged out.
+X.sp
+X\f(HN3   PASSWORDS\fR
+X.br
+XChoosing a good password is very important, because unauthorized
+Xusers are often able to steal accounts or gain access to a system by
+Xguessing passwords.  People who try to gain unauthorized access to a
+Xcomputer or a specific account are called "crackers".  If your account is
+Xcompromised, because of either a bad password or other means, the cracker
+Xcan not only remove or modify any of your files, but he/she can also attack
+Xother users on the system, or other systems on the network.
+X.sp
+XGood passwords are difficult to create; care and thought should go
+Xinto each one.  Here are some guidelines for choosing passwords.
+X.sp
+XBad passwords are:
+X.nf
+X.in +.3i
+X- your login in any form 
+X         (as-is, reversed, capitalized, doubled, etc)
+X- any first or last name, yours or someone else's
+X          (regardless of ordering or capitalization)
+X- license plate numbers
+X- phone numbers
+X- social security numbers
+X- brands or styles of automobiles
+X- street, city, state or country names
+X- all digits or all of the same letter
+X- any word found in a dictionary, English or other
+X- passwords shorter than six characters
+X- famous product names (Budweiser, Ruffles, etc)
+X- cartoon characters
+X.in -.3i
+X.fi
+X.sp
+XGood passwords are usually pieces of several words, with odd
+Xcapitalizations.  A good password may include punctuation or other
+Xnon-alphabetic characters.  Using digits in unexpected locations can
+Xmake a password better.
+X.sp
+XIf you need to know which machines you have accounts on here at ECN,
+Xyou can type 
+X.BX "lname\ -l\ -v\ <login>"\ , 
+Xwhere <login> is your login.  This will
+Xdisplay a list of machines on which you have accounts.
+X.sp
+XUse the passwd command to change your password.  Just type 
+X.BX "passwd"
+Xand you will be prompted for your old password (to verify that you are
+Xauthorized to change it) and a new password.  Then you will be prompted
+Xfor the new password again, to make sure you didn't mis-type the new
+Xpassword.  To change your password on all ECN hosts on
+Xwhich you have accounts, type 
+X.BX "passwd\ -n"\ . 
+XType
+X.BX "man\ passwd" 
+Xfor more information about how to change your password.
+X.sp
+XNote: it may take up to fifteen minutes for a password change to take
+Xeffect, so you may want to wait awhile after changing your password before
+Xyou try the new one.
+X.sp
+X\f(HN4   KEEPING YOUR PASSWORD SECURE\fR
+X.br
+XYou should change your password as soon as you get an account, and
+Xthen you should change it once every one or two months, just to be sure it
+Xisn't being used by anyone else.
+X.sp
+XDon't tell anyone what your password is, under any circumstances.  
+XLet me emphasize that.  Don't tell ANYONE.  Under ANY circumstances.
+XThere are crackers who have been known to send mail that appears to be from
+Xthe system administrator, asking you to change your password to something
+Xthey give you.  DON'T EVER DO THIS!  There is *no* legitimate reason for
+XANYONE to ask for your password.  If you ever get mail like this, go
+Xto your site specialist and report the incident.
+X.sp
+XDon't write your password down.  It's too easy for someone to discover
+Xit.  You should choose a password that you can remember.  If, however, you
+Xabsolutely must write down your password, don't write it anywhere obvious,
+Xlike on a post-it note stuck to your terminal, on the front of your
+Xnotebook, or on a piece of paper next to the terminal.  Write it on something
+Xin your wallet and then be tricky by changing the written password 
+Xin some way (like leaving out two key letters);
+Xso you can still remember it, but it is harder for a someone who
+Xsees the paper to get into the account.  Don't ever write your login and
+Xpassword on the same piece of paper.
+X.sp
+XYou should also be very careful that someone isn't watching you when
+Xyou log in.  Many people can tell what you are typing just by watching your
+Xfingers on the keyboard.
+X.sp
+X\f(HN5   DIRECTORIES AND FILES\fR
+X.br
+XAll information on the computer is stored in files.  A file is
+Xjust what it sounds like, a container for data.  A directory is a special
+Xfile that contains other files or directories.  You can list which files
+Xare in a directory using the \fIls\fR command.  
+XFor example, here's what \fIls\fR says about the directory 
+X(/home/harbor3/prm/pub/articles) where I'm located.
+X.TS
+Xtab (@);
+Xl l l l.
+XRFC1147.ps@acct.sec@imp.tech@new.security
+Xorange-book@privacy@pu.environ@ritalin
+Xs.serv	@s.serv.tr@style@wwarticle
+Xzap
+X.TE
+XYou can use \fIls\fR to find out additional information about files by using
+Xthe "-l" option.  For example, if I wanted more information about the
+Xfile acct.sec in the list above, I would type 
+X.BX "ls\ -l\ acct.sec"\ .  
+XHere is what happens when I do that:
+X.sp .5
+X\fC\s-2-rw-r--r--  1 prm  8058 Aug 19 11:22 acct.sec\fR\s+2
+X.DL
+X.LI
+XThe first field shown as, "\fC-rw-r--r--\fR", 
+Xis the file type and permission bits.
+XMore information about permission codes is given below.
+X.LI
+XThe second field, "1", is the number of links to the file.  In this case,
+Xthe file has only one name.  Other links can be made with the "ln" command.
+X.LI
+XThe third field, "prm", is the file's owner.  The login prm owns this file.
+X.LI
+XThe fourth field, "8058", is the size of the file in number of characters.
+X.LI
+XThe fifth field, "Aug 19 11:22", is the time the file was last modified.
+X.LI
+XThe last field is the name of the file.
+X.LE
+X.sp
+X\f(HNPermission Codes\fR
+X.br
+XThe first character in the type/permission field is the
+Xfile type.
+XIf the file is a directory,
+Xthe first character will be a "d".
+XIf it is a regular file,
+Xthe first character will be "-".
+X.sp
+XThe next nine characters are access permission flags.  The leftmost three
+Xare owner permissions, the middle three are group permissions, and the
+Xrightmost three are world permissions.  The letter "r" grants read
+Xpermission, the letter "w" grants write permission, and the letter "x"
+Xgrants execute permission.
+X.sp
+XIn the above example,
+Xthe permissions for the owner, "prm", are "rw-".  That
+Xmeans the owner "prm" can read and write the file, but not execute it.
+XThe permissions for the file's group are "r--", as they are for the world.
+XNOTE THAT ALL ECN USERS ARE BY DEFAULT IN GROUP "OTHER"!  FILES
+XOWNED BY GROUP OTHER WITH GROUP WRITE PERMISSION SET ARE VERY
+XCLOSE TO BEING WORLD WRITABLE!  
+XIf a file has modes "\fCrw-rw----\fR" and is owned by group other,
+Xeveryone on the computer can write to the file!  You can see group
+Xownership on a file by using the "g" option with the "l" option to \fIls\fR.
+XFor example, when I type 
+X.BX "ls -lg acct.sec" 
+XI get the following:
+X.nf
+X.sp .5
+X\fC\s-2-rw-r--r--  1 prm  other  8058 Aug 19 11:22 acct.sec\fR\s+2
+X.fi
+X.sp
+XThe "other" is the group owner of the file.
+X.sp
+XYou can use the \fIchmod\fR command to change file permissions.  The character
+X"+" means add permission and the character "-" means deny permission.  For
+Xexample, if I wanted to let people in group "other" write on my file, I
+Xwould type 
+X.BX "chmod\ g+w\ acct.sec"\ .  
+XWhereas if I want to deny other people permission
+Xto look at this file, I could type 
+X.BX "chmod\ go-r\ acct.sec" 
+Xand the read permission on the file would be revoked.
+X.sp
+XThere is a shorthand way of representing file modes.  Each permission
+Xcategory (owner, group, and world) is given a number which represents
+Xthe bits set in the permission field. 
+XHere is a table that explains this numbering system:
+X.TS
+Xcenter box tab (@);
+Xc c c c
+Xl n n n. 
+X@Owner@Group@World
+X_
+XRead@400@40@4
+XWrite@200@20@2
+XExecute@100@10@1
+XNone@0@0@0
+X.TE 
+XTo use this table, merely add up the permissions you want.
+XFor example, a file that is mode 644 has owner read and
+Xwrite permission (400 + 200), group read permission (40),
+Xand world read permission (4).
+X.sp 
+XYou can use this shorthand with \fIchmod\fR as well.  Just use the
+Xnumber instead of the symbolic representation.  If you want
+Xto change the mode of your \fI.login\fR from 755 to 644, you can type 
+X.BX "chmod\ 644\ .login"\ .
+X.sp
+XYour home directory should be mode 700, 711, or 755.  You should not allow
+Xothers write permission to your directory!  That would give them permission
+Xto create or destroy files at will.
+X.sp
+XImportant files should be mode 644 or 600.  Only rarely is it important
+Xto make a file mode 666, which is world-writable.
+X.sp
+X\f(HN6   IMPORTANT FILES\fR
+X.br
+XMost accounts have special files called "dot" files.  These files control
+Xthe startup, environment, and execution of the shell and some programs.
+XIt is very, very important that these files not be writable by anyone
+Xbut you!  If someone else can write those files, they can take control
+Xof your account in a matter of minutes!  Then they'll be you, which means
+Xthey can do anything you can do: read, write or modify files; send mail;
+Xtalk to other users; print documents.  Make sure that permissions on
+Xthese files are set to 644, or, better yet, 600:
+X.sp 2
+X.TS
+Xcenter tab (@);
+Xl l l.
+X .login@.logout@.cshrc
+X .bashrc@.kshrc@.xinitrc
+X .exrc@.dbxinit@.profile
+X .sunview@.mwmrc@.twmrc
+X.TE
+X\f(HN7   PHYSICAL SECURITY\fR
+X.br
+XTry to be aware of physical security.  When you are logged in on a terminal
+Xor workstation, don't leave it without locking the screen.  Often, this
+Xmeans that you shouldn't even go to the next room to get output without
+Xlocking your screen.  It only takes two commands ("cp and chmod") for
+Xsomeone to steal access to your account if they can find it logged in and
+Xunattended, so be careful!
+X.sp
+X\f(HN8   ACCOUNT SHARING\fR
+X.br
+XYou may, at one time or another, feel you need to give someone else access
+Xto your account.  There are several ways you could go about doing this,
+Xthe most common of which are \fI.rhosts\fR files, 
+Xgiving the person your password,
+Xand making your directory mode 777.  Please don't give anyone else access
+Xto your account.  It's too easy for them to do something malicious.  Don't
+Xlet a friend set up a dot file for you.  Don't use programs in other people's
+Xdirectories.  Don't trust people to leave your account alone.  If you let
+Xsomeone edit your \fI.login\fR because 
+Xyou don't really understand how a \fI.login\fR works, 
+Xyou've essentially given them your account, even if you change
+Xthe password.
+X.sp
+XECN prohibits account sharing.  The penalty for account sharing varies from
+Xdepartment to department in Engineering.  Remember, if someone using your
+Xaccount commits a crime, you are still liable for that crime.
+X.sp
+X\f(HN9   CHECKING YOUR ACCOUNT\fR
+X.br
+XThere is a program called \fIcheckacct\fR that will look through your account
+Xand warn you of any problems it finds.  
+XIt will tell you about 
+X.AL
+X.LI
+Xbad modes on your files 
+X.LI
+Xfiles in your directory that aren't owned by you
+X.LI
+Xother users in your .rhosts
+X.LI
+Xother potential security problems
+X.LE
+X.sp
+XTo use the program, type 
+X.BX "checkacct"\ .
+X.sp
+XIn addition we regularly run the COPS system security program.
+XThis program produces a listing of accounts with that
+Xhave security problems.
+XE-mail is sent to the account owner with hints on how to repair
+Xthe security weakness.
+SHAR_EOF
+chmod 0600 cops_104/checkacct/prm.mm ||
+echo 'restore of cops_104/checkacct/prm.mm failed'
+Wc_c="`wc -c < 'cops_104/checkacct/prm.mm'`"
+test 13290 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/prm.mm: original size 13290, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/prompt.help ==============
+if test -f 'cops_104/checkacct/prompt.help' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/prompt.help (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/prompt.help (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/prompt.help' &&
+X
+X(a)utomatic mode - Choosing `a' will put chkacct(1L) into automatic mode.  In
+X	this mode, no questions will be asked of the user.  Problems will
+X	still be displayed as they are found, but they will be fixed 
+X	automatically.  If you invoked chkacct(1L) with the ``harmless'' 
+X	(-n) option set, no corrective action will be taken.
+X
+X(h)elp me out with this menu - Choosing `h' displays this help screen.
+X
+X(f)ix problem - Choosing `f' will tell chkacct to perform the recommended fix
+X	displayed above.  If you invoked chkacct(1L) with the ``harmless'' 
+X	(-n) option set, no corrective action will be taken.
+X
+X(i)gnore problem - Choosing `i' will tell chkacct(1L) to ignore the problem and
+X	continue normal execution.
+X
+X(m)ore info - Choosing `m' will attempt to display more information relevant to
+X	this particular security problem.  
+SHAR_EOF
+chmod 0600 cops_104/checkacct/prompt.help ||
+echo 'restore of cops_104/checkacct/prompt.help failed'
+Wc_c="`wc -c < 'cops_104/checkacct/prompt.help'`"
+test 831 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/prompt.help: original size 831, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/readable ==============
+if test -f 'cops_104/checkacct/readable' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/readable (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/readable (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/readable' &&
+X
+XSome "dot" files typically have very sensitive information in them,
+Xsuch as passwords.  It is not a good idea to even have these on the
+Xsystem, but if you must, then they should not be readable by anyone on
+Xthe system (except yourself).
+X
+SHAR_EOF
+chmod 0600 cops_104/checkacct/readable ||
+echo 'restore of cops_104/checkacct/readable failed'
+Wc_c="`wc -c < 'cops_104/checkacct/readable'`"
+test 239 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/readable: original size 239, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/rhosts ==============
+if test -f 'cops_104/checkacct/rhosts' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/rhosts (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/rhosts (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/rhosts' &&
+X
+XIf you have accounts on more than one system on the same network, you
+Xcan allow yourself to log in from one to another by setting up
+X".rhosts" files.  This allows you to log in from one account to another
+Xwithout having to enter a password.  This can also be an easy way for
+Xsomeone to break into your account, if they can write their login to
+Xyour .rhosts file.  For this reason it usually best not to have one.
+X
+XOne last note on sharing accounts from the PUCC Policy Trifold, 
+X"Unauthorized Use of Accounts":
+X
+X"Don't let any other person use your account."
+X
+SHAR_EOF
+chmod 0600 cops_104/checkacct/rhosts ||
+echo 'restore of cops_104/checkacct/rhosts failed'
+Wc_c="`wc -c < 'cops_104/checkacct/rhosts'`"
+test 561 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/rhosts: original size 561, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/rhosts.pl ==============
+if test -f 'cops_104/checkacct/rhosts.pl' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/rhosts.pl (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/rhosts.pl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/rhosts.pl' &&
+X#!/usr/unsup/bin/perl
+X'true' || eval 'exec perl -S $0 $argv:q';
+Xeval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
+X& eval 'exec /usr/local/bin/perl -S $0 $argv:q'
+X        if 0;
+X
+X$me=$ENV{"USER"};
+X$end_code=0; 
+X$networkgrps="";
+Xwhile (<>) {
+X	chop;
+X	@F = split(' ');
+X	if (/^[ \t]*\+@/) { 
+X		$networkgrps=$networkgrps . $F[0] . " ";
+X	}
+X	elsif ($#F > 0) {
+X		$machine=$F[0];
+X		shift(@F);
+X		while ( $#F > -1 ) {
+X			if ( $F[0] ne $me )  {
+X				$holes{$machine}=$holes{$machine} . $F[0] . " ";
+X			}
+X			shift(@F);
+X		}
+X     	}
+X}
+Xif ( $networkgrps ne "" )  {
+X	printf "\nAll users in network group(s) (%s) can login to your account\n",$networkgrps;
+X	printf "without a password.\n";
+X	$end_code=1;
+X}
+Xfor ( keys %holes )  {
+X	printf "\nThese users at %s are allowed to login to your account\n",$_;
+X	printf "without a password: %s\n", $holes{$_};
+X	$end_code=1;
+X}
+Xexit $end_code;
+SHAR_EOF
+chmod 0600 cops_104/checkacct/rhosts.pl ||
+echo 'restore of cops_104/checkacct/rhosts.pl failed'
+Wc_c="`wc -c < 'cops_104/checkacct/rhosts.pl'`"
+test 864 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/rhosts.pl: original size 864, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/setuid ==============
+if test -f 'cops_104/checkacct/setuid' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/setuid (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/setuid (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/setuid' &&
+X
+XFiles with the setuid ("set userid") or the setgid ("set group id") bit
+Xset confer special permissions upon the user that runs them.  If user "pat"
+Xruns a program owned by user "terry" that has the setuid bit on, then user
+X"pat" can become user "terry" for the duration of that program.  User "pat"
+Xcan access and write, erase, and alter all the files owned by "terry" during
+Xthe duration of that program.  The example below shows the output of the
+Xcommand "ls -Faslg rogue", where this file has the setuid bit turned on.
+X
+X   0 -rws------  1 pat   staff           0 Nov 11 22:51 rogue*
+X
+XThis works the same way for programs with the setgid bit on.  The group
+Xthat owns them will be conferred upon anyone who runs the program.  Here
+Xis an example output of "ls -Faslg rogue" for a program with the setgid bit
+Xon.
+X
+X   0 -rwx--S---  1 pat   staff           0 Nov 11 22:51 rogue*
+X
+XYou can use the command "ls -Faslg" to check and see if you have any setuid
+Xor setgid files in your account.  Unless you have a specific reason for having 
+Xthem this way, you should consider turning off the setuid or setgid bit.
+XChkacct will do this for you if you simply press RETURN/NEWLINE at the
+Xprompt.
+X
+X[Excerpted from "Guide to Account Security" -- Purdue Engineering Computer 
+X Network (ECN) "No Name Newsletter" September 1991]
+SHAR_EOF
+chmod 0600 cops_104/checkacct/setuid ||
+echo 'restore of cops_104/checkacct/setuid failed'
+Wc_c="`wc -c < 'cops_104/checkacct/setuid'`"
+test 1315 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/setuid: original size 1315, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/sysV.m4 ==============
+if test -f 'cops_104/checkacct/sysV.m4' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/sysV.m4 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/sysV.m4 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/sysV.m4' &&
+Xundefine(eval)dnl()
+Xchangequote(%,^)dnl()
+Xdnl()
+Xdnl() At some sites, a group is given to each user, rendering group
+Xdnl()	permissions somewhat moot.  If your site is like this, then you
+Xdnl()	want to tell chkacct to act as if group permissions don't matter.
+Xdnl()   To do this, set smallgroups to be 1
+Xdnl()
+Xdefine(SmallGroups,%1^)dnl()
+Xdefine(FindPermRead,
+X	ifelse(SmallGroups, %0^, %-perm -4 -o -perm -40^, %-perm -4^))dnl()
+Xdefine(FindPermWrite,
+X	ifelse(SmallGroups, %0^, %-perm -2 -o -perm -20^, %-perm -2^))dnl()
+Xdefine(ChmodPermSymbol,
+X	ifelse(SmallGroups, %0^, %go^, %o^))dnl()
+Xdefine(FindPermSuid,
+X	ifelse(SmallGroups, %0^, %-perm -2000 -o -perm -4000^, %-perm -4000^))dnl()
+Xdefine(ChmodPermSuidSymbol,
+X	ifelse(SmallGroups, %0^, %ug^, %u^))dnl()
+Xdnl()
+Xdnl()
+Xdnl() Set cshpath() to be the tail end of whatever it takes to pipe standard
+Xdnl() input to the shell.  It will be used in the following way:
+Xdnl()		HOMEDIR=`echo "echo ~${USERID}" | cshpath()`
+Xdnl() On some bsd systems, cshpath() needs to be "/bin/csh -".  
+Xdnl() On some sysV systems, cshpath() needs to be "/bin/csh".  
+Xdnl()
+Xdefine(perlpath,%/usr/unsup/bin/perl^)dnl()
+Xdefine(catpath,%/bin/cat^)dnl()
+Xdefine(cshpath,%/bin/csh^)dnl()
+Xdefine(pagerpath,%"/usr/ucb/more"^)dnl()
+Xdefine(gurudude,%"PUCC General Consultant"^)dnl()
+Xdefine(installpath,%/usr/local/^)dnl()
+Xdefine(echownl,%/bin/echo "^$1%\c"^)dnl()
+Xdefine(lsopt,%^)dnl()
+Xdefine(findopts,%^)dnl()
+SHAR_EOF
+chmod 0600 cops_104/checkacct/sysV.m4 ||
+echo 'restore of cops_104/checkacct/sysV.m4 failed'
+Wc_c="`wc -c < 'cops_104/checkacct/sysV.m4'`"
+test 1422 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/sysV.m4: original size 1422, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/checkacct/write ==============
+if test -f 'cops_104/checkacct/write' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/checkacct/write (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/checkacct/write (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/checkacct/write' &&
+X
+XAll information on the computer is stored in files.  A file is just
+Xwhat it sounds like, a container for data.  A directory is a special
+Xfile that contains other files or directories.  You can list which
+Xfiles are in a directory using the "ls" command. For example, here's
+Xwhat "ls" says about the directory where I'm located:
+X
+XRFC1147.ps    acct.sec    imp.tech     new.security
+Xorange-book   privacy     pu.environ   ritalin
+Xs.serv        s.serv.tr   style        wwarticle
+Xzap
+X
+XYou can use "ls" to find out additional information about files by
+Xusing the "-l" option.  For example, if I wanted more information about
+Xthe file acct.sec in the list above, I would type Here is what happens
+Xwhen I do that:
+X
+X-rw-r--r--  1 pat  8058 Aug 19 11:22 acct.sec
+X
+X   - The first field shown as, "-rw-r--r--", is the file
+X     type and permission bits.  More information about permission codes
+X     is given below.
+X
+X   - The second field, "1", is the number of links to the
+X     file.  In this case, the file has only one name.  Other links can
+X     be made with the "ln" command.
+X
+X   - The third field, "pat", is the file's owner.  The login
+X     pat owns this file.
+X
+X   - The fourth field, "8058", is the size of the file in
+X     number of characters.
+X
+X   - The fifth field, "Aug 19 11:22", is the time the file
+X     was last modified.
+X
+X   - The last field is the name of the file.
+X
+XPERMISSION CODES
+X----------------
+XThe first character in the type/permission field is the file type.  If
+Xthe file is a directory, the first character will be a "d".  If it is a
+Xregular file, the first character will be "-".
+X
+XThe next nine characters are access permission flags.  The leftmost
+Xthree are owner permissions, the middle three are group permissions,
+Xand the rightmost three are world permissions.  The letter "r" grants
+Xread permission, the letter "w" grants write permission, and the letter
+X"x" grants execute permission.
+X
+XIn the above example, the permissions for the owner, "pat", are "rw-".
+XThat means the owner "prm" can read and write the file, but not execute
+Xit.  The permissions for the file's group are "r--", as they are for
+Xthe world.  If a file has modes "rw-rw----" and is owned by group
+Xother, everyone on the computer can write to the file!  You can see
+Xgroup ownership on a file by using the "g" option with the "l" option
+Xto "ls".
+X
+XFor example, when I type "ls -l" I get the following:
+X
+X-rw-r--r--  1 pat  other  8058 Aug 19 11:22 acct.sec
+X
+XThe "other" is the group owner of the file.
+X
+XYou can use the "chmod" command to change file permissions.  The
+Xcharacter "+" means add permission and the character "-" means deny
+Xpermission.  For example, if I wanted to let people in group "other"
+Xwrite on my file, I would type Whereas if I want to deny other people
+Xpermission to look at this file, I could type and the read permission
+Xon the file would be revoked.
+X
+XThere is a shorthand way of representing file modes.  Each permission
+Xcategory (owner, group, and world) is given a number which represents
+Xthe bits set in the permission field. Here is a table that explains
+Xthis numbering system:
+X
+X             _________________________________
+X            |           Owner   Group   World|
+X             _________________________________
+X            | Read       400     40       4  |
+X            | Write      200     20       2  |
+X            | Execute    100     10       1  |
+X              None         0      0       0
+X            |________________________________+
+X
+XTo use this table, merely add up the permissions you want.  For
+Xexample, a file that is mode 644 has owner read and write permission
+X(400 + 200), group read permission (40), and world read permission
+X(4).
+X
+XYou can use this shorthand with "chmod" as well.  Just use the number
+Xinstead of the symbolic representation.  If you want to change the mode
+Xof your .login from 755 to 644, you can type
+X
+X	/bin/chmod 0644 ~/.login
+X
+XYour home directory should be mode 700, 711, or 755.  You should not
+Xallow others write permission to your directory!  That would give them
+Xpermission to create or destroy files at will.
+X
+XImportant files should be mode 644 or 600.  Only rarely is it important
+Xto make a file mode 666, which is world- writable.
+X
+X[Excerpted from "Guide to Account Security" -- Purdue Engineering Computer 
+X Network (ECN) "No Name Newsletter" September 1991]
+SHAR_EOF
+chmod 0600 cops_104/checkacct/write ||
+echo 'restore of cops_104/checkacct/write failed'
+Wc_c="`wc -c < 'cops_104/checkacct/write'`"
+test 4332 -eq "$Wc_c" ||
+	echo 'cops_104/checkacct/write: original size 4332, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/carp/carp.1 ==============
+if test ! -d 'cops_104/carp'; then
+    echo 'x - creating directory cops_104/carp'
+    mkdir 'cops_104/carp'
+fi
+if test -f 'cops_104/carp/carp.1' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/carp/carp.1 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/carp/carp.1 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/carp/carp.1' &&
+X.TH CARP 1 "February 12, 1992"
+X.UC 4
+X.SH NAME
+Xcarp \- COPS data analysis tool
+X.SH SYNOPSIS
+X.B carp
+X[
+X\-x
+X]
+Xcops_directory
+X.SH DESCRIPTION
+X.I carp
+X(COPS Analysis and Report Program) is a data analysis tool that
+Xviews and analyze multiple COPS result files (important -- the
+XCOPS result files must have been created with the -v flag;
+X.I carp
+Xneeds the extra information.)  It is run by
+Xspecifying the root of the cops directory tree that contains
+Xvarious cops output files (as long as the results files are in
+Xsubdirectories of the cops directory, it will find them, presumably
+Xfrom a network of data.  It checks all subdirectories (and hence
+Xhostnames) containing cops reports (they are named something like
+X"1992_Dec_31".)  It then runs two subprograms; a report analyzer
+X.I (carp.anlz)
+Xand a table generator
+X.I (carp.table),
+Xto produce the final output, which will look something like:
+X.PP
+X.nf
+Xhostname      rep date     crn dev ftp grp hme is pass
+X=======================================================
+Xneuromancer  1992_Jan_27  | 1 |   | 2 |   | 1 | 2 |   |
+Xsun          1992_Jan_26  |   |   | 2 | 2 | 1 | 2 |   |
+Xdeath        1992_Jan_15  |   |   |   | 2 | 1 | 2 | 0 |
+X.fi
+X.PP
+XThe date is the date the cops report was created, the other headers
+Xcorrespond to the various checks that cops runs; 
+X.I cron.chk, 
+X.I ftp.chk,
+Xetc.  The number refers to the severity of the most serious warning
+Xfrom that host on that particular check:
+X.br
+X.IP
+X0 == a problem that, if exploited, can gain root access almost instantly
+Xfor an intruder.
+X.IP
+X1 == a serious security problem, such as a guessed password.
+X.IP
+X2 == a possibly serious security problem, but one that is difficult
+Xto analyze via a mere program.  Look at the problems in question,
+Xand decide for yourself.
+X.br
+XBlanks mean that no problem was found (*not* that no problem exists!)
+X.PP
+XAll of these numbers are in the
+X.I carp.anlz
+Xprogram (see the comments at the top of that file); they can be modified
+Xto best suit your needs... and, of course, you should look at the actual
+Xcops report for more information on the specific problems encountered.
+X.PP
+Xoptions are:
+X.TP
+X.B \-x
+XOutput the path to the result file so that
+X.I xcarp
+Xwill be able to find the specific host COPS report information.
+X.PP
+XIn addition, there are two sister tools that can be used in conjunction
+Xwith
+X.I carp
+X\-- an X previewer (
+X.I xcarp;
+Xnote that
+X.I xcarp
+Xwill only work if the "-x" flag is used when running
+X.I carp),
+Xand a filter 
+X.I (carp2ps)
+Xthat will generate postscript code suitable for printing (or framing,
+XI guess.)
+X.SH "SEE ALSO"
+X.EX 0
+Xcarp.anlz(1)    carp2ps(1)    xcarp(vaporware right now; soon to exist)
+X.EE
+X.SH BUGS
+X.I carp
+Xdies silently and horribly if the "-v" option wasn't used to generate
+Xthe COPS reports.
+SHAR_EOF
+chmod 0644 cops_104/carp/carp.1 ||
+echo 'restore of cops_104/carp/carp.1 failed'
+Wc_c="`wc -c < 'cops_104/carp/carp.1'`"
+test 2756 -eq "$Wc_c" ||
+	echo 'cops_104/carp/carp.1: original size 2756, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/carp/carp ==============
+if test -f 'cops_104/carp/carp' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/carp/carp (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/carp/carp (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/carp/carp' &&
+X#!/bin/sh
+X#
+X#  Useage: carp [-x] report_or_cops_dir
+X#
+X# -x emits a result file that can be used with the X-previewer
+X#
+X#  Carp is a data analysis tool for cops output, primarily designed
+X# for use analyzing a cops directory tree full of cops output (presumably
+X# from a network of data.)  It looks in the cops main directory (by
+X# default) and finds all subdirectories (and hence hostnames) containing
+X# cops reports (they are named something like "1992_Dec_31".)  It then
+X# runs two subprograms; a report analyzer ("carp.anlz") and a table
+X# generator ("carp.table".)  The final output will look something like:
+X# 
+X# hostname      rep date     crn dev ftp grp hme is pass msc pwd rc  rot usr
+X# ===========================================================================
+X# neuromancer  1992_Jan_27  | 1 |   | 2 |   | 1 | 2 |   |   | 2 | 2 | 2 |   |
+X# sun          1992_Jan_26  |   |   | 2 | 2 | 1 | 2 |   |   | 2 | 2 |   | 1 |
+X# death        1992_Jan_15  |   |   |   | 2 | 1 | 2 |   |   |   |   | 0 |   |
+X#
+X#  The date is the date the cops report was created, the other headers
+X# correspond to the various checks that cops runs; "cron.chk", "ftp.chk",
+X# etc.  The number refers to the severity of the most serious warning
+X# from that host on that particular check:
+X#
+X# 0 == a problem that, if exploited, can gain root access for an intruder
+X# 1 == a serious security problem, such as a guessed password.
+X# 2 == a possibly serious security problem, but one that is difficult
+X#      to analyze via a mere program.  Look at the problems in question,
+X#      and decide for yourself.
+X# Blanks mean that no problem was found (*not* that no problem exists!)
+X#  If the -x flag was used, the pathname to the report file is printed
+X# after the corresponding report line for the host.
+X#
+X#  All of these numbers are in the carp.anlz program; they can be modified
+X# to best suit your needs... and, of course, you should look at the actual
+X# cops report for more information on the specific problems encountered.
+X#
+X#  TO ADD NEW CHECKS -- just add a column in the echo near the bottom;
+X# bug.chk is used (commented out) as an example.  Note you'll also have
+X# to add stuff to "carp.table" -- see comments there, too...
+X#
+X# Basic stuff:
+XAWK=/bin/awk
+XFIND=/bin/find
+XSORT=/bin/sort
+XLS=/bin/ls
+XECHO=/bin/echo
+XTEST=/bin/test
+X
+X# other progs, files:
+Xgenerator="./carp.anlz"
+Xtabler="./carp.table"
+X
+Xif $TEST ! -s $generator -a ! -s $tabler ; then
+X	echo Can\'t find $tabler and/or $generator...
+X	exit 1
+X	fi
+X
+X# arg stuff:
+X# more arg stuff:
+Xif $TEST $# -eq 0 ; then
+X        echo Usage: $0 [-x] directory
+X        exit 2
+X        fi
+X
+Xwhile $TEST $# != 0
+X        do      case "$1" in
+X        -x)     x=yes ; shift ;;
+X        *)      report_dir=$report_dir" "$1 ; shift ;;
+X        esac
+X        done
+X
+Xfor dir in $report_dir ; do
+X	if $TEST ! -d $dir ; then
+X		echo $dir is not a directory...
+X		exit 3
+X		fi
+X	done
+X
+X#  find the most recent targets on all the machines...
+X# a two step process; one, get the dirs the report files live in,
+X# two, get the most recent one.
+Xtargets=`$FIND $report_dir -name '[0-9][0-9][0-9][0-9]_[A-Z][a-z][a-z]_[0-9]*' \
+X	-exec dirname {} \; | $SORT -u`
+X
+Xfor dir in $targets ; do
+X	all_reports=`$LS -t $dir/[0-9][0-9][0-9][0-9]_[A-Z][a-z][a-z]_[0-9]* \
+X		| $AWK 'NR == 1'`" "$all_reports
+X	done
+X
+X# echo all the reports are: $all_reports
+X$ECHO "COPS warning summary"
+X$ECHO
+X#
+X#  Default headers... must think of a better way.  A potential additional
+X# field might be bug.chk; to add, just add a column in the echo...
+X#
+X$ECHO "hostname      rep date     crn dev ftp grp hme is pass msc pwd rc root usr kng"
+X$ECHO "==============================================================================="
+X
+Xfor report in $all_reports ; do
+X	# extra X info for the x-program...
+X	if $TEST "$x" = "yes" ; then
+X		echo $report
+X		fi
+X	$AWK -f $generator $report | $AWK -f $tabler 
+X	done
+X
+X# done
+SHAR_EOF
+chmod 0700 cops_104/carp/carp ||
+echo 'restore of cops_104/carp/carp failed'
+Wc_c="`wc -c < 'cops_104/carp/carp'`"
+test 3863 -eq "$Wc_c" ||
+	echo 'cops_104/carp/carp: original size 3863, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/carp/carp.anlz ==============
+if test -f 'cops_104/carp/carp.anlz' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/carp/carp.anlz (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/carp/carp.anlz (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/carp/carp.anlz' &&
+XBEGIN { test = 0 }
+X
+X# assumes all checks print out something like:
+X#
+X# "**** foo.chk ****"
+X#
+X# when the verbose flag is true
+X#
+X/^\*\*\*\*/ { check = $2 }
+X
+X{if (test == 1) testing = $0 " " }
+X
+X#
+X#  IMPORTANT - exception list!
+X#
+X#  Be very careful of regular expressions and other awk stuff...
+X# ()'s, *'s, ?'s, /'s, etc. are all trouble.  Backquote if in doubt.
+X#
+X#  Sample list:
+X#
+X#  Hassled by mail warning?
+X# /Warning!  \/usr\/spool\/mail is _World_ writable!/ {next}
+X#
+X#  Brave... or stupid?
+X# _World_ writable!/ {next}
+X#
+X#  Kill off YP messages...
+X#  /YG/ {next}
+X#  /YP/ {next}
+X
+X#
+X# START THE CHECKING
+X#
+X# level 0 checks:
+X#
+X/A "+" entry in/ {print FILENAME, check, testing "0"; next }
+X# Assume bugs are all bad :-)
+X/ould have a hole\/bug/ {print FILENAME, check, testing "0"; next }
+X# kuang telling us we're in deep yoghurt, or something like that...
+X/DO ANYTHING/ {print FILENAME, check, testing "0"; next }
+X# writable password file really sucks:
+X/\/etc\/passwd.*_World_/ {print FILENAME, check, testing "0"; next }
+X
+X# level 1 checks:
+X#
+X/uudecode is suid!/ {print FILENAME, check, testing "1"; next }
+X/rexd is enabled in/ {print FILENAME, check, testing "1"; next }
+X/User.*home directory.*is mode/ {print FILENAME, check, testing "1"; next }
+X/User.*:.*is mode/ {print FILENAME, check, testing "1"; next }
+X/tftp is enabled on/ {print FILENAME, check, testing "1"; next }
+X/uudecode is enabled in/ {print FILENAME, check, testing "1"; next }
+X/Password file, line.*is blank/ {print FILENAME, check, testing "1"; next }
+X/Password file, line.*nonnumeric user id:/ {print FILENAME, check, testing "1"; next }
+X/(in cron_file) is World writable!/ {print FILENAME, check, testing "1"; next }
+X/File.*(inside root executed file) is _World_ writable!/ {print FILENAME, check, testing "1"; next }
+X/File.*(in .*) is _World_ writable!/ {print FILENAME, check, testing "1"; next }
+X/Directory.*is _World_ writable and in roots path!/ {print FILENAME, check, testing"1"; next }
+X/ftp's home directory should not be/ {print FILENAME, check, testing "1"; next }
+X/and.*ass.*are the same/ {print FILENAME, check, testing "1"; next }
+X/should be mode 555/ {print FILENAME, check, testing "1"; next }
+X/should be be empty/ {print FILENAME, check, testing "1"; next }
+X
+X# level 2 checks:
+X#
+X/is _World_ writable!/ {print FILENAME, check, testing "2" }
+X/Duplicate Group(s) found in/ {print FILENAME, check, testing "2"; next }
+X/Group.*has duplicate user/ {print FILENAME, check, testing "2"; next }
+SHAR_EOF
+true || echo 'restore of cops_104/carp/carp.anlz failed'
+fi
+echo 'End of  part 14'
+echo 'File cops_104/carp/carp.anlz is continued in part 15'
+echo 15 > _shar_seq_.tmp
+exit 0
+

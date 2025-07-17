@@ -1,0 +1,192 @@
+From umd5!haven!rutgers!uwm.edu!cs.utexas.edu!mailrus!uflorida!winnie!pd1!bill Wed Oct 11 12:54:32 EDT 1989
+Article 19038 of comp.unix.wizards:
+Path: umd5!haven!rutgers!uwm.edu!cs.utexas.edu!mailrus!uflorida!winnie!pd1!bill
+>From: bill@pd1.ccd.harris.com (Bill Davis)
+Newsgroups: comp.unix.wizards
+Subject: Re: Is there an FSDB Manual?
+Message-ID: <572@pd1.ccd.harris.com>
+Date: 4 Oct 89 21:11:01 GMT
+References: <1221@virtech.UUCP> <4960@cbnewsm.ATT.COM>
+Reply-To: bill@pd1.ccd.harris.com (Bill Davis)
+Distribution: comp
+Organization: Harris Controls and Composition Div., Melbourne Fla.
+Lines: 25
+
+In article <4960@cbnewsm.ATT.COM> szirin@cbnewsm.ATT.COM writes:
+>
+>Of course, anyone that can figure out how to use fsdb can easily read your
+>private file without ever touching the directory entry...
+
+If this were true, it would be a nasty security hole.
+Just by knowing fsdb, I could look anywhere in a file
+system and read the contents of files.
+
+This doesn't happen here.  Based on information
+available here, I have reason to believe
+it doesn't happen with the major variants of Unix.
+Anyone care to tell me if I am wrong VIA EMAIL
+to avoid spreading any "how to break a Unix system"
+information too widely?  Or better yet, if you find
+a version of Unix that lets someone other than
+root run fsdb and get information out of it (or
+worse yet, change it), perhaps you might want to tell
+your system vendor about it.  You probably don't
+want your system to remain that way.
+-- 
+* Truth comes as an enemy only to those who have lost the ability to welcome  *
+* it as a friend. ** Be thankful for your troubles.  If your job did not have *
+* problems, they could hire someone else to do your job at half the cost.     *
+Bill Davis   EMAIL: w.davis@ccd.harris.com (<-best) uunet!hcx1!pd1!bill
+
+
+From umd5!haven!ames!apple!rutgers!texbell!sequoia!rpp386!jfh Wed Oct 11 13:00:25 EDT 1989
+Article 19056 of comp.unix.wizards:
+Path: umd5!haven!ames!apple!rutgers!texbell!sequoia!rpp386!jfh
+>From: jfh@rpp386.cactus.org (John F. Haugh II)
+Newsgroups: comp.unix.wizards
+Subject: Re: Is there an FSDB Manual?
+Message-ID: <17101@rpp386.cactus.org>
+Date: 5 Oct 89 14:39:26 GMT
+References: <1221@virtech.UUCP> <4960@cbnewsm.ATT.COM> <572@pd1.ccd.harris.com>
+Reply-To: jfh@rpp386.cactus.org (John F. Haugh II)
+Distribution: comp
+Organization: TrishTrash Readers, Inc.
+Lines: 44
+
+In article <572@pd1.ccd.harris.com> bill@pd1.ccd.harris.com (Bill Davis) writes:
+>In article <4960@cbnewsm.ATT.COM> szirin@cbnewsm.ATT.COM writes:
+>>Of course, anyone that can figure out how to use fsdb can easily read your
+>>private file without ever touching the directory entry...
+>
+>If this were true, it would be a nasty security hole.
+>Just by knowing fsdb, I could look anywhere in a file
+>system and read the contents of files.
+
+It is quite true, and you don't need fsdb [ but it sure does
+make things easier ;-) ]
+
+To prevent this your block devices can not be readable by
+normal users.
+
+>This doesn't happen here.  Based on information
+>available here, I have reason to believe
+>it doesn't happen with the major variants of Unix.
+>Anyone care to tell me if I am wrong VIA EMAIL
+>to avoid spreading any "how to break a Unix system"
+>information too widely?  Or better yet, if you find
+>a version of Unix that lets someone other than
+>root run fsdb and get information out of it (or
+>worse yet, change it), perhaps you might want to tell
+>your system vendor about it.  You probably don't
+>want your system to remain that way.
+
+fsdb -may- have its access modes restricted to root 
+only, but this does not prevent someone from writing
+an fsdb clone and posting it to the net so everyone
+can use it.  However, any system which still has adb
+on it has all that is really needed for file system
+maintenance.
+
+I have used adb [ just yesterday in fact ] to break
+into UNIX systems.  My floppy devices are world
+accessible, so I mounted a floppy and created a SUID
+root program.  Seems I trashed /etc/shadow and couldn't
+login as root ;-(
+-- 
+John F. Haugh II                        +-Things you didn't want to know:------
+VoiceNet: (512) 832-8832   Data: -8835  | The real meaning of MACH is ...
+InterNet: jfh@rpp386.cactus.org         |    ... Messages Are Crufty Hacks.
+UUCPNet:  {texbell|bigtex}!rpp386!jfh   +--------------------------------------
+
+
+From umd5!haven!purdue!iuvax!rutgers!dptg!att!cbnewsm!szirin Wed Oct 11 13:01:21 EDT 1989
+Article 19063 of comp.unix.wizards:
+Path: umd5!haven!purdue!iuvax!rutgers!dptg!att!cbnewsm!szirin
+>From: szirin@cbnewsm.ATT.COM (seth.zirin)
+Newsgroups: comp.unix.wizards
+Subject: Re: Is there an FSDB Manual?
+Message-ID: <5037@cbnewsm.ATT.COM>
+Date: 5 Oct 89 21:43:53 GMT
+References: <11223@smoke.BRL.MIL>
+Reply-To: szirin@cbnewsm.ATT.COM
+Organization: AT&T Bell Laboratories
+Lines: 12
+
+In article <4960@cbnewsm.ATT.COM> szirin@cbnewsm.ATT.COM writes:
+>Of course, anyone that can figure out how to use fsdb can easily read your
+>private file without ever touching the directory entry...
+
+Sorry for the scare.  It was assumed that the user of fsdb would have
+root access.  The whole purpose of putting a slash in the filename is
+to prevent another root user from getting at the file text.  A chmod 600
+provides privacy from mortal readers.
+
+Putting a ^H into a file name also confuses people...
+
+seth zirin
+
+
+From umd5!haven!uflorida!rex!ginosko!gem.mps.ohio-state.edu!tut.cis.ohio-state.edu!bloom-beacon!eru!luth!sunic!mcsun!unido!uniol!lehners Wed Oct 11 13:04:49 EDT 1989
+Article 19071 of comp.unix.wizards:
+Path: umd5!haven!uflorida!rex!ginosko!gem.mps.ohio-state.edu!tut.cis.ohio-state.edu!bloom-beacon!eru!luth!sunic!mcsun!unido!uniol!lehners
+>From: lehners@uniol.UUCP (Joerg Lehners)
+Newsgroups: comp.unix.wizards
+Subject: Re: Is there an FSDB Manual?
+Message-ID: <889@uniol.UUCP>
+Date: 5 Oct 89 16:36:30 GMT
+References: <1221@virtech.UUCP> <4960@cbnewsm.ATT.COM> <572@pd1.ccd.harris.com>
+Distribution: comp
+Organization: University of Oldenburg, W-Germany
+Lines: 49
+
+Hello !
+
+bill@pd1.ccd.harris.com (Bill Davis) writes:
+>In article <4960@cbnewsm.ATT.COM> szirin@cbnewsm.ATT.COM writes:
+>>
+>>Of course, anyone that can figure out how to use fsdb can easily read your
+>>private file without ever touching the directory entry...
+
+>If this were true, it would be a nasty security hole.
+>Just by knowing fsdb, I could look anywhere in a file
+>system and read the contents of files.
+
+No, fsdb is not a security hole. The probabaly world-readable
+character and block device special entries in /dev are the security holes.
+I know about System V.2 and System V.3. In System V.2 all device
+files are public readable to allow df to detremine the free block/inode
+count. Maybe there are some other program that need direct filesystem
+access.
+System V.3 made all these special files unreadable for the normal user.
+To determine the blocks/inodes count there s special systemcall.
+The same things happened to /dev/mem and /dev/kmem.
+System V.2: /dev/mem and /dev/kmem world readable;
+System V.3: /dev/mem and /deb/kmem protected and s-bit on /bin/ps (non-root)
+
+When fsdb is a security hole then the files in /usr/include/sys are
+all security holes too, and Bach's Book 'The Design Of An Operating
+System' is a security hole too. Almost all information to build
+an fsdb on your own is in /usr/include/sys/* and some books.
+
+>[a bit deleted]
+>.....
+>a version of Unix that lets someone other than
+>root run fsdb and get information out of it (or
+>worse yet, change it), perhaps you might want to tell
+>your system vendor about it.  You probably don't
+>want your system to remain that way.
+Ok, I might be wise to protect fsdb from beeing executed by normal
+user's (no problem, I think) to prevent looking at protected files.
+But what about a copy of fsdb from somewhere else in some users directory ?
+
+Get a machine and try out protecting the special files for the disks
+and memory, and then do the right s-bit setting.
+
+  Joerg
+--
+/ Joerg Lehners                       | Fachbereich 10 Informatik ARBI   \
+|                                     | Universitaet Oldenburg           |
+| BITNET/EARN: 066065@DOLUNI1.BITNET  | Ammerlaender Heerstrasse 114-118 |
+\ UUCP/Eunet:  lehners@uniol.uucp     | D-2900 Oldenburg                 /
+
+

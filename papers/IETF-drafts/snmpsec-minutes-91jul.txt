@@ -1,0 +1,219 @@
+
+CURRENT_MEETING_REPORT_
+
+
+Reported by James Galvin/TIS and Keith McCloghrie/Hughes
+
+SNMPSEC Minutes
+
+Status of the Documents Reviewed:
+
+   o All three:  the SNMP Administrative Framework, SNMP Security
+     Protocols, and SNMP Party MIB, were published as Internet Drafts
+     immediately after the previous IETF (in St.  Louis).
+
+   o An update to the SNMP Party MIB was distributed to the snmp-sec-dev
+     mailing-list at the beginning of July.
+
+
+The Outstanding Issues were Discussed:
+
+
+   o Mike St.Johns suggested consideration of the use of ``threshold
+     keying'', in the distribution of initial secrets.  Threshold keying
+     is a standard security technique (see Denning's book on Computer
+     Security), in which the keys are split into multiple ``shadow''
+     parts.  The parts could be distributed separately and then
+     recombined to obtain the initial secret.  Use of this technique
+     would allow an administration to, for example, have a single shadow
+     key which would be manually entered into each agent at install
+     time, and another shadow key calculated by the nms so as to be
+     agent-specific and distributed to the agent; these two parts could
+     then be combined to get the initial secret.  The advantages would
+     be the ability to have the manually distributed secret information
+     be a) the same for all agents, and b) different from the secret
+     used as the initial key.  The disadvantage being the special
+     first-time-only processing the agent would need to recombine the
+     keys.  The meeting agreed to consider the suggestion in parallel
+     with other activities.
+
+   o The differences between MD4 and MD5 were discussed, and the pros
+     and cons of using each.  A suggestion was made to update the text
+     of the SNMP Security Protocols document to replace occurrences of
+     ``SNMP MD4 Authentication Protocol`` by ``SNMP Digest
+     Authentication Protocol'' in discussions of all parts of the
+     protocol except the particular digest algorithm used, where the use
+     of ``MD4'' would be retained.  This suggestion was accepted since
+     it would minimize the text (e.g.  to one page) which would be
+     needed in a future memo specifying alternative digest algorithms.
+
+   o A question on ``wildcard'' parties (analogous to the ``public''
+     community) was answered by discussing the ``initial'' noAuth,noPriv
+     parties defined by convention in the Party MIB. A lively discussion
+     ensued on the access rights to be afforded to this out-of-the-box
+     noAuth,noPriv party.  Some argued for allowing read-access to
+
+                                   1
+
+
+
+
+
+     everything in the MIB (except SNMP security's secret information);
+     others for allowing read-access to nothing, or just to MIB-II's
+     system group.  The consensus of the discussion seemed to be for
+     this working group to stay silent on the issue, and let the various
+     Requirements working groups make device-type specific
+     recommendations.  The Router Requirements WG. is making such a
+     recommendation for use of ``public'' communities, and knows it will
+     have to update that recommendation as and when the SNMP Security
+     documents are further along.
+
+   o A discussion was held on the protocol's use of ASN.1 tags instead
+     of a version number field.  The same conclusion was reached as in
+     previous discussions of the same topic.
+
+   o The term ``random values'' in the section of the SNMP Security
+     Protocols document discussing what to do when an agent loses its
+     knowledge of a secret, was clarified as being the need to set the
+     values to non-valid or non-guessable values.
+
+
+
+There was discussion of the implementation experience gained so far:
+
+
+   o Three separate implementations were in various stages of
+     incompletion, and one other person had spent some preparing for an
+     implementation.  Two of these implementations interoperated with
+     each other using noAuth,noPriv.  Two had implemented MD4.  One was
+     using DES but was unsure that the encrypted data was correct.  To
+     date, there is no experience with multiple MIB views, proxy, clock
+     synchronization, nor SNMP access to the Party MIB.
+
+   o A couple of ASN.1 definitions were discussed for possible
+     optimizations:
+
+      -  The replacement of ANY by a CHOICE in types of AuthInformation,
+
+      -  The specification of a fixed length for the OCTET STRING
+         containing the digest value, and
+
+      -  The rearrangement of the authentication information and the
+         source/destination party fields leading to the removal of one
+         of the levels of serialization.
+
+
+     There was also discussion of the present access-control
+     granularity, and its ability to scale.  The definition of MIB
+     subviews does allow access control on individual instances, but at
+     the cost of entering each object instance in the View Table.  There
+     is a legitimate requirement to support several Views each
+     containing all the variables in, for example, the ifTable for just
+     one interface.  This requires a large number of entries in the View
+
+                                   2
+
+
+
+
+
+     Table even with only a moderate numbers of interfaces.
+
+     The document editors agreed to update the documents to reflect the
+     (minor) changes resulting from the above discussions.  These
+     updates are expected to be available by the end of August.
+
+     Finally, there was discussion of where to go next.  The general
+     consensus of the meeting was that SNMP Security was too important
+     and central to the technology for us to recommend progression in
+     the standards track with the present incomplete levels of
+     implementation experience.  When asked how many other
+     implementation efforts were planned for the near future, a half a
+     dozen attendees raised their hands.  These and others were strongly
+     encouraged to proceed with these implementations in order to gain
+     the required experience.  Interoperability testing of such
+     implementations across the Internet, and at the Interop '91
+     SNMP-demo ``staging'' event were discussed and encouraged.
+
+
+Attendees
+
+Steve Alexander          stevea@i88.isc.com
+Karl Auerbach            karl@eng.sun.com
+Doug Barlow              barlow@decwet.dec.com
+James Barnes             barnes@xylogics.com
+Steve Bostock            steveb@novell.com
+Howard Brown             brown@ctron.com
+Theodore Brunner         tob@thumper.bellcore.com
+John Burruss             jburruss@wellfleet.com
+Jeffrey Case             case@cs.utk.edu
+Gigi Chu                 gigic@hpspd.spd.hp.com
+John Cook                cook@chipcom.com
+Tracy Cox                tacox@sabre.bellcore.com
+Emil Datability
+James Davin              jrd@ptt.lcs.mit.edu
+Jeffrey Edelheit         edelheit@mitre.org
+Gary Ellis               garye@hpspd.spd.hp.com
+Bill Fardy               fardy@ctron.com
+Barbara Fraser           byf@cert.sei.cmu.edu
+Jeff Fried               jmf@relay.proteon.com
+Deborah Futcher          dfutche@eco.twg.com
+Maria Gallagher          maria@nsipo.arc.nasa.gov
+Shawn Gallagher          gallagher@quiver.enet.dec.com
+James Galvin             galvin@tis.com
+Ron Jacoby               rj@sgi.com
+Mike Janson              mjanson@mot.com
+Frank Kastenholz         kasten@europa.clearpoint.com
+Manu Kaycee              kaycee@trlian.enet.dec.com
+Mark Kepke               mak@hpcndk.cnd.hp.com
+Kenneth Key              key@cs.utk.edu
+Christopher Kolb         kolb@psi.com
+Deidre Kostick           dck2@sabre.bellcore.com
+Bobby Krupczak           rdk@cc.gatech.edu
+
+                                   3
+
+
+
+
+
+Cheryl Krupczak          cheryl@cc.gatech.edu
+Nik Langrind             nik@shiva.com
+Anthony Lauck            lauck@tl.enet.dec.com
+Tim Lee-Thorp            ngc!tim@uunet.uu.net
+Ron Mackey               rem@dsiinc.com
+Keith McCloghrie         kzm@hls.com
+Evan McGinnis            bem@3com.com
+Lynn Monsanto            monsanto@eng.sun.com
+Bradford Parker          brad@cayman.com
+David Perkins            dperkins@synoptics.com
+John Pickens             jrp@3com.com
+Brian Price              brian@bss.com
+Anil Rijsinghani         anil@levers.enet.dec.com
+Kary Robertson           kr@concord.com.kr
+Jonathan Saperia         saperia@tcpjon.enet.dec.com
+Mark Schaefer            schaefer@davidsys.com
+John Seligson            johns@ultra.com
+Ron Sharp                rls@neptune.att.com
+Anil Singhal             nsinghal@hawk.ulowell.edu
+Mark Sleeper             mws@sparta.com
+Michael St.  Johns       stjohns@umd5.umd.edu
+Bob Stewart              rlstewart@eng.xyplex.com
+Bruce Taber              taber@interlan.com
+Ronald Tencati           tencati@nssdca.gsfc.nasa.gov
+Glenn Trewitt            trewitt@nsl.dec.com
+Theodore Tso             tytso@mit.edu
+William Versteeg         bvs@nrc.com
+David Waitzman           djw@bbn.com
+Steven Waldbusser        waldbusser@andrew.cmu.edu
+Drew Wansley             dwansley@secola.columbia.ncr.com
+David Ward               dward@chipcom.com
+Mark Wood                markl@dsiinc.com
+Brian Yasaki             bky@eco.twg.com
+Jeff Young               jsy@cray.com
+Joseph Zur               fibrontics!zur@uunet.uu.net
+
+
+
+                                   4

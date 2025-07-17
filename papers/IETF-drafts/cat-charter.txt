@@ -1,0 +1,90 @@
+
+Common Authentication Technology (cat)
+
+Charter
+
+Chair(s):
+     John Linn, linn@zendia.enet.dec.com
+
+Mailing Lists:
+     General Discussion:  cat-ietf@mit.edu
+     To Subscribe:  cat-ietf-request@mit.edu
+     Archive:  /cat-ietf/archive@bitsy.mit.edu
+
+Description of Working Group:
+
+     The goal of the Common Authentication Technology working group
+     is to provide strong authentication to a variety of protocol
+     callers in a manner which insulates those callers from the
+     specifics of underlying security mechanisms.  By separating
+     security implementation tasks from the tasks of integrating
+     security data elements into caller protocols, those tasks can
+     be partitioned and performed separately by implementors with
+     different areas of expertise.  This provides leverage for the
+     IETF community's security-oriented resources, and allows
+     protocol implementors to focus on the functions their protocols
+     are designed to provide rather than on characteristics of
+     security mechanisms.  CAT seeks to encourage uniformity and
+     modularity in security approaches, supporting the use of common
+     techniques and accomodating evolution of underlying
+     technologies.
+
+     In support of these goals, the Working Group will pursue
+     several interrelated tasks.  We will work towards agreement on
+     a common service interface allowing callers to invoke security
+     services, and towards agreement on a common authentication
+     token format, incorporating means to identify the mechanism
+     type in conjunction with which authentication data elements
+     should be interpreted.  The CAT Working Group will also work
+     towards agreements on suitable underlying mechanisms to
+     implement security functions; two candidate architectures
+     (Kerberos V5, based on secret-key technology and contributed by
+     MIT, and X.509-based public-key Distributed Authentication
+     Services being prepared for contribution by DEC) are under
+     current consideration.  The CAT Working Group will consult with
+     other IETF Working Groups responsible for candidate caller
+     protocols, pursuing and supporting design refinements as
+     appropriate.
+
+Goals and Milestones:
+
+Done       Preliminary BOF session at IETF meeting, discussions with
+           Telnet and Network Printing Working Groups.
+
+                                   1
+
+
+
+
+
+Done       Distribute Generic Security Service Application Program
+           Interface (GSS-API) documentation through Internet-Draft
+           process.
+
+Done       First IETF meeting as full Working Group:  review Charter,
+           distribute documents, and status of related implementation,
+           integration, and consulting liaison activities.  Schedule
+           follow-on tasks, including documentation plan for specific
+           CAT-supporting security mechanisms.
+
+Oct 1991   Update mechanism-independent Internet-Drafts in response to
+           issues raised, distribute additional mechanism-specific
+           documentation including Distributed Authentication Services
+           architectural description and terms/conditions for use of the
+           technology documented therein.
+
+Nov 1991   Second IETF meeting:  Review distributed documents and status
+           of related activities, continue consulting liaisons.  Discuss
+           features and characteristics of underlying mechanisms.
+           Define scope and schedule for follow-on work.
+
+Dec 1991   Submit service interface specification to RFC standards
+           track.
+
+Ongoing    Progress Internet Draft and RFC publication of
+           mechanism-level documents to support independent,
+           interoperable implementations of CAT-supporting mechanisms.
+
+
+
+                                   2

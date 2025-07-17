@@ -1,0 +1,114 @@
+
+CURRENT_MEETING_REPORT_
+
+
+Reported by Steve Kent/BBN
+
+PEM Minutes
+
+The Privacy Enhanced Mail (PEM) Working Group, Chaired by Steve Kent
+(BBN) met for the first time at the Atlanta IETF meeting.  The Working
+Group met on Monday and Tuesday afternoon and both sessions were well
+attended.  The purpose of these sessions was to discuss unresolved
+issues related to the Internet drafts which describe PEM processing and
+the proposed PEM key management system.  The goal of this meeting was to
+reach consensus on these issues so that revised Internet Drafts could be
+issued and the Internet Drafts could progress to RFCs.  A number of the
+issues which populated the meeting agenda were articulated in postings
+to the PEM mailing list in previous weeks.
+
+During the first session progress was made in resolving an issue related
+to PEM message processing details and John Linn (the editor of the
+relevant Internet Draft) agreed to make the necessary edits to this
+Internet Draft.
+
+There also appeared to be consensus on how to accommodate, in an orderly
+fashion, a growing list of distinguished name attributes in PEM
+certificates.  The proposal was made to register such attributes, for
+use in all Internet applications which make use of distinguished name,
+in the periodic IANA RFCs.
+
+Other issues regarding public key management for PEM were discussed
+including:
+
+
+   o The role of RSADSI in the certification process,
+   o Constraints on cross-certification, and
+   o Representation of object class identification in certificates.
+
+
+However, consensus was not achieved in the discussion of these issues
+and other contentious topics associated with the key management Internet
+Draft were not addressed due to insufficient time over both days of the
+PEM Working Group sessions.
+
+During the Tuesday afternoon session RSADSI presented proposed
+organization and user registration procedures and corresponding legal
+documents.  Copies of the organizational agreement were not available
+for distribution at the time of the meeting.  RSADSI also described the
+proposed agreement for distributing source code for the RSA cryptosystem
+as part of a freely available, Internet implementation of PEM. Because
+some aspects of this agreement are involved with unresolved issues as
+cited above, finalization of the agreement details, etc., will require
+resolution of these issues.
+
+As a result of the lack of progress at these Working Group meetings, an
+
+                                   1
+
+
+
+
+
+interim meeting was proposed (later in the week) for September 11th at
+BBN in Cambridge, MA. This Working Group also expects to convene again
+in November at the next IETF meeting.
+
+Attendees
+
+Doug Barlow              barlow@decwet.dec.com
+Jim Bidzos               jim@rsa.com
+David Bolen              db3l@nis.ans.net
+Nelson Bolyard           nelson@sqi.com
+Mats Brunell             mats.brunell@sics.se
+Vinton Cerf              vcerf@nri.reston.va.us
+Stephen Crocker          crocker@tis.com
+Steve Dusse              spock@rsa.com
+Jeffrey Edelheit         edelheit@mitre.org
+James Ellis              jte@cert.sei.cmu.edu
+Barbara Fraser           byf@cert.sei.cmu.edu
+Deborah Futcher          dfutche@eco.twg.com
+Maria Gallagher          maria@nsipo.arc.nasa.gov
+James Galvin             galvin@tis.com
+Joe Godsil               jgodsil@ncsa.uiuc.edu
+William Griffeth         billg@usl.com
+Steve Hardcastle-Kille   S.Kille@cs.ucl.ac.uk
+Alton Hoover             hoover@nis.ans.net
+Neil Katin               katin@eng.sun.com
+Charles Kaufman          kaufman@dsmail.enet.dec.com
+Stephen Kent             kent@bbn.com
+Vincent Lau              vincent.lau@eng.sun.com
+John Linn                linn@zendia.enet.dec.com
+David Lippke             lippke@utdallas.edu
+Jack Liu                 liu@koala.enet.dec.com
+Louis Mamakos            louie@ni.umd.edu
+Ellen McDermott          emcd@osf.org
+April Merrill            abmerri@tycho.ncsc.mil
+Paul Mockapetris         pvm@darpa.mil
+Clifford Neuman          bcn@isi.edu
+Richard Parker           rp@mbunix.mitre.org
+P. Rajaram               rajaram@sun.com
+Michael Reilly           reilly@nsl.dec.com
+Jeffrey Schiller         jis@mit.edu
+Aaron Schuman            schuman@sgi.com
+Ron Sharp                rls@neptune.att.com
+Robert Shirey            shirey@mitre.org
+Mark Stein               marks@eng.sun.com
+Ronald Tencati           tencati@nssdca.gsfc.nasa.gov
+Theodore Tso             tytso@mit.edu
+Brian Yasaki             bky@eco.twg.com
+Peter Yee                yee@ames.arc.nasa.gov
+
+
+
+                                   2

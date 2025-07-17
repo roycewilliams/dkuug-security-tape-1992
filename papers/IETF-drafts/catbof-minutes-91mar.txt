@@ -1,0 +1,106 @@
+
+
+CURRENT_MEETING_REPORT_
+
+
+
+Reported by John Linn/DEC
+
+CAT BOF Minutes
+
+A Birds of a Feather session met on Common Authentication Technology
+(CAT) at the March meeting; the first formal CAT Working Group meeting
+will take place at the July IETF. At the March BOF, Jeff Schiller and
+John Linn presented material on CAT concepts and responded to questions
+from attendees.
+
+CAT's goal is to provide security services to a range of IETF protocol
+callers in a manner which insulates those callers from the specifics of
+underlying cryptographic security mechanisms, enabling modular
+separation between protocol and security implementation activities.
+Agreement on common security service interface characteristics, token
+representations, and other protocol integration issues, as well as
+discussion of individual mechanisms, falls within this Working Group's
+Charter.  Two IETF applications protocol Working Groups (Telnet and
+Network Printing) are currently seeking to employ CAT-related
+techniques.
+
+There was some controversy about mechanism type negotiation as
+contemplated by the Telnet security proposals.  One observation:  It's
+necessary to intersect two peers' notions of acceptable mechanisms, not
+for a client to accept any (however weak) which may be offered by a
+server.  A belief was voiced that few servers would support more than a
+single mechanism, and/but that clients would often have to support
+multiple mechanisms to conform with their desired set of target servers;
+cases of single-mechanism clients communicating with multi-mechanism
+servers are also possible.  While it was widely agreed that the world
+would be a better and more interoperable place if and when only one
+mechanism was in general use, there was a sense that ambidextrous hosts
+were unavoidable and would have to be accommodated.  The Assigned
+Numbers RFC was proposed as a ``registry'' vehicle for mechanism type
+specifiers to be used in the Internet.
+
+Interest was expressed in means to allow protection of data carried in
+stream-oriented protocols as well as in message-oriented protocols,
+whether by definition of stream-oriented security services interfaces or
+by (direct or mediated) provision of session keys to callers.  There was
+debate about the merits of modeling protected password exchanges as CAT
+authentication mechanisms.  In subsequent Security Area Advisory Group
+(SAAG) discussion, it was agreed that mechanisms performing key
+exchange, and hence constituting a basis for confidentiality and
+integrity protection for messages as well as authentication, should be
+emphasized.
+
+                                   1
+
+
+
+
+
+
+The CAT activity will be supported with a family of documents, to be
+provided from different sources.  A high-level Generic Security Service
+Application Program Interface (GSSAPI) specification will be submitted
+to the Internet-Draft process in advance of the July IETF meeting, and
+will be followed by a separate document defining a set of C language
+bindings therefore.  Organizations defining particular security
+mechanisms (e.g., SPX, Kerberos) will submit separate mechanism-specific
+documents, supporting independently developed yet interoperable
+implementations of those mechanisms.  CAT participants will pursue
+design refinements, protocol integration, and implementation activities,
+and will continue consulting liaison activities with IETF protocol
+Working Groups which are prospective clients for CAT-provided security
+services.
+
+Attendees
+
+Warren Benson            wbenson@zeus.unomaha.edu
+Randy Butler             rbutler@ncsa.uiuc.edu
+Vinton Cerf              vcerf@NRI.Reston.VA.US
+Martina Chan             mchan@mot.com
+Stephen Crocker          crocker@tis.com
+Jeffrey Edelheit         edelheit@smiley.mitre.org
+Barbara Fraser           byf@cert.sei.cmu.edu
+Shawn Gallagher          gallagher@quiver.enet.dec.com
+James Galvin             galvin@tis.com
+Tom Grant                grant@xylogics.com
+Neil Haller              nmh@bellcore.com
+Russ Hobby               rdhobby@ucdavis.edu
+Joel Jacobs              jdj@mitre.org
+Ajay Kachrani            kachrani@regent.enet.dec.com
+Philip Karn              karn@thumper.bellcore.com
+John Linn                ULTRA::LINN
+Mike Little              little@ctt.bellcore.com
+Stephanie Price          price@cmc.com
+Michael Reilly           reilly@pa.dec.com
+George Sanderson         sanderson@mdc.com
+Tim Seaver               tas@mcnc.org
+Sam Sjogren              sjogren@tgv.com
+Michael St.  Johns       stjohns@umd5.umd.edu
+William Townsend         townsend@xylogics.com
+Glenn Trewitt            trewitt@pa.dec.com
+Daniel Weidman           weidman@wudos2.wustl.edu
+
+
+
+                                   2

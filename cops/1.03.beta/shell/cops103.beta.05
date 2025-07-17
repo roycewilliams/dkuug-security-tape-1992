@@ -1,0 +1,1792 @@
+#!/bin/sh
+# this is cops103.beta.05 (part 5 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file beta/extensions/crypto-stuff continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 5; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping beta/extensions/crypto-stuff'
+else
+echo 'x - continuing file beta/extensions/crypto-stuff'
+sed 's/^X//' << 'FOO_BAR' >> 'beta/extensions/crypto-stuff' &&
+X
+X  Snefru and MD4 are both digital signature algorithms that are much more
+secure than the crc producer in this package.  Snefru was posted to
+comp.unix.sources, volume 21, I believe, and is hence available from any
+c.u.s. archive site, like uunet.uu.net; MD4 is available via anon-ftp from
+theory.lcs.mit.edu.  You might check them out if you're really serious about
+your binaries and stuff.
+X
+FOO_BAR
+echo 'File beta/extensions/crypto-stuff is complete' &&
+chmod 0600 beta/extensions/crypto-stuff ||
+echo 'restore of beta/extensions/crypto-stuff failed'
+Wc_c="`wc -c < 'beta/extensions/crypto-stuff'`"
+test 395 -eq "$Wc_c" ||
+	echo 'beta/extensions/crypto-stuff: original size 395, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/extensions/netstuff ==============
+if test -f 'beta/extensions/netstuff' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/extensions/netstuff (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/extensions/netstuff (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/extensions/netstuff' &&
+X
+X
+X    For additional information, help on various subjects, etc., there
+are various resources available on the net.  By no means is this list
+exclusive:
+X
+X   comp.risks -- a moderated newsgroup that talks about the risks of
+computing, often discussing computer security.
+X
+X   comp.unix.wizards -- a high noise free-for-all group that has
+some choice tidbits of information.  Now that this is gone, you might
+check out comp.unix.esoterica, or any of the other weird new names.
+*I* voted to keep comp.unix.wizards :-)
+X
+X   Security Mailing list -- moderated by Neil Gorsuch, fits and bursts
+of information that can be gotten nowhere else.  Hard to join the elite
+who are on the list, and a long wait for acceptance.  Security programs
+can be snarfed off of this list at times.
+X
+X   CERT -- the Computer Emergency Response Team has a mailling list
+devoted to the development of security tools.  As quoted from
+their initial mailing:
+X
+"The Computer Emergency Response Team Coordination Center (CERT/CC) has
+established a new Internet mailing list named CERT-TOOLS.  This new
+mailing list is now available.
+X
+The purpose of this new mailing list is to encourage the exchange of
+information on security tools and security techniques.  The list
+should not be used for security problem reports.
+[...]
+Mailing list problems, additions, changes, and deletions requests should
+be sent to:
+X        cert-tools-request@cert.sei.cmu.edu
+X
+[...]
+CERT/CC is planning to collect many of the tools and will make the
+archive available via anonymous ftp on the cert.sei.cmu.edu system.
+A trusted archive service will also be available for tools not intended
+for general public usage.
+X
+All mail intended to be redistributed should be mailed to:
+X	cert-tools@cert.sei.cmu.edu
+X
+Computer Emergency Response Team
+Email: cert@cert.sei.cmu.edu
+Telephone: 412-268-7090 (answers 24 hours a day)"
+FOO_BAR
+chmod 0600 beta/extensions/netstuff ||
+echo 'restore of beta/extensions/netstuff failed'
+Wc_c="`wc -c < 'beta/extensions/netstuff'`"
+test 1859 -eq "$Wc_c" ||
+	echo 'beta/extensions/netstuff: original size 1859, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/extensions/passwords ==============
+if test -f 'beta/extensions/passwords' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/extensions/passwords (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/extensions/passwords (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/extensions/passwords' &&
+X
+X   For those who need _fast_ password cracking, for whatever reason,
+Matt Bishop wrote a fairly incredible password cracking engine, which
+is detailed in:
+X
+"An Application of a Fast Data Encryption Standard Implementation",
+Matt Bishop, Computing Systems 1(3) pp. 221-254 (Summer 1988).
+X
+X  If you have a valid reason for using it, you can mail to Matt at:
+X    
+X   bishop@bear.dartmouth.edu
+X
+X  for more information on his package.
+X
+X
+X  For an even better solution, try Matt's replacement for "passwd", which
+allows you to configure it to your site to dissallow stupid passwords or
+localisms.  Highly recomended, available right now via anon-ftp, at
+bear.dartmouth.edu, in ~pub/passwd.tar.Z
+X
+FOO_BAR
+chmod 0600 beta/extensions/passwords ||
+echo 'restore of beta/extensions/passwords failed'
+Wc_c="`wc -c < 'beta/extensions/passwords'`"
+test 690 -eq "$Wc_c" ||
+	echo 'beta/extensions/passwords: original size 690, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/extensions/questions ==============
+if test -f 'beta/extensions/questions' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/extensions/questions (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/extensions/questions (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/extensions/questions' &&
+X   
+X   I polled a security mailing list and got about 40 responses to a
+selected number of questions dealing with security; it might be useful
+for inclusion on how the net (at least some of the security minded ones)
+view security.  The answers to these questions shaped some of the philosophies
+of COPS and might be indicative of the type of security tools to be
+developed in the future.  My questions start with a number and a ")".
+X
+X   1)  What kinds of problems should a software security system (SSS)
+X   such as COPS check for? (Mention specific examples, if you can.)
+X
+X  Just about everyone agreed that the more things checked, the better.
+Some specific wants of items I didn't mention, more or less in the order
+of # of requests:
+X
+X  Some kind of _secure_ checksum method for checking up on binary files.
+X
+X  Checking binaries for known security problems - sendmail, fingerd,
+ftpd, ect.
+X
+X  Checking the validity of the _format_ of key files rather than merely
+checking if they are writable.
+X
+X  Checking for potential trojan horses; files such as "ls" in a users
+account.
+X
+X  Finding things hidden under mount points.
+X
+X  Keeping track of accounts in a seperate file from /etc/passwd and
+run periodic checks to see if any accounts have been added by any
+unauthorized user.
+X  
+X  Report unusual system activity, such as burning lots of CPU time.
+X
+X  Record unsuccessful login attempts and su's to root, when and by whom
+if possible.
+X
+X
+X   2)  Are there any security problems too sensitive to be checked
+X   by a SSS?  That is, what things should *not* be built into a SSS?
+X
+X     Boy, this was a landslide.  Over 90% said NO, and not only no,
+but basically "Hell No".  The only concerns I got were against password
+cracking and problems that could not be easily fixed.  There was also
+a small amount of concern about limiting access to root, but most realized
+that no matter what, the benifits would outweigh any losses if the programs
+were put out.
+X
+X   3) What should the primary goal of a SSS be -- discovering as many
+X   security holes as possible in a given system (including bugs or
+X   design flaws that may not be easily fixed -- especially without
+X   source code), or merely uncovering correctable errors (due to
+X   ignorance, carelessness, etc)?
+X
+X     Another landslide.  Of all the responses, only one person objected
+to finding all holes, although a few did say that finding the fixable
+holes was top priority.
+X
+X    One view:
+X
+X  My use for an SSS is as a system monitor, not as a diagnostic tool.
+I suppose the diagnostic version also has its uses, but writing and
+distributing such a program is asking for trouble.  I don't see
+anything wrong with writing it and distributing only the binaries.
+X
+X
+X   4)  Do you feel that SSS are a security threat themselves?
+X
+X     Some dissent begins to show.... It was almost even here, with the
+no's beating out the yes's by a single vote.  However, 2/3 of the yes
+votes qualified there answer by stating something like "a tool can be
+misused" and whatnot.  Here are some typical responses:
+X
+Of course.  They point to way for bad guys.  Such is life.
+They are a tool.  They have the potential for anything.  The
+security threat lies in how they are used....
+X
+No, as long as they don't breed complacency. Just by running
+a SSS each night should not make you thinks your systems are
+secure.
+X
+Fire is also dangerous but VERY useful.
+X
+X
+X   5) Do you think that the SSS should be restricted to be used only
+X   by system administrators (or other people in charge), or should
+X   they be accessible to all?
+X
+X     Here's where the problems start :-)  Everyone wants as many
+features as possible, but quite a few of you don't want anyone else
+to have it.  Hmm...   Out of 35 responses on this question:
+X  12 - Yes, only SA's.
+X  10 - No.
+X   6 - It would be nice to have it restricted, but... How?
+X   5 - Have two versions; one restricted, one not.  Needless to say,
+X        the dangerous stuff should go in the first.
+X   1 - Restrict only parts that detect bugs/whatever that cannot be
+X        repaired.
+X   1 - Argh!  Help!
+X
+X     Some quotable quotes:
+X
+I don't see how it could be restricted.
+X
+Admins, etc only. (possibly said because I'm an admin. From an
+intellectual standpoint, I would want to know about this stuff even
+if I was just a user)
+X
+I think the SSS should be restricted to system
+administrators with the realisation that others can probably
+get their hands on the code if they want to. 
+X
+Definitely available to all, SA's can be as lazy as anyone and should not be 
+allowed to hide behind a veil of secrecy if, in doing so, they expose the 
+systems they administer.
+X
+It seems to me that only an "administrator type" will have sufficient
+privilege levels to make _effective_ use of such a tool.  Ordinary users
+may be able to garner _some_ benefit though, if run on their own files.
+If possible, can there be an "administrator" mode and a (restriced/limited)
+"user" mode?
+X
+(and finally, my personal favorite...)
+X
+I think that a check for a hole that can't be closed shouldn't be a part of
+the check, if that hole is widespread.  I have no examples of any such hole,
+but a weak spot that can't be closed and has no workaround is one of the few
+candidates for the security by secrecy concept.  I have mixed feelings about
+this, but if I can't fix the hole, I'd rather not have it's existence be
+"public" knowledge.  A freely available routine to locate the hole would
+spread it's existence far and wide.....(?)
+But, if I didn't know about it beforehand then it would be good to have a
+tool to tell me it existed.  Gads, I hate moral conflicts!
+X 
+X
+X   6) When a SSS finds a security flaw in a system, do you want it to 
+X   indicate how they flaw could be used to compromise your system, or
+X   would you just accept the conclusion and apply a fix?
+X
+X      This question was ill worded and gramatically incorrect, but still
+managed to conjure up a lot of comments.  Some thought it was asking if
+the system should apply a fix.
+X      In any case, almost 3/4 said Yes, indicate exactly how to exploit
+any potential hole.  As usual, there were a few with reservations about
+the info getting out, but.... 
+X   Here are some of the more interesting comments:
+X
+X                (Think about this one!)
+X  *I* would like to know to futher my knowledge of Unix, but more importantly
+to make sure that the version I have was not modified by a cracker to
+put security holes *into* a system.  (That'd be sneaky :-)
+X
+X   Security by obfuscation doesn't work.
+X
+X   By definition, a SSS is a software system, and therefore has bugs in it.
+If it reported a problem which would cause quite a bit of inconvenience if
+fixed, or would be difficult to fix, then I would be much more apt to make
+the fix if I knew how the problem could be exploited.  This is important,
+because many, if not most, sites require only a moderate level of security,
+and many security holes are fiendishly difficult to exploit.
+X
+X   We cannot assume that end-purchasers of a system can be as aware of 
+the internal workings of a system as the designers of the system (or SSS)
+are.  If a security flaw is discovered, the administrators need to be
+informed about what changes are necessary to remove that flaw, and what
+repercussions they may have.
+X   [...]
+X   Imagine a SSS that knew sendmail(8) was a security flaw
+allowing a worm to enter systems.  It would report that sendmail is a 
+security flaw, please disable it like....  If the vendor had released
+a patch, and the SSS didn't know how it, the administrator (in blind
+faith to this SSS program) might disable a *very* useful program
+unnecessarily.
+X
+X
+X   7)  Do you think that there is too much, not enough, or just about
+X   the right amount of concern over computer security?  How about at 
+X   your computer site?  At other sites?
+X
+X      The "not enough"s won, but not by much.  I thought that given
+the paranoia of a security group, this would be a larger victory.
+Lots of people said it depends -- on the type of facility, the size, etc.
+Large sites seem to have a healthier view of security (paranoia :-)) than
+smaller/non-governmental.  Only 4 or 5 said there was enough concern.
+A couple of people mentioned _The Cuckoo's Egg_ as suggested reading
+(I heartily agree.)
+X
+X   More quotes:
+X
+X  (I don't know if the next answer is true, but I like it anyway!)
+X
+X  This is really a deep philosophical question---something to talk about
+over a few beers at the bar, but not here.
+X
+X  I think it's a site dependent problem, and all the above are
+true: too much, too little, and just right. Computer is not a
+"one size fits all" situation. Having offered that opinion, I
+think an assessment of my site or other sites is extraneous, and I
+will reserve that opinion.
+X
+X  ... more attention to unauthorized use of the networks.
+X
+X   8)  Do you think that there should be a ruling body that governs
+X   and enforces rules and regulations of the net -- sort of a net.police?
+X
+X     Some of you wondered what this had to do with software security, but
+just about everyone answered anyway.  This one scared me!  The "No's" only
+beat out the "yes's" by one vote.  Yikes!  Maybe I'm from the old school
+of thought, but....  Several people said that it couldn't be done anyway;
+a couple mentioned they a CERT-like agency to help out, but not control,
+and finally two said that the laws and government were already there to
+do this.
+X
+X   It's there, defacto.  The free market is working pretty well.
+X
+X   Absolutely. I quarrel with the "net.police" designation, per se, of
+course, as do many others. But perhaps something more like a recognized
+trade association, and providing similar services. Also, it is time that
+the basic duties which must be reasonably performed by a site in order for
+it to remain on the net should become a requirement rather than a matter
+of individual whim.
+X
+X   Yuck!  This is very distasteful to me.  It will probably be necessary
+though as more and more people participate in the net.  Enforcement will
+have to be judicious until secure networking is developed and implemented
+generally.
+X
+X   No.  Aside from the fact that it'd never work, I like Usenet as an
+anarchy.  It has some rough edges, but for the most part it works.  What
+does this question have to do with SSS-type programs?
+X
+X   Enforcement will be tough and may hold back legitimate users.  But
+we have to start somewhere.  So I suppose that I agree with having
+net.police, as long as they don't turn things into a police.state.net. 
+X
+X
+X   9)  Do you believe that breaking into other people's systems should
+X   continue to be against the law?
+X
+X      Only one said "no", and s/he had a smiley following the answer.
+But there were some of you who voiced concern that it wasn't really
+against the law to begin with.  In _The Cuckoo's Nest_, Cliff Stoll talked
+about a (Canadian, I think) case that the only reason the cracker was
+prosecuted was for stealing electricity!  Less than a watt or something.
+A few of you mentioned denial of services as being a just reason, but
+what if they break in only at night, when no one else is on, and they
+really don't take anything at all?  Should that be less punishable than
+someone who sucks away user CPU/disk/whatever?
+X
+X   Breakins should be encouraged and rewarded (1/2 :-).
+X
+X   Yes.  Unquestionably.  However, those laws should not attempt to regulate
+inter-system traffic to cause these things to happen.
+X
+X   Yes - and as a felony in all cases, without exception.
+X
+X   Yes but murder, rape, robbery... are more important and laws and
+sentencing should reflect this. There are some around who want to treat
+cracking as a capital crime!
+X
+X   Yes, from the denial of services standpoint.  I pay $XXX,XXX.XX for a
+system, and joe blow slides in and sucks away at those resources, there
+should be a nontrivial penalty for getting caught.  Don't behead the guy,
+but monetary fines or community service would be just fine.
+X
+X
+X   I don't know.  I'm not a philosopher.  Certainly causing
+damage to others is wrong, including denial of service,
+compromising sensitive info, or whatever.  I'm concerned
+though that clamping down on young kids will discourage them
+from becoming computer geeks.  I think we need to encourage
+our young people to become technically literate.  If we
+don't become a more expert society we can kiss it goodbye;
+all we'll have left is our military solutions, like some
+brainless jock bully...
+X
+X   I'm not sure that it is everywhere - but: Yes.  Should attempting 
+to break in be against the law: No.  Is this vague: Yes.
+X
+X   I did not know that it was. The laws about it have not been tested and 
+are vague and unclear. You need to be very clear about what the laws
+are going to do. 
+X
+X   **HELL FUCKING YES** Those of us who started in UNIX years ago have
+for the most part *always* respected others!! This I can't stress strong
+enough.
+X
+X
+X  10)  Is your site academic, government, or commercial in nature?
+X
+X      Just over 1/2 of those that answered claimed university ties,
+with about 1/4 being commercial, 1/6 government, a few research sites,
+and a couple that were a mixture.  Sites included Sun, AT&T, SCO (Xenix),
+the DoD, and the Army, among others.
+X
+(Guess where this one came from :-)
+X
+Research.  We invented Unix.
+X
+Academic with commercial applications.
+X
+Primarily academic, but we are part of the government.
+X
+Academic, except when collecting student fees *) *)
+FOO_BAR
+chmod 0600 beta/extensions/questions ||
+echo 'restore of beta/extensions/questions failed'
+Wc_c="`wc -c < 'beta/extensions/questions'`"
+test 13339 -eq "$Wc_c" ||
+	echo 'beta/extensions/questions: original size 13339, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/ftp.cert ==============
+if test -f 'beta/ftp.cert' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/ftp.cert (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/ftp.cert (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/ftp.cert' &&
+:
+#!/bin/sh
+#
+#  Usage: ftp.chk [-a]
+#
+#   This shell script checks to see if you've set up (mainly anonymous)
+# ftp correctly.  The "-a" option checks your anon-ftp setup; without that,
+# this script doesn't do a whole lot -- just check to see if your ftpusers
+# file doesn't have any root accounts in it.  There seems to be some different
+# types of ftp's around; for instance, some allow "chmod" -- and if the home
+# dir is owned by "ftp", you're toast.  So I've tried to err on the side of
+# safety...
+#
+#   See the man page for a more detailed description, here's what this
+# checks for:
+#
+# - User ftp exists in the password file.
+# - root (or all root equivalents) are in ftpusers file.
+# - Home directory for ftp should exist, and not be /
+# - The ~ftp/etc/{passwd|group} should not be the same as the real ones.
+# - Various critical files/directories should exist, and have correct
+#   permissions and owners; variables "$primary" and "$owner" can be set
+# to whomever you want owning the files:
+#
+#  File/Dir          Perms           Owner      Other
+#  =========         ======          ======     ======
+#  ~ftp              non-w.w.        root
+#           or
+#  ~ftp              555             ftp	if no chmod command exists
+#
+#     All of these are ftp owned iff no chmod exists...
+#
+#  ~ftp/bin          non-w.w.        root/ftp
+#  ~ftp/bin/ls       111             root/ftp
+#  ~ftp/etc          non-w.w.        root/ftp
+#  ~ftp/etc/passwd   non-w.w.        root/ftp   0 size or nonexistant
+#  ~ftp/etc/group    non-w.w.        root/ftp   0 size or nonexistant
+#  ~ftp/pub          non-w.w.        root/ftp
+#  ~ftp/incoming     world-writable  root/ftp   This can be set to "pub"
+#  ~ftp/.rhosts      non-w.w.        root       0 size, is optional
+#  ~ftp/*            non-w.w.                   other dirs/files in ~ftp
+#
+X
+#  If an argument is present, it should be an "a"
+TEST=/bin/test
+if $TEST $# -gt 1 ; then
+X	$ECHO Usage: $0 [-a]
+X	exit 1
+X	fi
+if $TEST $# -eq 1 ; then
+X	if $TEST $1 = "-a" ; then
+X			anonymous=yes
+X	else
+X		$ECHO Usage: $0 [-a]
+X		exit 1
+X		fi
+X	fi
+X
+#   Primary and secondary owners of the ftp files/dirs; if you *don't* have
+# chmod, you can probably change the secondary owner to "ftp".  If you have
+# chmod in your ftp, definitely have secondary to some other account (root
+# is fine for this.)
+primary=root
+secondary=xcert
+X
+# some might have this as ftpd; is the account in /etc/passwd
+ftpuid=ftp
+X
+# Where is everyone?
+ECHO=/bin/echo
+AWK=/bin/awk
+GREP=/bin/grep
+LS=/bin/ls
+CMP=/bin/cmp
+X
+# system files
+ftpusers=/etc/ftpusers
+passwd=/etc/passwd
+group=/etc/group
+X
+#   ftp's files:
+ftproot=`$AWK -F: '/^'"$ftpuid"':/{print $6}' $passwd`
+#  just recheck that user ftp exists:
+ftpuid=`$AWK -F: '/^'"$ftpuid"':/{print $1}' $passwd`
+X
+#   if the user ftp doesn't exist, no-anon stuff....
+if $TEST -z "$ftpuid" -a "$anonymous" = "yes" ; then
+X	$ECHO Warning!  Need user $ftp for anonymous ftp to work!
+X	exit
+X	fi
+#
+# If they have user $ftpuid in /etc/password, then anon-ftp is possible...
+#
+# 
+#
+if $TEST -n "$ftpuid" ; then
+X	anonymous=yes
+X	fi
+X
+ftprhosts=$ftproot/.rhosts
+ftpbin=$ftproot"/bin"
+ftpls=$ftpbin"/ls"
+ftpetc=$ftproot"/etc"
+ftppasswd=$ftpetc"/passwd"
+ftpgroup=$ftpetc"/group"
+X
+#   the pub/incoming stuff; by default, pub is *not* world writable, incoming
+# is; if you want pub to be world writable, just change incoming to "pub"
+incoming=incoming
+ftppub=$ftproot"/pub"
+X
+crit_files="$ftpgroup $ftppasswd $ftpls"
+X
+if $TEST -s $ftpusers
+X	then
+X	# check to see if root (or root equivalents) is in ftpusers file
+X	all_roots=`$AWK -F: '{if ($3==0 && length($2)==13) printf("%s ", $1)}' $passwd`
+X	if $TEST -n "$all_roots" ; then
+X		for i in $all_roots
+X			do
+X			if $TEST ! "`$GREP -w $i $ftpusers`"
+X				then
+X				$ECHO Warning!  $i should be in $ftpusers!
+X				fi
+X			done
+X		fi
+X	fi
+X
+#  do the anonymous ftp checking stuff now
+if $TEST -n "$anonymous" ; then
+X	#
+X	#  ftp's home dir checking
+X	if $TEST ! -d "$ftproot" -o -z "$ftproot"; then
+X		$ECHO Warning!  Home directory for ftp doesn\'t exist!
+X		fi
+X	if $TEST "$ftproot" = "/" ; then
+X		$ECHO Warning!  $ftproot ftp\'s home directory should not be \"/\"!
+X		fi
+X	#
+X	#  Don't want the passwd and group files to be the real ones!
+X	if $TEST "`$CMP $passwd $ftppasswd 2> /dev/null`" ; then
+X		:
+X	else $ECHO Warning!  $ftppasswd and $passwd are the same!
+X		fi
+X	if $TEST "`$CMP $group $ftpgroup 2> /dev/null`" ; then
+X		:
+X		else $ECHO Warning!  $ftpgroup and $group are the same!
+X		fi
+X
+X	#   want to check all the critical files and directories for correct
+X	# ownership.
+X	#
+X	#  This is what a "/bin/ls -l" of a file should look like:
+X	# ---x--x--x  1 root        81920 Dec 31  1999 /bin/ls
+X	#  So in awk, $3 is the owner, $1 is the permission.
+X	#
+X	#  Some need passwd & group files, some don't:
+X	# crit_files=$crit_files" "$ftpgroup" "$ftppasswd
+X	crit_files=$crit_files" "$ftpbin" "$ftpetc
+X	for i in $crit_files
+X		do
+X		if $TEST ! -f $i -a ! -d $i; then
+X			$ECHO Warning!  File $i is missing!
+X			fi
+X
+X		owner=`$LS -Lld $i | $AWK '{print $3}'`
+X		if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X			:
+X		else
+X			$ECHO Warning!  $i should be owned by $primary or $secondary!
+X			fi
+X		done
+X
+X	#   ftproot is special; if owned by root; should be !world writable;
+X	# if owned by ftp, should be mode 555
+X	owner=`$LS -Lld $ftproot | $AWK '{print $3}'`
+X	perms=`$LS -Lld $ftproot | $AWK '{print $1}'`
+X	if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X		:
+X	else
+X		$ECHO Warning!  $ftproot should be owned by $primary or $secondary!
+X	fi
+X
+X	# ftp-root should not be world-writable:
+X	./is_able $ftproot w w
+X
+X	# if ftp owns root-dir, then mode should be 555:
+X	if $TEST "$owner" = "$ftpuid" -a "$perms" != "dr-xr-xr-x" ; then
+X		$ECHO Warning!  $ftproot should be mode 555!
+X		fi
+X
+X	#
+X	# check the .rhosts file:
+X	if $TEST -f $ftprhosts ; then
+X		if $TEST -s $ftprhosts ; then
+X			$ECHO Warning!  $ftprhosts should be be empty!
+X			fi
+X		owner=`$LS -Lld $ftprhosts | $AWK '{print $3}'`
+X		if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X			:
+X		else
+X			$ECHO Warning!  $ftprhosts should be owned by $primary or $secondary!
+X			fi
+X		fi
+X
+X	#
+X	# finally, some permissions of miscellaneous files:
+X	perms=`$LS -Lld $ftpls | $AWK '{print $1}'`
+X	if $TEST "$perms" != "---x--x--x" ; then
+X		$ECHO Warning!  Incorrect permissions on \"ls\" in $ftpbin!
+X		fi
+X
+X	perms=`$LS -Lld $ftppasswd | $AWK '{print $1}'`
+X	if $TEST "$perms" != "-r--r--r--" ; then
+X		$ECHO Warning!  Incorrect permissions on \"passwd\" in $ftpetc!
+X		fi
+X
+X	perms=`$LS -Lld $ftpgroup | $AWK '{print $1}'`
+X	if $TEST "$perms" != "-r--r--r--" ; then
+X		$ECHO Warning!  Incorrect permissions on \"group\" in $ftpetc!
+X		fi
+X
+X	#   Finally, the ~ftp/{pub|incoming|whatever} stuff:
+X	all_dirs=`$LS -Lal $ftproot | $AWK '{if (NF >= 8) print $NF}'`
+X	for i in $all_dirs
+X		do
+X		if $TEST -n "`is_able $ftproot/$i w w`" -a $i != "$incoming" ; then
+X			$ECHO Warning!  Anon-ftp directory $i is World Writable!
+X			fi
+X		done
+X	fi
+X
+# end of script
+FOO_BAR
+chmod 0600 beta/ftp.cert ||
+echo 'restore of beta/ftp.cert failed'
+Wc_c="`wc -c < 'beta/ftp.cert'`"
+test 6956 -eq "$Wc_c" ||
+	echo 'beta/ftp.cert: original size 6956, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/ftp.chk ==============
+if test -f 'beta/ftp.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/ftp.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/ftp.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/ftp.chk' &&
+:
+#
+#  Usage: ftp.chk [-a]
+#
+#   This shell script checks to see if you've set up (mainly anonymous)
+# ftp correctly.  The "-a" option forces a check on your anon-ftp setup
+# (without the flag, this will look in your /etc/passwd, to see if user
+# ftp exists, and proceed onwards anyway) without that, this script 
+# doesn't do a whole lot -- just check to see if your ftpusers file 
+# doesn't have any root accounts in it.  There seems to be some different
+# types of ftp's around; for instance, some allow "chmod" -- and if the home
+# dir is owned by "ftp", you're toast.  So I've tried to err on the side of
+# safety...
+#
+#   See the man page for a more detailed description, here's what this
+# checks for:
+#
+# - User ftp exists in the password file.
+# - root (or all root equivalents) are in ftpusers file.
+# - Home directory for ftp should exist, and not be /
+# - The ~ftp/etc/{passwd|group} should not be the same as the real ones.
+# - Various critical files/directories should exist, and have correct
+#   permissions and owners; variables "$primary" and "$secondary" can be set
+# to whomever you want owning the files:
+#
+#  File/Dir          Perms           Owner      Other
+#  =========         ======          ======     ======
+#  ~ftp              non-w.w.        root
+#           or
+#  ~ftp              555             ftp	if no chmod command exists
+#
+#     All of these are ftp owned iff no chmod exists...
+#
+#  ~ftp/bin          non-w.w.        root/ftp
+#  ~ftp/bin/ls       111             root/ftp
+#  ~ftp/etc          non-w.w.        root/ftp
+#  ~ftp/etc/passwd   non-w.w.        root/ftp   0 size or nonexistant
+#  ~ftp/etc/group    non-w.w.        root/ftp   0 size or nonexistant
+#  ~ftp/pub          non-w.w.        root/ftp
+#  ~ftp/incoming     world-writable  root/ftp   This can be set to "pub"
+#  ~ftp/.rhosts      non-w.w.        root       0 size, is optional
+#  ~ftp/*            non-w.w.                   other dirs/files in ~ftp
+#
+X
+#  If an argument is present, it should be an "a"
+TEST=/bin/test
+ECHO=/bin/echo
+if $TEST $# -gt 1 ; then
+X	$ECHO Usage: $0 [-a]
+X	exit 1
+X	fi
+if $TEST $# -eq 1 ; then
+X	if $TEST $1 = "-a" ; then
+X			anonymous=yes
+X	else
+X		$ECHO Usage: $0 [-a]
+X		exit 1
+X		fi
+X	fi
+X
+#   Primary and secondary owners of the ftp files/dirs; if you *don't* have
+# chmod, you can probably change the secondary owner to "ftp".  If you have
+# chmod in your ftp, definitely have secondary to some other account (root
+# is fine for this.)
+primary=root
+secondary=root
+X
+# some might have this as ftpd; is the account in /etc/passwd
+ftpuid=ftp
+X
+# Where is everyone?
+AWK=/bin/awk
+EGREP=/usr/bin/egrep
+LS=/bin/ls
+CMP=/bin/cmp
+RM=/bin/rm
+YPCAT=/usr/bin/ypcat
+X
+# system files
+ftpusers=/etc/ftpusers
+passwd=/etc/passwd
+group=/etc/group
+X
+#  A pox on YP/NIS, making life tougher for me :-)  Thanks to Rob Kolstad
+# for pointing this out -- you need to use ypcat to get the password file,
+# if you run yp:
+X
+# Scratch files for testing:
+yp_passwd=./p.$$
+yp_group=./g.$$
+X
+# generic test to check for yp use?
+if $TEST -f $YPCAT -a -s $YPCAT ; then
+X	$YPCAT passwd > $yp_passwd
+X	if $TEST $? -eq 0 ; then
+X		$YPCAT group > $yp_group
+X		yp=true
+X	else
+X		yp=false
+X		fi
+X	fi
+X
+if $TEST "$yp" = "true" ; then
+X	passwd=$yp_passwd
+X	group=$yp_group
+X	fi
+X
+#   ftp's files:
+ftproot=`$AWK -F: '/^'"$ftpuid"':/{print $6}' $passwd`
+#  just recheck that user ftp exists:
+ftpuid=`$AWK -F: '/^'"$ftpuid"':/{print $1}' $passwd`
+X
+#
+# If they have user $ftpuid in /etc/password, then anon-ftp is possible...
+#
+# Comment this (next three lines) out if you don't want this program to
+# automatically detect anon-ftp setup!
+if $TEST -n "$ftpuid" ; then
+X	anonymous=yes
+X	fi
+X
+ftprhosts=$ftproot/.rhosts
+ftpbin=$ftproot"/bin"
+ftpls=$ftpbin"/ls"
+ftpetc=$ftproot"/etc"
+ftppasswd=$ftpetc"/passwd"
+ftpgroup=$ftpetc"/group"
+X
+#   the pub/incoming stuff; by default, pub is *not* world writable, incoming
+# is; if you want pub to be world writable, just change incoming to "pub"
+incoming=incoming
+ftppub=$ftproot"/pub"
+X
+crit_files="$ftpgroup $ftppasswd $ftpls"
+X
+if $TEST -s "$ftpusers" ; then
+X	# check to see if root (or root equivalents) is in ftpusers file
+X	all_roots=`$AWK -F: '{if ($3==0 && length($2)==13) printf("%s ", $1)}' $passwd`
+X	if $TEST -n "$all_roots" ; then
+X		for i in $all_roots
+X			do
+X			if $TEST ! "`$EGREP '^'"$i"'$' $ftpusers`"
+X				then
+X				$ECHO Warning!  $i should be in $ftpusers!
+X				fi
+X			done
+X		fi
+X	fi
+X
+#  do the anonymous ftp checking stuff now
+if $TEST -n "$anonymous" ; then
+X
+X	#   if the user ftp doesn't exist, no-anon stuff....
+X	if $TEST -z "$ftpuid" ; then
+X		$ECHO Warning!  Need user $ftpuid for anonymous ftp to work!
+X		$RM -f $yp_passwd $yp_group
+X		exit 1
+X		fi
+X	#
+X	#  ftp's home dir checking
+X	if $TEST ! -d "$ftproot" -o -z "$ftproot"; then
+X		$ECHO Warning!  Home directory for ftp doesn\'t exist!
+X		$RM -f $yp_passwd $yp_group
+X		exit 1
+X		fi
+X	if $TEST "$ftproot" = "/" ; then
+X		$ECHO Warning!  $ftproot ftp\'s home directory should not be \"/\"!
+X		fi
+X	#
+X	#  Don't want the passwd and group files to be the real ones!
+X	if $TEST "$passwd" != "$ftppasswd" ; then
+X		if $TEST "`$CMP $passwd $ftppasswd 2> /dev/null`" ; then
+X			:
+X		else $ECHO ftp-Warning!  $ftppasswd and $passwd are the same!
+X			fi
+X		fi
+X	if $TEST "$group" != "$ftpgroup" ; then
+X		if $TEST "`$CMP $group $ftpgroup 2> /dev/null`" ; then
+X			:
+X		else $ECHO ftp-Warning!  $ftpgroup and $group are the same!
+X			fi
+X		fi
+X
+X	#   want to check all the critical files and directories for correct
+X	# ownership.
+X	#
+X	#  This is what a "/bin/ls -l" of a file should look like:
+X	# ---x--x--x  1 root        81920 Dec 31  1999 /bin/ls
+X	#  So in awk, $3 is the owner, $1 is the permission.
+X	#
+X	#   some versions don't need much of anything... no etc directory or
+X	# password/group files.
+X	# crit_files=$ftpls
+X	#   others need etc directory & password/group files.  Experiment.
+X	crit_files=$crit_files" "$ftpbin" "$ftpetc
+X	for i in $crit_files
+X		do
+X		if $TEST ! -f $i -a ! -d $i; then
+X			$ECHO ftp-Warning!  File $i is missing!
+X			fi
+X
+X		owner=`$LS -Lld $i | $AWK '{print $3}'`
+X		if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X			:
+X		else
+X			$ECHO ftp-Warning!  $i should be owned by $primary or $secondary!
+X			fi
+X		done
+X
+X	#   ftproot is special; if owned by root; should be !world writable;
+X	# if owned by ftp, should be mode 555
+X	owner=`$LS -Lld $ftproot | $AWK '{print $3}'`
+X	perms=`$LS -Lld $ftproot | $AWK '{print $1}'`
+X	if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X		:
+X	else
+X		$ECHO ftp-Warning!  $ftproot should be owned by $primary or $secondary!
+X	fi
+X
+X	# ftp-root should not be world-writable:
+X	./is_able $ftproot w w
+X
+X	# if ftp owns root-dir, then mode should be 555:
+X	if $TEST "$owner" = "$ftpuid" -a "$perms" != "dr-xr-xr-x" ; then
+X		$ECHO ftp-Warning!  $ftproot should be mode 555!
+X		fi
+X
+X	#
+X	# check the .rhosts file:
+X	if $TEST -f $ftprhosts ; then
+X		if $TEST -s $ftprhosts ; then
+X			$ECHO ftp-Warning!  $ftprhosts should be be empty!
+X			fi
+X		owner=`$LS -Lld $ftprhosts | $AWK '{print $3}'`
+X		if $TEST "$owner" = "$primary" -o "$owner" = "$secondary" ; then
+X			:
+X		else
+X			$ECHO ftp-Warning!  $ftprhosts should be owned by $primary or $secondary!
+X			fi
+X		fi
+X
+X	#
+X	# finally, some permissions of miscellaneous files:
+X	perms=`$LS -Lld $ftpls | $AWK '{print $1}'`
+X	if $TEST "$perms" != "---x--x--x" ; then
+X		$ECHO ftp-Warning!  Incorrect permissions on \"ls\" in $ftpbin!
+X		fi
+X
+X	perms=`$LS -Lld $ftppasswd | $AWK '{print $1}'`
+X	if $TEST "$perms" != "-r--r--r--" ; then
+X		$ECHO ftp-Warning!  Incorrect permissions on \"passwd\" in $ftpetc!
+X		fi
+X
+X	perms=`$LS -Lld $ftpgroup | $AWK '{print $1}'`
+X	if $TEST "$perms" != "-r--r--r--" ; then
+X		$ECHO ftp-Warning!  Incorrect permissions on \"group\" in $ftpetc!
+X		fi
+X
+X	#   Finally, the ~ftp/{pub|incoming|whatever} stuff:
+X	all_dirs=`$LS -Lal $ftproot | $AWK '{if (NF >= 8) print $NF}'`
+X	for i in $all_dirs
+X		do
+X		if $TEST -n "`is_able $ftproot/$i w w`" -a $i != "$incoming" ; then
+X			$ECHO Warning!  Anon-ftp directory $i is World Writable!
+X			fi
+X		done
+X	fi
+X
+# get rid of any yp evidence
+$RM -f $yp_passwd $yp_group
+# end of script
+FOO_BAR
+chmod 0700 beta/ftp.chk ||
+echo 'restore of beta/ftp.chk failed'
+Wc_c="`wc -c < 'beta/ftp.chk'`"
+test 8066 -eq "$Wc_c" ||
+	echo 'beta/ftp.chk: original size 8066, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/group.chk ==============
+if test -f 'beta/group.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/group.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/group.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/group.chk' &&
+:
+#
+#   group.chk
+#
+#  Check group file -- /etc/group -- for incorrect number of fields,
+# duplicate groups, non-alphanumeric group names, and non-numeric group
+# id's.
+#
+# Awk part based on _passwd_ from _The AWK Programming Language_, page 78
+#
+#   Mechanism:  Group.check uses awk to ensure that each line of the group
+# has 4 fields, as well as examining each line for any duplicate groups or
+# any duplicate user id's in a given group by using "sort -u" to ferret
+# out any duplications.  It also checks to make sure that the password
+# field (the second one) is a "*", meaning the group has no password (a
+# group password is usually not necessary because each member listed on 
+# the line has all the privilages that the group has.)  All results are
+# echoed to standard output.  Finally it ensures that the group names
+# are alphanumeric, that the group id's are numeric, and that there are
+# no blank lines.  For yellow pages groups, it does the same checking,
+# but in order to get a listing of all members of the groups, it does a
+# "ypcat group > ./$$" and uses that temporary file for a groupfile.
+# It removes the tmp file after using it, of course.
+#   The /etc/group file has a very specific format, making the task
+# fairly simple.  Normally it has lines with 4 fields, each field
+# separated by a colon (:).  The first field is the group name, the second
+# field is the encrypted password (an asterix (*) means the group has no
+# password, otherwise the first two characters are the salt), the third
+# field is the group id number, and the fourth field is a list of user
+# ids in the group.  If a line begins with a plus sign (+), it is a yellow
+# pages entry.  See group(5) for more information.
+#
+#
+AWK=/bin/awk
+SED=/bin/sed
+ECHO=/bin/echo
+TEST=/bin/test
+SORT=/usr/bin/sort
+UNIQ=/usr/bin/uniq
+YPCAT=/usr/bin/ypcat
+RM=/bin/rm
+X
+#   Used for Sun C2 security group file.  FALSE (default) will flag
+# valid C2 group syntax as an error, TRUE attempts to validate it.
+# Thanks to Pete Troxell for pointing this out.
+C2=FALSE
+X
+etc_group=/etc/group
+yp_group=./$$
+yp=false
+X
+if $TEST -f $YPCAT
+X	then
+if $TEST -s $YPCAT
+X	then
+X	$YPCAT group > $yp_group
+X	if $TEST $? -eq 0
+X		then
+X		yp=true
+X		fi
+X	fi
+fi
+X
+# Testing $etc_group for potential problems....
+X
+#   First line is for a yellow pages entry in the group file.
+# It really should check for correct yellow pages syntax....
+$AWK 'BEGIN {FS = ":" }
+X    {
+X    if (substr($1,1,1) != "+") { \
+X        if ($0 ~ /^[ 	]*$/) {
+X            printf("Warning!  Group file, line %d, is blank\n", NR)
+X            }
+X        else {
+X            if (NF != 4) {
+X                printf("Warning!  Group file, line %d, does not have 4 fields: %s\n", NR, $0)
+X                } \
+X            if ($1 !~ /[A-Za-z0-9]/) {
+X                printf("Warning!  Group file, line %d, nonalphanumeric user id: %s\n", NR, $0)
+X                } \
+X            if ($2 != "" && $2 != "*") {
+X                if ("'$C2'" != "TRUE") {
+X                    if (length($2) == 13)
+X                        printf("Warning!  Group file, line %d, group has password: %s\n", NR, $0)
+X                        }
+X                    else {
+X                        if ("#$"$1 != $2)
+X                            printf("Warning!  Group file, line %d, group has invalid field for C2:\n%s\n", NR, $0)
+X                        } \
+X                    } \
+X                if ($3 !~ /[0-9]/) {
+X                    printf("Warning!  Group file, line %d, nonnumeric group id: %s\n", NR, $0)
+X                    }
+X                }
+X            }
+X        }' $etc_group
+X
+#
+#  Look for duplications in groups in $etc_group
+#
+result=`$AWK -F: '{print $1}' $etc_group | $SORT |$UNIQ -d`
+if $TEST "$result"
+X	then
+X	$ECHO "Warning!  Duplicate Group(s) found in $etc_group:"
+X	$ECHO $result
+fi
+X
+#
+#   Next, check for duplicate users in a group in /etc/group.  Let
+# awk do all the work (thanks, adri!)
+#
+X
+# Ignore all groups with less than two members.
+#
+awk -F: 'split($4, users, ",") > 1 {
+X    ct = 0
+X    for (i in users) {
+X        curuser = users[i]
+X        for (j in users) {
+X            if (j > i && curuser == users[j]) {
+X                if (ct++ == 0) print "Warning!  Group "$1" has duplicate user(s):"
+X                    print curuser
+X                }
+X            }
+X        }
+X    }' $etc_group
+X
+X
+#
+# Test yellow pages groups as well
+if $TEST "$yp" = "true"
+X	then
+$AWK 'BEGIN {FS = ":" }
+X    {
+X    if ($0 ~ /^[ 	]*$/) {
+X        printf("Warning!  YGroup file, line %d, is blank\n", NR)
+X        }
+X    else {
+X        if (NF != 4) {
+X            printf("Warning!  YGroup file, line %d, does not have 4 fields: %s\n", NR, $0)
+X            } \
+X        if ($1 !~ /[A-Za-z0-9]/) {
+X            printf("Warning!  YGroup file, line %d, nonalphanumeric user id: %s\n", NR, $0)
+X            } \
+X        if ($2 != "" && $2 != "*") {
+X            if (length($2) == 13)
+X                printf("Warning!  YGroup file, line %d, group has password: %s\n", NR, $0)
+X            } \
+X        if ($3 !~ /[0-9]/) {
+X            printf("Warning!  YGroup file, line %d, nonnumeric group id: %s\n", NR, $0)
+X            }
+X        }
+X    }' $yp_group
+X
+#
+#  Look for duplications in groups in yellow pages groups
+#
+X	yresult=`$AWK -F: '{print $1}' $yp_group | $SORT |$UNIQ -d`
+X	if $TEST "$yresult"
+X		then
+X		$ECHO "Warning!  Duplicate Group(s) found in yellow pages group:"
+X		$ECHO $result
+X	fi
+#
+#   Next, check for duplicate users in a group in yellow groups.  Let
+# awk do all the work (thanks, adri!) 
+X
+# ignore all groups with one member.
+#
+X	awk -F: 'split($4, users, ",") > 1 {
+X	    ct = 0
+X	    for (i in users) {
+X	        curuser = users[i]
+X	            for (j in users) {
+X	                if (j > i && curuser == users[j]) {
+X	                    if (ct++ == 0) 
+X	                        print "Warning!  YGroup "$1" has duplicate user(s):"
+X	                    print curuser
+X	                    }
+X	                }
+X	            }
+X	    }' $yp_group
+X
+fi
+X
+$RM -f $yp_group
+X
+# end
+FOO_BAR
+chmod 0700 beta/group.chk ||
+echo 'restore of beta/group.chk failed'
+Wc_c="`wc -c < 'beta/group.chk'`"
+test 5939 -eq "$Wc_c" ||
+	echo 'beta/group.chk: original size 5939, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/init_kuang ==============
+if test -f 'beta/init_kuang' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/init_kuang (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/init_kuang (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/init_kuang' &&
+# /* Copyright 1985 Robert W. Baldwin */
+# /* Copyright 1986 Robert W. Baldwin */
+###############################################
+# Kuang: Rule based computer security checker.
+###############################################
+X
+CAT=/bin/cat
+ECHO=/bin/echo
+X
+#
+# Initialization.
+#
+./clearfiles
+#
+# First setup what we have access to.
+# The uids.k file must include the user 'OTHER' meaning the world access bits.
+# Add any other UIDs accessible to the attacker (e.g., ftp, daemon).
+#
+# Directly accessible user IDs.
+$CAT >uids.k <<END
+OTHER
+END
+X
+#  Commented out example of how to set up above:
+#
+#$CAT >uids.k <<END
+#guest
+#df
+#foo
+#END
+#
+# Directly accessible group IDs.
+# This usually includes a group like 'users', which most users are in.
+#
+$CAT >gids.k <<END
+END
+X
+#  Commented out example of how to set up above:
+#
+#$CAT >gids.k <<END
+#guest
+#END
+#
+# Setup the primary goal(s).
+#
+$ECHO Setting up goal						#>/dev/tty
+./addto uids root DO ANYTHING
+FOO_BAR
+chmod 0700 beta/init_kuang ||
+echo 'restore of beta/init_kuang failed'
+Wc_c="`wc -c < 'beta/init_kuang'`"
+test 950 -eq "$Wc_c" ||
+	echo 'beta/init_kuang: original size 950, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/is_able.chk ==============
+if test -f 'beta/is_able.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/is_able.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/is_able.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/is_able.chk' &&
+:
+#
+#  is_able.chk
+#
+#   This shell script checks the permissions of all files and directories
+# listed in the configuration file "is_able.lst", and prints warning messages
+# according to the status of files.  You can specify world or group readability
+# or writeability.  See the config file for the format of the configuration
+# file.
+#
+#   Mechanism:  This shell script parses each line from the configure file,
+# changes into the directory the file is in, and then uses the "is_able" 
+# program to check if any of the directories in question are writable by 
+# world/group.  All results are written to standard output.
+#
+TEST=/bin/test
+ECHO=/bin/echo
+AWK=/bin/awk
+SED=/bin/sed
+X
+config_file=is_able.lst
+X
+if $TEST ! -f "$config_file" ; then
+X	$ECHO "Config file $config_file doesn't exist!"
+X	exit
+X	fi
+X
+#  Read from $dir_list (e.g. "is.chk.lst") what files/dirs to check.
+#
+# Comments are lines starting with a "#".
+#
+# /path/to/{dir|file}   World/Group     Read/Write/Both
+# as above              {W|w|G|g}       {R|r|W|w|B|b}
+#
+$AWK '/^#/ {
+X	next;}
+X	{ world=group=read=write=both=0; \
+X	# need 3 fields, or format error
+X	if (NF != 3) next; \
+X	if ($2 != "W" && $2 != "w" && $2 != "G" && $2 != "g") next; \
+X	if ($3!="R"&&$3!="r"&&$3!="W"&&$3!="w"&&$3!="B"&&$3!="b") next; \
+X	for (f=1;f < NF; f++) printf("%s ", $f); \
+X	print $NF;
+X	}' $config_file |
+while read targets
+X	do
+X	#   Use sed, 'cause awk lets me down (line too long) -- then realize
+X	# I should have used sed anyway.  Lazy bum.
+X	foo=`echo "$targets" | $SED 's/\(.*\)....$/\1/'`
+X	args=`echo "$targets" | $SED 's/.*\(...\)$/\1/'`
+X
+X	#  I added this, to change into the directory before checking
+X	# for writability; the reason?  With long dir pathnames that had
+X	# lots of files inside, the shell would blow up, trying to expand
+X	# all the full paths, and stuff it into a single variable.  For
+X	# instance, a line like this in $config_file:
+X	#
+X	#  /usr/foo/bar/cowabunga/* w w
+X	#
+X	#  Would expand to "/usr/foo/bar/cowabunga/ls /usr/..."  Need full
+X	# pathnames, tho!  And it can still blow up, tho it's tougher.
+X	#
+X	dir=`echo "$targets" | $SED 's/\(.*\\)\/[^ ]* .*$/\1/'`
+X	old_dir=`pwd`
+X	cd $dir
+X	for f in $foo
+X		do
+#		echo $dir $f $args
+X		$old_dir/is_able $f $args
+X		done
+X	cd $old_dir
+X	done
+X
+# end of script
+FOO_BAR
+chmod 0700 beta/is_able.chk ||
+echo 'restore of beta/is_able.chk failed'
+Wc_c="`wc -c < 'beta/is_able.chk'`"
+test 2263 -eq "$Wc_c" ||
+	echo 'beta/is_able.chk: original size 2263, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/is_able.lst ==============
+if test -f 'beta/is_able.lst' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/is_able.lst (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/is_able.lst (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/is_able.lst' &&
+#  This lists any/all sensitive files the administration wants to ensure
+# non-read/writability of.  Comments are lines starting with a "#".
+#
+# USE FULL PATHNAMES!
+#
+#   Lines are of the format:
+#
+# /path/to/{dir|file}	World/Group	Read/Write/Both
+#
+# as above		{w|g}		{r|w|b}
+#
+/			w		w
+/etc			w		w
+/usr			w		w
+/bin			w		w
+/dev			w		w
+/usr/bin		w		w
+/usr/etc		w		w
+/usr/adm		w		w
+/usr/lib		w		w
+/usr/include		w		w
+/usr/spool		w		w
+/usr/spool/mail		w		w
+/usr/spool/news		w		w
+/usr/spool/uucp		w		w
+/usr/spool/at		w		w
+/usr/local		w		w
+/usr/local/bin		w		w
+/usr/local/lib		w		w
+/usr/users		w		w
+/Mail			w		w
+X
+# some Un*x's put shadowpass stuff here:
+/etc/security		w		r
+X
+# /.login /.profile /.cshrc /.rhosts
+/.*			w		w
+X
+#   I think everything in /etc should be !world-writable, as a rule; but
+# if you're selecting individual files, do at *least* these:
+#   /etc/passwd /etc/group /etc/inittab /etc/rc /etc/rc.local /etc/rc.boot
+#   /etc/hosts.equiv /etc/profile /etc/syslog.conf /etc/export /etc/utmp
+#   /etc/wtmp
+/etc/*			w		w
+X
+/bin/*			w		w
+/usr/bin/*		w		w
+/usr/etc/*		w		w
+/usr/adm/*		w		w
+/usr/lib/*		w		w
+/usr/include/*		w		w
+/usr/local/lib/*	w		w
+/usr/local/bin/*	w		w
+/usr/etc/yp*		w		w
+/usr/etc/yp/*		w		w
+X
+# individual files:
+/usr/lib/crontab	w		b
+/usr/lib/aliases	w		w
+/usr/lib/sendmail	w		w
+/usr/spool/uucp/L.sys	w		b
+X
+#  NEVER want these readable!
+/dev/kmem		w		b
+/dev/mem		w		b
+X
+#   Optional List of assorted files that shouldn't be
+# write/readable (mix 'n match; add to the list as desired):
+/usr/adm/sulog		w		r
+/.netrc			w		b
+# HP-UX and others:
+/etc/btmp		w		b
+/etc/securetty		w		b
+# Sun-fun
+/dev/drum		w		b
+/dev/nit		w		b
+FOO_BAR
+chmod 0600 beta/is_able.lst ||
+echo 'restore of beta/is_able.lst failed'
+Wc_c="`wc -c < 'beta/is_able.lst'`"
+test 1643 -eq "$Wc_c" ||
+	echo 'beta/is_able.lst: original size 1643, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/kuang ==============
+if test -f 'beta/kuang' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/kuang (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/kuang (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/kuang' &&
+:
+# /* Copyright 1985 Robert W. Baldwin */
+# /* Copyright 1986 Robert W. Baldwin */
+#
+# Jan 1990, Ported to bourne shell from Csh.  Dan Farmer
+#
+#   Took out some comments, combined four of Bob's shell
+# scripts into one (the target script remains separate for
+# easy editing of targets.)  More or less a straight line
+# for line translation; a rewrite that goes for speed will
+# come later.  Maybe just rewrite it in C.  Yeah, that's it....
+X
+###############################################
+# Kuang: Rule based computer security checker.
+###############################################
+X
+# commands used....
+SH=/bin/sh
+MV=/bin/mv
+TEST=/bin/test
+ECHO=/bin/echo
+AWK=/bin/awk
+RM=/bin/rm
+X
+# Initialization.
+$SH ./init_kuang
+X
+# Main loop
+#
+$ECHO Starting main loop                        #>/dev/tty
+while $TEST -f uids.n -o -f gids.n -o -f files.n
+X    do
+X    if $TEST -f uids.n ; then
+X        $MV uids.n uids.x
+X
+# Process a list of uids from stdin.
+# Usage: douids username comments
+X    $ECHO Called douids                        #>/dev/tty
+X    i=1
+X    while $TEST "1"
+X        do
+X        nextuid=`$AWK '{if (NR=="'$i'") print $0}' uids.x`
+X        i=`expr $i + 1`
+X
+X        if $TEST -z "$nextuid"  ; then
+X            break;
+X	    fi
+X
+X            user=`$ECHO $nextuid | $AWK '{print $1}'`
+X
+X        $ECHO "   " User $user                    #>/dev/tty
+X
+# Rules mapping uids to files.
+#
+X        next=`$ECHO $nextuid | $AWK '{for (i=2;i<=NF;i++) printf("%s ", $i)}'`
+X        ./addto files /etc/passwd replace grant $user $next
+X        ./addto files /usr/lib/aliases replace trojan $user $next
+X
+#   hsh = home sweet home = home directory of $user
+X        hsh=`./tilde $user`
+X
+X        if $TEST -f $hsh/.rhosts ;  then
+X            ./addto files $hsh/.rhosts write grant $user $next
+X        fi
+X
+X        if $TEST -f $hsh/.login ;  then
+X            ./addto files $hsh/.login replace trojan $user $next
+X        fi
+X
+X        if $TEST -f $hsh/.cshrc ;  then
+X            ./addto files $hsh/.cshrc replace trojan $user $next
+X        fi
+X
+X        if $TEST -f $hsh/.profile ;  then
+X            ./addto files $hsh/.profile replace trojan $user $next
+X        fi
+X
+X        if $TEST "$user" = "root" ;  then
+X	    if $TEST -f /usr/lib/crontab ; then
+X               ./addto files /usr/lib/crontab replace create supershell $next
+X	    else
+X               ./addto files /usr/spool/cron/crontabs replace create supershell $next
+X	    fi
+X            ./addto files /etc/rc replace trojan $user $next
+X            ./addto files /etc/rc.local replace trojan $user $next
+X        fi
+X
+X        if $TEST "$user" != "root" ;  then
+X            ./addto files /etc/hosts.equiv replace allow rlogin $next
+X        fi
+X
+X        if $TEST "$user" != "root" -a -f /etc/hosts.equiv -a -s /etc/hosts.equiv 
+X            then
+X            ./addto files /etc/hosts replace fake HostAddress $next
+X        fi
+X
+X    done
+fi
+X
+X    if $TEST -f gids.n ; then
+X       $MV gids.n gids.x
+X
+X    $ECHO Called dogids                        #>/dev/tty
+X    i=1
+X    while $TEST "1"
+X        do
+X        nextgid=`$AWK '{if (NR=="'$i'") print $0}' gids.x`
+X        i=`expr $i + 1`
+X
+X        if $TEST -z "$nextgid" ; then
+X            break;
+X	    fi
+X
+X        group=`$ECHO $nextgid | $AWK '{print $1}'`
+X        $ECHO "   " Group $group                    #>/dev/tty
+X
+# Rules mapping gids to uids.
+#
+X        next=`$ECHO $nextgid | $AWK '{for (i=2;i<=NF;i++) printf("%s ", $i)}'`
+X        use=`./members $group`
+X        for user in $use
+X            do
+X            ./addto uids $user grant $group $next
+X            done
+X
+# Rules mapping gids to files.
+#
+X        ./addto files /etc/group replace grant $group $next
+X        done
+X    fi
+X
+X    if $TEST -f files.n ; then
+X       $MV files.n files.x
+X
+# A list of file names is read from successive lines of stdin.
+# Each file is examined for ways to access it.
+# The input format is:
+#    <filename> <whitespace> <mode> <comments>
+# The <mode> is either "write" or "replace".
+#
+X    $ECHO Called dofiles.                        #>/dev/tty
+X    i=1
+X    while $TEST "1"
+X        do
+X        nextfile=`$AWK '{if (NR=='"$i"') print $0}' files.x`
+X        i=`expr $i + 1`
+X        if $TEST -z "$nextfile" ; then
+X            break;
+X	    fi
+X
+X        file=`$ECHO $nextfile | $AWK '{print $1}'`
+X        mode=`$ECHO $nextfile | $AWK '{print $2}'`
+X
+X        $ECHO "    File $file, mode $mode"            #>/dev/tty
+X
+# Rules converting filename goals into UserName or GroupName goals.
+#
+X        next=`$ECHO $nextfile | $AWK '{for (i=3;i<=NF;i++) printf("%s ", $i)}'`
+X
+X        writers=`./filewriters $file`
+X        numwriters=`$ECHO $writers | $AWK '{print NF}'`
+X        if $TEST "$numwriters" = "3" ; then
+X            owner=`$ECHO $writers | $AWK '{print $1}'`
+X            group=`$ECHO $writers | $AWK '{print $2}'`
+X            other=`$ECHO $writers | $AWK '{print $3}'`
+X
+X            $ECHO "        Writers are $owner $group $other"    #>/dev/tty
+X                ./addto uids $owner $mode $file $next
+X            if $TEST "$group" != "NONE" ; then
+X                ./addto gids $group $mode $file $next
+X            fi
+X            if $TEST "$other" != "NONE" ; then
+X                ./addto uids $other $mode $file $next
+X            fi
+X        else
+X            $ECHO "        $file does not exist"        #>/dev/tty
+X            continue
+X        fi
+X
+# Rules converting filename goals into other filename goals.
+#
+X        if $TEST "$mode" != "replace" ; then
+X            continue
+X        fi
+X
+X    parent=`$ECHO $file | $AWK -F/ '{if (NF == 2) {
+X		printf("/%s", $1)}
+X		else if (NF>2) {for (i=2;i<NF;i++) printf("/%s", $i)} 
+X		else printf("")'}`
+X
+X    basename=`$ECHO $file | $AWK -F/ '{print $NF}'`
+X
+X    $ECHO -n "       " Parent directory is $parent        #>/dev/tty
+X    $ECHO ", " basename is $basename                #>/dev/tty
+X    if $TEST -n "$parent" ; then
+X       ./addto files $parent write replace $basename $next
+X        fi
+X    done
+X
+X    fi
+done
+X
+# destroy the evidence.... Need "Success" file for report, though.
+$RM files.? gids.? uids.?
+FOO_BAR
+chmod 0700 beta/kuang ||
+echo 'restore of beta/kuang failed'
+Wc_c="`wc -c < 'beta/kuang'`"
+test 5969 -eq "$Wc_c" ||
+	echo 'beta/kuang: original size 5969, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/kuang.pl.shar ==============
+if test -f 'beta/kuang.pl.shar' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/kuang.pl.shar (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/kuang.pl.shar (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/kuang.pl.shar' &&
+#!/bin/sh
+# This is a shell archive (produced by shar 3.49)
+# To extract the files from this archive, save it to a file, remove
+# everything above the "!/bin/sh" line above, and type "sh file_name".
+#
+# made 01/09/1991 15:04 UTC by df@death.cert.sei.cmu.edu
+#
+# existing files will NOT be overwritten unless -c is specified
+#
+# This shar contains:
+# length  mode       name
+# ------ ---------- ------------------------------------------
+#   9782 -rw------- README.perl
+#   1776 -rwx------ get-cf
+#   6490 -rw------- kuang.1
+#  16925 -rwx------ kuang.pl
+#    284 -rwx------ kuang_all
+#   1307 -rw------- put-cf
+#   1274 -rw------- yagrip.pl
+#
+# ============= README.perl ==============
+if test -f 'README.perl' -a X"$1" != X"-c"; then
+X	echo 'x - skipping README.perl (File already exists)'
+else
+echo 'x - extracting README.perl (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'README.perl' &&
+XXThis is a perl version of Dan's version of Bob Baldwin's Kuang program
+XX(originally written as some shell scripts and C programs). 
+XX
+XXThe original intent was to improve the speed of kuang, which is
+XXespecially important for installations like ours with several thousand
+XXaccounts and NFS things and all that.  The shell version of Kuang used
+XXC programs to add rules, get a groups members, determine the writers
+XXof a file, and so on, which really slowed things down.
+XX
+XX		"no" problems	/etc staff writeable
+XX		-------------	--------------------
+XXshell kuang	2:14 (14)	12:26 (98)	0.1 p/s
+XXperl kuang	1:10 (18)	 2:34 (588)	3.8 p/s
+XX
+XXThe "no" problems column indicates the time taken (and number of plans
+XXconsidered) for the shell and Perl versions of Kuang on a system with
+XXno known security problems.  The "/etc staff writeable" column gives
+XXtiming and # of plans for a system with a /etc directory that is
+XXwriteable by group staff, which contains several dozen users.
+XX
+XXAs you can see, the Perl version is a bit faster.  Turns out there are
+XXall sorts of details that need to be considered in real
+XXimplementations of Kuang type programs, some of which are discussed
+XXbelow.
+XX
+XX  --- Steve Romig, CIS, Ohio State, October 1990
+XX
+XX------------------------------------------------------------------------------
+XX
+XXSome Features of the Perl Version
+XX
+XX  Caches passwd/group file entries in an associative array for faster
+XX  lookups.  This is particularly helpful on insecure systems using YP
+XX  where password and group lookups are slow and you have to do a lot of
+XX  them...:-)
+XX
+XX  Can specify target (uid or gid) on command line.
+XX
+XX  Can use -l option to generate PAT for a goal.
+XX
+XX  Can use -f to preload file owner, group and mode info, which is
+XX  helpful in speeding things up and in avoiding file system
+XX  'shadows'...  See the man page for details.
+XX
+XXFuture plans, things to fix:
+XX
+XX- An earlier version scanned the password file looking for generally
+XX  accessible accounts (no password), which would be added to the
+XX  uids.known list (in addition to -1, "other").  I had planned on also
+XX  adding a password checker which would allow us to also add accounts
+XX  with easily guessed passwords.  Eventually I nuked the code that
+XX  scanned the password file to speed things up, and further reflection
+XX  reveals that it isn't wise to add the password scanning to Kuang
+XX  itself (since there are many other things that might be considered
+XX  in determining whether an account is accessible or not, and you
+XX  probably don't want to add them all to Kuang).  
+XX
+XX  At some point we should add a command line option that allows us to
+XX  add additional uid's (or gid's?) to the uids.known list.  That way
+XX  the user could run some other tool to scan the password file and
+XX  generate a list of accessible accounts, which could then be fed to
+XX  kuang.  Makes it faster on clients using YP since most of the
+XX  password file is the same for all N clients, why scan it N times.
+XX  This would make it easier for the Kuang user to do smarter things
+XX  to/with the password file checks (list all accounts with no password
+XX  or easily guessed password, filter out "ok" entries (eg, sync) and
+XX  etc.)
+XX
+XX- This version doesn't deal with uid's and gid's correctly.  If there
+XX  are several entries that list the same UID, but with different
+XX  names, directories and shells, we'll only check plans for becoming
+XX  one of them, rather than any of them, so some possible plans aren't
+XX  even examined.  
+XX
+XX  Hmmm...this is easier than I thought - when we evaluate some plan
+XX  for granting a particular uid, we need to evaluate plans for all
+XX  usernames that can become that uid.  Just stick a loop in there
+XX  somewhere...get CF's for each of username's in turn.  
+XX
+XX  Bah, harder than I thought, since it'd have to scan the whole
+XX  password file to figure which username/home directories can become
+XX  which uid's.  Similarly with groups.  
+XX
+XX  Current plan: by default, kuang will have to scan the whole password
+XX  and group files so it can be sure to get all possible ways to become
+XX  some uid or gid.  Internally, really need several lists:
+XX
+XX	mapping from uid to list of usernames that have that uid
+FOO_BAR
+true || echo 'restore of beta/kuang.pl.shar failed'
+fi
+echo 'End of  part 5'
+echo 'File beta/kuang.pl.shar is continued in part 6'
+echo 6 > _shar_seq_.tmp
+exit 0

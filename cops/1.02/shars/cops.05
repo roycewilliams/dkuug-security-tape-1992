@@ -1,0 +1,1631 @@
+#!/bin/sh
+# This is part 05 of cops
+# ============= cops/makefile ==============
+if test ! -d 'cops'; then
+    echo 'x - creating directory cops'
+    mkdir 'cops'
+fi
+if test -f 'cops/makefile' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/makefile (File already exists)'
+else
+echo 'x - extracting cops/makefile (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/makefile' &&
+X#  Simple Makefile for the COPS system; compiles, and chmods 
+X# the programs.
+X#
+X#	make all	    -- makes everything
+X#	make install	    -- puts things in their place
+X#	make <program_name> -- make a given program
+XINSTALL_DIR= sun
+X
+XEXECUTABLE = home.chk user.chk pass.chk is_writable crc crc_check \
+X	     addto clearfiles filewriters members tilde is_able
+XC_SRC      = home.chk.c user.chk.c is_able.c pass.c is_something.c \
+X	     addto.c clearfiles.c filewriters.c members.c tilde.c \
+X	     crc.c crc_check.c
+XSHELL_PROGS= chk_strings root.chk dev.chk cron.chk is_able.chk \
+X	     cops group.chk rc.chk passwd.chk ftp.chk crc.chk \
+X	     misc.chk suid.chk kuang init_kuang reconfig res_diff
+XSUPPORT    = is_able.lst stop.sample crc_list
+XCFLAGS     = -O
+X#  Certain systems need to uncomment this to compile the pass.chk; Xenix,
+X# some SysV:
+X# BRAINDEADFLAGS = -lcrypt
+X
+X#
+X# Where the programs are....
+X#
+XCHMOD=/bin/chmod
+XTEST=/bin/test
+XMKDIR=/bin/mkdir
+XCP=/bin/cp
+XCC=/bin/cc
+XRM=/bin/rm
+X
+X# make all
+Xall:	$(EXECUTABLE)
+X	$(CHMOD) 700 $(SHELL_PROGS)
+X
+X# hammer the binaries and formatted docs
+Xclean:
+X	$(RM) -f $(EXECUTABLE)
+X	cd docs; make clean
+X
+X# make the documentation
+Xman:
+X	cd docs; make
+X
+X# make a dir and shove everything in the proper place
+Xinstall:
+X	-if $(TEST) ! -d $(INSTALL_DIR) ; then mkdir $(INSTALL_DIR) ; fi
+X	$(CP) $(EXECUTABLE) $(SHELL_PROGS) $(SUPPORT) $(INSTALL_DIR)
+X
+X# make the programs
+Xaddto: src/addto.c
+X	$(CC) $(CFLAGS) -o addto src/addto.c
+X
+Xclearfiles: src/clearfiles.c
+X	$(CC) $(CFLAGS) -o clearfiles src/clearfiles.c
+X
+Xfilewriters: src/filewriters.c
+X	$(CC) $(CFLAGS) -o filewriters src/filewriters.c
+X
+Xmembers: src/members.c
+X	$(CC) $(CFLAGS) -o members src/members.c
+X
+Xhome.chk: src/home.chk.c
+X	$(CC) $(CFLAGS) -o home.chk src/home.chk.c
+X
+Xuser.chk: src/user.chk.c
+X	$(CC) $(CFLAGS) -o user.chk src/user.chk.c
+X
+Xis_able: src/is_able.c
+X	$(CC) $(CFLAGS) -o is_able src/is_able.c
+X
+Xis_writable: src/is_something.c
+X	$(CC) $(CFLAGS) -DWRITABLE -o is_writable src/is_something.c
+X
+Xpass.chk: src/pass.c
+X	$(CC) $(CFLAGS) -o pass.chk src/pass.c $(BRAINDEADFLAGS)
+X
+Xtilde: src/tilde.c
+X	$(CC) $(CFLAGS) -o tilde src/tilde.c
+X
+Xcrc: src/crc.c
+X	$(CC) $(CFLAGS) -o crc src/crc.c
+X
+Xcrc_check: src/crc_check.c
+X	$(CC) $(CFLAGS) -o crc_check src/crc_check.c
+X
+X# the end
+SHAR_EOF
+chmod 0600 cops/makefile ||
+echo 'restore of cops/makefile failed'
+Wc_c="`wc -c < 'cops/makefile'`"
+test 2250 -eq "$Wc_c" ||
+	echo 'cops/makefile: original size 2250, current size' "$Wc_c"
+fi
+# ============= cops/misc.chk ==============
+if test -f 'cops/misc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/misc.chk (File already exists)'
+else
+echo 'x - extracting cops/misc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/misc.chk' &&
+X:
+X#
+X#  Usage: misc.chk
+X#
+X#  This shell script checks a variety of miscellaneous potential
+X# security problems that really don't belong anywhere else.
+X#
+X#  Right now this looks for to see if tftp & rexd are enabled,
+X# to check if the uudecode alias is in the mail alias file and
+X# not commented out, and if uudecode can create a SUID file.
+X#
+X#  Mechanism:  tftp.chk will try to get /etc/motd from the localhost.
+X# Not much too it; just connect and try to get it.  For rexd, just
+X# look in the /etc/inetd.conf file to see if it's enabled (e.g., not
+X# commented out).
+X#
+X#  Warning:  it may take a minute or so to complete the test, since tftp
+X# might take a while to get the test file, or it may take a while to time
+X# out the connection (which is what usually happens if the test fails.)
+X
+X#
+X#  Location of stuff:
+XTFTP=/usr/ucb/tftp
+XGREP=/bin/grep
+XECHO=/bin/echo
+XTEST=/bin/test
+XAWK=/bin/awk
+XSED=/bin/sed
+XRM=/bin/rm
+XUUDECODE=/usr/bin/uudecode
+X
+X# look for uudecode alias in $aliases
+Xaliases=/usr/lib/aliases
+Xuu=decode
+X
+X# look for rexd in $inetd; this file could be "/etc/servers", too!
+X# If SysV, probably want to change lines 51 & 59....
+X# inetd=/etc/servers
+Xinetd=/etc/inetd.conf
+Xrexd=rexecd
+X
+X# tmp and target file
+XTARGET=/etc/motd
+XTMP=./tmp.$$
+X
+X#  Read from $inetd to see if daemons are running.
+X# Comments are lines starting with a "#", so ignore.
+X# Checking for rexd:
+X#
+X# If sysV based (also look at next check, too!):
+X# if $TEST -n "`$AWK '{if($1~/^#/)next;else if(\"'$rexd'\"==$3)print}' $inetd`"
+Xif $TEST -n "`$AWK '{if ($1 ~ /^#/) next; else if (\"'$rexd'\" == $NF) print}' $inetd`"
+X	then
+X	$ECHO Warning -- $rexd is enabled in $inetd!
+X	fi
+X
+X# Check to see if anything started inetd.conf is writable; 5th field is program
+X# SysV format -- $3?
+X# files=`$AWK '{if ($1 ~ /^#/) next; else print $3}' $inetd`
+Xfiles=`$AWK '{if ($1 ~ /^#/) next; else print $5}' $inetd`
+Xif $TEST -n "$files" ; then
+X	for i in $files
+X		do
+X		./is_able $i w w
+X		done
+X	fi
+X
+X# Checking for uudecode alias:
+Xres=`$SED -n '/^[^#]*|*"'$uu'"/p' $aliases`
+X
+Xif $TEST -n "$res"
+X	then
+X	$ECHO warning -- $uu is enabled in $aliases!
+X	fi
+X
+Xif $TEST -f $TMP ; then
+X#	$ECHO "You've got to be kidding.  Tmp file $TMP already exists!"
+X	exit 1
+X	fi
+X
+X
+X# uucode stuff -- thanks to pete shipley...
+X$UUDECODE << EOD_
+Xbegin 4755 ./foobar.$$
+X 
+Xend
+XEOD_
+X
+Xif $TEST -n "`./is_able $UUDECODE s s`" ; then
+X    $ECHO Warning!  $UUDECODE is SUID!
+Xfi
+X
+Xif $TEST -n "`./is_able ./foobar.$$ s s`"; then
+X    $ECHO Warning!  $UUDECODE creates setuid files!
+Xfi
+X
+X$RM -f ./foobar.$$
+X
+X#  The rest is all for tftp stuff:
+X#
+X#   Get the local hostname...
+Xif $TEST -s /bin/hostname ; then
+X	HOSTNAME=`/bin/hostname`
+Xelif $TEST -s /bin/uname ; then
+X	HOSTNAME=`/bin/uname -n`
+Xelif $TEST -s /usr/bin/uuname ; then
+X	HOSTNAME=`/usr/bin/uuname -l`
+X	fi
+Xif $TEST -z "$HOSTNAME" ; then
+X	HOSTNAME="foobar"
+X	fi
+X
+Xif $TEST -z "$HOSTNAME" ; then
+X#	$ECHO "Unable to find hostname"
+X	exit 1
+X	fi
+X
+X#   Do the dirty work -- check tftp for the localhost, if it was found;
+X# this might take a bit, since tftp might have to time out.
+X{
+X$TFTP << _XXX_
+Xconnect $HOSTNAME
+Xget $TARGET $TMP
+Xquit
+X_XXX_
+X}  > /dev/null 2> /dev/null
+X
+Xif $TEST -s $TMP ; then
+X	$ECHO "Warning! tftp is enabled on $HOSTNAME!"
+X	fi
+X
+X$RM -f $TMP
+X
+Xexit 0
+X# end of script
+SHAR_EOF
+chmod 0700 cops/misc.chk ||
+echo 'restore of cops/misc.chk failed'
+Wc_c="`wc -c < 'cops/misc.chk'`"
+test 3240 -eq "$Wc_c" ||
+	echo 'cops/misc.chk: original size 3240, current size' "$Wc_c"
+fi
+# ============= cops/pass.words ==============
+if test -f 'cops/pass.words' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/pass.words (File already exists)'
+else
+echo 'x - extracting cops/pass.words (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/pass.words' &&
+Xaaa
+Xacademia
+Xaerobics
+Xairplane
+Xalbany
+Xalbatross
+Xalbert
+Xalex
+Xalexander
+Xalgebra
+Xaliases
+Xalphabet
+Xama
+Xamorphous
+Xanalog
+Xanchor
+Xandromache
+Xanimals
+Xanswer
+Xanthropogenic
+Xanvils
+Xanything
+Xaria
+Xariadne
+Xarrow
+Xarthur
+Xathena
+Xatmosphere
+Xaztecs
+Xazure
+Xbacchus
+Xbailey
+Xbanana
+Xbananas
+Xbandit
+Xbanks
+Xbarber
+Xbaritone
+Xbass
+Xbassoon
+Xbatman
+Xbeater
+Xbeauty
+Xbeethoven
+Xbeloved
+Xbenz
+Xbeowulf
+Xberkeley
+Xberliner
+Xberyl
+Xbeverly
+Xbicameral
+Xbob
+Xbrenda
+Xbrian
+Xbridget
+Xbroadway
+Xbumbling
+Xburgess
+Xcampanile
+Xcantor
+Xcardinal
+Xcarmen
+Xcarolina
+Xcaroline
+Xcascades
+Xcastle
+Xcat
+Xcayuga
+Xceltics
+Xcerulean
+Xchange
+Xcharles
+Xcharming
+Xcharon
+Xchester
+Xcigar
+Xclassic
+Xclusters
+Xcoffee
+Xcoke
+Xcollins
+Xcommrades
+Xcomputer
+Xcondo
+Xcookie
+Xcooper
+Xcornelius
+Xcouscous
+Xcreation
+Xcreosote
+Xcretin
+Xdaemon
+Xdancer
+Xdaniel
+Xdanny
+Xdave
+Xdecember
+Xdefoe
+Xdeluge
+Xdesperate
+Xdevelop
+Xdieter
+Xdigital
+Xdiscovery
+Xdisney
+Xdog
+Xdrought
+Xduncan
+Xeager
+Xeasier
+Xedges
+Xedinburgh
+Xedwin
+Xedwina
+Xegghead
+Xeiderdown
+Xeileen
+Xeinstein
+Xelephant
+Xelizabeth
+Xellen
+Xemerald
+Xengine
+Xengineer
+Xenterprise
+Xenzyme
+Xersatz
+Xestablish
+Xestate
+Xeuclid
+Xevelyn
+Xextension
+Xfairway
+Xfelicia
+Xfender
+Xfermat
+Xfidelity
+Xfinite
+Xfishers
+Xflakes
+Xfloat
+Xflower
+Xflowers
+Xfoolproof
+Xfootball
+Xforesight
+Xformat
+Xforsythe
+Xfourier
+Xfred
+Xfriend
+Xfrighten
+Xfun
+Xfungible
+Xgabriel
+Xgardner
+Xgarfield
+Xgauss
+Xgeorge
+Xgertrude
+Xginger
+Xglacier
+Xgnu
+Xgolfer
+Xgorgeous
+Xgorges
+Xgosling
+Xgouge
+Xgraham
+Xgryphon
+Xguest
+Xguitar
+Xgumption
+Xguntis
+Xhacker
+Xhamlet
+Xhandily
+Xhappening
+Xharmony
+Xharold
+Xharvey
+Xhebrides
+Xheinlein
+Xhello
+Xhelp
+Xherbert
+Xhiawatha
+Xhibernia
+Xhoney
+Xhorse
+Xhorus
+Xhutchins
+Ximbroglio
+Ximperial
+Xinclude
+Xingres
+Xinna
+Xinnocuous
+Xirishman
+Xisis
+Xjapan
+Xjessica
+Xjester
+Xjixian
+Xjohnny
+Xjoseph
+Xjoshua
+Xjudith
+Xjuggle
+Xjulia
+Xkathleen
+Xkermit
+Xkernel
+Xkirkland
+Xknight
+Xladle
+Xlambda
+Xlamination
+Xlarkin
+Xlarry
+Xlazarus
+Xlebesgue
+Xlee
+Xleland
+Xleroy
+Xlewis
+Xlight
+Xlisa
+Xlouis
+Xlynne
+Xmacintosh
+Xmack
+Xmaggot
+Xmagic
+Xmalcolm
+Xmark
+Xmarkus
+Xmarty
+Xmarvin
+Xmaster
+Xmaurice
+Xmellon
+Xmerlin
+Xmets
+Xmichael
+Xmichelle
+Xmike
+Xminimum
+Xminsky
+Xmoguls
+Xmoose
+Xmorley
+Xmozart
+Xnancy
+Xnapoleon
+Xnepenthe
+Xness
+Xnetwork
+Xnewton
+Xnext
+Xnoxious
+Xnutrition
+Xnyquist
+Xoceanography
+Xocelot
+Xolivetti
+Xolivia
+Xoracle
+Xorca
+Xorwell
+Xosiris
+Xoutlaw
+Xoxford
+Xpacific
+Xpainless
+Xpakistan
+Xpam
+Xpapers
+Xpassword
+Xpatricia
+Xpenguin
+Xpeoria
+Xpercolate
+Xpersimmon
+Xpersona
+Xpete
+Xpeter
+Xphilip
+Xphoenix
+Xpierre
+Xpizza
+Xplover
+Xplymouth
+Xpolynomial
+Xpondering
+Xpork
+Xposter
+Xpraise
+Xprecious
+Xprelude
+Xprince
+Xprinceton
+Xprotect
+Xprotozoa
+Xpumpkin
+Xpuneet
+Xpuppet
+Xrabbit
+Xrachmaninoff
+Xrainbow
+Xraindrop
+Xraleigh
+Xrandom
+Xrascal
+Xreally
+Xrebecca
+Xremote
+Xrick
+Xripple
+Xrobotics
+Xrochester
+Xrolex
+Xromano
+Xronald
+Xrosebud
+Xrosemary
+Xroses
+Xruben
+Xrules
+Xruth
+Xsal
+Xsaxon
+Xscamper
+Xscheme
+Xscott
+Xscotty
+Xsecret
+Xsensor
+Xserenity
+Xsharks
+Xsharon
+Xsheffield
+Xsheldon
+Xshiva
+Xshivers
+Xshuttle
+Xsignature
+Xsimon
+Xsimple
+Xsinger
+Xsingle
+Xsmile
+Xsmiles
+Xsmooch
+Xsmother
+Xsnatch
+Xsnoopy
+Xsoap
+Xsocrates
+Xsossina
+Xsparrows
+Xspit
+Xspring
+Xspringer
+Xsquires
+Xstrangle
+Xstratford
+Xstuttgart
+Xsubway
+Xsuccess
+Xsummer
+Xsuper
+Xsuperstage
+Xsupport
+Xsupported
+Xsurfer
+Xsuzanne
+Xswearer
+Xsymmetry
+Xtangerine
+Xtape
+Xtarget
+Xtarragon
+Xtaylor
+Xtelephone
+Xtemptation
+Xthailand
+Xtiger
+Xtoggle
+Xtomato
+Xtopography
+Xtortoise
+Xtoyota
+Xtrails
+Xtrivial
+Xtrombone
+Xtubas
+Xtuttle
+Xumesh
+Xunhappy
+Xunicorn
+Xunknown
+Xurchin
+Xutility
+Xvasant
+Xvertigo
+Xvicky
+Xvillage
+Xvirginia
+Xwarren
+Xwater
+Xweenie
+Xwhatnot
+Xwhiting
+Xwhitney
+Xwill
+Xwilliam
+Xwilliamsburg
+Xwillie
+Xwinston
+Xwisconsin
+Xwizard
+Xwombat
+Xwoodwind
+Xwormwood
+Xyacov
+Xyang
+Xyellowstone
+Xyosemite
+Xzap
+Xzimmerman
+SHAR_EOF
+chmod 0600 cops/pass.words ||
+echo 'restore of cops/pass.words failed'
+Wc_c="`wc -c < 'cops/pass.words'`"
+test 3278 -eq "$Wc_c" ||
+	echo 'cops/pass.words: original size 3278, current size' "$Wc_c"
+fi
+# ============= cops/passwd.chk ==============
+if test -f 'cops/passwd.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/passwd.chk (File already exists)'
+else
+echo 'x - extracting cops/passwd.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/passwd.chk' &&
+X:
+X#
+X#   passswd.chk
+X#
+X#  Check passsword file -- /etc/passswd -- for incorrect number of fields,
+X# duplicate uid's, non-alphanumeric uids, and non-numeric group id's.
+X#
+X# Awk part from _The AWK Programming Language_, page 78
+X#
+X#  Mechanism:  Passwd.check uses awk to ensure that each line of the file
+X# has 7 fields, as well as examining the file for any duplicate users
+X# by using "sort -u".  It also checks to make sure that the password
+X# field (the second one) is either a "*", meaning the group has no password,
+X# or a non-null field (which would mean that the account has a null
+X# password.)  It then checks to ensure that all uids are alphanumeric,
+X# and that all user id numbers are indeed numeric.  For yellow pages
+X# passwords, it does the same checking, but in order to get a listing of
+X# all members of the password file, it does a "ypcat passwd > ./$$" and
+X# uses that temporary file for a passfile.  It removes the tmp file after
+X# using it, of course.
+X#   The /etc/passwd file has a very specific format, making the task
+X# fairly simple.  Normally it has lines with 7 fields, each field
+X# separated by a colon (:).  The first field is the user id, the second
+X# field is the encrypted password (an asterix (*) means the group has no
+X# password, otherwise the first two characters are the salt), the third
+X# field is the user id number, the fourth field is the group id number,
+X# the fifth field is the GECOS field (basically holds miscellaneous
+X# information, varying from site to site), the sixth field is the home
+X# directory of the user, and lastly the seventh field is the login shell
+X# of the user.  No blank lines should be present.  Uid's will be flagged
+X# if over 8 chars, unless the $OVER_8 variable (line 50) is set to "YES".
+X#   If a line begins with a plus sign (+), it is a yellow pages entry.
+X# See passwd(5) for more information, if this applies to your site.
+X#
+XAWK=/bin/awk
+XTEST=/bin/test
+XECHO=/bin/echo
+XSORT=/usr/bin/sort
+XUNIQ=/usr/bin/uniq
+XRM=/bin/rm
+XYPCAT=/usr/bin/ypcat
+X
+X#   Used for Sun C2 security group file.  FALSE (default) will flag
+X# valid C2 passwd syntax as an error, TRUE attempts to validate it.
+X# Thanks to Pete Troxell for pointing this out.
+XC2=FALSE
+X
+X#  Some systems allow long uids; set this to "YES", if so (thanks
+X# to Pete Shipley (lot of petes around here, eh?)):
+XOVER_8=NO
+X
+X#
+X# Important files:
+Xetc_passwd=/etc/passwd
+Xyp_passwd=./$$
+X
+Xyp=false
+X
+X# Testing $etc_passwd for potential problems....
+Xif $TEST -f $YPCAT
+X	then
+Xif $TEST -s $YPCAT
+X	then
+X	$YPCAT passwd > $yp_passwd
+X	if $TEST $? -eq 0
+X		then
+X		yp=true
+X		fi
+X	fi
+Xfi
+X
+Xresult=`$AWK -F: '{print $1}' $etc_passwd | $SORT |$UNIQ -d`
+Xif $TEST "$result"
+X	then
+X	$ECHO "Warning!  Duplicate uid(s) found in $etc_passwd:"
+X	$ECHO $result
+Xfi
+X
+X
+X#   First line is for a yellow pages entry in the password file.
+X# It really should check for correct yellow pages syntax....
+X$AWK 'BEGIN {FS = ":" } \
+X	{if (substr($1,1,1) != "+") { \
+X	if ($0 ~ /^[ 	]*$/) { printf("Warning!  Password file, line %d, is blank\n", NR) } else {
+X	if (NF != 7) {
+X		printf("Warning!  Password file, line %d, does not have 7 fields: \n\t%s\n", NR, $0) } \
+X	if ($1 !~ /[A-Za-z0-9]/) {
+X		printf("Warning!  Password file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+X	if (length($1) > 8 && "'$OVER_8'" != "YES") {
+X		printf("Warning!  Password file, line %d, uid > 8 chars\n\t%s\n", NR, $0) } \
+X	if ($2 == "") {
+X		printf("Warning!  Password file, line %d, no password: \n\t%s\n", NR, $0) } \
+X 	if ("'$C2'" == "TRUE" && $2 ~ /^##/ && "##"$1 != $2) {
+X		printf("Warning!  Password file, line %d, invalid password field for C2: \n\t%s\n", NR, $0) } \
+X	if ($3 !~ /^[0-9]/) {
+X		if ($3 < 0) {
+X			printf("Warning!  Password file, line %d, negative user id: \n\t%s\n", NR, $0) } \
+X		else {
+X		printf("Warning!  Password file, line %d, nonnumeric user id: \n\t%s\n", NR, $0) }} \
+X	if ($3 == "0" && $1 != "root") {
+X		printf("Warning!  Password file, line %d, user %s has uid = 0 and is not root\n\t%s\n", NR, $1, $0) } \
+X	if ($4 !~ /[0-9]/) {
+X		printf("Warning!  Password file, line %d, nonnumeric group id: \n\t%s\n", NR, $0) } \
+X	if ($6 !~ /^\//) {
+X		printf("Warning!  Password file, line %d, invalid login directory: \n\t%s\n", NR, $0) } \
+X	}}}' $etc_passwd
+X
+X#
+X# Test yellow pages passwords as well
+Xif $TEST "$yp" = "true"
+X	then
+X	yresult=`$AWK -F: '{print $1}' $yp_passwd | $SORT |$UNIQ -d`
+X	if $TEST "$yresult"
+X		then
+X		$ECHO "Warning!  Duplicate uid(s) found in yellow page passwords:"
+X		$ECHO $yresult
+X	fi
+X
+X	$AWK 'BEGIN {FS = ":" } \
+X		{ if ($0 ~ /^[ 	]*$/) { printf("Warning!  YPassword file, line %d, is blank\n", NR) } else {
+X		if (NF != 7) {
+X			printf("Warning!  YPassword file, line %d, does not have 7 fields: \n\t%s\n", NR, $0) } \
+X		if ($1 !~ /[A-Za-z0-9]/) {
+X			printf("Warning!  YPassword file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+X		if (length($1) > 8 && "'$OVER_8'" != "YES") {
+X			printf("Warning!  YPassword file, line %d, uid > 8 chars\n\t%s\n", NR, $0) } \
+X		if ($2 == "") {
+X			printf("Warning!  YPassword file, line %d, no password: \n\t%s\n", NR, $0) } \
+X		if ($3 !~ /^[0-9]/) {
+X			if ($3 < 0) {
+X			printf("Warning!  YPassword file, line %d, negative user id: \n\t%s\n", NR, $0) } \
+X			else {
+X			printf("Warning!  YPassword file, line %d, nonnumeric user id: \n\t%s\n", NR, $0) }} \
+X		if ($3 == "0" && $1 != "root") {
+X			printf("Warning!  YPassword file, line %d, user %s has uid = 0 and is not root\n\t%s\n", NR, $1, $0) } \
+X		if ($4 !~ /[0-9]/) {
+X			printf("Warning!  YPassword file, line %d, nonnumeric group id: \n\t%s\n", NR, $0) } \
+X		if ($6 !~ /^\//) {
+X			printf("Warning!  YPassword file, line %d, invalid login directory: \n\t%s\n", NR, $0) } \
+X		}}' $yp_passwd
+X	
+Xfi
+X
+X$RM -f $yp_passwd
+X
+X# end
+SHAR_EOF
+chmod 0700 cops/passwd.chk ||
+echo 'restore of cops/passwd.chk failed'
+Wc_c="`wc -c < 'cops/passwd.chk'`"
+test 5702 -eq "$Wc_c" ||
+	echo 'cops/passwd.chk: original size 5702, current size' "$Wc_c"
+fi
+# ============= cops/docs/COPS.report ==============
+if test ! -d 'cops/docs'; then
+    echo 'x - creating directory cops/docs'
+    mkdir 'cops/docs'
+fi
+if test -f 'cops/docs/COPS.report' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/docs/COPS.report (File already exists)'
+else
+echo 'x - extracting cops/docs/COPS.report (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/docs/COPS.report' &&
+X.ps 12
+X.vs 12
+X.PH ````
+X.pn
+X.nr W 78
+X.ce 2
+X\fBCOPS and Robbers
+XUN*X System Security\fP
+X.sp
+X.sp
+X.PP
+XIn the last few years, computer security has received a great deal
+Xmore attention than it has in the past.  Computerized break-ins and
+Xcriminal activity, once merely the product of the imagination of
+Xscience fiction writers,
+Xhas became a fairly common occurence in both commercial and academic
+Xcircles.  In this paper, I will go over the problems that face any
+Xmultiuser computing system, then discuss how these problems apply to UNIX\**
+X.FS
+XAlthough originally designed and developed by Ken Thompson and
+XDennis Ritchie of AT&T, UNIX has grown far beyond its' original
+Xdesign and now numerous companies market their own \*Qflavor\*U of
+XUNIX.  When I use the term UNIX in this paper, I don't mean merely
+XAT&T's version, but instead I mean the majority of the most popular
+Xvarieties, made by developers at Berkely, Sun, and a host of other
+Xmanufacturers.  I believe UNIX is still a trademark of Bell
+XLaboratories.
+X.FE
+Xspecifically, and finally present in detail a suite of programs that
+Xwere developed in an attempt to address some of the main problems
+Xthat could be solved via software.  UNIX, although considered to be
+Xa fairly secure operating system ([Wood 88], [Duff 89], etc), has the
+Xadvantage of having many published works ([Grampp and Morris 84],
+X[Bishop 83], etc) on the problems that a computing site can have with
+Xsecurity, and in addition, on how a UNIX system administrator might
+Xmake his/her system more secure by monitoring various aspects of his/her
+XUNIX site.  This, combined with UNIX's popularity, make it an ideal
+Xtarget for a software security system to operate on.
+X.PP
+XIn this report I am not going to discuss specific ways of breaking
+Xinto a given UNIX machine (for a more detailed description on how to
+Xcompromise UNIX security, see either [Baldwin88], [Bishop83],
+X[Wood & Kochran 86], or [Grampp & Morris 84]) -- instead, I will
+Xconcentrate on how to improve and strengthen the potentially good
+Xsecurity of a generic UNIX system by means of a software toolkit
+Xthat examines the weaker areas of UNIX that are either traditionally
+Xignored (due to the time constraints or ignorance of the system
+Xadministrators) or are simply reoccurring problems that need to be
+Xwatched over.  In addition, this report is not meant for UNIX neophytes
+X-- although a great deal of proficiency is not needed to read
+Xthis report and use the programs described herein, a familiarity with
+Xbasic UNIX features -- the file system and file permission modes for
+Xexample -- and commands such as
+X.ul
+Xawk, grep, sed
+Xas well as a working knowledge of shell and C programming are necessary
+Xto understand the internal workings of the security system described in
+Xthis paper.
+X.PP
+XAlthough there is no reasonable way that all security problems can be
+Xsolved (at least not with a software solution) on any arbitrary UNIX
+Xsystem, administrators and system programs can be assisted by a software
+Xsecurity tool.  The Computer Oracle Password and Security system (COPS)
+Xthat will be described in this paper is just such a device.  The COPS
+Xsystem is a collection of programs and shell scripts that attempt
+Xto address as many of these problems as possible in an efficient,
+Xportable, and above all in a reliable and safe way.  The main goal
+Xof COPS is one of prevention; it tries to anticipate and eliminate
+Xsecurity problems by making sure people don't get a chance to
+Xcompromise security in the first place.  Alerting the
+Xadministrators of a potential intruder or that a virus has infected 
+Xthe system is beyond the scope of the present system, although with 
+Xwork with such capabilities could be added ([Bauer and Koblentz 88]
+Xand [Duff 89].)
+X.PP
+XTo understand the reason COPS might check any specific problem, a
+Xlook at computer security problems in general is in order.  The
+Xproblems listed below are not meant to be inclusive, but they are
+Xindicative of the myriad types of dilemmas a typical computer multiuser
+Xsystem might encounter:
+X.PP
+X1)  Administrators, system programmers, and computer operators.  The
+Xvery people that (should) worry the most about security are sometimes
+Xthe ones that are the
+Xleast concerned.  Carelessness is one of the main culprits; a mistake by a user
+Xmight cause little or no problem, but when someone with no
+Xrestrictions (or almost none) on their computer activity makes a mistake,
+Xa security hole can result.  \*QI can trust my users\*U is a fine
+Xstatement to make -- but can you trust your users' friends?  How about
+Xthe users of computers that are networked to yours?
+XNew software, systems, or procedures
+Xcan facilitate extra problems; a computing staff is often ill or
+Xcompletely non-trained on new techniques and software.
+XToo often \*QRTFM\*U is the only training that they will ever receive.
+XPrograms that are created for in-house use are often ill-documented and
+Xnot debugged thoroughly, and when users other than the author start to
+Xuse/abuse the program, problems can result.  Especially misunderstood,
+Xeven by experienced UNIX system programmers, is the SUID program or,
+Xworse yet, the SUID shell script ([Bishop 83].)
+XWhen a user says that his/her password was forgotten (or any
+Xother account/security related problem), what checks are made to verify
+Xthat the person is really the owner of that account?  Are users that are
+Xsecurity problems kept track of, so that repeated abuses of the system will
+Xresult in punitive action?  Does your site even have a security policy?
+XAnd of course, the last straw is that most system administrators simply
+Xhave too much other work to do than to constantly check
+Xthe system for potential security flaws -- let alone to double-check that
+Xany work done by other system programmers has been done correctly.
+XThese are the actions that often get left unsaid and undone.
+X.PP
+XA UNIX environment has no special defenses against this kind of
+X\*Qattack\*U.  Fortunately, a number of these potential problems (unless
+Xcatastrophic in scope) are not only correctable, but are
+Xeasy to detect with a software toolkit such as COPS.  Even the most
+Xcareful UNIX guru will periodically make a mistake; COPS has been
+Xdesigned to aid in her/his never ending battle against the forces of
+Xdarkness.
+X.PP
+X2)  Physical security.  This is perhaps the most frustrating of all 
+Xpossible problems because it effects all computer systems and is often the
+Xhardest to safeguard against.  Even if the software is secure, even if 
+Xthe system administrators are alert to potential problems, what happens 
+Xif a user walks up to the root console and starts typing?  Does the night
+Xjanitorial staff let anyone into the machine room without proper 
+Xidentification? Who has access to the key that opens up the computing 
+Xcenter?  Are terminals that are logged on left unguarded or unlocked?
+XAre passwords written on or near a users terminal or desk?
+XNo software in the world can help
+Xagainst human nature or carelessness.  Reiterating to your staff and users
+Xthat terminals should not be left alone or unguarded and that passwords
+X(especially root) should not be typed in front of unfriendly (and in
+Xthis case, _everyone_ is your enemy) eyes would be a good start.  A
+Xsimple analogy: since you would never give the keys to the company car
+Xaway, why on earth would you give away the keys to your computer, which
+Xis certainly worth a hell of a lot more time and money (although it may
+Xnot get as good mileage on the interstate.)  Common sense goes a long
+Xways to help prevent this kind of risk.
+X.PP
+X3)  Authentication.  What is authentication?  All modern computing
+Xsystems that have capabilities for multiple users have a means of
+Xidentifying who is
+Xusing the computer at any given time.  A common means of identification
+Xis by using a password; and since the inception of this idea, poor
+Xpasswords have been a perennial problem.  People have a tendency to
+Xuse their own name, or their social security number, or some other
+Xcommon word, name, or phrase for a password.  The problem then arises
+Xwhen an unauthorized user wants to access clandestine information,
+Xhe/she simply tries one of these simple passwords until a successful
+Xmatch is found.
+X.PP
+XOther problems with authentication?  What computer hosts are
+X\*Qtrusted\*U and allow users to log in from other machines without 
+Xany further authentication?  Are incorrect login attempts kept and/or
+Xmonitored so as to allow administrators to keep track of any unusual
+Xactivity?  What about \*QTrojan horses\*U -- programs that can steal
+Xpasswords and the privileges that a user owns -- is there a program or a
+Xadministrative method that detects a potential 'horse?
+X.PP
+XFortunately UNIX systems again have some fairly good tools to aid in
+Xthis fight.  Although finding simple passwords is indeed a trivial
+Xtask, forcing the users on a system to use passwords that are harder to
+Xguess is also
+Xtrivial, by either modifying the mechanism that gets/gives the password
+Xto the user, and/or by having the system administrators run a simple
+Xpassword detector periodically, and notifying users if their password is
+Xdeemed too obvious.  The
+X.ul
+Xcrypt
+Xcommand, although proven to be insecure for a knowledgeable and
+Xresourceful attacker ([Reed and Weinberger 84], [Baldwin 86]), does
+Xoffer an added shield against most unauthorized users.  Logs can be kept
+Xof incorrect login attempts, but as with most security measures, to be
+Xeffective someone (usually the site administrator) must take the time to
+Xexamine the evidence.
+X.PP
+X4)  Bugs/Features.  Massive software designs (such as an operating system)
+Xare usually the result of a team or of teams of developers working together.
+XIt only takes one programmer to make a mistake, and it will almost always
+Xhappen.  \*QBack doors\*U that allow unauthorized entrances are sometimes
+Xpurposefully coded in -- for debugging, maintenance, or other reasons.
+XAnd there are always 
+Xunexpected side effects when thousands of people using the system start
+Xdoing strange (stupid?) things.  The best kind of defense against this
+Xis to report the problems to the developer as they are discovered, and
+Xif possible, to also report a way to fix the problem.  Unfortunately,
+Xin many cases the
+Xsource code is needed to make a bug fix, and especially in non-academic
+Xareas, this is simply not available due to the prohibitive costs involved.
+XCombining this with the reluctance of a (usually) commercial developer
+Xto admit any problems with their product, and the end result is a
+Xsecurity hole that will not be mended unless some kind of financial loss
+Xor gain is at stake -- for the developer of the product, not yours!
+X.PP
+X5)  Ignorance.  Users who don't know or care can be a problem as well.
+XEven if
+Xsomeone doesn't care about their own security, they can unwittingly
+Xcompromise the entire system -- especially if they are a user with
+Xhigh privileges.  Administrators and system operators are not immune to
+Xthis either, but hopefully are better informed, or at least have access
+Xto a means of combating this dysfunction.  It may also be due to apathy,
+Xan unwillingness to learn a new system, a lack of time to explore all of
+Xthe features of a large system, or simply not enough computer savvy to
+Xlearn more about a very complex system, and no one willing to
+Xteach it to the user.  This problem is much like illiteracy; it is a
+Xnever-ending battle that will never go completely away.  And while a 
+Xsoftware toolkit such as COPS can help combat this problem by calling
+Xattention to neglected or misunderstood critical areas, by far and away
+Xthe best weapon against this is education.  An educated user will simply
+Xnot make as many mistakes; and while it may seem impractical to teach
+X_all_ users about (even) the fundamentals of computer security, think of
+Xall the time and resources wasted tracking down the mistakes that keep
+Xrecurring time and time again.
+X.PP
+X6)  Unauthorized permissions or privileges.  Are users given _too much_
+Xfreedom?  Do new computer accounts have any default security at all, or
+Xare the new users expected to know what to do to protect their programs,
+Xdata, and other files.  System files, programs, and data are sometimes
+Xshipped with minimal or no protection when gotten straight from the
+Xmanufacturer; someone at the installation site must have enough
+Xknowledge to \*Qtune\*U the system to be effective and safe.  Password,
+Xmemory, and log files especially should all be carefully monitored,
+Xbut unfortunately an experienced user can often still find out any information
+Xthey want with perseverance and a little luck.  This is
+Xwhere a system such as COPS can really shine.  After a new system is
+Xconfigured, some basic flaws can be uncovered with just a small amount
+Xof effort.  New system problems that somehow slip through the cracks of
+Xthe site installers can be caught and modified before any serious
+Xproblems result.  The key here is to prevent your system users from
+Xgetting a denial of computer service that they need and deserve.  Service
+Xcould mean anything from CPU time, response time, file space, or any
+Xother commodity that a computer has to offer.
+X.PP
+X7)  Crackers/Hackers/Evil twin brothers.  Not much is needed on this
+Xsubject, save to say that they are often not the main problem.
+XProfessional evil-users are a rarity; often harmful acts are done 
+Xby users who \*Qjust wanted to see what would happen\*U or had no idea
+Xof the ramifications of their acts.  Someone who is truly experienced is 
+Xvery difficult to stop, and is certainly outside the realm of any
+Xsoftware security tool as discussed in this paper.  Fortunately, most
+Xevil-doers are fairly inexperienced and ignorant, and when they make a
+Xmistake, a watchful administrator can deal with a problem before it gets
+Xout of hand.  Sometimes they can even reveal security problems that 
+Xwere previously undiscovered.  COPS can help here mostly by reducing an
+Xattacker's options; the less holes to exploit, the better.
+X.PP
+XThe COPS system attempts to help protect as many of the above
+Xitems as possible for a generic UNIX system.  In the proper UNIX spirit,
+Xinstead of having a large program that attempts to solve every possible
+Xproblem, it is composed of several small programs that each check one
+Xor more potential UNIX security holes.
+XThe COPS system uses a variety of these problems to see if there are any
+Xcracks in a given UNIX security wall.  These methods correspond to some
+Xof the problems discussed above; specifically to administrators, system
+Xprogrammers, and computer operators; authentication; ignorance;
+Xunauthorized permissions or privileges; and finally crackers/hackers/evil
+Xtwin brothers (numbers 1,3,5, and 6.)  It is very difficult, almost a
+Xpractical impossibility to give software assistance to problems in
+Xphysical security, and finally bugs or features that are present in a
+Xgiven UNIX system are possible to detect, but are not covered in this
+Xsystem (yet).  The design of most of the the programs were at least
+Xdescribed if not outlined from the following sources:
+X.sp
+XAho, Kernighan, and Weinberger 88
+X.sp
+XBaldwin 87
+X.sp
+XFiedler and Hunter 86
+X.sp
+XGrampp and Morris 84
+X.sp
+XWood and Kochran 86
+X.sp
+X.PP
+XOf course with all of the problems listed below, looking at the actual
+Xsource code of the program is very instructive -- each numbered section
+Xlists the corresponding program that is used to perform the check.  COPS
+Xchecks:
+X.PP
+X1)  \*Qvital\*U system files and directories to see if they
+Xhave dangerous permissions (usually either world-writable, or world-readable.)
+XFiles and directories thought to be critical are in a configuration
+Xfile
+X.ul
+Xis_able.lst.
+XWildcards are useable like in UNIX; indeed, COPS
+Xpasses everything to the shell for expansion.
+X.sp
+XThe program that performs this task is
+X.ul
+Xis_able.chk
+X.PP
+X2)  Check devices for file systems to see if they are world-readable/writable,
+Xplus check for any exported NFS file systems with no restrictions.
+XThe file systems are normally found in /etc/fstab.
+X.sp
+XThe program that performs this task is
+X.ul
+Xdev.chk
+X.PP
+X3)  Check all files in system for SUID status, notifying the COPS user
+Xof any changes in SUID status, and if any SUID files are world-writable,
+Xshell scripts, or non-executable (program) files.
+X.sp
+XThe program that performs this task is
+X.ul
+Xsuid.chk
+Xand was written by Prentiss Riddle.
+X.PP
+X4)  Check the /etc/passwd file (and the yellow pages password database, if
+Xapplicable) for null passwords, improper # of fields, non-unique user-id's,
+Xnon-numeric group id's, blank lines, and non-alphanumeric user-id's.
+X.sp
+XThe program that performs this task is
+X.ul
+Xpasswd.chk
+X.PP
+X5)  Check the /etc/group file (and the yellow pages database, if
+Xapplicable) for groups with passwords, improper # of fields,
+Xduplicate users in groups, blank lines, and non-unique group-id's.
+X.sp
+XThe program that performs this task is
+X.ul
+Xgroup.chk
+X.PP
+X6)  Check passwords of users on system.
+X.sp
+XMethod -- using the stock \*Qcrypt\*U command, compare the encrypted
+Xpassword found in the /etc/passwd file against the following
+X(encrypted) guesses:
+X.sp
+XThe login id (uid), information in the gecos field, and all single
+Xletter passwords.
+X.sp
+XThe program that performs this task is
+X.ul
+Xpass.chk
+Xand was written by Craig Leres and was modified by Seth Alford,
+XRoger Southwick, Steve Dum, and Rick Lindsley.  Bugs have been reported
+Xand fixed by numerous people.
+X.PP
+X7)  Check the root path, umask, also if root is in /etc/ftpuser and
+Xowns /bin, /etc, /etc/passwd, /.login, /.profile and /.rhosts, and
+Xfinally if a \*Q+\*U is in /etc/hosts.equiv.
+X.sp
+XThe program that performs this task is
+X.ul
+Xroot.chk
+X.PP
+X8)  Examine the commands in /etc/rc* to ensure that none of the
+Xfiles or paths used are world-writable.
+X.sp
+XThe program that performs this task is
+X.ul
+Xrc.chk
+X.PP
+X9)  Examine the commands in /usr/lib/crontab to ensure that none of the
+Xfiles or paths used are world-writable.
+X.sp
+XThe program that performs this task is
+X.ul
+Xcron.chk
+X.PP
+X10)  Check all of the user home directories to ensure they are not
+Xworld writable.
+X.sp
+XThe program that performs this task is
+X.ul
+Xhome.chk
+Xand was written by John Owens.
+X.PP
+X11) Check important user files in user's home directories to ensure
+Xthey are not world writable, plus checks netrc files to see if they
+Xare readable.  The files checked (all in the individual
+Xusers' home directory, all with the prefix \*Q.\*U):
+X.sp
+Xrhosts profile login cshrc kshrc tcshr crhost
+X.sp
+Xnetrc forward dbxinit distfile exrc emacsrc logout
+X.sp
+XThe program that performs this task is
+X.ul
+Xuser.chk
+X.PP
+X12) Checks ftp setup; anononymous ftp setup, if you support it.  This
+Xseems to be fairly site specific; it tries to check for correct ownership,
+Xfile/directory permissions, etc.; for a complete description, check the
+Xman page for ftp.chk.
+X.sp
+XThe program that performs this task is
+X.ul
+Xftp.chk [-a]
+X.PP
+X13) Check for unexpected file system corruption or security breaches,
+Xusing CRC values that are generated from your system files, then
+Xcompared against previously calculated values.  As the author says:
+X\*QIt's nice to be able to say that you know all your files
+Xare as they should be.\*U
+X.sp
+XThe program that performs this task is
+X.ul
+Xcrc.chk.
+XMark Mendel wrote most of
+X.ul
+Xcrc.c
+Xand Jon Zeef wrote
+X.ul
+Xcrc_check.c
+X.PP
+X14) Checks a few miscellaneous potential security problems that really
+Xdon't belong anywhere else.  This includes looking to see if tftp &
+Xrexecd are enabled, to check if the uudecode alias is in the mail
+Xalias file and not commented out, if uudecode is either SUID or can
+Xcreate SUID files, and if the programs inside the /etc/inetd.conf
+Xor /etc/servers aren't world-writable.
+X.sp
+XThe program that performs this task is
+X.ul
+Xmisc.chk
+X.PP
+X15) Given a goal to compromise, such as user root, and a list of user
+Xand group id's that can be used in an attempt to achieve the goal, this
+Xsecurity tool will search through the system until it verifies that the
+Xgoal is compromisible or not.  The program that performs this tricky task
+Xis part of the
+X.ul
+XU-Kuang
+X(rhymes with \*Qtwang\*U)
+Xsystem.  Robert Baldwin was kind enough to allow me to include this
+Xsecurity checker (a fine security machine in it's own right)
+Xwithin this distribution.  For more information on this fascinating
+Xsecurity checker, see kuang.man.ms and [Baldwin 87].  I have rewritten
+Xit in Bourne shell (it was in C-Shell) for further portability; Steve
+XRomig rewrote it in Perl for speed.
+X.PP
+X.PP
+XNone of programs listed above certain cover all of the possible areas
+Xthat can harm a system, but if run together they can aid an overworked
+Xadministrator to locate some of the potential trouble spots.  The COPS
+Xsystem is not meant to be a panacea against all UNIX security woes,
+Xbut an administrator who examines the security toolbox programs and 
+Xthis research paper might reduce the danger of their UNIX system being
+Xcompromised -- and that's all any security tool can ever hope to do.
+XThe COPS system could never replace a vigilant administration
+Xstaffed with knowledgeable people, but hopefully, as administrators look
+Xinto the package, more comprehensive programs will come into being,
+Xcovering more of the problems that will continue as the latest versions
+Xof UNIX continue to grow.
+X.PP
+XDesign Notes:
+X.PP
+XThe programs that are described here were designed to address the
+Xproblems discussed above, but still be usable on as many UNIX
+X\*Qflavors\*U as possible.  Speed was sacrificed for
+Xsimplicity/portability; hopefully the tools here will either be
+Xreplaced or modified, as by no means are they the final word or
+Xsolution to _any_ of these problems; indeed, it is my hope that
+Xafter other programmers/administrators see this report, they will
+Xcreate newer, better, and more general tools that can be
+Xre-distributed periodically.  None of the programs need to be run by
+Xroot to be effective, with the exception of the SUID checker (to
+Xensure that all files are checked.) Some of the tools were written by
+Xmyself, the others were written by other programmers on the network
+Xand (with their permission) presented here.  All of the programs in
+Xthis report are in the public domain, with the exception of Robert
+XBaldwin's U-Kuang system; they all exist solely to be used and
+Xmodified to fit your needs.  If they are re-distributed, please 
+Xkeep them in their original form unless it is clearly stated that
+Xthey were modified.  Any improvements (that might not be too hard :-)),
+Xsuggestions, or other security programs that
+Xyou would like to see get further distribution can be sent to:
+X.PP
+Xdf@medusa.cs.purdue.edu
+X.PP
+X(That's me)
+X.PP
+Xor
+X.PP
+Xspaf@uther.cs.purdue.edu
+X.PP
+X(Dr. Eugene Spafford)
+X.PP
+X.PP
+XEnhancements I envision include:
+X.sp
+Xi) Improved speed and portability without sacrificing functionality
+X(pretty obvious, I guess....)
+X.sp
+Xii) A level of severity assigned to each warning; anything that could 
+Xcompromise root instantly (root having no password, for example) might
+Xhave a level 0 priority, while simply having a user with a writable home
+Xdirectory might only be level 3.  This way the system could be run at
+Xa certain threshold level, or simply have the set of warnings
+Xprioritized for a less sophisticated administrator.
+X.sp
+Xiii) The eradication of any design flaws or coding errors that are in
+Xthe COPS system.
+X.PP
+XThe main purpose of creating the COPS system was twofold; the first was
+Xto foster an understanding of the security problems common to most UNIX
+Xsystems, and the second was to try to create and apply software tools
+Xthat, when run, will inform system administrators of potential problems
+Xpresent in their system.  No attempt is made by the tools to correct any
+Xproblems because a potential security problem at one site may be
+Xstandard policy/practice at another.  An emphasis on furthering
+Xeducation and knowledge about UNIX in general is the key to good
+Xsecurity practices, not following blindly what an unintelligent tool
+Xmight say.
+X.PP
+XSome of the advantages to using a system such as COPS are:
+X.sp
+Xi) Nearly Continuous monitoring of traditional problem areas.
+X.sp
+Xii) A new system can be checked before being put into production.
+X.sp
+Xiii) New or inexperienced administrators can not only stop some of their
+Xproblems in security they may have, but can also raise their
+Xconsciousness about the potential for security dilemmas.
+X.PP
+XAnd a couple of disadvantages:
+X.sp
+Xi) An administrator could get a false sense of security from running
+Xthese programs.  Caveat emptor (ok, they are free, but still beware.)
+X.sp
+Xii) A specific path to the elimination of the problem is not presented.
+XThis could also be construed as an advantage, when considering the third
+Xpoint.
+X.sp
+Xiii) Badguys can get these tools.  You know -- the guys with black hats.
+XWhat happens when they get a copy of this package?  With any sensitive
+Xsubject like security, knowledge is zealously guarded.  People are
+Xafraid that absolute knowledge corrupts -- who knows, they may be right.
+XBut I staunchly stand by the tree of knowledge.  Let the bad guys taste
+Xthe fruit, and they may see the light, so to speak.  In addition, the
+Xsystem does not say how to exploit the hole, just that it exists.
+X.PP
+X.ul
+XResults of Running COPS:
+X.PP
+XNot surprisingly, the results when COPS was run varied significantly
+Xdepending on what system and site it was run on.  Here at Purdue, it was
+Xrun on a Sequent Symmetry running DYNIX 3.0.12, on a pair of Suns (a
+X3/280 and 3/50) running UNIX 4.2 release 3.4, a VAX 11/780 running 4.3
+XBSD UNIX, a VAX 8600 running Ultrix 2.2, and finally a NeXT machine
+Xrunning their 0.9 O/S version of UNIX.  The results of the COPS
+Xsystem showed a reasonable amount of security concern on all of the
+Xmachines; the faculty only machines showed the weakest security, followed
+Xby the machines used by the graduate students, and finally the undergraduate
+Xmachines had the strongest security (our administrators _know_ that you
+Xcan't trust those (us?) young folks.)  Whether this was showing that
+XPurdue has a good administration, or that the UNIX vendors have a fairly
+Xgood grasp on potential security problems, or if it was merely 
+Xshowcasing the shortcomings of this system wasn't clear to me from the
+Xresults.
+X.PP
+XThe security results probably will vary significantly from machine to
+Xmachine -- this
+Xis not a fault of UNIX; merely having the same machine and software
+Xdoes not mean that two sites will not have completely different security
+Xconcerns.  In addition, different vendors and administrators have
+Xsignificantly varying opinions on how a machine should be set up.  There
+Xis no fundamental reason why any system cannot pass all or nearly all of
+Xthese tests, but what is standard policy at one sites may be an
+Xunthinkable risk at another, depending upon the nature of the work being
+Xdone, the information stored on the computer, and the users of the
+Xsystem.
+X.PP
+XWhen I first started researching this report, I thought it would be a
+Xfairly easy task.  Go to a few computing sites, read some theoretical
+Xpapers, gather all the programs everyone had written, and write a
+Xbrief summary paper.  But what I found was an
+Xtremendous lack of communication and concerted effort towards the
+Xsubject of security.  AT&T had written a couple of programs ([Kaplilow
+Xand Cherepov 88], as had Hewlett Packard ([Spence 89]), but they were
+Xproprietary.  I heard rumors that the
+Xgovernment was either working on or had such a security system, but they
+Xcertainly weren't going to give it to me.
+XThe one book devoted to UNIX security ([Kochran and Wood 86]) was good,
+Xbut the programs that they presented were not expansive enough for what
+XI had in mind, plus the fact that they had written their programs
+Xmostly based on System V.  And while most system administrators I talked
+Xto had written at least a shell script or two that performed a minor
+Xsecurity task (SUID programs seemed the most popular), no one seemed to
+Xexchange ideas or any
+Xtheir problems with other sites -- possibly afraid that the admission of
+Xa weakness in their site might be an invitation to disaster.  There is
+Xan excellent security discussion group on the network ([Various Authors
+X84-]), from which I received some excellent ideas for this project, but
+Xit is very restrictive to whom it allows to participate.  I hope that
+Xwith the release of this security system it will not only help stamp
+Xout problems with UNIX security, but would encourage people to exchange
+Xideas, programs, problems and solutions to the computer community at large.
+X
+XDan Farmer
+XSeptember 29, 1989
+X(latest changes on January 7, 1991)
+X.PP
+X.ul
+XAcknowledgements:
+XI would like to thank Eugene Spafford for his invaluable help in
+Xthe researching, planning, and development of this project.  Without
+Xthe writings and programs created by Robert Morris, Matt Bishop, and
+Xother capable UNIX programmers, this project could never have gotten
+Xoff the ground.  Thanks also go to Brian Kernighan, Dennis Ritchie,
+XDonald Knuth, and Ken Thompson, for such inspirational computer work.
+XAnd of course without Peg, none of this would have come into being.
+XThanks again to all of you.
+X.bp
+X.ce
+X.ul
+XBIBLIOGRAPHY
+X
+X.sp
+X_, UNIX Programmers Manual, 4.2 Berkeley Software Distribution,
+XComputer Science Division, Department of Electrical
+XEngineering and Computer Science University of California,
+XBerkeley, CA, August 1983.
+X.sp
+X_, DYNIX(R) V3.0.12 System Manuals, Sequent Computer Systems, Inc., 1984.
+X.sp
+XAho, Alfred V., Brian W. Kernighan, and Peter J. Weinberger, The
+XAWK Programming Language, Addison-Wesley Publishing Company, 1988.
+X.sp
+XAuthors, Various, UNIX Security Mailing List/Security Digest,
+XDecember 1984 -.
+X.sp
+XBaldwin, Robert W., Crypt Breakers Workbench, Usenet, October
+X1986.
+X.sp
+XBaldwin, Robert W., Rule Based Analysis of Computer Security,
+XMassachusetts Institute of Technology, June 1987.
+X.sp
+XBauer, David S. and Michael E. Koblentz, NIDX - A Real-Time
+XIntrusion Detection Expert System, Proceedings of the Summer
+X1988 USENIX Conference, Summer, 1988.
+X.sp
+XBishop, Matt, Security Problems with the UNIX Operating System,
+XDepartment of Computer Sciences, Purdue University, January
+X31, 1983.
+X.sp
+XBishop, Matt, How to Write a Setuid Program, April 18, 1985.
+X.sp
+XDenning, Dorothy, Cryptography and Data Security, Addison-Wesley
+XPublishing Company, Inc, 1983.
+X.sp
+XDuff, Tom, Viral Attacks On UNIX System Security, Proceedings of
+Xthe Winter 1988 USENIX Conference, Winter, 1988.
+X.sp
+XFiedler, David and Bruce Hunter, UNIX System Administration,
+XHayden Book Company, 1986.
+X.sp
+XGrampp, F. T. and R. H. Morris, "UNIX Operating System Security,"
+XAT&T Bell Laboratories Technical Journal, October 1984.
+X.sp
+XKaplilow, Sharon A. and Mikhail Cherepov, "Quest -- A Security
+XAuditing Tool," AT&T Bell Laboratories Technical Journal,
+XAT&T Bell Laboratories Technical Journal, May/June 1988.
+X.sp
+XMorris, Robert and Ken Thompson, "Password Security : A Case
+XHistory," Communications of the ACM, November 1979.
+X.sp
+XReed, Brian, "Reflections on Some Recent Widespread Computer
+XBreak-ins," Communications of the ACM, vol. Vol 30, No. 2,
+XFebruary 1987.
+X.sp
+XReed, J.A. and P.J. Weinberger, File Security and the UNIX System
+XCrypt Command, Vol 63, No. 8, AT&T Bell Laboratories
+XTechnical Journal, October 1984.
+X.sp
+XSmith, Kirk, Tales of the Damned, UNIX Review, February 1988.
+X.sp
+XSpafford, Eugene H., The Internet Worm Program: An Analysis,
+XPurdue Technical Report CSD-TR-823, Nov 28, 1988.
+X.sp
+XSpafford, Eugene H., 1989.  Private Communications
+X.sp
+XBruce Spence, spy: A UNIX File System Security Monitor, Workshop
+XProceedings of the Large Installation Systems Administration III,
+XSeptember, 1988.
+X.sp
+XStoll, Clifford, Stalking the Wily Hacker, Volume 31, Number 5,
+XCommunications of the ACM, May 1988.
+X.sp
+XThompson, Ken, Reflections on Trusting Trust, Volume 27, Number
+X8, Communications of the ACM, August 1984.
+X.sp
+XWood, Patrick and Stephen Kochran, UNIX System Security, Hayden
+XBooks, 1986.
+X.sp
+XWood, Patrick, A Loss of Innocence, UNIX Review, February 1988.
+SHAR_EOF
+chmod 0600 cops/docs/COPS.report ||
+echo 'restore of cops/docs/COPS.report failed'
+Wc_c="`wc -c < 'cops/docs/COPS.report'`"
+test 31849 -eq "$Wc_c" ||
+	echo 'cops/docs/COPS.report: original size 31849, current size' "$Wc_c"
+fi
+# ============= cops/docs/KUANG.README ==============
+if test -f 'cops/docs/KUANG.README' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/docs/KUANG.README (File already exists)'
+else
+echo 'x - extracting cops/docs/KUANG.README (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/docs/KUANG.README' &&
+X
+X  The U-Kuang system is currently setup in a minimum configuration; e.g.
+Xit assumes only that world modes/permissions are to be used.  To fully
+Xuse the system, if the password checkers and the home-directory checker
+Xcome back with any positive results (i.e. with an account that can be
+Xbroken), modify the init_kuang file to reflect this.
+X  To use this system to it's full capabilities, be sure to read the
+Xmanual, kuang.man.ms.
+X
+XThis directory contains the various programs and shell scripts
+Xthat make up the Kuang security checking system.
+X
+XThe file, kuang.man.1, documents the system in the style of a UNIX
+Xmanual page.  The file, kuang.mss, is a draft of a paper on
+Xthis system.
+X
+X
+XTo run the system:
+X
+X0. Execute 'make' to build the programs.
+X1. Read kuang.man.1
+X2. Modify the file, init_kuang, to set the initial set of privileges.
+X3. Execute "sh kuang" (or run the COPS system.)
+X
+SHAR_EOF
+chmod 0600 cops/docs/KUANG.README ||
+echo 'restore of cops/docs/KUANG.README failed'
+Wc_c="`wc -c < 'cops/docs/KUANG.README'`"
+test 886 -eq "$Wc_c" ||
+	echo 'cops/docs/KUANG.README: original size 886, current size' "$Wc_c"
+fi
+# ============= cops/docs/SUID.README ==============
+if test -f 'cops/docs/SUID.README' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/docs/SUID.README (File already exists)'
+else
+echo 'x - extracting cops/docs/SUID.README (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/docs/SUID.README' &&
+XFindsuid is a little utility we dreamt up to watch for potential Trojan horse
+Xprograms by keeping an eye on our suid and sgid files and telling us when
+Xthey change unexpectedly.
+X
+XWe run it using the following line in crontab:
+X
+X	40 3 * * * /etc/findsuid/findsuid >/etc/findsuid/fserror 2>&1
+X
+XIncluded here is the findsuid shell script, a man page, a makefile, and a
+Xsample "stop" file.
+X
+X--- Prentiss Riddle ("Aprendiz de todo, maestro de nada.")
+X--- {ihnp4,harvard,seismo,gatech,ctvax}!ut-sally!riddle
+SHAR_EOF
+chmod 0600 cops/docs/SUID.README ||
+echo 'restore of cops/docs/SUID.README failed'
+Wc_c="`wc -c < 'cops/docs/SUID.README'`"
+test 501 -eq "$Wc_c" ||
+	echo 'cops/docs/SUID.README: original size 501, current size' "$Wc_c"
+fi
+true || echo 'restore of cops/docs/cops failed'
+echo End of part 5, continue with part 6
+exit 0

@@ -1,0 +1,1466 @@
+#!/bin/sh
+# This is a shell archive (produced by shar 3.49)
+# To extract the files from this archive, save it to a file, remove
+# everything above the "!/bin/sh" line above, and type "sh file_name".
+#
+# made 03/06/1992 23:02 UTC by zen@death
+# Source directory /big/zen/COPS
+#
+# existing files will NOT be overwritten unless -c is specified
+#
+# This is part 1 of a multipart archive                                    
+# do not concatenate these parts, unpack them in order with /bin/sh        
+#
+# This shar contains:
+# length  mode       name
+# ------ ---------- ------------------------------------------
+#   3228 -rwxr-xr-x cops_104/MANIFEST
+#   3531 -rwx------ cops_104/bug.chk
+#  11719 -rw------- cops_104/README.1
+#   8771 -rw------- cops_104/README.3
+#   6582 -rwxr-xr-x cops_104/passwd.chk
+#   4602 -rwxr-xr-x cops_104/XTRA_CREDIT
+#   2023 -rwxr-xr-x cops_104/chk_strings
+#   1204 -rwx------ cops_104/bug.chk.aix
+#  10003 -rwxr-xr-x cops_104/cops
+#   1364 -rwx------ cops_104/bug_cmp
+#   7743 -rwxr-xr-x cops_104/cover_letter
+#   2207 -rwxr-xr-x cops_104/crc.chk
+#   1143 -rwxr-xr-x cops_104/crc_list
+#   2290 -rwxr-xr-x cops_104/cron.chk
+#   3443 -rwxr-xr-x cops_104/dev.chk
+#   1120 -rwx------ cops_104/bug.chk.dec
+#   1184 -rwxr-xr-x cops_104/disclaimer
+#  31849 -rw------- cops_104/docs/COPS.report
+#    886 -rw------- cops_104/docs/KUANG.README
+#    501 -rw------- cops_104/docs/SUID.README
+#   3759 -rw------- cops_104/docs/cops
+#    789 -rw------- cops_104/docs/dev.chk
+#   4278 -rw------- cops_104/docs/CRC.README
+#    270 -rw------- cops_104/docs/home.chk
+#   1716 -rw------- cops_104/docs/pass.chk
+#    973 -rw------- cops_104/docs/is_able
+#   2809 -rw------- cops_104/docs/kuang.1
+#  36594 -rw------- cops_104/docs/kuang.man
+#    782 -rw------- cops_104/docs/rc.chk
+#    983 -rw------- cops_104/docs/is_able.chk
+#   4988 -rw------- cops_104/docs/release.notes
+#   1882 -rw------- cops_104/docs/suid.man
+#    230 -rw------- cops_104/docs/tilde
+#  16483 -rw------- cops_104/docs/warnings
+#    521 -rw------- cops_104/docs/root.chk
+#    969 -rw------- cops_104/docs/cron.chk
+#    662 -rw------- cops_104/docs/group.chk
+#    745 -rw------- cops_104/docs/pass_diff.chk
+#    508 -rw------- cops_104/docs/user.chk
+#   2146 -rw------- cops_104/docs/makefile
+#    943 -rw------- cops_104/docs/passwd.chk
+#    696 -rw------- cops_104/docs/misc.chk
+#   2963 -rw------- cops_104/docs/ftp.chk
+#  30969 -rw------- cops_104/docs/COPS.tex
+#    207 -rw------- cops_104/docs/readme.sequent
+#    665 -rw------- cops_104/docs/is_writable
+#  20591 -rwxr-xr-x cops_104/docs/readme.C2
+#   1752 -rwxr-xr-x cops_104/docs/readme.apollo
+#    322 -rw------- cops_104/docs/readme.ibm
+#   2759 -rwxr-xr-x cops_104/docs/readme.shadow
+#    102 -rw------- cops_104/docs/readme.svr4
+#    720 -rwxr-xr-x cops_104/docs/readme.xenix
+#    591 -rwxr-xr-x cops_104/docs/readme.yp
+#   2652 -rwx------ cops_104/docs/bug.chk
+#   5158 -rw------- cops_104/docs/readme.filter
+#    885 -rw------- cops_104/docs/obligitory.joke
+#    226 -rw------- cops_104/docs/obligitory.album
+#   1615 -rw------- cops_104/extensions/THINGS_2_DO
+#    779 -rw------- cops_104/extensions/YAR
+#    395 -rw------- cops_104/extensions/crypto-stuff
+#   2126 -rw------- cops_104/extensions/netstuff
+#    690 -rw------- cops_104/extensions/passwords
+#  13339 -rw------- cops_104/extensions/questions
+#  11163 -rw------- cops_104/extensions/uucp.hardening
+#   9462 -rw------- cops_104/extensions/writing.suid
+#    999 -rwx------ cops_104/bug.chk.sgi
+#   8387 -rwxr-xr-x cops_104/ftp.chk
+#   5969 -rwxr-xr-x cops_104/kuang
+#   5952 -rwxr-xr-x cops_104/group.chk
+#    950 -rwxr-xr-x cops_104/init_kuang
+#   2336 -rwxr-xr-x cops_104/is_able.chk
+#   1678 -rwxr-xr-x cops_104/is_able.lst
+#  42692 -rwxr-xr-x cops_104/kuang.pl.shar
+#   2965 -rwxr-xr-x cops_104/makefile
+#   4094 -rwxr-xr-x cops_104/misc.chk
+#   3278 -rwxr-xr-x cops_104/pass.words
+#   2794 -rwxr-xr-x cops_104/pass_diff.chk
+#   5683 -rwx------ cops_104/bug.chk.sun
+#     21 -rwxr-xr-x cops_104/patchlevel.h
+#    559 -rwxr-xr-x cops_104/quick_start
+#   3273 -rwxr-xr-x cops_104/rc.chk
+#   1087 -rwx------ cops_104/bug.chk.apollo
+#   1901 -rwx------ cops_104/bug.chk.next
+#   1393 -rwx------ cops_104/bug.chk.svr4
+#   2296 -rwx------ cops_104/platform
+#   1933 -rw------- cops_104/cops_filter
+#   5636 -rwx------ cops_104/reconfig
+#   1329 -rwxr-xr-x cops_104/res_diff
+#   4926 -rwxr-xr-x cops_104/root.chk
+#   3254 -rw------- cops_104/src/addto.c
+#    702 -rw------- cops_104/src/clearfiles.c
+#   9920 -rw------- cops_104/src/crc.c
+#   4261 -rw------- cops_104/src/crc_check.c
+#   2420 -rw------- cops_104/src/filewriters.c
+#   2916 -rw------- cops_104/src/home.chk.c
+#   5750 -rw------- cops_104/src/is_able.c
+#   3206 -rw------- cops_104/src/is_something.c
+#   1258 -rw------- cops_104/src/members.c
+#  17403 -rw------- cops_104/src/pass.c
+#    401 -rw------- cops_104/src/tilde.c
+#   1721 -rw------- cops_104/src/user.chk.c
+#   3826 -rw------- cops_104/src/conf.h
+#  22754 -rw------- cops_104/src/crack-fcrypt.c
+#   8130 -rw------- cops_104/src/crack-lib.c
+#   3254 -rw------- cops_104/src/crack.h
+#   6578 -rwx------ cops_104/suid.chk
+#    886 -rwxr-xr-x cops_104/yp_pass.chk
+#   1352 -rwxr-xr-x cops_104/extra_src/diff_last.sh
+#   1363 -rwxr-xr-x cops_104/extra_src/mail.chk
+#   4478 -rwx------ cops_104/extra_src/trust.pl
+#    696 -rwxr-xr-x cops_104/extra_src/bad_dir.pl
+#    532 -rw------- cops_104/extra_src/stop.make
+#   1423 -rw------- cops_104/extra_src/README
+#    935 -rwx------ cops_104/extra_src/uucp_quick.chk
+#  40163 -rw------- cops_104/extra_src/uucp_2.shar
+#    558 -rwx------ cops_104/extra_src/rhosts_sweeper
+#   4982 -rwxr-xr-x cops_104/extra_src/pass.mail
+#  17694 -rw------- cops_104/extra_src/uucp_1.shar
+#  12030 -rw------- cops_104/checkacct/Article
+#    769 -rw------- cops_104/checkacct/Intro
+#   1275 -rw------- cops_104/checkacct/Makefile
+#   1270 -rw------- cops_104/checkacct/README.FIRST
+#   1433 -rw------- cops_104/checkacct/bsd.m4
+#  13845 -rw------- cops_104/checkacct/ca.src
+#   4581 -rw------- cops_104/checkacct/chkacct.1l
+#    734 -rw------- cops_104/checkacct/dotwrite
+#    155 -rw------- cops_104/checkacct/effect.dotwrit
+#    428 -rw------- cops_104/checkacct/effect.owners
+#    125 -rw------- cops_104/checkacct/effect.read
+#    260 -rw------- cops_104/checkacct/effect.rhosts
+#    100 -rw------- cops_104/checkacct/effect.setuid
+#     71 -rw------- cops_104/checkacct/effect.write
+#    296 -rw------- cops_104/checkacct/owners
+#  13290 -rw------- cops_104/checkacct/prm.mm
+#    831 -rw------- cops_104/checkacct/prompt.help
+#    239 -rw------- cops_104/checkacct/readable
+#    561 -rw------- cops_104/checkacct/rhosts
+#    864 -rw------- cops_104/checkacct/rhosts.pl
+#   1315 -rw------- cops_104/checkacct/setuid
+#   1422 -rw------- cops_104/checkacct/sysV.m4
+#   4332 -rw------- cops_104/checkacct/write
+#   2756 -rw-r--r-- cops_104/carp/carp.1
+#   3863 -rwx------ cops_104/carp/carp
+#   5309 -rwx------ cops_104/carp/carp.anlz
+#   2995 -rwx------ cops_104/carp/carp.table
+#    905 -rwx------ cops_104/carp/carp.awk
+#   2334 -rw-r--r-- cops_104/carp/carp.anlz.1
+#   2433 -rwx------ cops_104/carp/carp2ps
+#    315 -rw-r--r-- cops_104/carp/carp2ps.1
+#   4199 -rw------- cops_104/carp/README
+#    526 -rw------- cops_104/carp/How2Change
+#    849 -rw------- cops_104/perl/shadow.sh
+#   9306 -rw------- cops_104/perl/README.kuang
+#   2606 -rwx------ cops_104/perl/cops.cf.orig
+#   2669 -rwx------ cops_104/perl/cops.cf
+#   1292 -rwx------ cops_104/perl/chk_strings
+#   3616 -rwx------ cops_104/perl/chk_strings.pl
+#   6537 -rwx------ cops_104/perl/cops
+#   2199 -rwx------ cops_104/perl/cron.chk
+#   2378 -rwx------ cops_104/perl/dev.chk
+#    463 -rwx------ cops_104/perl/fgrep.pl
+#    414 -rwx------ cops_104/perl/file_mode.pl
+#    398 -rwx------ cops_104/perl/file_owner.pl
+#   6582 -rwx------ cops_104/perl/ftp.chk
+#   1776 -rwx------ cops_104/perl/get-cf
+#    902 -rwx------ cops_104/perl/getopts.pl
+#   2963 -rwx------ cops_104/perl/glob.pl
+#   4981 -rwx------ cops_104/perl/group.chk
+#    475 -rwx------ cops_104/perl/hostname.pl
+#   1235 -rwx------ cops_104/perl/is_able.chk
+#   1678 -rwx------ cops_104/perl/is_able.lst
+#  15363 -rwx------ cops_104/perl/kuang
+#   2835 -rwx------ cops_104/perl/is_able.pl
+#   7253 -rw------- cops_104/perl/kuang.1
+#   3965 -rwx------ cops_104/perl/misc.chk
+#  10640 -rwx------ cops_104/perl/pass.cache.pl
+#   7203 -rwx------ cops_104/perl/pass.chk
+#   4784 -rwx------ cops_104/perl/passwd.chk
+#    677 -rwx------ cops_104/perl/pathconf.pl
+#    644 -rwx------ cops_104/perl/pathconf.sh
+#    898 -rwx------ cops_104/perl/rc.chk
+#   3358 -rwx------ cops_104/perl/reconfig.pl
+#   5623 -rwx------ cops_104/perl/root.chk
+#   2768 -rw------- cops_104/perl/rules.pl
+#    653 -rwx------ cops_104/perl/stat.pl
+#    229 -rwx------ cops_104/perl/suckline.pl
+#   4240 -rwx------ cops_104/perl/suid.chk
+#      0 -rwx------ cops_104/perl/suid.stop
+#   1870 -rwx------ cops_104/perl/user.chk
+#   1274 -rw------- cops_104/perl/yagrip.pl
+#  10121 -rw------- cops_104/perl/prl.patch
+#    672 -rw------- cops_104/perl/README.sgi
+#   8275 -rw------- cops_104/README.2.sh
+#  11991 -rw------- cops_104/README.2.pl
+#   2227 -rw------- cops_104/README.FIRST
+#    644 -rwxr-xr-x cops_104/suid.stop
+#
+if test -r _shar_seq_.tmp; then
+	echo 'Must unpack archives in sequence!'
+	echo Please unpack part `cat _shar_seq_.tmp` next
+	exit 1
+fi
+# ============= cops_104/MANIFEST ==============
+if test ! -d 'cops_104'; then
+    echo 'x - creating directory cops_104'
+    mkdir 'cops_104'
+fi
+if test -f 'cops_104/MANIFEST' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/MANIFEST (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/MANIFEST (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/MANIFEST' &&
+XFile Name
+X==================
+XMANIFEST		# this file
+XREADME.1		# README.{1,2,3} are various docs for the package
+XREADME.2.pl
+XREADME.2.sh
+XREADME.3
+XREADME.FIRST		# absolutely read this one first!
+XXTRA_CREDIT		# contributors, etc.
+Xbug.chk
+Xbug.chk.aix
+Xbug.chk.apollo
+Xbug.chk.dec
+Xbug.chk.next
+Xbug.chk.sgi
+Xbug.chk.sun
+Xbug.chk.svr4
+Xbug_cmp
+Xcheckacct
+Xchk_strings
+Xcops			# the main thingee, head honcho, etc.
+Xcops_filter
+Xcover_letter		# overview of changes, etc.
+Xcrc.chk
+Xcrc_list
+Xcron.chk
+Xdev.chk
+Xdisclaimer		# don't sue me
+Xftp.chk
+Xgroup.chk
+Xinit_kuang
+Xis_able.chk
+Xis_able.lst
+Xkuang
+Xkuang.pl.shar
+Xmakefile
+Xmisc.chk
+Xpass.words
+Xpass_diff.chk
+Xpasswd.chk
+Xpatchlevel.h
+Xplatform
+Xquick_start
+Xrc.chk
+Xreconfig
+Xres_diff
+Xroot.chk
+Xsuid.chk
+Xsuid.stop
+Xyp_pass.chk
+X
+Xcarp/How2Change
+Xcarp/README
+Xcarp/carp
+Xcarp/carp.1
+Xcarp/carp.anlz
+Xcarp/carp.anlz.1
+Xcarp/carp.awk
+Xcarp/carp.table
+Xcarp/carp2ps
+Xcarp/carp2ps.1
+X
+Xcheckacct/Article
+Xcheckacct/Intro
+Xcheckacct/Makefile
+Xcheckacct/README.FIRST
+Xcheckacct/bsd.m4
+Xcheckacct/ca.src
+Xcheckacct/chkacct.1l
+Xcheckacct/dotwrite
+Xcheckacct/effect.dotwrit
+Xcheckacct/effect.owners
+Xcheckacct/effect.read
+Xcheckacct/effect.rhosts
+Xcheckacct/effect.setuid
+Xcheckacct/effect.write
+Xcheckacct/owners
+Xcheckacct/prm.mm
+Xcheckacct/prompt.help
+Xcheckacct/readable
+Xcheckacct/rhosts
+Xcheckacct/rhosts.pl
+Xcheckacct/setuid
+Xcheckacct/sysV.m4
+Xcheckacct/write
+X
+Xdocs/COPS.report
+Xdocs/COPS.tex
+Xdocs/CRC.README
+Xdocs/KUANG.README
+Xdocs/SUID.README
+Xdocs/bug.chk.1
+Xdocs/cops
+Xdocs/cron.chk
+Xdocs/dev.chk
+Xdocs/ftp.chk
+Xdocs/group.chk
+Xdocs/home.chk
+Xdocs/is_able
+Xdocs/is_able.chk
+Xdocs/is_writable
+Xdocs/kuang.1
+Xdocs/kuang.man
+Xdocs/makefile
+Xdocs/misc.chk
+Xdocs/obligitory.album
+Xdocs/obligitory.joke
+Xdocs/pass.chk
+Xdocs/pass_diff.chk
+Xdocs/passwd.chk
+Xdocs/rc.chk
+Xdocs/readme.C2
+Xdocs/readme.apollo
+Xdocs/readme.filter
+Xdocs/readme.ibm
+Xdocs/readme.sequent
+Xdocs/readme.shadow
+Xdocs/readme.svr4
+Xdocs/readme.xenix
+Xdocs/readme.yp
+Xdocs/release.notes
+Xdocs/root.chk
+Xdocs/suid.man
+Xdocs/tilde
+Xdocs/user.chk
+Xdocs/warnings
+X
+Xextensions/THINGS_2_DO
+Xextensions/YAR
+Xextensions/crypto-stuff
+Xextensions/netstuff
+Xextensions/passwords
+Xextensions/questions
+Xextensions/uucp.hardening
+Xextensions/writing.suid
+X
+Xextra_src/README
+Xextra_src/bad_dir.pl
+Xextra_src/diff_last.sh
+Xextra_src/mail.chk
+Xextra_src/pass.mail
+Xextra_src/rhosts_sweeper
+Xextra_src/stop.make
+Xextra_src/trust.pl
+Xextra_src/uucp_1.shar
+Xextra_src/uucp_2.shar
+Xextra_src/uucp_quick.chk
+X
+Xperl/README.kuang
+Xperl/README.sgi
+Xperl/chk_strings
+Xperl/chk_strings.pl
+Xperl/cops
+Xperl/cops.cf
+Xperl/cops.cf.orig
+Xperl/cron.chk
+Xperl/dev.chk
+Xperl/fgrep.pl
+Xperl/file_mode.pl
+Xperl/file_owner.pl
+Xperl/ftp.chk
+Xperl/get-cf
+Xperl/getopts.pl
+Xperl/glob.pl
+Xperl/group.chk
+Xperl/hostname.pl
+Xperl/is_able.chk
+Xperl/is_able.lst
+Xperl/is_able.pl
+Xperl/kuang
+Xperl/kuang.1
+Xperl/misc.chk
+Xperl/pass.cache.pl
+Xperl/pass.chk
+Xperl/passwd.chk
+Xperl/pathconf.pl
+Xperl/pathconf.sh
+Xperl/prl.patch
+Xperl/rc.chk
+Xperl/reconfig.pl
+Xperl/root.chk
+Xperl/rules.pl
+Xperl/shadow.sh
+Xperl/stat.pl
+Xperl/suckline.pl
+Xperl/suid.chk
+Xperl/suid.stop
+Xperl/user.chk
+Xperl/yagrip.pl
+X
+Xsrc/addto.c
+Xsrc/clearfiles.c
+Xsrc/conf.h
+Xsrc/crack-fcrypt.c
+Xsrc/crack-lib.c
+Xsrc/crack.h
+Xsrc/crc.c
+Xsrc/crc_check.c
+Xsrc/filewriters.c
+Xsrc/home.chk.c
+Xsrc/is_able.c
+Xsrc/is_something.c
+Xsrc/members.c
+Xsrc/pass.c
+Xsrc/tilde.c
+Xsrc/user.chk.c
+SHAR_EOF
+chmod 0755 cops_104/MANIFEST ||
+echo 'restore of cops_104/MANIFEST failed'
+Wc_c="`wc -c < 'cops_104/MANIFEST'`"
+test 3228 -eq "$Wc_c" ||
+	echo 'cops_104/MANIFEST: original size 3228, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/bug.chk ==============
+if test -f 'cops_104/bug.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/bug.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/bug.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/bug.chk' &&
+X#!/bin/sh
+X#
+X#  bug.chk [arch]
+X#
+X#   This uses publically available (available via anon-ftp from 
+X# cert.sei.cmu.edu) data to determine if a security bug is present.  It
+X# checks the date of the program in question against the cert advisory
+X# date, and, if it is older than that, it flags it as a potential
+X# bug/vulnerability.
+X#
+X#  Right now, it either uses your argument as an archetecture type, or
+X# tries to figure out what kind of platform you're running
+X# on, and then looks at the bugs known for your host, in a file named
+X# "bug.chk.arch_type".
+X#
+XECHO=/bin/echo
+XTEST=/bin/test
+XGREP=/bin/grep
+XLS=/bin/ls
+XLS_OPTS="-slagL"
+XAWK=/bin/awk
+XSH=/bin/sh
+XDATE=/bin/date
+X
+X# the bug comparison module; current vs. bug date
+XBUG="$AWK -f ./bug_cmp"
+X
+X# Do you decend from 4.3 BSD?
+Xbsd43=yes
+Xplatform="./platform"
+X
+Xif $TEST ! -f ./bug_cmp ; then
+X	$ECHO "Must have bug compare module, ./bug_cmp, to run..."
+X	exit 2
+X	fi
+X
+X# what is the date?  We just need the month and year...
+X# Format: Fri Feb  7 14:16:55 PST 1992
+Xreal_date=`$DATE | $AWK '{print $2, $NF}'`
+X
+X# what kind of machine are we on?
+X#
+Xif $TEST "$1" != "" ; then
+X	host_type=$1
+Xelse
+X	host_type=`$platform`
+X	fi
+X
+X#
+X#  Do a few (old) generic checks, then go to machine specific drek...
+X#
+X
+X#
+X# Generic sendmail problem -- worm used this...
+Xsendmail="/usr/lib/sendmail"
+Xfix_date="1 Dec 1988"
+Xcert_advis="CA-88:01"
+Xif $TEST -f "$sendmail" ; then
+X	cur_date=`$LS $LS_OPTS $sendmail | $AWK '{print $8, $7, $9}'`
+X	$ECHO $sendmail $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X#
+X#   If running BSD based stuff, check login, fingerd, and ftpd,
+X# plus the more recent rdist hole.
+Xlogin="/bin/login"
+Xall_locations="/etc /bin /usr/bin /usr/etc /usr/ucb"
+Xif $TEST "$bsd43" -eq "yes" -a -f "$login" ; then
+X	fix_date="21 Dec 1988"
+X	cert_advis="CA-89:01"
+X	cur_date=`$LS $LS_OPTS $login | $AWK '{print $8, $7, $9}'`
+X	$ECHO $login $fix_date $cur_date $cert_advis $real_date | $BUG
+X	for location in $all_locations ; do
+X		# have to check for sun's naming schema also...
+X		if $TEST -f "$location/ftpd" ; then
+X			ftp="$location/ftpd"
+X		elif $TEST -f "$location/in.ftpd" ; then
+X			ftp="$location/in.ftpd"
+X			fi
+X		if $TEST -f "$location/fingerd" ; then
+X			finger="$location/fingerd"
+X		elif $TEST -f "$location/in.fingerd" ; then
+X			finger="$location/in.fingerd"
+X			fi
+X		if $TEST -f "$location/rdist" ; then
+X			rdist="$location/rdist"
+X			fi
+X		done
+X	cur_date=`$LS $LS_OPTS $ftp | $AWK '{print $8, $7, $9}'`
+X	$ECHO $ftp $fix_date $cur_date $cert_advis $real_date | $BUG
+X	cur_date=`$LS $LS_OPTS $finger | $AWK '{print $8, $7, $9}'`
+X	$ECHO $finger $fix_date $cur_date $cert_advis $real_date | $BUG
+X
+X	#
+X	# rdist is special
+X	#
+X	# These vendors are *not* affected: Amdahl, AT&T System V,
+X	# Data General DG/UX for AViiON Systems, Sequent Computer Systems
+X	# (note they will begin to ship rdist in February 1992, but
+X	# it will be the corrected version)
+X	#
+X	fix_date="22 Oct 1991"
+X	#   Sun put out another one after that date... you probably want
+X	# this date instead...
+X	fix_date="23 Oct 1991"
+X
+X	cert_advis="CA-91:20"
+X	cur_date=`$LS $LS_OPTS $rdist | $AWK '{print $8, $7, $9}'`
+X	$ECHO $rdist $fix_date $cur_date $cert_advis $real_date | $BUG
+X	fi
+X
+X# host specific ones....
+Xif $TEST -n "$host_type" ; then
+X	if $TEST -f "./bug.chk.$host_type" ; then
+X		$SH ./bug.chk.$host_type $real_date
+X	else
+X		# check to see if I'm a sun...
+X		$ECHO $host_type | $GREP "sun" > /dev/null
+X		if $TEST $? -eq "0" ; then
+X			./bug.chk.sun $real_date
+X		else
+X			:
+X			# $ECHO Bug list for $host_type not found...
+X			fi
+X		fi
+X	fi
+X
+X# finis
+SHAR_EOF
+chmod 0700 cops_104/bug.chk ||
+echo 'restore of cops_104/bug.chk failed'
+Wc_c="`wc -c < 'cops_104/bug.chk'`"
+test 3531 -eq "$Wc_c" ||
+	echo 'cops_104/bug.chk: original size 3531, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/README.1 ==============
+if test -f 'cops_104/README.1' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/README.1 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/README.1 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/README.1' &&
+X
+X   Welcome!  You now hold in your hands (terminal?) a collection of
+Xsecurity tools that are designed specifically to aid the typical UNIX
+Xsystems administrator, programmer, operator, or consultant in the
+Xoft-neglected area of computer security.
+X
+X   If you're the kind of boy/girl/rock who thinks "man pages are for
+Xweenies, let's type 'make' and run the damn thing," then you might read
+Xone file, "quickstart", for a lightning-fast intro.  Otherwise, reading
+Xthis now might prove enlightening.
+X
+X   The package, which will henceforth be referred to as COPS (Computer
+XOracle and Password System), can be broken down into three key parts.
+XThe first is the actual set of programs that attempt to automate
+Xsecurity checks that are often performed manually (or perhaps with self-
+Xwritten short shell scripts or programs) by a systems administrator.
+XThe second part is the documentation, which details how to set up,
+Xoperate, and interpret the results of the programs.  It also includes a
+Xpaper or two on COPS itself.  Third, COPS is an evolving beast, so it
+Xincludes a list of possible extensions that might appear in future
+Xreleases.  In addition, it includes some short papers on various topics
+Xin UNIX security and pointers to other works in UNIX security that could
+Xnot be included at this time, due to space or other restrictions.
+X
+X   This document contains four sections:
+X
+X      1) What is COPS?
+X      2) What is COPS _not_?
+X      3) Installation, Execution, and Continuing Use of COPS
+X      4) Disclaimer and End Notes
+X
+X
+X1) What is COPS?
+X-----------------
+X
+X   The heart of COPS is a collection of about a dozen (actually, a few
+Xmore, but a dozen sounds so good) programs that each attempt to tackle
+Xa different problem area of UNIX security.  Here is what the programs
+Xcurrently check, more or less (they might check more, but never less,
+Xactually):
+X
+Xo  file, directory, and device permissions/modes.
+X
+Xo  poor passwords.
+X
+Xo  content, format, and security of password and group files.
+X
+Xo  the programs and files run in /etc/rc* and cron(tab) files.
+X
+Xo  existance of root-SUID files, their writeability, and whether or not
+X   they are shell scripts.
+X
+Xo  a CRC check against important binaries or key files to report any
+X   changes therein. 
+X
+Xo  writability of users home directories and startup files (.profile,
+X   .cshrc, etc.) 
+X
+Xo  anonymous ftp setup.
+X
+Xo  unrestricted tftp, decode alias in sendmail, SUID uudecode problems, 
+X   hidden shells inside inetd.conf, rexd running in inetd.conf.
+X
+Xo  miscellaneous root checks -- current directory in the search path,
+X   a "+" in /etc/host.equiv, unrestricted NFS mounts, ensuring root is 
+X   in /etc/ftpusers, etc.
+X
+Xo  dates of CERT advisories vs. key files.  This checks the dates that
+X   various bugs and security holes were reported by CERT against the
+X   actual date on the file in question.  A positive result doesn't
+X   always mean that a bug was found, but it is a good indication that
+X   you should look at the advisory and file for further clues.  A
+X   negative result, obviously, does not mean that your software has no
+X   holes, merely that it has been modified in SOME way (perhaps merely
+X   "touch"'ed) since the advisory was sent out.
+X
+Xo  the Kuang expert system.  This takes a set of rules and tries to
+X   determine if your system can be compromised (for a more complete list 
+X   of all of the checks, look at the file "release.notes" or
+X   "cops.report"; for more on Kuang, look at at "kuang.man".)
+X
+X   All of the programs merely warn the user of a potential problem --
+XCOPS DOES NOT ATTEMPT TO CORRECT OR EXPLOIT ANY OF THE POTENTIAL
+XPROBLEMS IT FINDS!  COPS either mails or creates a file (user
+Xselectable) of any of the problems it finds while running on your
+Xsystem.  Because COPS does not correct potential hazards it finds, it
+Xdoes _not_ have to be run by a privileged account (i.e. root or
+Xwhomever.)  The only security check that should be run by root to get
+Xmaximum results is the SUID checker: although it can be run as an
+Xunprivileged user, it should be run as root so that it can find all the
+XSUID files in a system.  In addition, if key binaries are not
+Xworld-readable, only executable, the CRC checking program ("crc.chk")
+Xneeds to be run as a privileged user to read the files in question to
+Xget the result.)  Also note that COPS cannot used to probe a host
+Xremotely; all the tests and checks made require a shell that is on the
+Xhost being tested.
+X
+X   The programs that make up COPS were originally written primarily in
+XBourne shell (using awk, sed, grep, etc.) for (hopefully) maximum
+Xportability, with a few written in C for speed (most notably parts of
+Xthe Kuang expert system and the implementation of fast user home
+Xdirectory searching), but the entire system should run on most BSD and
+XSystem V machines with a minimum of tweaking.  In addition, a perl
+Xversion is included that, while perhaps not as portable as the shell/C
+Xversion, has some advantages.
+X
+X   COPS includes various support programs as well.  The primary one is
+XCARP (COPS Analysis and Report Program).  CARP is a results interpreter
+Xthat is designed to analyze and generate a summary on various COPS reports
+Xfrom a complete network or set of hosts.
+X
+X2) What is COPS _not_?
+X-----------------------
+X
+X   COPS mostly provides a method of checking for common procedural
+Xerrors.  It is not meant to be used as a replacement for common sense or
+Xuser/operator/administrative alertness!  Think of it as an aid, a first
+Xline of defense, not as an impenetrable shield against security woes.
+XAn experienced wrong-doer could easily circumvent *any* protection that
+XCOPS can give.  However, COPS *can* aid a system in protecting its users
+Xfrom (their own?) ignorance, carelessness, and the occasional malcontent
+Xuser.
+X
+X   Once again, COPS does not correct any errors found.  There are
+Xseveral reasons for this: first and foremost, computer security is a
+Xslippery beast.  What is a major breach in security at one site may be a
+Xstandard policy of openness at another site.  Additionally, in order to
+Xcorrect all problems it finds, it would have to be run as a privileged
+Xuser; I'm not going to go into the myriad problems of running SUID shell
+Xscripts (see the bibliography at the end of the technical report
+X"cops.report" for pointer to a good paper on this subject by Matt
+XBishop; look at the included paper "SU" for pointers on how to write a
+XSUID program) -- suffice to say it's a bad idea that can give an
+Xattacker privileges equal to whatever account the shell is SUID to.
+X
+X3) Installation, Execution, and Continuing Use of COPS
+X-------------------------------------------------------
+X
+X   There are two versions of COPS that can be run.  The original ("COPS
+Xclassic"?) needs nothing more than a C compiler and the standard shell
+Xtools that any (or most any) UNIX system should have: awk, sed, grep,
+Xetc.  For information on how to configure and run this version, look at
+Xthe file "README.2.sh".  The most important thing to do is to run the
+Xshell program "reconfig" if you have a system V or a non-standard
+XBerkeley UNIX system -- the paths to the programs that COPS uses are
+Xhard-coded, and this will reconfigure the paths so that COPS can find
+Xthese programs.
+X
+X   If you have installed perl on your system (I think it works with perl
+Xversions > 3.18) and would like to try the perl version, look at the
+Xfile "README.2.pl" for details on how to use that.  There are several
+Xadvantages and disadvantages to using the perl version, so if you have
+Xperl, I would advise trying both packages to see which one better suits
+Xyour environment.
+X
+X   If you need help to interpret the results of COPS, look in the file
+X"warnings", in the "doc" directory.  All of the individual programs in
+Xthe COPS package have a man page there as well.
+X
+X   For continuing use, multiple architecture sites, or other advanced
+XCOPS topics, check out "README.3".
+X
+X  There are additional "readme" files for the following topics: Apollo
+Xand Xenix machines, C2 and other shadow passord files, NIS/Yellow Pages,
+Xand the COPS filter.  Look at the corresponding readme (note lower case)
+Xfile for these in the "docs" directory -- e.g.  "docs/readme.apollo."
+X
+X4) Disclaimer and End Notes
+X----------------------------
+X
+X   COPS is meant to be a tool to aid in the tightening of security, not
+Xas a weapon to be used by an enemy to find security flaws in a system.
+XIt may be argued that allowing anyone to have access to such a tool may
+Xbe dangerous, but hopefully the overall benefit for systems that use
+Xthis package will outweigh any negative impact.  To me it is akin to a
+Xlaw enforcement problem -- although telling the public how to break into
+Xa house may foster a slight rise in break-in attempts, the overall rise
+Xin public awareness of what to defend themselves against would actually
+Xresult in a drop in break-ins.  The crackers with black hats already
+Xknow how to crush system defenses and have similar tools, I'm sure.
+XIt's time we fought back.
+X
+X   COPS is not the final answer to anyone's security woes.  You can use
+Xthe system as long as you realize that COPS has no warranty, implied or
+Xotherwise, and that any problems that you may have with it are not my or
+Xany of the other authors' fault.  I will certainly attempt to help you
+Xsolve them, if I am able.  If you have ideas for additional programs or
+Xa better implementation of any of the programs here, I would be very
+Xinterested in seeing them.  COPS was the work of a LOT of people, both
+Xin writing code and in the testing phase (thanks, beta testers!).  For a 
+Xcomplete list of contributors, look at the file "XTRA_CREDIT".
+X
+X   So, good luck, and I hope you find COPS useful as we plunge into UNIX
+Xof the 1990's.
+X
+X   dan farmer
+X   January 31, 1989
+X   (Now January 31, 1990)
+X   (Now November 17, 1991... how time goes on...)
+X
+X# include "./disclaimer"
+X
+Xp.s.  Just for snix, here are some of the machine/OS's I know this
+Xsucker works on; far and away the most common problem was getting that
+Xstupid password cracking program to compile, followed by systems without
+Xthe -ms package to nroff.  Some minor problems with config files -- I
+X*think* these are all ok:
+X
+XDECstation 2100, 3100, 5000, Ultrix 2.x, 3.x, 4.x (Ultrix is braindead.)
+X
+XSun 3's, 4's  (incl. Solbourne and clones) -- 3.x, 4.x
+XGould 9080 Powernode, hacked up Gould OS (whatever it is)
+Xsequent S-87 symmetry, dynix V3.x (both att & bsd universes; att required
+X                       "BRAINDEADFLAGS = -lcrypt" to be uncommented.
+XETA-10P, Sys V R3 based
+XConvex boxes, all types, OS's (up to 9.x, the most recent)
+XApollo dn3000 & dsp90, Domain SR 9.7, 10.x (see "readme.apollo")
+XVax 11/780, 4.x BSD (Mt. Xinu, tahoe and stock)
+XVaxstation, MicroVax, Vax 6320 & 8800, Ultrix 2.x, 3.x, 4.x
+XHP900/370, HP-UX 6.x, 7.x
+XCray 2 & Y-MP, UNICOS 5.x, 6.x
+XAmdahl 5880, UTS 580-1.2.3
+XSGI 2500's, IRIX GL 3.6
+XSGI 4D's, IRIX System V Release 3.x
+X'286 & '386 Boxes, running Xenix (see "readme.xenix")
+XAT&T 3B2 & 3B1, SysVR[3-4]
+XCADMUS box (R3000 & 68020 cpu), SysVR3.2
+XPyramid, running 4.4c and 5.1a
+X
+XApple Mac IIci, running AUX 2.x.  The "test -z" seemed broken on this,
+Xbut I only had a brief chance to test it out, but kuang didn't like it
+Xas a result.  I'll get a working version soon; everything seemed ok
+X(change the /etc/servers line in "misc.chk").
+X
+XNeXT, 1.x 
+X(password stuff is different on this machine, though; cracking is
+Xstrange.  Diffs anyone?  Also, /bin/test vs. shell builtin "test" is
+X*weird*.)
+X
+XMultimax 320, 12 Processors, 64Mb Memory, Encore Mach Version B1.0c (Beta)
+X(no crypt(3) on this machine.  Sigh.)
+X
+XIBM rs6000, AIX 3.1 (DEADBEEF about sums it up.)
+X
+X  I've lost track of the others.  If you have some bizzare piece of
+Xhardware that you've run it on, I'd like to hear about it...
+SHAR_EOF
+chmod 0600 cops_104/README.1 ||
+echo 'restore of cops_104/README.1 failed'
+Wc_c="`wc -c < 'cops_104/README.1'`"
+test 11719 -eq "$Wc_c" ||
+	echo 'cops_104/README.1: original size 11719, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/README.3 ==============
+if test -f 'cops_104/README.3' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/README.3 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/README.3 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/README.3' &&
+X
+XContinued Use and Installing COPS
+X----------------------------------
+X
+X   Once you are satisfied that COPS indeed does something useful
+X(hopefully this will occur :-)), a good way to use it is to run it on at
+Xleast a semi-regular basis.  Even if it doesn't find any problems
+Ximmediately, the problems and holes it detects are of the sort that can
+Xpop up at any given time.  One way of running COPS might be to run it as
+Xan "at" job or by cron (if you run suid.chk via cron, use the "-s" flag
+Xto tell cron where the rest of the COPS programs are, or it will chmod
+X"/" to mode 700, among other things).
+X
+X   I strongly advise that whatever directory COPS is placed in be
+Xreadable, writable, and executable only by the owner (typing "chmod 700
+X/usr/foo/bar" or whatever the name is will do this) of the directory.
+XThis is to prevent prying eyes from seeing any security problems your
+Xsite may have.  Even if you don't think of them as important, someone
+Xelse might come around and change your mind.  Since COPS is fairly
+Xconfigurable, an intruder could easily change the paths and files that
+XCOPS checks for, hence making it fairly worthless.  Again, this comes
+Xback to the point that COPS is only a tool -- don't put down your
+Xdefensive shields merely because COPS says "all clear".  If this sounds
+Xparanoid, it is!  Security people are traditionally paranoid, for a
+Xreason...  In any case, it is probably not a good idea to advertise any
+X(even) potential weaknesses.
+X
+X   If you use the shell/C version, typing "make install" will create (if
+Xnecessary) a subdirectory with the name you put in $INSTALL_DIR (found
+Xon line 7 of "makefile"); if you run a network with multiple
+Xarchitectures, you can have several executable versions of COPS in the
+Xsame NFS-mounted directory structure.
+X
+X  You can run COPS with "cops -a archtype", and it will cd into the
+Xarchtype directory, use the binaries or config files in that directory
+X(placed there by a "make install"), and put any results in a
+Xsubdirectory of the archtype directory with the appropriate host name.
+XYou can set the secure directory (the directory that COPS finds all of
+Xthe programs in and places the results in) by either invoking COPS with
+Xthe -s flag (both shell and perl versions), or by setting the $SECURE
+Xvariable in the "cops" shell script (line 93.)
+X
+X   For example, assume you have the following setup, and run COPS with:
+X
+Xmachine architecture    hostname    If run COPS with:
+X=====================   ========    ==================
+Xcray                    ribcage     cops         -s /usr/secure
+Xvax                     bar         cops -a vax  -s /usr/secure
+Xvax                     foo         cops -a vax  -s /usr/secure
+Xsun                     earth       cops -a sun3 -s /usr/secure
+Xsun                     mars        cops -a sun3 -s /usr/secure
+Xsun                     venus       cops -a sun4 -s /usr/secure
+Xmips                    hades       cops         -s /usr/secure
+X
+X  The resulting directory/reporting structure would be (all reports
+Xwould be placed in a file named "year_month_day"):
+X
+X/usr/secure/cops/ribcage
+X/usr/secure/cops/vax/bar
+X/usr/secure/cops/vax/foo
+X/usr/secure/cops/sun3/earth
+X/usr/secure/cops/sun3/mars
+X/usr/secure/cops/sun4/venus
+X/usr/secure/cops/hades
+X
+X  Sometimes you will get the same report over and over again, everytime
+Xyou run COPS; for instance, with Ultrix 3.x, /dev/kmem is world
+Xreadable.  This is a security hole, but many utilities in Ultrix need
+Xthis to function.  If you wish to only see reports that are _different_
+Xthan the old reports, you first need to have an older report saved in a
+Xfile (in $SECURE/hostname, or wherever you usually save the reports).
+XIn the shell version, you can either do:
+X
+X   cops -m user
+X
+Xor:
+X
+X   set "MMAIL=YES" (line 55)
+X   set "ONLY_DIFF=YES" (line 66)
+X
+Xin "cops".  In the perl version, do:
+X
+X   set "$ONLY_DIFF=1" (line 11 of the config file)
+X
+X  Every time COPS is run after that, it will compare the report it
+Xgenerated for the current check with the old report; if it detects any
+Xdifferences, it will mail you a report.  If not, it will simply discard
+Xit.  This can be a real boon for a site with a lot of machines running
+XCOPS every night.
+X
+X  Alternately, you can use a "filter_file" to filter out repetative
+Xmessages.  There is an example filter file, "cops_filter", that is
+Xincluded in the package.  It is used by simply typing "cops -f cops_filter",
+Xand can be both very useful and very dangerous.  Useful for obvious
+Xreasons, dangerous because it can cause valid warning messages to be
+Xthrown away before you get to see them.
+X
+X   There are a couple of further options you may wish to explore.  First
+Xof all, since so many breakins are because of poor password selection by
+Xusers, it would be a wise idea to add options to your password checking
+Xprogram (line 200 in "cops", or line 72 in "cops.cf" for perl users).
+XYou may wish to try some words from a dictionary; you may use either
+Xyour system dictionary (usually found in /usr/dict/words), or you may
+Xuse the same dictionary that the internet worm found so lucrative when
+Xhitting all those thousands of hosts; that dictionary is in the file
+X"pass.words".  For example, the way to include the worm dictionary (e.g.
+Xthe dictionary r.t.m. used in his Internet Worm) is:
+X
+X  pass.chk -w pass.words
+X
+X  Also, try some of the options in the password program, such as "-b",
+X"-g", "-s", and "-c", which add checks for backward, gecos, single
+Xletter & number, and upper and lower case guesses, respectively.  Of
+Xcourse, each option will increase the time needed to crack the
+Xpasswords, so experiment!  See what is reasonable for your hardware
+Xcapabilities and resources.
+X
+X  I've included the fast crypt functions that are used in Crack; if you
+Xwant to try those (highly recommended!), uncomment lines 96-97 in the
+Xmakefile, and comment out the normal compile line (95).  Better yet,
+Xget the full Crack package from uunet.uu.net or somewhere else.  It
+Xdoes a great job at cracking passwords.  I might try to integrate the
+Xwhole package at some later time, but it might just be wasted work;
+Xthey work well separately.
+X
+X   By using the "pass_diff.chk" program, you can check only accounts
+Xthat have _changed_ their password since the last time you've checked --
+Xthis can save enormous amounts of time with large systems.  This way,
+Xyou can check your users thoroughly once, then only check them when
+Xtheir passwords change (possibly to something less secure).  Be careful,
+Xthough, if you use this and then later expand your checks and/or the
+Xdictionary you use to search for passwords, since the earlier accounts
+Xthat were already checked with an inferior method will not be checked
+Xagain until they change their password.  See the file "passwords" in the
+X"extensions" directory for a replacement "passwd" program that can
+Xdisallow poor passwords to begin with.
+X
+X   The file "is_able.lst" contains a list of files that are to be
+Xchecked for world readability and/or writability.  You should look at
+Xthis file and add or delete any files you feel are important to your
+Xsystem.
+X
+X   After running COPS, if any warnings are given that compromise any
+Xindividual user's account (such as a world writable .profile or home
+Xdirectory, a guessed password, etc.), and the problem is not corrected
+Ximmediately (or you are not sure whether or not it is worth hassling the
+Xuser to change it), try this:
+X
+X   If you are using the shell version, edit the file "init_kuang", and
+Xadd the compromised user(s) uids and groups in their respective target
+Xlines (below lines 20 and 26, respectively).  If you are running the
+Xperl version, create a file with the compromised users listed in it (see
+Xkuang.1 in the perl distribution).  Now run kuang again to see if the
+Xusers can compromise the entire system.  You may change your mind about
+Xnot thinking they are a problem!  In addition, kuang does not have to
+Xhave "root" as a target (the last line).  Try putting in system
+Xadministrators or other powerful figures to see if they are in danger as
+Xwell.  If you have "perl" installed on your system, try the perl version
+Xof kuang -- "kuang.pl" (you'll have to unpack the shar file this is
+Xinside -- "kuang.pl.shar", and you may have to edit the first line of the
+Xfile "kuang.pl", to reflect where the location that perl is on your system),
+Xbecause it is a more powerful, faster, and more versitile version.
+X
+X  That's it!  Congratulations for reading this far :-)  Browse around
+Xthe COPS directories for more goodies; the "extra_src", "docs", and
+X"extensions" directories all have interesting things in them.  Don't
+Xforget to try CARP to analyze your network's data (*ONLY USABLE WITH
+X"cops -v" RESULT FILES*) , and let me know how it goes.  Finally, good
+Xluck.  Send me ideas, flames, kudos, whatever.
+X
+X -- dan
+SHAR_EOF
+chmod 0600 cops_104/README.3 ||
+echo 'restore of cops_104/README.3 failed'
+Wc_c="`wc -c < 'cops_104/README.3'`"
+test 8771 -eq "$Wc_c" ||
+	echo 'cops_104/README.3: original size 8771, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/passwd.chk ==============
+if test -f 'cops_104/passwd.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/passwd.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/passwd.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/passwd.chk' &&
+X:
+X#
+X#   passswd.chk
+X#
+X#  Check passsword file -- /etc/passswd -- for incorrect number of fields,
+X# duplicate uid's, non-alphanumeric uids, and non-numeric group id's.
+X#
+X# Awk part from _The AWK Programming Language_, page 78
+X#
+X#  Mechanism:  Passwd.check uses awk to ensure that each line of the file
+X# has 7 fields, as well as examining the file for any duplicate users
+X# by using "sort -u".  It also checks to make sure that the password
+X# field (the second one) is either a "*", meaning the group has no password,
+X# or a non-null field (which would mean that the account has a null
+X# password.)  It then checks to ensure that all uids are alphanumeric,
+X# and that all user id numbers are indeed numeric.  For yellow pages
+X# passwords, it does the same checking, but in order to get a listing of
+X# all members of the password file, it does a "ypcat passwd > ./$$" and
+X# uses that temporary file for a passfile.  It removes the tmp file after
+X# using it, of course.
+X#   The /etc/passwd file has a very specific format, making the task
+X# fairly simple.  Normally it has lines with 7 fields, each field
+X# separated by a colon (:).  The first field is the user id, the second
+X# field is the encrypted password (an asterix (*) means the group has no
+X# password, otherwise the first two characters are the salt), the third
+X# field is the user id number, the fourth field is the group id number,
+X# the fifth field is the GECOS field (basically holds miscellaneous
+X# information, varying from site to site), the sixth field is the home
+X# directory of the user, and lastly the seventh field is the login shell
+X# of the user.  No blank lines should be present.  Uid's will be flagged
+X# if over 8 chars, unless the $OVER_8 variable (line 50) is set to "YES".
+X#   If a line begins with a plus sign (+), it is a yellow pages entry.
+X# See passwd(5) for more information, if this applies to your site.
+X#
+XAWK=/bin/awk
+XTEST=/bin/test
+XECHO=/bin/echo
+XSORT=/usr/bin/sort
+XUNIQ=/usr/bin/uniq
+XRM=/bin/rm
+XYPCAT=/usr/bin/ypcat
+X
+X#   Used for Sun C2 security group file.  FALSE (default) will flag
+X# valid C2 passwd syntax as an error, TRUE attempts to validate it.
+X# Thanks to Pete Troxell for pointing this out.
+XC2=FALSE
+X
+X#  Some systems allow long uids; set this to "YES", if so (thanks
+X# to Pete Shipley (lot of petes around here, eh?)):
+XOVER_8=NO
+X
+X#
+X# Important files:
+Xetc_passwd=/etc/passwd
+Xyp_passwd=./$$
+X
+Xyp=false
+X
+X# Testing $etc_passwd for potential problems....
+Xif $TEST -s $YPCAT ; then
+X	# thanks to brent chapman!
+X        $YPCAT passwd | sort -t: +2n -3 +0 -1 > $yp_passwd
+X	if $TEST $? -eq 0 ; then
+X		yp=true
+X		fi
+X	fi
+X
+Xresult=`$AWK -F: '{print $1}' $etc_passwd | $SORT |$UNIQ -d`
+Xif $TEST "$result" ; then
+X	$ECHO "Warning!  Duplicate uid(s) found in $etc_passwd:"
+X	$ECHO $result
+X	fi
+X
+X
+X#   First line is for a yellow pages entry in the password file.
+X# It really should check for correct yellow pages syntax....
+X$AWK 'BEGIN {FS = ":" }
+X    {
+X    if (substr($1,1,1) != "+") {
+X        if ($0 ~ /^[ 	]*$/) {
+X            printf("Warning!  Password file, line %d, is blank\n", NR)
+X            }
+X        else {
+X            if (NF != 7) {
+X                printf("Warning!  Password file, line %d, does not have 7 fields: \n\t%s\n", NR, $0)
+X                }
+X            if ($1 !~ /[A-Za-z0-9]/) {
+X                printf("Warning!  Password file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0)
+X                }
+X            if (length($1) > 8 && "'$OVER_8'" != "YES") {
+X                printf("Warning!  Password file, line %d, uid > 8 chars\n\t%s\n", NR, $0)
+X                }
+X            if ($2 == "") {
+X                printf("Warning!  Password file, line %d, no password: \n\t%s\n", NR, $0)
+X                }
+X            if ("'$C2'" == "TRUE" && $2 ~ /^##/ && "##"$1 != $2) {
+X                printf("Warning!  Password file, line %d, invalid password field for C2: \n\t%s\n", NR, $0)
+X                }
+X            if ($3 !~ /^[0-9]/) {
+X                if ($3 < 0) {
+X                    printf("Warning!  Password file, line %d, negative user id: \n\t%s\n", NR, $0)
+X                    }
+X                else {
+X                    printf("Warning!  Password file, line %d, nonnumeric user id: \n\t%s\n", NR, $0)
+X                    }
+X                }
+X            if ($3 == "0" && $1 != "root") {
+X                printf("Warning!  Password file, line %d, user %s has uid = 0 and is not root\n\t%s\n", NR, $1, $0)
+X                }
+X            if ($4 !~ /[0-9]/) {
+X                printf("Warning!  Password file, line %d, nonnumeric group id: \n\t%s\n", NR, $0)
+X                }
+X            if ($6 !~ /^\//) {
+X                printf("Warning!  Password file, line %d, invalid login directory: \n\t%s\n", NR, $0)
+X                }
+X            }
+X        }
+X    }' $etc_passwd
+X
+X#
+X# Test yellow pages passwords as well
+Xif $TEST "$yp" = "true"
+X	then
+X	yresult=`$AWK -F: '{print $1}' $yp_passwd | $SORT |$UNIQ -d`
+X	if $TEST "$yresult"
+X		then
+X		$ECHO "Warning!  Duplicate uid(s) found in yellow page passwords:"
+X		$ECHO $yresult
+X	fi
+X
+X	$AWK 'BEGIN {FS = ":" }
+X    	    {
+X	    if ($0 ~ /^[ 	]*$/) {
+X	        printf("Warning!  YPassword file, line %d, is blank\n", NR)
+X	        }
+X	    else {
+X	        if (NF != 7) {
+X	            printf("Warning!  YPassword file, line %d, does not have 7 fields: \n\t%s\n", NR, $0)
+X	            }
+X	        if ($1 !~ /[A-Za-z0-9]/) {
+X	            printf("Warning!  YPassword file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0)
+X	            }
+X	        if (length($1) > 8 && "'$OVER_8'" != "YES") {
+X	            printf("Warning!  YPassword file, line %d, uid > 8 chars\n\t%s\n", NR, $0)
+X	            }
+X	        if ($2 == "") {
+X	            printf("Warning!  YPassword file, line %d, no password: \n\t%s\n", NR, $0)
+X	            }
+X	        if ($3 !~ /^[0-9]/) {
+X	            if ($3 < 0) {
+X	                printf("Warning!  YPassword file, line %d, negative user id: \n\t%s\n", NR, $0)
+X	            }
+X	            else {
+X	                printf("Warning!  YPassword file, line %d, nonnumeric user id: \n\t%s\n", NR, $0)
+X	                }
+X	            }
+X	        if ($3 == "0" && $1 != "root") {
+X	            printf("Warning!  YPassword file, line %d, user %s has uid = 0 and is not root\n\t%s\n", NR, $1, $0)
+X	            }
+X	        if ($4 !~ /[0-9]/) {
+X	            printf("Warning!  YPassword file, line %d, nonnumeric group id: \n\t%s\n", NR, $0)
+X	            }
+X	        if ($6 !~ /^\//) {
+X	            printf("Warning!  YPassword file, line %d, invalid login directory: \n\t%s\n", NR, $0)
+X	            }
+X	        }
+X    	    }' $yp_passwd
+X	fi
+X
+X$RM -f $yp_passwd
+X
+X# end
+SHAR_EOF
+chmod 0755 cops_104/passwd.chk ||
+echo 'restore of cops_104/passwd.chk failed'
+Wc_c="`wc -c < 'cops_104/passwd.chk'`"
+test 6582 -eq "$Wc_c" ||
+	echo 'cops_104/passwd.chk: original size 6582, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/XTRA_CREDIT ==============
+if test -f 'cops_104/XTRA_CREDIT' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/XTRA_CREDIT (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/XTRA_CREDIT (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/XTRA_CREDIT' &&
+X
+X  Code credits are where code credits are due.  If I miss anyone, please
+Xforgive (and notify) me!
+X
+XGene Spafford -- overall design help and good guy.
+X
+XRobert Baldwin and Steve Romig -- the original kuang package/design, and
+Xthe perl rewrite, respectively.
+X
+XCraig Leres, Jef Poskanzer, Seth Alford, Roger Southwick, Steve Dum,
+Xand Rick Lindsley all get credit for the password guessing program.
+X
+XPrentiss Riddle -- the suid checker and lots of new bits and suggestions
+Xto go into the rest of the cops package.
+X
+XMark Mendel and Jon Zeef -- the crc generator.
+X
+XMuffy Barkocy -- cleaned up and helped rewrite lots of my ill designed
+Xdocumentation.
+X
+XAlec Muffett -- letting me use the fcrypt stuff he wrote (get his full
+XCrack package, folks!)
+X
+XShabbir Safdar and Phil Moyer -- writing chkacct and the help/text files
+Xfor the same, respectively.
+X
+XChip Rosenthal and Bill Davidsen for all the uucp stuff, which I've
+Xstuffed temporarily in the extra_src directory, until I can integrate
+Xit with the rest of the stuff.
+X
+XThe GNU folks, for making the ultimate interactive shell (bash) --
+Xprobably saves me a good 10% of keystrokes over other shells, as
+Xwell as saving (and probably wasting, since I could read more) lots of
+Xtime by making a more efficient news reader.
+X
+X  Round IV (this release) -- lots of people again -- the perl crew, of
+Xcourse; Ethan Lish with the Xenix stuff.  Wolfgang Denk and Jerry Carlin
+Xdid massive work to wipe out more SysV problems.  Bud Bowman with the
+Xpass.mail thingee, Ole H. Nielsen with the C2 stuff, Wietse Venema for
+Xhelp debugging the bug stuff, the uucp_quick.chk thing, and other useful
+Xcomments, lots of others, etc.
+X
+X  In round III (second patch), Muffy Barkocy and Michelle Crabb both gave me
+Xgood ideas to use.  Pete Shipley fixed up some code (is_able) and generally
+Xhelped my motivation to get things out the door.  Gandalph suggested ftp.chk,
+XJay Batson made me fix root.chk, Shelley Shostak fixed and added features
+Xto pass.chk, and Brian Moore gave me the shell script checking --> SUID
+Xconcept.  Jim W Lai pointed out some other pass.chk things (what a buggy
+Xprogram :-)).  Rob Kolstad told me about some bugs in the ftp checker, and
+Xgently pointed out that some stuff wasn't using the YP passwd files when
+Xthey should be, and Jim Ellis helped get this to work on a Cray.  There
+Xare probably more that I've forgotten (sorry, if so!) Thanks, people...
+X
+X  In round II (the first patch), Mark Plumbly fixed rc.chk so it would
+Xwork like I said it would, as well as pointing out a few problems with
+Xthe password guesser.
+X
+X  And of course lots of credit goes to my great Beta-release sweatshop team;
+Xespecially Adri Verhoef for tightening up lots of my crummy code (cops,
+Xgroup.chk, root.chk, is_writable, dev.chk, dir.chk & file.chk among others),
+XSteve Romig for good ideas _and_ letting me use a system V machine to test
+Xon (how many people do you know that would let you test a security
+Xsystem on their system with no strings attached!) Jason Levitt, Jim
+XKimble, Jim Rowan, Stefan Vorkoetter, Judy Scheltema, Pete Troxell (all
+Xthe Sun C2 stuff....), Dennis Conley, and of course John Sechrest.
+XTony Petrost pointed out some of my incorrect assumptions and helped
+Xfix cron.chk.  Kudos also to Bruce Spence for giving me some good
+Ximplementation ideas at LISA III.
+X
+X  If strings is not available to you, a version is available on uunet;
+Xalso a nifty install program written by Kevin Braunsdorf that can be used
+Xas a super directory/file mode checker/security device might be available
+Xsoon in comp.unix.sources (these programs large sizes preculudes their
+Xinclusion in COPS, but I recommend looking into them.)  Both can be gotten
+Xvia anonymous ftp.  Strings is in comp.unix.sources directory, install,
+Xshould be in j.cc.purdue.edu, methinks.
+X  Everything else not explicitely mentioned in the COPS.report.ms paper
+Xor here was written by me.  Not mentioned execpt in the source code are
+Xsome small changes made by myself to make everything fit in as a cohesive
+Xwhole; I tried to make comments in the source code if I changed it (never
+Xto drastic in any case.)
+X
+X  For a good story on the subject, you might want to read _The Cuckoo's
+XEgg_, by Clifford Stoll.  This is a true tale of a sysadmin's fight 
+Xagainst beaurocracy and a system cracker.  Good stuff.
+X
+X  For a a good read on Unix security in general, look at Dave Curry's now
+Xinfamous "white paper", via anon-ftp, SPAM.ITSTD.SRI.COM (128.18.4.3) as
+Xthe file "pub/security-doc.tar.Z.  But don't believe him when he says Yellow
+XPages is secure.  It's not.  Not much is, these days... good luck, tho!
+X
+X -- dan
+SHAR_EOF
+chmod 0755 cops_104/XTRA_CREDIT ||
+echo 'restore of cops_104/XTRA_CREDIT failed'
+Wc_c="`wc -c < 'cops_104/XTRA_CREDIT'`"
+test 4602 -eq "$Wc_c" ||
+	echo 'cops_104/XTRA_CREDIT: original size 4602, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/chk_strings ==============
+if test -f 'cops_104/chk_strings' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/chk_strings (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/chk_strings (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/chk_strings' &&
+X:
+X#
+X#  Usage: chk_strings filename
+X#
+X#  This will check pathnames inside executable files for writability,
+X# using the "strings" command and egrep.
+X#
+X#  I have identified three basic types of strings containing paths to files:
+X# 1)
+X#    /path1/path2/file			/* standard */
+X# 2) 
+X#    '/path1/path2/file'		/* standard, in single quotes */
+X# 3)
+X#    :/path1/file1:/path2/file2		/* a path for searching */
+X#
+X#  For the first two, I simply test the writability; for the last, I
+X# parse it into seperate paths and check each one in turn.
+X#
+XAWK=/bin/awk
+XSED=/bin/sed
+XEGREP=/usr/bin/egrep
+XTEST=/bin/test
+XECHO=/bin/echo
+XSORT=/usr/bin/sort
+XSTRINGS=/usr/ucb/strings
+X
+Xif test ! -s $STRINGS
+X	then
+X	exit 0
+Xfi
+X
+Xif test $# -eq 0
+X	then
+X	$ECHO "Usage: $0 file"
+X	exit 2
+Xfi
+X
+Xwhile test 0 -ne $#
+X	do
+X	# $ECHO Checking $1...
+X	if ./is_writable $1 ; then
+X		$ECHO "Warning!  Root executed File $1 is _World_ writable!"
+X		fi
+X
+X	# get the first two types:
+X
+X#   /path1/path2/file			/* standard */
+X#   '/path1/path2/file'		/* standard, in single quotes */
+X#   :/path1/file1:/path2/file2		/* a path for searching */
+X
+X# test_files=`$STRINGS $1 | $EGREP "/.*/" | $AWK '{for (i=1;i<=NF;i++) 
+Xtest_files=`$STRINGS $1|$SED -n -e 's/^.*[pP][aA][tT][hH]=//' -e '/\/.*\//p' |
+X	$AWK '{for (i=1;i<=NF;i++) 
+X	if ((res = substr($i,1,1))=="/") 
+X		printf("%s\n",$i)
+X	else if ((res != ":") && (res2=substr($i,2,1))=="/")
+X		printf("%s\n",substr($i,2,length($i)-2))}
+X	/:/ {
+X		resk=substr($0, index($0,"=")+1, length($0) - index($0,"=")) \
+X		split($0, path, ":");	\
+X		for (j in path) printf("%s\n",path[j])}' | $SORT -u`
+X
+X	shift
+X	done
+X
+X	for i in $test_files
+X		do
+X		if $TEST ! -d "$i" -o ! -f "$i" ; then
+X			i=`$ECHO $i | $SED -e 's/[:;"]//g' -e "s/[']//g"`
+X			if $TEST ! -f "$i" ; then
+X				continue
+X				fi
+X			fi
+X		
+X		if $TEST -n "`$ECHO $i | $EGREP /tmp\|/dev/null\|/dev/tty\|/dev/printer\|/dev/console`" ; then
+X			continue
+X			fi
+X		if ./is_writable "$i" ; then
+X			$ECHO "Warning!  File $i (inside root executed file $1) is _World_ writable!"
+X			fi
+X		done
+X
+X# end of script
+SHAR_EOF
+chmod 0755 cops_104/chk_strings ||
+echo 'restore of cops_104/chk_strings failed'
+Wc_c="`wc -c < 'cops_104/chk_strings'`"
+test 2023 -eq "$Wc_c" ||
+	echo 'cops_104/chk_strings: original size 2023, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/bug.chk.aix ==============
+if test -f 'cops_104/bug.chk.aix' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/bug.chk.aix (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/bug.chk.aix (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/bug.chk.aix' &&
+X#!/bin/sh
+X#
+X#  IBM/AIX module for bug/vulnerability checking
+X#
+XECHO=/bin/echo
+XTEST=/bin/test
+XLS=/bin/ls
+XLS_OPTS="-slagL"
+XARCH=/bin/arch
+XGREP=/bin/grep
+XAWK=/bin/awk
+XBUG="$AWK -f ./bug_cmp"
+X
+Xif $TEST ! -f ./bug_cmp ; then
+X	$ECHO "Must have bug compare module, ./bug_cmp, to run..."
+X	exit 2
+X	fi
+X# what is the date?  We just need the month and year...
+SHAR_EOF
+true || echo 'restore of cops_104/bug.chk.aix failed'
+fi
+echo 'End of  part 1'
+echo 'File cops_104/bug.chk.aix is continued in part 2'
+echo 2 > _shar_seq_.tmp
+exit 0
+

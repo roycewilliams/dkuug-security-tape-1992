@@ -1,0 +1,111 @@
+From mojo!mimsy!haven!udel!wuarchive!usc!elroy.jpl.nasa.gov!aero!faigin Tue May  1 00:52:24 EDT 1990
+Article: 262 of alt.security:
+Path: mojo!mimsy!haven!udel!wuarchive!usc!elroy.jpl.nasa.gov!aero!faigin
+>From: faigin@aerospace.aero.org (Daniel P. Faigin)
+Newsgroups: alt.security
+Subject: Re: SUID for users is useful
+Message-ID: <FAIGIN.90Apr27143304@sunstroke.aerospace.aero.org>
+Date: 27 Apr 90 21:33:04 GMT
+References: <15050@s.ms.uky.edu>
+	<FAIGIN.90Apr26082803@sunstroke.aerospace.aero.org>
+	<35834@think.Think.COM> <1990Apr27.194537.15237@cunixf.cc.columbia.edu>
+Sender: news@aerospace.aero.org
+Organization: The Aerospace Corporation, Computer Security Office, El Segundo
+	CA
+Lines: 91
+In-reply-to: jbaltz@cunixe.cc.columbia.edu's message of 27 Apr 90 19:45:37 GMT
+Status: R
+
+In article <1990Apr27.194537.15237@cunixf.cc.columbia.edu>
+jbaltz@cunixe.cc.columbia.edu (Jerry B. Altzman) writes: 
+
+>   Can someone tell me where I can get more (unclassified) information on
+>   secure computing (e.g. "Orange Book", &c)
+
+An excellent reference on secure computing is the book "Building A Secure
+Computer System" by Morrie Gasser of Digitial Equiptment, ISBN 0-442-23022-2.
+Published by Van Nostrand Reinhold Co, New York NY 10003
+
+As for the material published by the NCSC... To receive one complimentary copy
+of the following documents, call or write the INFOSEC Awareness Office:
+Department of Defense, National Security Agency, Attention: S332, 9800 Savage
+Road, Ft. George G. Meade MD 20755-6000, 301/688-8742. Additional copies may
+be ordered from the Government Printing Office at Superintendent of Documents,
+U.S. Govt. Printing Office, Washington DC 20402, 202/783-3238. The GPO takes
+plastic money (VISA and Master Card).
+
+                           The NCSC "Rainbow" Series
+
+o Trusted Computer System Evaluation Criteria (Orange Book)
+  GPO Stock#  008-000-00461-7, DoD 5200.28-STD, $6 
+
+o Department of Defense Password Management Guideline (Light Green)
+  GPO# 008-000-00443-9, CSC-STD-002-85, $1.75
+
+o Guideance for Applying TCSEC in Specific Environments (Yellow)
+  GPO# 008-000-00442-1, CSC-STD-003-85, $1
+
+o Technical Rationale behind CSC-STD-003-85 (Yellow)
+  GPO# 008-000-00441-2, CSC-STD-004-85, $2
+
+o Personal Computer Security Considerations (Lt. Blue)
+  GPO# 008-000-00439-1, NCSC-WA-002-85, $1.75
+
+o A Guide to Understanding AUDIT in Trusted Systems (Tan)
+  GPO# 008-000-00508-7, NCSC-TG-001 v.2, $2
+
+o  A Guide to Understanding DISCRETIONARY ACCESS CONTROL in Trusted Systems
+   (Red-Orange) 
+   GPO# ???, NCSC-TG-003 v.1, $??
+
+o  Glossary of Computer Security Terms (Aqua)
+   GPO# 008-000-00522-2, NCSC-TG-004, $3.25
+
+o  Trusted Network Interpretation (Red)
+   GPO# 008-000-00486-2, NCSC-TG-005v1, $13
+   
+o  A Guide to Understanding CONFIGURATION MANAGEMENT in Trusted Systems (Peach)
+   GPO# 008-000-00507-9, NCSC-TG-001 v.2, $2
+
+o  A Guide to Understanding DESIGN DOCUMENTATION in Trusted Systems (Burgandy)
+   GPO# 008-000-00518-4, NCSC-TG-007 v.1, $2.25
+
+o  A Guide to Understanding Trusted Distribution in Trusted Systems (Lavander)
+   GPO# ???, NCSC-TG-008 v.1, $??
+
+o  Computer Security Subsystem Interpretation (CSSI) of the TCSEC (Venice Blue)
+   GPO# 008-000-00510-9, NCSC-TG-009, $2.25
+
+o  Rating Maintenance Phase Program Document (Hot Pink)
+   GPO# ???, NCSC-TG-013, $??
+
+o  Guidelines for Formal Verification Systems (Dark Purple)
+   GPO# ???, NCSC-TG-014, $??
+
+o  A Guide to Understanding TRUSTED FACILITY MANAGEMENT (Brown)
+   GPO# ???, NCSC-TG-015, $??
+
+To order final reports, call 703/487-4650, or write US Dept of Commerce, NTIS,
+5285 Port Royal Rd, Springfield VA 22161. Some of the more significant FERs
+are:
+
+   The SCOMP FER, CSC-EPL-85/001, NTIS# AD-A166-95, $15.95 Paper,
+		$6.95 microfiche (Rating: A1)
+   The IBM MVS/XA with RACF V1.8 FER, CSC-EPL-88/003 (Rating: C2)
+   The MULTICS FER, CSC-EPL-85-003. (Rating: B2)
+   The AT&T System V/MLS Release 1.1.2 Running on Unix System V Release 3.1.1
+		FER, CSC-EPL-89/003. (Rating: B1)
+   HP MPE V/E FER, CSC-EPL-88/010 (Rating: C2)
+   Data General AOS/VS FER, CSC-EPL-89/001 (Rating: C2)
+
+You might also try writing the National Computer Security Center at the
+address above for copies of Final Reports.
+
+Daniel
+--
+[W]:The Aerospace Corp M1/055 * POB 92957 * LA, CA 90009-2957 * 213/336-8228
+[H]:9758 Natick Avenue * Sepulveda CA 91343 * 818/892-8555  | If you turn it
+[Em]:faigin@aerospace.aero.org * Faigin@dockmaster.ncsc.mil | over and don't
+[Vmail]:213/336-5454 Box#3149            | let it go, you end up upside down
+
+

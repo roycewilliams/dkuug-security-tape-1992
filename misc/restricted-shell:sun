@@ -1,0 +1,51 @@
+From sun-managers-relay@eecs.nwu.edu Mon Sep 17 18:35:42 1990
+Received: from hellcat.eng.umd.edu 
+	by bacchus.eng.umd.edu (5.64/UMDENG-0.2/04-20-90)
+	id AA22069; Mon, 17 Sep 90 18:35:40 -0400
+Received: from hub.eecs.nwu.edu 
+	by hellcat.eng.umd.edu (5.64/UMDENG-0.2/04-20-90)
+	id AA21302; Mon, 17 Sep 90 18:35:35 -0400
+Received: from Icarus.AE.MsState.Edu by delta.eecs.nwu.edu id aa13503;
+          17 Sep 90 16:04 CDT
+Received: from tardis.ae.msstate.edu by Icarus.AE.MsState.Edu (4.0/5.0s);  id AA03274; Mon, 17 Sep 90 16:04:21 CDT
+Date: Mon, 17 Sep 90 16:04:21 CDT
+From: Larry Thorne <larryt@ae.msstate.edu>
+To: sun-managers@eecs.nwu.edu
+Subject: Summary:  restricted shell (rsh) on SunOS
+Status: RO
+
+Many thanks for all the replies, folks!  Yes, there is already a form
+of restricted shell on SunOS, hidden away in sh.
+
+According to Jim Mattson <jmattson@UCSD.EDU>:
+>Unless Sun has severely broken sh, just make /usr/bin/rsh a link to
+>/usr/bin/sh.  You should find that this is how your rsh on the Iris is set
+>up.  When sh starts, it checks the first alphabetic character of argv[0] to
+>see if it's an 'r'.  If so, you get a restricted shell.
+
+And, yes, this does work just fine!!  Thanks, Jim.
+
+Also, from knutson%SW.MCC.COM@MCC.COM (Jim Knutson):
+>Last I understood, you make a link to /bin/sh such that the new name has an "r"
+>in it (e.g. rs, rshell, etc.) and you get a restricted shell.  Actually, I
+>think that "shr" and "srh" would be restricted as well (i.e. you don't have
+>to have the first character be an r).
+
+And, also from csmoko@relay.nswc.navy.mil:
+>It is there, but it does not jump out at you.  In order to accrss it
+>you invoke a 'sh -r'.  You could make a script that did an exec of
+>sh -r and name it resh (not to be confused with /usr/ucb/rsh).
+
+According to payan@Corp.Sun.COM (Nozar Payandehjoo), the following works:
+>Look into /usr/lib/rsh.  (This is linked to /bin/sh.)
+
+However, I could only find this on one of our systems running 4.1.  Our
+server (still running 4.0.3) didn't have this link for some reason.
+
+Many thanks to all that replied!
+
+Larry Thorne
+NSF ERC
+Mississippi State University
+larryt@ae.msstate.edu
+

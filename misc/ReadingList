@@ -1,0 +1,81 @@
+There are many books available on security, but only a few on Unix
+security.  What follows are my recommendations for books and articles
+to get a start in the area.  Other publications and organizations
+devoted to security are listed in the appendix to the ADAPSO virus
+book, listed below.
+
+--spaf
+
+
+
+Critical Concept
+----------------
+"Reflections on Trusting Trust", Ken Thompson, in "Communications of
+the ACM", August 1984, v. 27 #8
+
+General Interest
+----------------
+"The Cuckoo's Egg" by Cliff Stoll, 1989,  Doubleday.
+
+"Computers Under Attack: Intruders, Worms and Viruses", edited by
+Peter J. Denning, 1990, ACM Press/Addison-Wesley.
+
+"Rogue Programs: Viruses, Worms and Torjan Horses", edited by Lance J.
+Hoffman, 1990, Van Nostrand Reinhold.
+
+"Spectacular Computer Crimes", J.J. Buck BloomBecker, 1990, Dow Jones Irwin.
+
+"Introduction to Computer Crime", edited by J. J. Buck BloomBecker,
+1988, National Center for Computer Crime Data.
+
+Textbooks
+---------
+Cryptography and Data Security, Dorothy E. R. Denning, 1983, Addison
+Wesley.
+
+Control an Security of Computer Information Systems, P. E. Fites, M.
+P, J, Kratz, and A. F. Brebner, 1989, Computer Science Press.
+
+Building a Secure Computer System, Morrie Gasser, 1988, Van Nostrand
+Reinhold. 
+
+Security in Computing, Charles P. Pfleeger, 1989, Prentice Hall.	
+
+
+Computer Viruses
+----------------
+"Computer Viruses: Dealing with Electronic Vandalism and Programmed
+Threats", E. H. Spafford, K. A. heaphy, and D. J. Ferbrace, 1989,
+ADAPSO (Arlington VA).
+
+"Computer Viruses", David J. Stang, 1990, National Computer Security
+Association (Washington DC).
+
+
+Internet Worm
+-------------
+The June 1989 issue of "Communications of the ACM"  v32 #6
+
+
+Unix Security
+-------------
+"Practical Unix Security" (working title), Simson Garfinkel and Eugene
+Spafford, to appear in late 1990, O'Reilly & Associates.
+
+"Unix System Security", Patrick Wood and Stephen Kochran, 1986, Hayden
+Books.
+
+"Unix Operating System Security", F. T. Grampp and R. H. Morris, "AT&T
+Bell Laboratories Technical Journal", Oct. 1984.
+
+The February 1988 issue of "Unix Review", v. 8 #2.
+
+Proceedings of the:
+    Usenix Security Workshops (available through the Usenix Association)
+
+
+On-going (potentially valuable, but pricey)
+-------------------------------------------
+Datapro Reports on Computer Security, published by McGraw-Hill.
+
+"Computer Security", published by Elsevier Press.

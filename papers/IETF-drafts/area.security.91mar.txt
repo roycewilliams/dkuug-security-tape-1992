@@ -1,0 +1,206 @@
+
+
+Security Area
+
+Director(s):
+
+   o Steve Crocker:  crocker@tis.com
+
+Area Summary reported by Steve Crocker/TIS
+
+The Security Area within the IETF is responsible for development of
+security oriented protocols, security review of RFCs, development of
+candidate policies, and review of operational security on the Internet.
+
+This report has two parts.  The first section covers highlights from the
+meeting.  The second section covers the organization and operation of
+the Security Area.
+
+HIGHLIGHTS
+
+Security Policy and Site Security Policy Handbook (SPWG and SSPHWG)
+
+Both the Security Policy and Site Security Policy Handbook Working
+Groups prepared drafts of their documents.  The security policy document
+is a concise statement of principles for protection of information
+assets and computing resources in the Internet.  Because it's intended
+to act as a guide to others who will establish policies for their
+networks, hosts, products, etc., the IAB determined that this document
+will be called a Guidelines and will be issued as an informational RFC.
+The document is now available as an Internet Draft.
+
+The Site Security Policy Handbook is an extensive document that is
+intended to serve as a basis for tailoring site-specific policies.  It
+covers numerous facets of security including configuration, operation
+and responses to incidents.
+
+These efforts are the result of the hard work and persistence of the
+Security Policy and Site Security Policy Handbook Working Groups.  The
+members and particularly the Chairs of these groups deserve
+congratulations for the work they have done.
+
+Common Authentication Technology (CAT)
+
+John Linn and Jeff Schiller will co-Chair a new Working Group to explore
+and define a common authentication framework.  This work will embrace
+MIT's Kerberos and Digital's SPx authentication servers.  Digital also
+
+                                   1
+
+
+
+
+
+
+unveiled its General Security Services Application Program Interface
+(GSSAPI) which provides a common interface for SPx, Kerberos and any
+other authentication service that may be defined in the future.  This
+work is intended to provide a uniform method for applications to
+authenticate connections in client-server and peer-peer connections.
+
+Privacy Enhanced Mail (PEM)
+
+The Privacy and Security Research Group (PSRG) under the Internet
+Research Task Force (IRTF) has revised the specifications for privacy
+enhanced mail.  The specifications are being released as Internet Drafts
+and will be reviewed through the usual open process.  At this IETF
+meeting, Jim Bidzos, the President of RSA Data Securityi, Inc, presented
+the outline of the forthcoming organizational agreement.  (RSADSI holds
+the patent on the RSA public key technology and is licensing its use for
+privacy enhanced mail within the Internet.)  Additional open meetings
+will be scheduled in forthcoming IETF meetings.
+
+IP Security Option (IPSO)
+
+Some time ago a protocol was defined for adding U.S. DoD security labels
+at the IP level.  The protocol was never fully completed and sat in an
+incomplete state.  Last fall, the effort was resurrected by Vint Cerf,
+the IAB Chair.  Steve Kent has now completed the revisions to the
+document, and it is now available as an Internet Draft.  This document
+covers only the Basic Security Option and is applicable only to the U.S.
+DoD security labels.  Another document is expected later which will
+cover the Extended Security Option, and a separate effort is described
+next which is intended to cover labels outside of the U.S. DoD
+hierarchy.
+
+Trusted Systems Interoperability Group (TSIG -- CIPSO and TNFS)
+
+The Trusted Systems Interoperability Group is a consortium of computer
+systems vendors developing protocols for trusted systems.  Has asked the
+IETF and IAB for assistance in standardizing their protocols.  The
+operation and rules of the TSIG are quite similar to the IAB and IETF.
+Each of the TSIG's protocols is developed by a TSIG Working Group whose
+deliberations are open to all.  In order to facilitate the publication
+of protocols developed by the TSIG, the individual TSIG Working Groups
+will be chartered as IETF Working Groups.  Two groups have submitted
+charters, CIPSO and TNFS.
+
+The CIPSO Working Group is developing a commercial IP security option.
+This is intended to make security labels available to the commercial,
+civilian U.S. government and non-U.S. government communities.  A draft
+document is essentially complete and will be made available as an
+Internet Draft.
+
+                                   2
+
+
+
+
+
+
+The TNFS Working Group is developing a trusted version of the NFS
+(Network File System) protocol.  This work is being coordinated with the
+distributed file systems Working Group in the Applications area.  This
+work also depends on clarification of the status of NFS as a base for
+building other protocols.
+
+ORGANIZATION AND OPERATION
+
+Much of the work of the Security Area is performed in coordination with
+Working Groups in other areas.  Indeed, one of the primary tasks is to
+provide security expertise to Working Groups in other IETF areas.
+
+Starting with the December 1990 IETF meeting, we organized a Security
+Area Advisory Group (SAAG) to gather together the limited number of
+people knowledgeable about security in protocols and to provide a
+coordinated forum for discussion of security issues in Internet
+protocols.  We've also established a pattern of having the SAAG meet
+twice during the IETF meeting, once at the beginning and once at the end
+of week.  Although these are business meetings devoted principally to
+assignment of tasks and coordination of new work items, observers are
+welcome.
+
+SAAG Operation
+
+The main bulk of work for the SAAG consists of a set of formal work
+items.  These work items correspond to three types of activities.
+
+Security relevant developments within Working Groups in areas other than
+security.
+
+Assistance to the Telnet Working Group on authentication and encryption
+is a typical example.  For items of this type, a SAAG member is assigned
+and supports the Working Groups.
+
+Working groups within the Security Area.
+
+The development of SNMP security is an example.  In many cases, even
+though a Working Group is in the Security Area, there are close ties to
+another area.  SNMP security is obviously tied closely to the Management
+area.  In several instances, it's a matter of choice whether a Working
+Group is in the Security Area or in another area.  These decisions are
+made on a case by case basis by mutual agreement of the respective Area
+Directors.  In these cases the work is usally coordinated closely with
+the relevant Area Director.
+
+Preliminary inquiries
+
+                                   3
+
+
+
+
+
+
+These are topics which do not merit the creation of a formal Working
+Group but which do need some level of attention.  These are assigned to
+a SAAG member and followed for one or SAAG meeting.
+
+In addition to the items formally being worked on by the SAAG, there are
+other discussions that take place but do not lead to the creation of a
+formal work item.  No follow up actions are scheduled for these.
+
+The following table shows the work items and other discussions arranged
+by status (SAAG, Security Area, Other Area, Prelim) and by which area
+they interact with.  Minutes of the meetings of many of these groups are
+included in these proceedings.
+
+                       SAAG            Security Area   Other Areas    Prelim
+
+Security                export          spwg
+                       iabcc
+
+Management                             snmpsec
+
+User Services                          ssphwg
+
+Routing                                                rreq
+
+Applications            passwd          cat             telnet          email
+                       privdb          pem(2)          npp             nntp
+                       chronos                        tnfs(1)
+
+Internet Services                      ipso                           iplpdn
+                                       cipso(1)
+
+OSI                                                   ds
+
+Operations
+
+
+(1) This is a TSIG WG
+(2) PEM is being developed by the PSRG
+
+
+
+                                   4

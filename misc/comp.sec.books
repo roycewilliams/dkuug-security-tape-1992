@@ -1,0 +1,180 @@
+From mojo!mimsy!haven!udel!wuarchive!zaphod.mps.ohio-state.edu!swrinde!ucsd!ucbvax!rcl.wau.nl!DEGROOT Sat Feb 10 06:04:25 EST 1990
+Article: 1061 of misc.security:
+Path: mojo!mimsy!haven!udel!wuarchive!zaphod.mps.ohio-state.edu!swrinde!ucsd!ucbvax!rcl.wau.nl!DEGROOT
+>From: DEGROOT@rcl.wau.nl ("Kees de Groot, Computer Systems Security")
+Newsgroups: misc.security
+Subject: responses on a question about books on security: thanks to all!
+Message-ID: <9002080851.AA00760@ucbarpa.Berkeley.EDU>
+Date: 18 Jan 90 09:28:00 GMT
+Sender: usenet@ucbvax.BERKELEY.EDU
+Organization: The Internet
+Lines: 165
+Approved: security@rutgers.edu
+
+At the end of November in 1989 I sent a message on the above
+subject to the security-list. I have appended the responses
+to the original message for your interest.
+Thank you for your response!
+
+======================================================================
+Subj:   Request for info on student-security-course
+
+Course on security
+==================
+        Security implies a lot of things like defending
+        against malfunctional apparatus, viruses, fraudulous
+        people etc. For all these threats there are a lot of
+        measures like making regularly backups, double or
+        triple system-configurations and anti-virus
+        software. Also a good deal of thinking has to be
+        done to make your organisation internally secure.
+
+        There are a lot of books covering most of these
+        subjects. In my opinion security is a very important
+        subject to be taught to students.
+
+        1. Are there any books covering security in such a
+           way that the book can be used for a course on the
+           subject?
+
+        2. Are there security courses for students and if so
+           what subjects are covered?
+
+==========================================================================
+
+>From: "Charles P. Pfleeger" <pfleeger@TIS.COM>
+Subject: Security textbooks
+To: DEGROOT@RCL.WAU.NL
+
+There are three books that I would consider using to teach a course in
+computer security (which, incidentally, I did for several years while
+on the faculty of The University of Tennessee).  The books are Lance
+Hoffman's Modern Methods for Computer Security (Prentice-Hall, 1977--
+very dated), Dorothy Denning's Cryptanalysis and Data Security
+(Addison Wesley, 1982--somewhat dated, rather narrowly focused,
+although excellent within that focus), and my Security in Computing
+(Prentice Hall, 1989).  Without trying to give an obviously-biased
+review, let me just mention that it covers encryption and cryptography
+as a fundamental (but certainly not the only) tool in providing
+security; studies problems and solutions for providing security in the
+design of programs, operating systems, database management systems,
+and networks; and covers risk analysis, physical and administrative
+protection, legal issues and ethical issues.  If you will contact your
+local Prentice-Hall representative, or write to Prentice-Hall in
+Englewood Cliffs NJ 07632 USA (there is also a european sales office,
+but I do not have the address), I am sure you can get a copy for your
+review.
+
+                                                --CPfleeger
+======================================================================
+>From: Ommang <harald%apple@hub.ucsb.edu>
+
+I'm currently taking a class from Dr. Richard A. Kemmerer at UCSB, and
+we use this book : Charles P. Pfleeger "Security in Computing", Prentice
+Hall 1989. ISBN 0-13-798943-1.
+
+I think the book is pretty good. Kemmerer has also used lots of papers on the
+topic in his class.  SOme of the topics covered : Terminology (trojan horse,
+trap door, worm, virus, denial of service etc.) Security principles (least
+privilege, economy of mechanism, complete mediation, separation of privilege,
+etc.)  Security models and principles (Bell-LaPadula, Integrity, Take-Grant,
+Lattice and ono-interference).  Security mechanisms (capabilities, access
+control lists, authentication mechanisms, secure attention key etc)
+Protection techniques (penetration analysis, info flow analysis, covert
+channel analysis etc)  Encryption (monoaplphabetic, polyalphabetic, rotors,
+DES, Hill, etc).
+
+Hope this is of some help to you !
+Harald
+
+====================================================================
+
+>From:   gasser@ultra.enet.dec.com (MORRIE GASSER, 508-264-5055, DTN 293-5055)
+
+I saw your request for a book that could be used for a computer security
+course.  My book has been used in a number of courses...
+
+Title:     Building a Secure Computer System
+Author:    Morrie Gasser
+Publisher: Van Nostrand Reinhold Co., New York.
+ISBN No.:  0-442-23022-2
+
+  U.K.:   Van Nostrand Reinhold at
+          International Thomson Publishing Services Ltd,
+          North Way, Andover, Hants SP10 5BE.
+
+          # 26.95
+
+  U.S.:   Van Nostrand Reinhold Co.
+          P.O. Box 668
+          Florence, Kentucky 41042
+
+          Mail order phone:  606-525-6600
+
+          $37.95
+
+=====================================================================
+>From:   IN%"FITSILIS@GRPATVX1.BITNET" 12-DEC-1989 13:04:16.63
+
+Dear Kees
+We have just completed our thesis work on Computer Security in the
+Department of Computer Engineering and Informatics at the University
+of Patras,Greece.We admit that we faced a lot of difficulties in
+finding adequate bibliography and references on this subject (which
+shows how an important subject it is!).We believe that one of the best
+books on Computer Security is "Cryptography and Data Security" by
+Dorothy Elizabeth Denning,published by Addison-Wesley,ISBN 0-201-10150-5.
+We supply a sample of the book's contents:
+-ENCRYPTION ALGORITHMS (transposition,substitution,product(DES),exponential,
+                knapsack ciphers).
+-CRYPTOGRAPHIC TECHNIQUES (block and stream ciphers,endpoints of encryption,
+                key management)
+-ACCESS CONTROL (access matrix model,authorization lists,capabilities,take-
+                grant systems).
+-INFORMATION FLOW CONTROLS (lattice model,execution based and compiler based
+                mechanisms,program verification).
+-INFERENCE CONTROL (statistical database model,inference control mechanism,
+                methods of attack (trackers etc),methods of defence
+                (statistic restriction,noise addition etc)).
+This book was published in 1982.If it looks out of date to you,we recommend
+"Proceedings of the IEEE Symposium on Security and Privacy".These are the
+procedings of an annual symposium on computer security,containing all the
+recent work on the subject.We used the 1988 symposium proceedings,IEEE
+Ctalogue Number 88CH2558-5,ISBN 0-8186-0850-1.Also you can find related
+papers on the following magazines:
+-ACM PRESS SIGSAC REVIEW (published 4 times a year).
+-CRYPTOLOGIA (journal on cryptography).
+In our opinion,this subject can be taught to students that have elementary
+knowledge of operating systems,computer networks,databases and a good
+mathematical background (i.e. information theory,number theory,complexity
+theory).
+We wonder if you could keep us informed on the progress of your cources,
+since we are faced with similar problems (we are preparing a Computer
+Security course to be taught next year in our department).Also if you
+have (or received) any further recommendations on the subject,please
+forward them to us.
+                                                Friendly,
+                                                CHARLES CAMEAS
+                                                PANOS FITSILIS
+
+=====================================================================
+
+Mr. de Groot,
+        One excellent text on the subject is SECURITY IN COMPUTING,
+C. P. Pfleeger, Prentice-Hall, Englewood Cliffs, New Jersey (1989).
+It is my understanding that this material was taught by the author
+while he was a professor in the Computer Science Dept. at The University
+of Tennessee.  The author is currently working in private industry
+as a computer security professional.
+
+                                        Regards,
+
+                                        Lloyd F. Arrowood
+                                        Oak Ridge National Laboratory
+
+Disclaimer:  The views and opinions of the author do not necessarily state
+             or reflect those of the United States Government or any agency
+             thereof.
+==========================================================================
+
+

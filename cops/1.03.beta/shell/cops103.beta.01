@@ -1,0 +1,1673 @@
+#!/bin/sh
+# This is a shell archive (produced by shar 3.49)
+# To extract the files from this archive, save it to a file, remove
+# everything above the "!/bin/sh" line above, and type "sh file_name".
+#
+# made 06/20/1991 16:28 UTC by df@death.cert.sei.cmu.edu
+# Source directory /usr/users/df/COPS
+#
+# existing files will NOT be overwritten unless -c is specified
+#
+# This is part 1 of a multipart archive                                    
+# do not concatenate these parts, unpack them in order with /bin/sh        
+#
+# This shar contains:
+# length  mode       name
+# ------ ---------- ------------------------------------------
+#   1093 -rw------- beta/MANIFEST
+#  22555 -rw------- beta/README
+#  20290 -rwx------ beta/README.C2
+#   1752 -rwx------ beta/README.apollo
+#   2129 -rw------- beta/README.shadows
+#    636 -rw------- beta/README.xenix
+#    582 -rw------- beta/README.yp
+#   3346 -rw------- beta/TODO
+#   3599 -rw------- beta/XTRA_CREDIT
+#   2023 -rwx------ beta/chk_strings
+#   8062 -rwx------ beta/cops
+#  11389 -rw------- beta/cops.c
+#   7085 -rw------- beta/cover_letter
+#   2093 -rwx------ beta/crc.chk
+#   1045 -rw------- beta/crc_list
+#   2266 -rwx------ beta/cron.chk
+#   3437 -rwx------ beta/dev.chk
+#   1123 -rw------- beta/disclaimer
+#  31849 -rw------- beta/docs/COPS.report
+#    886 -rw------- beta/docs/KUANG.README
+#    501 -rw------- beta/docs/SUID.README
+#   2568 -rw------- beta/docs/cops
+#    875 -rw------- beta/docs/dev.chk
+#   4278 -rw------- beta/docs/CRC.README
+#    270 -rw------- beta/docs/home.chk
+#   1524 -rw------- beta/docs/pass.chk
+#    980 -rw------- beta/docs/is_able
+#   2809 -rw------- beta/docs/kuang.1
+#  36594 -rw------- beta/docs/kuang.man
+#    775 -rw------- beta/docs/rc.chk
+#    992 -rw------- beta/docs/is_able.chk
+#   3833 -rw------- beta/docs/release.notes
+#   1157 -rw------- beta/docs/suid.man
+#    230 -rw------- beta/docs/tilde
+#  13863 -rw------- beta/docs/warnings
+#    509 -rw------- beta/docs/root.chk
+#    973 -rw------- beta/docs/cron.chk
+#    654 -rw------- beta/docs/group.chk
+#    743 -rw------- beta/docs/pass_diff.chk
+#    481 -rw------- beta/docs/user.chk
+#   1948 -rw------- beta/docs/makefile
+#    941 -rw------- beta/docs/passwd.chk
+#    593 -rw------- beta/docs/misc.chk
+#   2838 -rw------- beta/docs/ftp.chk
+#   1638 -rw------- beta/extensions/THINGS_2_DO
+#    595 -rw------- beta/extensions/YAR
+#    395 -rw------- beta/extensions/crypto-stuff
+#   1859 -rw------- beta/extensions/netstuff
+#    690 -rw------- beta/extensions/passwords
+#  13339 -rw------- beta/extensions/questions
+#   6956 -rw------- beta/ftp.cert
+#   8066 -rwx------ beta/ftp.chk
+#   5939 -rwx------ beta/group.chk
+#    950 -rwx------ beta/init_kuang
+#   2263 -rwx------ beta/is_able.chk
+#   1643 -rw------- beta/is_able.lst
+#   5969 -rwx------ beta/kuang
+#  42692 -rw------- beta/kuang.pl.shar
+#   2341 -rw------- beta/makefile
+#   3674 -rwx------ beta/misc.chk
+#   3278 -rw------- beta/pass.words
+#   2795 -rwx------ beta/pass_diff.chk
+#   6544 -rwx------ beta/passwd.chk
+#     21 -rw------- beta/patchlevel.h
+#    586 -rw------- beta/quick_start
+#   2887 -rwx------ beta/rc.chk
+#    428 -rwx------ beta/rc.foot
+#   5232 -rwx------ beta/reconfig
+#    953 -rwx------ beta/res_diff
+#   4897 -rwx------ beta/root.chk
+#   3254 -rw------- beta/src/addto.c
+#    702 -rw------- beta/src/clearfiles.c
+#   9920 -rw------- beta/src/crc.c
+#   4067 -rw------- beta/src/crc_check.c
+#   2420 -rw------- beta/src/filewriters.c
+#   2916 -rw------- beta/src/home.chk.c
+#   5750 -rw------- beta/src/is_able.c
+#   3206 -rw------- beta/src/is_something.c
+#   1258 -rw------- beta/src/members.c
+#  15989 -rw------- beta/src/pass.c
+#    401 -rw------- beta/src/tilde.c
+#   1721 -rw------- beta/src/user.chk.c
+#    644 -rw------- beta/stop.sample
+#   4285 -rwx------ beta/suid.chk
+#    827 -rwx------ beta/yp_pass.chk
+#   1810 -rwx------ beta/chk_strings.old
+#    625 -rw------- beta/death/1991_Jun_20
+#
+if test -r _shar_seq_.tmp; then
+	echo 'Must unpack archives in sequence!'
+	echo Please unpack part `cat _shar_seq_.tmp` next
+	exit 1
+fi
+# ============= beta/MANIFEST ==============
+if test ! -d 'beta'; then
+    echo 'x - creating directory beta'
+    mkdir 'beta'
+fi
+if test -f 'beta/MANIFEST' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/MANIFEST (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/MANIFEST (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/MANIFEST' &&
+File Name
+==================
+MANIFEST
+README
+README.apollo
+README.xenix
+README.yp
+XXTRA_CREDIT
+chk_strings
+cops
+cover_letter
+crc.chk
+crc_list
+cron.chk
+dev.chk
+disclaimer
+docs
+extensions
+ftp.chk
+group.chk
+init_kuang
+is_able.chk
+is_able.lst
+kuang
+kuang.pl.shar
+makefile
+misc.chk
+pass.words
+pass_diff.chk
+passwd.chk
+patchlevel.h
+rc.chk
+reconfig
+res_diff
+root.chk
+src
+stop.sample
+suid.chk
+yp_pass.chk
+X
+docs/COPS.report
+docs/COPS.report
+docs/CRC.README
+docs/KUANG.README
+docs/SUID.README
+docs/cops
+docs/cron.chk
+docs/dev.chk
+docs/ftp.chk
+docs/group.chk
+docs/home.chk
+docs/is_able
+docs/is_able.chk
+docs/kuang.1
+docs/kuang.man
+docs/makefile
+docs/misc.chk
+docs/pass.chk
+docs/pass_diff.chk
+docs/passwd.chk
+docs/rc.chk
+docs/release.notes
+docs/root.chk
+docs/suid.man
+docs/tilde
+docs/user.chk
+docs/warnings
+X
+extensions/THINGS_2_DO
+extensions/YAR
+extensions/crypto-stuff
+extensions/netstuff
+extensions/passwords
+extensions/questions
+X
+src/addto.c
+src/clearfiles.c
+src/crc.c
+src/crc_check.c
+src/filewriters.c
+src/home.chk.c
+src/is_able.c
+src/is_something.c
+src/members.c
+src/pass.c
+src/tilde.c
+src/user.chk.c
+FOO_BAR
+chmod 0600 beta/MANIFEST ||
+echo 'restore of beta/MANIFEST failed'
+Wc_c="`wc -c < 'beta/MANIFEST'`"
+test 1093 -eq "$Wc_c" ||
+	echo 'beta/MANIFEST: original size 1093, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/README ==============
+if test -f 'beta/README' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/README (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/README (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/README' &&
+X
+X   Welcome!  You now hold in your hands (terminal?) a collection
+of security tools that are designed specifically to aid the typical
+UNIX systems administrator, programmer, operator, or consultant in
+the oft neglected area of computer security.
+X
+X   The package, which will be henceforth be referred to as COPS
+(Computer Oracle and Password System), can be broken down into three
+key parts.  The first is the actual set of programs that attempt
+to automate security checks that are often performed manually (or
+perhaps with self written short shell scripts or programs) by a systems
+administrator.  The second part is the documentation, which details
+how to set up, operate, and to interpret any results given by the
+programs.  Finally, COPS is an evolving beast.  It includes a list
+of possible extensions that might appear in future releases, as well
+as pointers to other works in UNIX security that could not be included
+at this time, due to space or other restrictions.
+X
+X   This document contains six sections:
+X
+X      1) What is COPS?
+X      2) What COPS is _not_
+X      3) How to Configure COPS
+X      4) Running COPS for the 1st Time
+X      5) Continued Use and Installing COPS
+X      6) Disclaimer and End Notes
+X
+X
+1) What is COPS?
+-----------------
+X
+X   COPS is a collection of about a dozen (actually, a few more, but
+a dozen is such a good sounding number) programs that each attempt
+to tackle a different problem area of UNIX security.  Here is what it
+currently checks:
+X
+o  file, directory, and device permissions/modes.
+X
+o  poor passwords.
+X
+o  content, format, and security of password and group files.
+X
+o  the programs and files run in /etc/rc* and cron(tab) files.
+X
+o  finds SUID files, and checks for their writeability and if they are
+X   shell scripts.
+X
+o  runs a crc check against important binaries or key files, and reports
+X   any changes therein.
+X
+o  writability of users home directories and startup files (.profile,
+X   .cshrc, etc.)
+X
+o  anonymous ftp setup.
+X
+o  unrestricted tftp, decode alias in sendmail, SUID uudecode problems.
+X
+o  miscellaneous root checks -- current directory in the search path,
+X   a "+" in /etc/host.equiv, unrestricted NFS mounts, ensures root is
+X   in /etc/ftpusers, etc.
+X
+o  includes the Kuang expert system, that takes a set of rules and tries
+X   to determine if your system can be compromised (for a more complete list
+X   of all of the checks, look at the file "release.notes" or "cops.report";
+X   for more on Kuang, look at at "kuang.man".)
+X
+X   All of the programs merely warn the user of a potential problem --
+COPS DOES NOT ATTEMPT TO CORRECT OR EXPLOIT ANY OF THE POTENTIAL PROBLEMS
+IT FINDS!  COPS either mails or creates a file (user selectable) of any
+of the problems it finds while running on your system.  And because COPS
+does not correct potential hazards it finds, it does _not_ have to be
+run by a privileged account (i.e. root or whomever.)  The only security
+check that should be run by root to get maximum results is the SUID checker;
+although it can be run as an unprivileged user, to find all the SUID files
+in a system, it should be run as root (in addition, if key binaries are
+not world readable, only executable, the CRC checking program ("crc.chk")
+needs to be run as a privileged user to read the file in question to get
+the result.)  In addition, COPS cannot used to probe a host remotely; all
+the tests and checks made require a shell that is on the site being tested.
+X
+X   The programs are mostly written in Bourne shell (using awk, sed, grep,
+etc. as well) for (hopefully) maximum portability.  A few are written
+in C for speed (most notably the Kuang expert system and for implementing
+fast user home directory searching), but the entire system should run on
+most BSD and System V machines with a minimum of tweaking.
+X
+2) What COPS is _not_
+----------------------
+X
+X   COPS merely provides a method of checking for common procedural errors.
+It is not meant to be used as a replacement for common sense or user/
+operator/administrative alertness!  Think of it as an aid, a first line
+of defense -- not as an impenetrable shield against security woes.  An
+experienced wrong-doer could easily circumnavigate _any_ protection that
+COPS can give.  However, COPS _can_ aid a system in protecting its users
+from (their own?) ignorance, carelessness, and the occasional malcontent
+user.
+X
+X   Once again, COPS does not correct any errors found.  There are several
+reasons for this; first and foremost, computer security is a slippery
+beast.  What is a major breach in security at one site may be a standard
+policy of openness at another site.  Additionally, in order to correct all
+problems it finds, it would have to be run as a privileged user; and I'm
+not going to go into the myriad problems of running SUID shell scripts
+(See the bibliography at the end of the technical report "cops.report"
+for pointer to a good paper on this subject by Matt Bishop.)
+X
+X   At this time, COPS does not attempt to detect bugs or features (such
+as the infamous ftpd, fingerd, etc) that may cause security problems.  Although
+this may change in future versions, the current line of reasoning to avoid
+general publication of programs such as these is that all the problems that
+COPS detects can be repaired on any system it runs on.  However, many bugs
+can be readily repaired only be having source code (and possibly a good
+vendor to repair it), and many sites would have serious troubles if they
+suddenly discovered unrepairable problems that could compromise their
+livelihood.  It is possible that a more controlled release may come out
+in the future to address such problems (but don't mail to me about getting
+them -- unless you want to help write them! :-))
+X
+3) How to Configure COPS
+-------------------------
+X
+X  System V users, other Non-BSD systems, or sites with commands in
+strange places -- you may have to run a shell script called "reconfig"
+to change the pathnames of the executable programs called when using
+COPS.  If your system does not use the paths listed in the shell
+scripts, try running "reconfig".  This will reconfigure the pathnames
+used by COPS to your system; COPS should run fine then, if it
+can find all of the commands (reconfig should tell you if it
+cannot.)  If trouble persists, you will have to change the paths
+to your executable files (awk, sed, etc) by hand.  A drag, I know.
+This all may change without notice, anyway :-)
+X
+X  With all the varieties of unix, there are a few types that may need
+extra help to run the system.  I've got README files for Apollo and Xenix
+in the distribution -- see the files "README.apollo", and "README.xenix",
+respectively -- if you have any troubles, drop me a line, and I'll
+see what I can do about working out a patch with you.  Some problems
+might arise with some SYSV machines (heck, to any machine :-)), due to
+weird files and names for stuff.  What can I say?  Portability is a
+problem.  You can comment out line 39 and 38 in "misc.chk", if you use
+/etc/servers instead of /etc/inetd.conf.
+X
+4) Running COPS for the 1st Time
+---------------------------------
+X
+X   Since most of COPS was written and tested mostly on just a few machines
+(at least compared to the total number out there!), you may have significant
+differences that were not anticipated -- unfortunately, or fortunately,
+UNIX is not quite standardized yet.  However, I haven't run into a UNIX
+yet that I haven't been able to get it running on, with just a small amount
+of change, so feel free to mail to me for help.
+X
+X   COPS is run by simply typing "cops".  "cops" is a Bourne shell script
+that runs each of the programs, accumulates the output, and then either 
+mails or stores any results in a file.  "suid.chk" (and possibly "crc.chk")
+is the only package that is meant to be run separately, simply because it
+can take a long time to run, and possibly because it needs a privileged
+account to run it; look at "suid.man" for more information.  By all means,
+however, do not ignore the SUID checker!  Run it at least once a week, if
+possible, more (daily?); intruders into a system often leave SUID files
+to gain privileges later.  "crc.chk" should also be run; it can either
+be run as a standalone program (preferred), or as part of the COPS package;
+read the file "CRC.README", and the man page for more information.
+X
+X   To run COPS for the first time, I suggest doing the following:
+X
+X   -- Look at the disclaimer, file "disclaimer".  Don't sue me.
+X      Actually, this holds for all the times you use COPS (1/4 :-))
+X
+X   -- Type "make" and "make docs" to create the formatted manual pages,
+X      to compile the C programs,  and to make the shell programs executable.
+X      A couple of potential (hopefully minor problems) might occur, probably
+X      only for SysV based machines; one, if you don't have the "-ms" package
+X      for nroff (i.e. you, get an error message after typing "make" about
+X      it), just remove the "-ms" flag; e.g., change line 7 of the
+X      "docs/makefile" file, from:
+X
+X      ROFFLAGS   = -ms
+X	to
+X      ROFFLAGS   =
+X
+X      The second potential problem might be with the password checking
+X      program; if it fails to compile, try uncommenting out line 20 in
+X      "makefile" -- e.g., enable the "BRAINDEADFLAGS = -lcrypt" flag.
+X      If this doesn't work... well, you can either work it out, or e-mail me.
+X
+X   -- Read the technical report to understand what COPS is doing and
+X      what is going on -- "cops.report".  This gives a look at the
+X      philosophies, design notes, and finally a general outlay of the
+X      COPS system and UNIX security.  This can be forsaken, for those
+X      who just want to get to the results/see some action (people like
+X      me.)
+X
+X   -- Next, change lines 51 and 52 in the "cops" shell file; this is
+X      what they were:
+X
+X        SECURE=/usr/foo/bar
+X        SECURE_USERS="foo@bar.edu"
+X
+X      SECURE should be the same directory as the directory that contains
+X      the cops programs, and SECURE_USERS should be your own login id, or
+X      to whomever you designate as the recipient of the output (your enemy?)
+X
+X   -- Set "MMAIL=NO" in the "cops" shell file (line 24).  This will prevent
+X      a large mail file from choking the mailer.  All of the output will be
+X      put into a file called "year_month_day" (obviously, that's like:
+X      "1991_Dec_31", not actually the words, "year_month_day" :-)), and
+X      should be automatically placed by COPS in a directory that has the
+X      same name as the host it was run on (e.g., your own hostname.)
+X
+X   -- Look at the directory and file configuration file, "is_able.lst"
+X      This contains critical files that COPS checks for group and world
+X      writability and readability.  Add or delete whatever files/directories
+X      you wish; if a file doesn't exist, COPS will effectively ignore it.
+X      (If you don't know or are uncertain what files/directories are
+X      important, what is given there is a good set to start with on most
+X      systems.)
+X
+X   -- If you allow anonymous ftp access to your system, add a "-a" flag
+X      to "ftp.chk" on line 104 of "cops".  Right now, it is set up so
+X      that key files and directories are expected to be owned by root;
+X      however, it has provisions for two owners, $primary and $secondary --
+X      some may wish to change the second to "ftp", or some other user.
+X      Read the man page for ftp.chk, or look at "ftp.chk" for further notes.
+X
+X   -- You may wish to comment out the password checker (line 109 in the
+X      "cops" shell file).  Although this is not necessary, it will speed
+X      up the package if you wish for immediate gratification.
+X      If you are using yellow pages/NIS, read "README.yp" for tips on how
+X      to check passwords there.
+X
+X   -- Uncomment out the crc checker, "crc.chk" (line 123), if you desire to
+X      run it as part of the normal COPS run.
+X
+X  You should be ready to roll.  COPS is run by simply typing "cops" (you
+may wish to put in the background....)  If you followed my advice and
+set "MAIL=NO" in the "cops" shell file, after COPS is finished, there
+will be a report file created ("year_month_day") that lists the time and
+machine it was created on.  Otherwise, COPS mails the report to the user
+listed on the line 'SECURE_USERS="foo@bar.edu"'.  There is a file
+"warnings", which contains most of the warning messages COPS uses, as well
+as a brief explanation of how the message might pertain to your system and
+finally a suggestion as how to "fix" any problem.
+X
+X   NOTE: Change the shell script "cops" to reflect who you want the output
+sent to and where the location of the program is BEFORE running the program.
+X
+X
+5) Continued Use and Installing COPS
+-------------------------------------
+X
+X   Once you are satisfied that COPS indeed does something useful
+(hopefully this will occur :-)), a good way to use it is to run it
+on at least a semi-regular basis.  Even if it doesn't find any problems
+immediately, the types of problems and holes it can detect are of the
+sort that can pop up at any given time.  One way of running COPS
+might be to run it as an "at" job or by cron.
+X
+X   I highly advise that whatever directory COPS is placed in is to be
+readable, writable, and executable only by the owner (typing 
+"chmod 700 /usr/foo/bar" or whatever the name is will do this) of the
+directory.  This is to prevent prying eyes from seeing any security
+problems your site may have.  Even if you don't think of them as
+important, someone else might come around and change your mind.  Since
+COPS is fairly configurable, an intruder could easily change the paths
+and files that COPS checks for, hence making it fairly worthless.  Again,
+this comes back to the point that COPS is only a tool -- don't put down
+your defensive shields merely because COPS says "all clear".  If this
+sounds paranoid, it is!  Security people are traditionally paranoid,
+for a reason....  In any case, it is probably not a good idea to advertise
+any (even) potential weaknesses.
+X
+X   Typing "make install" will create (if necessary) a subdirectory with
+the name you put in $INSTALL_DIR (found on line 7 of "makefile"); if you
+run a network with multiple architectures, you can have several executable
+versions of COPS in the same NFS mounted directory structure.  You can run
+COPS with "cops archtype", and it will cd into the archtype directory, use
+the binaries in that directory (placed there by a "make install"), and put
+any results in a subdirectory of the archtype directory with the appropriate
+host name.
+X
+X   For example, assume you have the following setup:
+X
+machine architecture    hostname    If run COPS with:
+=====================   ========    ==================
+cray                    ribcage     cops
+vax                     bar         cops vax
+vax                     foo         cops vax
+sun                     earth       cops sun
+sun                     mars        cops sun
+sun                     venus       cops sun
+mips                    hades       cops
+X
+X  If $SECURE (the secure directory variable in the "cops" shell script) was
+set to "/usr/secure", the resulting directory/reporting structure would be:
+X
+/usr/secure/cops/ribcage
+/usr/secure/cops/vax/bar
+/usr/secure/cops/vax/foo
+/usr/secure/cops/sun/earth
+/usr/secure/cops/sun/mars
+/usr/secure/cops/sun/venus
+/usr/secure/cops/hades
+X
+X  Sometimes you will get the same report over and over again, everytime you
+run COPS; for instance, with Ultrix 3.x, /dev/kmem is world readable -- this
+is a security hole, but many utilities in Ultrix need this to function.  If
+you wish to only see reports that are _different_ than the old reports, you
+first need to have an older report saved in a file (in $SECURE/hostname, or
+wherever you usually save the reports); you can then set "MMAIL=YES" _and_
+"ONLY_DIFF=YES" (lines 25 & 30, respectively) in "cops"; everytime COPS is
+run after that, it will compare the report it generated for the current
+check with the old report; if it detects any differences, it will mail you
+a report.  If not, it simply discards it.  This can be a real boon for a
+site with a lot of machines running COPS every night...
+X
+X   There are a couple of further options you may wish to explore.  First
+of all, since so many breakins are because of poor passwords selection
+by users, it would be a wise idea to add options to your password checking
+program (line 109 in "cops").  You may wish to try some words from a
+dictionary; you may use either your system dictionary (usually found in
+/usr/dict/words), or you may use the same dictionary that the internet
+worm found so lucrative when hitting all those thousands of hosts; that
+dictionary is in the file "pass.words" (example; the way to include the
+worm dictionary is: "pass.chk -w pass.words").  Also, try some of the options
+in the password program, such as "-b", "-g", "-s", and "-c", which add
+checks for backward, gecos, single letter & number, and upper and lower
+case guesses, respectively.  Just as a note, each option will increase the
+time needed to crack the passwords, of course; experiment!  See what is
+reasonable for your hardware and resource capabilities.
+X
+X   By using the "pass_diff.chk" program, you only check accounts that have
+_changed_ their password since the last time you've checked -- this can
+save enormous amounts of times with large systems; you can check your users
+thoroughly once, then only check them as they change their passwords again.
+Be careful, though, if you use this, and then later expand your checks
+and/or your dictionary used to search for passwords, the earlier accounts
+that were already checked with an inferior method will not be checked again
+until they change their password.  See the file "passwords" in the
+"extensions" directory for a replacement "passwd" program, that can disallow
+poor passwords to begin with.
+X
+X   The file "is_able.lst" contains a list of files that are to be checked
+for world readability and/or writability; look at the file; add or delete
+any files you feel are important to your system.
+X
+X   After running COPS, if any warnings are given that compromise any
+individual users accounts (such as world writable .profiles, home
+directories, guessed passwords, etc.), and the warnings are not corrected
+immediately (or you are not sure whether or not it is worth hassling
+the user to change it), try this:
+X
+X   Edit the file "init_kuang", and add the compromised user(s) uids and
+groups in their respective target lines (below lines 20 and 27,
+respectively), and run kuang again to see if the users can compromise
+the entire system.  You may change your mind about not thinking
+they are a problem!  In addition, kuang does not have to have "root" 
+as a target (the last line).  Try putting in system administrators or
+other powerful figures to see if they are in danger as well.  If you
+have "perl" installed on your system, try the perl version of kuang --
+"kuang.pl" (you'll have to unpack the shar file this is inside --
+"kuang.pl.shar", and you may have to edit the first line of the file
+"kuang.pl", to reflect where the location that perl is on your system.)
+X
+6) Disclaimer and End Notes
+----------------------------
+X
+X   COPS is meant to be a tool to aid in the tightening of security, not
+as a weapon to be used by an enemy to find security flaws in a system.
+It may be argued that allowing anyone to have access to such a tool may
+be dangerous.  But hopefully the overall benefit for systems that use
+this package will outweigh any negative impact.  To me it is akin to a
+law enforcement problem -- that although telling the public how to break
+into a house may foster a slight rise in break-in attempts, the overall
+rise in public awareness on how to defend themselves would actually result
+in a drop in break-ins.  The crackers with black hats already know how
+to crush system defenses and have similar tools, I'm sure.  It's time
+we fought back.
+X
+X  COPS is not the final answer to anyone's security woes.  You can use
+the system as long as you realize that COPS has no warranty, implied
+or otherwise, and that any problems that you may have with it are
+not my or any of the other authors' fault.  I will certainly attempt to
+help you solve them, if I am able.  If you have ideas for additional
+programs, or a better implementation of any of the programs here, I would
+be very interested in seeing them.  COPS was the work of a LOT of people,
+both in writing code and in the testing phase (thanks beta testers!).  For
+a complete list of contributors, look at the file "XTRA_CREDIT".
+X
+X   So good luck, and I hope you find COPS useful as we plunge into UNIX
+of the 1990's.
+X
+X   dan farmer
+X   January 31, 1989
+X   (Now January 31, 1990)
+X
+X
+# include "./disclaimer"
+X
+X  Just for snix, here are some of the machine/OS's I know this sucker works
+on; far and away the most common problem was getting that stupid password
+cracking program to compile, followed by systems without the -ms package to
+nroff.  Some minor problems with config files -- I *think* these are all
+ok:
+X
+X
+DECstation 2100, 3100, 5000, Ultrix 2.x, 3.x, 4.x
+(It should, I'm sitting in front of one now.  Ultrix is braindead)
+X
+Sun 3's, 4's (incl. Solbourne) -- 3.x, 4.x
+Gould 9080 Powernode, hacked up Gould OS (whatever it is)
+sequent S-87 symmetry, dynix V3.0.12 (both att & bsd universes; att required
+X                       "BRAINDEADFLAGS = -lcrypt" to be uncommented.
+eta-10P, Sys V R3 based
+Convex boxes, all types, most OS's (up to 9.x, the most recent)
+Apollo dn3000 & dsp90, Domain SR 9.7
+Vax 11/780, 4.3 BSD (Mt. Xinu, tahoe and stock)
+Vaxstation, MicroVax, Vax 6320 & 8800, Ultrix 2.0, 3.x
+HP900/370, HP-UX 6.5
+Cray 2 & Y-MP, UNICOS 5.0, 6.0
+Amdahl 5880, UTS 580-1.2.3
+SGI 2500's, IRIX GL 3.6
+SGI 4D's, IRIX System V Release 3.X
+'286 & '386 Boxes, running Xenix (README.xenix)
+AT&T 3B2, SysVR4
+CADMUS box (R3000 & 68020 cpu), SysVR3.2
+Pyramid, running 4.4c and 5.1a
+X
+Apple Mac IIci, running AUX 2.x.  The "test -z" seemed broken on this, but I
+only had a brief chance to test it out, but kuang didn't like it as a result.
+I'll get a working version soon; everything seemed ok (change the /etc/servers
+line in "misc.chk".)
+X
+NeXT, 1.x
+(password stuff is different on this machine, tho; cracking is strange.  Diffs?)
+X
+Multimax 320, 12 Processors, 64Mb Memory, Encore Mach Version B1.0c (Beta)
+(no crypt(3) on this machine.  Sigh.)
+X
+IBM rs6000, AIX 3.1 (BRAINDEAD -- boo.  hiss.)
+COPS will *NOT* work well on this piece of trash -- the shell utilities are
+garbage; however, you can still get *some* useful info.  I'm not going to
+rewrite everything because big-blue won't write an awk that works:
+FOO_BAR
+chmod 0600 beta/README ||
+echo 'restore of beta/README failed'
+Wc_c="`wc -c < 'beta/README'`"
+test 22555 -eq "$Wc_c" ||
+	echo 'beta/README: original size 22555, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/README.C2 ==============
+if test -f 'beta/README.C2' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/README.C2 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/README.C2 (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/README.C2' &&
+X
+Dan,
+X
+X  Please find enclose four (4) files: passwd.chk, passwd.file.chk, group.chk,
+and group.file.chk. These are the files to allow checking of the Sun C2
+security variations of SunOS. They will perform checking of the yellow pages
+version if so selected by the TEST_YP variable being TRUE in the passwd.chk
+and group.chk files. The testing of the SUN C2 security is performed by setting
+the SUN_SECURITY variable to TRUE in the passwd.chk and group.chk files. 
+X
+Pete Troxell
+X
+#!/bin/sh
+# This is a shell archive (produced by shar 3.49)
+# To extract the files from this archive, save it to a file, remove
+# everything above the "!/bin/sh" line above, and type "sh file_name".
+#
+# made 01/08/1991 02:50 UTC by df@death.cert.sei.cmu.edu
+#
+# existing files will NOT be overwritten unless -c is specified
+#
+# This shar contains:
+# length  mode       name
+# ------ ---------- ------------------------------------------
+#   1609 -rwx------ group.chk
+#   6191 -rwx------ group.file.chk
+#   1650 -rwx------ passwd.chk
+#   7715 -rwx------ passwd.file.chk
+#
+# ============= group.chk ==============
+if test -f 'group.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping group.chk (File already exists)'
+else
+echo 'x - extracting group.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'group.chk' &&
+#!/bin/sh
+#
+#   group.chk
+#
+#  Check group file -- /etc/group -- for incorrect number of fields,
+# duplicate groups, non-alphanumeric group names, and non-numeric group
+# id's.
+#
+ECHO=/bin/echo
+RM=/bin/rm
+TEST=/bin/test
+YPCAT=/usr/bin/ypcat
+XX
+#
+# Enhanced Security Features addes by Pete Troxell:
+#
+#   Used for Sun C2 security group file.  FALSE (default) will flag
+# valid C2 group syntax as an error, TRUE attempts to validate it. When
+# using this option the script must be executed as root or su since the file
+# /etc/security/group.adjunct is read protected from everybody except root.
+#
+SUN_SECURITY=FALSE
+XX
+#
+# Enable/Disable testing of the Yellow Pages group file(s)
+#
+TEST_YP=FALSE
+XX
+#
+# Important files:
+#
+etc_group=/etc/group
+etc_secure_group=/etc/security/group.adjunct
+yp_group=./grp$$
+yp_secure_group=./sgrp$$
+XX
+yp=false
+yp_secure=false
+XX
+#
+# Testing $yp_group for potential problems....
+#
+if $TEST -f $YPCAT -a $TEST_YP = "TRUE"
+XX	then
+if $TEST -s $YPCAT
+XX	then
+XX	$YPCAT group > $yp_group 2>/dev/null
+XX	if $TEST $? -eq 0
+XX		then
+XX		yp=true
+XX	fi
+XX	if $TEST $yp = "true" -a $SUN_SECFURITY = "TRUE"
+XX		then
+XX		$YPCAT -t group.adjunct.byname > $yp_secure_group 2>/dev/null
+XX		if $TEST $? -eq 0
+XX			then
+XX			yp_secure=true
+XX		fi
+XX	fi
+fi
+fi
+XX
+#
+# Test the system group file
+#
+group.file.chk $etc_group $etc_secure_group $SUN_SECURITY
+XX
+#
+# Test yellow pages password file
+#
+if $TEST "$yp" = "true"
+XX	then
+XX	$ECHO
+XX	$ECHO "***** Testing the Yellow Pages password file(s) ******"
+XX	$ECHO
+XX	group.file.chk $yp_group $yp_secure_group $SUN_SECURITY
+XX	fi
+XX
+#
+# Clean up after ourselfs
+#
+$RM -f $yp_group
+$RM -f $yp_secure_group
+# end
+SHAR_EOF
+chmod 0700 group.chk ||
+echo 'restore of group.chk failed'
+Wc_c="`wc -c < 'group.chk'`"
+test 1609 -eq "$Wc_c" ||
+X	echo 'group.chk: original size 1609, current size' "$Wc_c"
+fi
+# ============= group.file.chk ==============
+if test -f 'group.file.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping group.file.chk (File already exists)'
+else
+echo 'x - extracting group.file.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'group.file.chk' &&
+#!/bin/sh
+#
+#   group.file.chk
+#
+# Awk part based on _passwd_ from _The AWK Programming Language_, page 78
+#
+#   Mechanism:  Group.check uses awk to ensure that each line of the group
+# has 4 fields, as well as examining each line for any duplicate groups or
+# any duplicate user id's in a given group by using "sort -u" to ferret
+# out any duplications.  It also checks to make sure that the password
+# field (the second one) is a "*", meaning the group has no password (a
+# group password is usually not necessary because each member listed on 
+# the line has all the privilages that the group has.)  All results are
+# echoed to standard output.  Finally it ensures that the group names
+# are alphanumeric, that the group id's are numeric, and that there are
+# no blank lines.  For yellow pages groups, it does the same checking,
+# but in order to get a listing of all members of the groups, it does a
+# "ypcat group > ./$$" and uses that temporary file for a groupfile.
+# It removes the tmp file after using it, of course.
+#   The /etc/group file has a very specific format, making the task
+# fairly simple.  Normally it has lines with 4 fields, each field
+# separated by a colon (:).  The first field is the group name, the second
+# field is the encrypted password (an asterix (*) means the group has no
+# password, otherwise the first two characters are the salt), the third
+# field is the group id number, and the fourth field is a list of user
+# ids in the group.  If a line begins with a plus sign (+), it is a yellow
+# pages entry.  See group(5) for more information.
+#   The SUN /etc/security/group.adjunct file also has a very specific
+# format, makeing the check task simple. Each entry has 2 fields separated 
+# by a colon (:). THe first field is the user name which matches the user
+# name contained in the /etc/group file. The second field is the encrypted
+# password (an asterix (*) means the group has no password, otherwise the 
+# first two characters are the salt). The password contained in the 
+# /etc/group file is comprised of the #$user_id where the user_id matches
+# the entry of the first field in both group files.
+#
+XX
+#
+# Parameters
+#
+group_file=$1
+group_adjunct_file=$2
+SUN_SECURITY=$3
+XX
+#
+# Utilities
+#
+AWK=/bin/awk
+DIFF=/usr/bin/diff
+ECHO=/bin/echo
+JOIN=/usr/bin/join
+RM=/bin/rm
+SORT=/usr/bin/sort
+TEST=/bin/test
+UNIQ=/usr/bin/uniq
+XX
+#
+# Important files:
+#
+join_group_1=./grp$$.1.join
+join_group_2=./grp$$.2.join
+sort_group=./grp$$.sort
+sort_secure_group=./sgrp$$.sort
+XX
+#
+# Testing the group file for problems
+#
+result=`$AWK -F: '{print $1}' $group_file | $SORT |$UNIQ -d`
+if $TEST "$result"
+XX	then
+XX	$ECHO "Warning!  Duplicate gid(s) found in group file:"
+XX	for USER in $result
+XX	do
+XX		$ECHO "	$USER"
+XX	done
+fi
+XX
+#
+#   First line is for a yellow pages entry in the group file.
+# It really should check for correct yellow pages syntax....
+#
+$AWK 'BEGIN {FS = ":" } {
+XX	if (substr($1,1,1) != "+") { \
+XX	if ($0 ~ /^[ 	]*$/) { printf("Warning!  Group file, line %d, is blank\n", NR) } else {
+XX	if (NF != 4) { printf("Warning!  Group file, line %d, does not have 4 fields: \n\t%s\n", NR, $0) } \
+XX	if ($1 !~ /[A-Za-z0-9]/) {
+XX		printf("Warning!  Group file, line %d, nonalphanumeric user id: \n\t%s\n", NR, $0) } \
+XX	if ($2 != "" && $2 != "*") {
+XX		if ("'$SUN_SECURITY'" != "TRUE")
+XX			printf("Warning!  Group file, line %d, has password: \n\t%s\n", NR, $0)
+XX		else {
+XX			if ("#$"$1 != $2)
+XX				printf("Warning!  Group file, line %d, invalid password field for SUN C2 Security: \n\t%s\n", NR, $0) } \
+XX		} \
+XX	if ($3 !~ /[0-9]/) {
+XX		printf("Warning!  Group file, line %d, nonnumeric group id: \n\t%s\n", NR, $0) \
+XX	}}}} ' $group_file
+XX
+#
+# Ignore all groups with less than two members.
+#
+awk -F: '
+XX	split($4, users, ",") > 1 {
+XX		ct = 0
+XX		for (i in users) {
+XX			curuser = users[i]
+XX			for (j in users) {
+XX				if (j > i && curuser == users[j]) {
+XX					if (ct++ == 0) print "Warning!  Group "$1" has duplicate user(s):"
+XX					print curuser
+XX				}
+XX			}
+XX		}
+XX	}
+XX	' $group_file
+XX
+#
+# Perform checks on the security enhanced version of SUNOS
+#
+if $TEST $SUN_SECURITY = "TRUE"
+XX	then
+XX	result=`$AWK -F: '{print $1}' $group_adjunct_file | $SORT -t: | $UNIQ -d`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Duplicate uid(s) found in group adjunct file:"
+XX		for USER in $result
+XX		do
+XX			$ECHO "	$USER"
+XX		done
+XX	fi
+XX	#
+XX	# Check that for each entry in the group file that there is a matching
+XX	# entry in the group.adjunct file.
+XX	#
+XX	$SORT -t: -o $sort_group $group_file
+XX	$SORT -t: -o $sort_secure_group $group_adjunct_file
+XX	$JOIN -t: $sort_group $sort_secure_group > $join_group_1
+XX	$JOIN -t: -a1 $sort_group $sort_secure_group > $join_group_2
+XX	result=`$DIFF $join_group_1 $join_group_2`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Matching record(s) in group adjunct file not found for"
+XX		$ECHO "these records in group file:"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Check that for each entry in the group.adjunct file that there is a 
+XX	# matching entry in the group file.
+XX	#
+XX	$RM -f $join_group_2
+XX	$JOIN -t: -a2 $sort_group $sort_secure_group > $join_group_2
+XX	result=`$DIFF $join_group_1 $join_group_2`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Matching record(s) in group file not found for"
+XX		$ECHO "these records in group adjunct file"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Test the fields in the group.adjunct file for validity
+XX	#
+XX	$AWK 'BEGIN {FS = ":" } \
+XX		{if (substr($1,1,1) != "+") { \
+XX		if ($0 ~ /^[ 	]*$/) { printf("\nWarning!  Group adjunct file, line %d, is blank\n", NR) } else {
+XX		if (NF != 2) {
+XX			printf("\nWarning!  Group adjunct file, line %d, does not have 2 fields: \n\t%s\n", NR, $0) } \
+XX		if ($1 !~ /[A-Za-z0-9]/) {
+XX			printf("\nWarning!  Group adjunct file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+XX		if ($2 != "" && $2 != "*") {
+XX			printf("\nWarning!  Group adjunct file, line %d, has password: \n\t%s\n", NR, $0) } \
+XX		}}}' $group_adjunct_file
+fi
+XX
+#
+# Clean up after ourself
+#
+$RM -f $join_group_1
+$RM -f $join_group_2
+$RM -f $sort_group
+$RM -f $sort_secure_group
+# end
+SHAR_EOF
+chmod 0700 group.file.chk ||
+echo 'restore of group.file.chk failed'
+Wc_c="`wc -c < 'group.file.chk'`"
+test 6191 -eq "$Wc_c" ||
+X	echo 'group.file.chk: original size 6191, current size' "$Wc_c"
+fi
+# ============= passwd.chk ==============
+if test -f 'passwd.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping passwd.chk (File already exists)'
+else
+echo 'x - extracting passwd.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'passwd.chk' &&
+#!/bin/sh
+#
+#   passwd.chk
+#
+#  Check passsword file -- /etc/passswd -- for incorrect number of fields,
+# duplicate uid's, non-alphanumeric uids, and non-numeric group id's.
+#
+#
+ECHO=/bin/echo
+RM=/bin/rm
+TEST=/bin/test
+YPCAT=/usr/bin/ypcat
+XX
+#
+# Enhanced Security Features added by Pete Troxell:
+#
+#   Used for Sun C2 security password adjunct file.  FALSE (default) will flag
+# valid SUN C2 passwd syntax as an error, TRUE attempts to validate it. When 
+# using this option, the script must be executed as root or su since the file
+# /etc/security/passwd.adjunct is read protected from everybody except root.
+#
+SUN_SECURITY=FALSE
+XX
+#
+# Enable/Disable testing of the Yellow Pages password file(s)
+#
+TEST_YP=FALSE
+XX
+#
+# Important files:
+#
+etc_passwd=/etc/passwd
+etc_secure_passwd=/etc/security/passwd.adjunct
+yp_passwd=./pwd$$
+yp_secure_passwd=./spwd$$
+XX
+yp=false
+yp_secure=false
+XX
+#
+# Testing $yp_passwd for potential problems....
+#
+if $TEST -f $YPCAT -a $TEST_YP = "TRUE"
+XX	then
+if $TEST -s $YPCAT
+XX	then
+XX	$YPCAT passwd > $yp_passwd 2>/dev/null
+XX	if $TEST $? -eq 0
+XX		then
+XX		yp=true
+XX	fi
+XX	if $TEST $yp = "true" -a $SUN_SECURITY = "TRUE"
+XX		then
+XX		$YPCAT -t passwd.adjunct.byname > $yp_secure_passwd 2>/dev/null
+XX		if $TEST $? -eq 0
+XX			then
+XX			yp_secure=true
+XX		fi
+XX	fi
+fi
+fi
+XX
+#
+# Test the system password file
+#
+passwd.file.chk $etc_passwd $etc_secure_passwd $SUN_SECURITY
+XX
+#
+# Test yellow pages password file
+#
+if $TEST "$yp" = "true"
+XX	then
+XX	$ECHO
+XX	$ECHO "***** Testing the Yellow Pages password file(s) *****"
+XX	$ECHO
+XX	passwd.file.chk $yp_passwd $yp_secure_passwd $SUN_SECURITY
+XX	fi
+XX
+#
+# Clean up after ourselfs
+#
+$RM -f $yp_passwd
+$RM -f $yp_secure_passwd
+# end
+SHAR_EOF
+chmod 0700 passwd.chk ||
+echo 'restore of passwd.chk failed'
+Wc_c="`wc -c < 'passwd.chk'`"
+test 1650 -eq "$Wc_c" ||
+X	echo 'passwd.chk: original size 1650, current size' "$Wc_c"
+fi
+# ============= passwd.file.chk ==============
+if test -f 'passwd.file.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping passwd.file.chk (File already exists)'
+else
+echo 'x - extracting passwd.file.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'passwd.file.chk' &&
+#!/bin/sh
+#
+#   passwd.file.chk
+#
+#  Check passsword file -- /etc/passswd -- for incorrect number of fields,
+# duplicate uid's, non-alphanumeric uids, and non-numeric group id's.
+#
+# Awk part from _The AWK Programming Language_, page 78
+#
+#  Mechanism:  Passwd.check uses awk to ensure that each line of the file
+# has 7 fields, as well as examining the file for any duplicate users
+# by using "sort -u".  It also checks to make sure that the password
+# field (the second one) is either a "*", meaning the group has no password,
+# or a non-null field (which would mean that the account has a null
+# password.)  It then checks to ensure that all uids are alphanumeric,
+# and that all user id numbers are indeed numeric.  For yellow pages
+# passwords, it does the same checking, but in order to get a listing of
+# all members of the password file, it does a "ypcat passwd > ./$$" and
+# uses that temporary file for a passfile.  It removes the tmp file after
+# using it, of course.
+#   The /etc/passwd file has a very specific format, making the task
+# fairly simple.  Normally it has lines with 7 fields, each field
+# separated by a colon (:).  The first field is the user id, the second
+# field is the encrypted password (an asterix (*) means the user id has no
+# password, otherwise the first two characters are the salt), the third
+# field is the user id number, the fourth field is the group id number,
+# the fifth field is the GECOS field (basically holds miscellaneous
+# information, varying from site to site), the sixth field is the home
+# directory of the user, and lastly the seventh field is the login shell
+# of the user.  No blank lines should be present.
+#   The SUN /etc/security/passwd.adjunct file also has a very specific 
+# format, making the check task simple. Each entry has 7 fields, each field 
+# separated by a colon (:). The first field is the user name which matches 
+# the user name contained in the /etc/passwd file. The second field is the 
+# encrypted password (an asterix (*) means the user login is disabled,
+# otherwise the first two characters are the salt). The password contained
+# in the /etc/passwd file is comprised of ##user_id where the user_id 
+# matches the entry of the first field in both password files. The third
+# through fifth specify the minimum, maximum, and default security labels
+# for the user. The sixth and seventh fields specify which auditing flags
+# should be always or never monitored.
+#   If a line begins with a plus sign (+), it is a yellow pages entry.
+# See passwd(5) for more information, if this applies to your site.
+#
+XX
+#
+# Parameters
+#
+passwd_file=$1
+passwd_adjunct_file=$2
+SUN_SECURITY=$3
+XX
+#
+# Utilities
+#
+AWK=/bin/awk
+DIFF=/usr/bin/diff
+ECHO=/bin/echo
+JOIN=/usr/bin/join
+RM=/bin/rm
+SORT=/usr/bin/sort
+TEST=/bin/test
+UNIQ=/usr/bin/uniq
+XX
+#
+# Important files:
+#
+join_passwd_1=./pwd$$.1.join
+join_passwd_2=./pwd$$.2.join
+sort_passwd=./pwd$$.sort
+sort_secure_passwd=./spwd$$.sort
+XX
+#
+# Testing the passwd file for problems
+#
+result=`$AWK -F: '{print $1}' $passwd_file | $SORT -t: | $UNIQ -d`
+if $TEST "$result"
+XX	then
+XX	$ECHO
+XX	$ECHO "Warning!  Duplicate uid(s) found in password file:"
+XX	for USER in $result
+XX	do
+XX		$ECHO "	$USER"
+XX	done
+fi
+XX
+#
+#   First line is for a yellow pages entry in the password file.
+# It really should check for correct yellow pages syntax....
+#
+$AWK 'BEGIN {FS = ":" } \
+XX	{if (substr($1,1,1) != "+") { \
+XX	if ($0 ~ /^[ 	]*$/) { printf("\nWarning!  Password file, line %d, is blank\n", NR) } else {
+XX	if (NF != 7) {
+XX		printf("\nWarning!  Password file, line %d, does not have 7 fields: \n\t%s\n", NR, $0) } \
+XX	if ($1 !~ /[A-Za-z0-9]/) {
+XX		printf("\nWarning!  Password file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+XX	if ($2 == "") {
+XX		printf("\nWarning!  Password file, line %d, no password: \n\t%s\n", NR, $0) } \
+XX 	if ("'$SUN_SECURITY'" == "TRUE" && "##"$1 != $2) {
+XX		printf("\nWarning!  Password file, line %d, invalid password field for SUN C2 Security: \n\t%s\n", NR, $0) } \
+XX	if ($3 !~ /[0-9]/) {
+XX		printf("\nWarning!  Password file, line %d, nonnumeric user id: \n\t%s\n", NR, $0) } \
+XX	if ($3 == "0" && $1 != "root") {
+XX		printf("\nWarning!  Password file, line %d, user %s has uid = 0 and is not root\n\t%s\n", NR, $1, $0) } \
+XX	if ($4 !~ /[0-9]/) {
+XX		printf("\nWarning!  Password file, line %d, nonnumeric group id: \n\t%s\n", NR, $0) } \
+XX	if ($6 !~ /^\//) {
+XX		printf("\nWarning!  Password file, line %d, invalid login directory: \n\t%s\n", NR, $0) } \
+XX	}}}' $passwd_file
+XX
+#
+# Perform checks on the security enhanced version of SUNOS
+#
+if $TEST $SUN_SECURITY = "TRUE"
+XX	then
+XX	result=`$AWK -F: '{print $1}' $passwd_adjunct_file | $SORT -t: | $UNIQ -d`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Duplicate uid(s) found in password adjunct file:"
+XX		for USER in $result
+XX		do
+XX			$ECHO "	$USER"
+XX		done
+XX	fi
+XX	#
+XX	# Check that for each entry in the passwd file that there is a matching
+XX	# entry in the passwd.adjunct file.
+XX	#
+XX	$SORT -t: -o $sort_passwd $passwd_file
+XX	$SORT -t: -o $sort_secure_passwd $passwd_adjunct_file
+XX	$JOIN -t: $sort_passwd $sort_secure_passwd > $join_passwd_1
+XX	$JOIN -t: -a1 $sort_passwd $sort_secure_passwd > $join_passwd_2
+XX	result=`$DIFF $join_passwd_1 $join_passwd_2`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Matching record(s) in password adjunct file not found for"
+XX		$ECHO "these records in password file:"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Check that for each entry in the passwd.adjunct file that there is a 
+XX	# matching entry in the passwd file.
+XX	#
+XX	$RM -f $join_passwd_2
+XX	$JOIN -t: -a2 $sort_passwd $sort_secure_passwd > $join_passwd_2
+XX	result=`$DIFF $join_passwd_1 $join_passwd_2`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Matching record(s) in password file not found for"
+XX		$ECHO "these records in password adjunct file"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Test the fields in the passwd.adjunct file for validity
+XX	#
+XX	$AWK 'BEGIN {FS = ":" } \
+XX		{if (substr($1,1,1) != "+") { \
+XX		if ($0 ~ /^[ 	]*$/) { printf("\nWarning!  Password adjunct file, line %d, is blank\n", NR) } else {
+XX		if (NF != 7) {
+XX			printf("\nWarning!  Password adjunct file, line %d, does not have 7 fields: \n\t%s\n", NR, $0) } \
+XX		if ($1 !~ /[A-Za-z0-9]/) {
+XX			printf("\nWarning!  Password adjunct file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+XX		if ($2 == "") {
+XX			printf("\nWarning!  Password adjunct file, line %d, no password: \n\t%s\n", NR, $0) } \
+XX		#
+XX		# Fields 3-5 are ignored since they deal with labels which are
+XX		# currently unused on the SUN (perhaps a future B-level??)
+XX		#
+XX		# Fields 6+7 contain audit flags for the user and are selected
+XX		# from the following: dr, dw, dc, da, lo, ad, p0, p1, and all.
+XX		# More than 1 flag can be selected by separating flags with a 
+XX		# comma (,).
+XX		#
+XX		if ($6 != "") {
+XX			j=1
+XX			len=length($6)
+XX			for (i=1; i<=len; i++) {
+XX				if ((substr($6,i,1) != ",") && (i < len)) 
+XX					continue
+XX				if (i == len)
+XX					token=substr($6,j,i-j+1)
+XX				else
+XX					token=substr($6,j,i-j)
+XX				j=i+1
+XX				if (token == "dr") continue
+XX				if (token == "dw") continue
+XX				if (token == "dc") continue
+XX				if (token == "da") continue
+XX				if (token == "lo") continue
+XX				if (token == "ad") continue
+XX				if (token == "p0") continue
+XX				if (token == "p1") continue
+XX				if (token == "all") continue
+XX			printf("\nWarning!  Password adjunct file, line %d, invalid audit flag: %s\n\t%s\n", NR, token, $0) } \
+XX			}
+XX		}}}' $passwd_adjunct_file
+fi
+XX
+#
+# Clean up after ourself
+#
+$RM -f $join_passwd_1
+$RM -f $join_passwd_2
+$RM -f $sort_passwd
+$RM -f $sort_secure_passwd
+# end
+SHAR_EOF
+chmod 0700 passwd.file.chk ||
+echo 'restore of passwd.file.chk failed'
+Wc_c="`wc -c < 'passwd.file.chk'`"
+test 7715 -eq "$Wc_c" ||
+X	echo 'passwd.file.chk: original size 7715, current size' "$Wc_c"
+fi
+Xexit 0
+FOO_BAR
+chmod 0700 beta/README.C2 ||
+echo 'restore of beta/README.C2 failed'
+Wc_c="`wc -c < 'beta/README.C2'`"
+test 20290 -eq "$Wc_c" ||
+	echo 'beta/README.C2: original size 20290, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/README.apollo ==============
+if test -f 'beta/README.apollo' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/README.apollo (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/README.apollo (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/README.apollo' &&
+X
+X  Try setting the $OVER_8 variable (line 50) in "passwd.chk" to "YES",
+if you get warnings about having extra long uid's.
+X
+X
+X  This little script can be used to generate a better password file for
+the password cracker, if you use those funky more-than-one-field in field
+one of the password file; e.g., if you have something that looks like:
+X
+root.foo.bar:xxxxxxxxxxxxx:0:0:Mr. Fu Bear:/:/bin/sh
+X
+X  This will change it to:
+X
+root:xxxxxxxxxxxxx:0:0:foo bar Mr. Fu Bear:/:/bin/sh
+X
+X  So that you can use the extra fields as gcos information for password
+cracking.  You can substitute the normal password cracking stuff in "cops"
+("pass.chk") with something like (assuming you call this "apollo.sh"):
+X
+apollo.sh > ./apollo.pw.$$
+pass.chk -P ./apollo.pw.$$
+rm -f ./apollo.pw.$$
+X
+X
+X  In addition, you can add these 2 lines to the "passwd.chk" shell script
+(right before the start of the awk on line 82 would be fine):
+X
+$AWK -F: '{print $1}' $etc_passwd | $AWK -F. '{if (NF > 3)
+X		printf("Warning!  Password file, line %d, has %d sub-fields in the user field: \n\t%s\n", NR, NF, $0) }'
+X
+X  And if you're running YP (is that possible, with all of that?  :-)
+You can add these 2 lines before line 119:
+X
+$AWK -F: '{print $1}' $yp_passwd | $AWK -F. '{if (NF > 3)
+X		printf("Warning!  YPassword file, line %d, has %d sub-fields in the user field: \n\t%s\n", NR, NF, $0) }'
+X
+X
+:
+#
+#  apollo.pw
+#
+AWK=/bin/awk
+X
+# Quote from the man page (passwd):
+# On DOMAIN systems, passwords are kept in the registry files (/registry/*).
+#
+# Important files:
+etc_passwd=/etc/passwd
+X
+$AWK -F: '{split($1,temp,"."); \
+X		$1=temp[1]; \
+X		for (i in temp) {
+X			if (i!=1) \
+X				$5 = $5" "temp[i]; \
+X			} \
+X		for (j=1;j<=NF;j++)
+X			printf("%s:",$j); \
+X		printf("\n") \
+X		}' $etc_passwd
+X
+# end
+FOO_BAR
+chmod 0700 beta/README.apollo ||
+echo 'restore of beta/README.apollo failed'
+Wc_c="`wc -c < 'beta/README.apollo'`"
+test 1752 -eq "$Wc_c" ||
+	echo 'beta/README.apollo: original size 1752, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/README.shadows ==============
+if test -f 'beta/README.shadows' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/README.shadows (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/README.shadows (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/README.shadows' &&
+X
+X  Part of a conversation I had with a guy about cracking shadow passords;
+at the end of this is a script that should work with SVR3.2; I'm not
+sure about the rest, but minor changes should make it work on
+just about anything.  Let me know if you can't get it to work, and
+I'll *make* it work :-)  In any case, you'll need to run as root to
+get the passwords for cracking.
+X
+>On system V3.2, both  AT&T, SCO, and us (Interactive) use the following format
+> /etc/passwd looks pretty much normal;
+> adm:x:4:4:0000-Admin(0000):/usr/adm:
+[...]
+> except that the passwd field always contains an "x".
+> Then, the etc/shadow file, which is owned by root and perms 400 looks
+> like;
+[...]
+> sally:e4T6g5HbjOnck:7449:0:7000
+[...]
+> The first field is the account name, the second field is the excrypted
+> passwd string, and the rest is password aging garbage.
+> Ignore the password fields above containing "LOCKED".  I do that by
+> hand to secure an account, since the output of crypt will never match it.
+X
+X  Try this on for size:
+X
+========== shadow.stuff ================
+#!/bin/sh
+#
+#  Usage: shadow.stuff
+#
+#   Extracts the correct info from shadow pass to use for processing with
+# pass.chk and passwd.chk.
+#
+X
+shadow=/etc/shadow
+passwd=/etc/passwd
+foo_pass=./shadow.tmp.$$
+X
+# foo_pass=shadow.pass
+X
+cat $passwd $shadow | sort > $foo_pass
+X
+awk -F: '{parray[$1] = $0":"parray[$1]} END { \
+X	for (line in parray) { \
+X		nf=split(parray[line], pline, ":"); \
+X		if (pline[9] != "LOCKED" && nf == 13) {
+X			print pline[1]":"pline[9]":"pline[3]":"pline[4]":" \
+X			pline[5]":"pline[6]":"pline[7]; \
+X		      	} \
+X		      } \
+X		}' $foo_pass
+rm $foo_pass
+==========================================
+X
+X  Ok, the way you use this is just to type "shadow.stuff > tempfile";
+this will create a file, "tempfile" (or whatever), that *should*
+be the equivalent to a normal password file.  Of course, you'll have
+to run this as root so that you can read the shadow password file.
+This should work, but no blame if it doesn't, please :-)  Just let
+me know if it does or not; I can put it in the normal distribution,
+if so.
+X
+X  Hope this helps -- 'luck!
+X
+X -- dan
+FOO_BAR
+chmod 0600 beta/README.shadows ||
+echo 'restore of beta/README.shadows failed'
+Wc_c="`wc -c < 'beta/README.shadows'`"
+test 2129 -eq "$Wc_c" ||
+	echo 'beta/README.shadows: original size 2129, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/README.xenix ==============
+if test -f 'beta/README.xenix' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/README.xenix (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/README.xenix (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/README.xenix' &&
+X
+X  Uncomment the "BRAINDEADFLAGS=-lcrypt" in the makefile, and put the line:
+X
+extern char *crypt();
+X
+X  Right after the #include lines in "pass.c".  This apparently came from 
+the makers of Xenix, about the availability of crypt(3):
+X
+========================
+Subject: crypt in Xenix
+X
+Due to the export restrictions on CRYPT, we do not ship it with the
+standard product.  We do ship it as an SLS: the relevant numbers are
+lng190 (for shipment inside the U.S. only) and lng225, which can be
+shipped outside the U.S..
+========================
+X
+X  Make the following change in dev.chk:
+X
+line 39:
+> mtab=/etc/fstab
+X
+To:
+< mtab=/etc/checklist
+X
+FOO_BAR
+chmod 0600 beta/README.xenix ||
+echo 'restore of beta/README.xenix failed'
+Wc_c="`wc -c < 'beta/README.xenix'`"
+test 636 -eq "$Wc_c" ||
+	echo 'beta/README.xenix: original size 636, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/README.yp ==============
+if test -f 'beta/README.yp' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/README.yp (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/README.yp (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/README.yp' &&
+X
+X  There are a couple of things to keep in mind if you're using yellow
+pages/NIS.  Automatic checks are made in the passwd.chk, group.chk, suid.chk,
+and ftp.chk.  However, if you want to crack passwords from that database,
+you need to do one of three things:
+X
+1)  If you're using "pass_diff.chk" to check only changed passwords (on
+line 108 of "cops"), change the flag on line 33 in "pass_diff.chk" from
+"NO" to "YES"
+X
+2)  If you're not running "pass_diff.chk", replace "pass.chk" with
+"yp_pass.chk" on line 109 of "cops".
+X
+3)  Create a file with ypcat and run "pass.chk -P file".
+X
+FOO_BAR
+chmod 0600 beta/README.yp ||
+echo 'restore of beta/README.yp failed'
+Wc_c="`wc -c < 'beta/README.yp'`"
+test 582 -eq "$Wc_c" ||
+	echo 'beta/README.yp: original size 582, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/TODO ==============
+if test -f 'beta/TODO' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/TODO (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/TODO (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/TODO' &&
+Cron & Rc checking... do chk_strings instead of parsing?
+X
+rc.chk -- if have rc.local, rc.local.bak, may only display promblems
+in rc.*bak if dup'd
+X
+Return-Path: LNAGEL@DALVMIC5.vnet.ibm.com
+Received: from CERT.SEI.CMU.EDU by death.cert.sei.cmu.edu (5.65/2.3)
+X        id AA20896; Tue, 23 Apr 91 13:51:06 -0400
+Received: from IINUS1.IBM.COM by cert.sei.cmu.edu (5.65/2.2)
+X        id AA04454; Tue, 23 Apr 91 13:50:59 -0400
+Message-Id: <9104231750.AA04454@cert.sei.cmu.edu>
+Received: from DALVMIC5 by vnet.ibm.com (IBM VM SMTP V2R1) with BSMTP id 5318;
+X   Tue, 23 Apr 91 13:27:46 EDT
+Date: Tue, 23 Apr 91 11:58:21 CDT
+XFrom: "Lynn Nagel" <lnagel@dalvmic5.vnet.ibm.com>
+To: df@cert.sei.cmu.edu
+Subject: COPS
+Reply-To: lnagel@dalvmic5.vnet.ibm.com
+Status: ORr
+X
+X
+X
+Dan,
+I am very impressed with what you have assembled.  However, the more I get
+into the code, the more I find that the litereary liscense some large
+computer vendors take in delivering systems can cause significant special
+conditions  (ie. Sun's C2 implementation versus IBM's -> similar, but not
+quite the same).
+X
+Another problem that I am starting to see is the AIX product trying to
+become more systems manageable has implemented several files in a
+stanza format (ie. /etc/securty/* & /etc/filesystems in leiu of fstab).
+X
+I did find a hole.  AIX uses a file .Xdefaults which isn't checked for,
+(I did notice .Xintrc being chked but not in Kaung - and I understand
+the issues).
+X
+NIS security exposure:  I generally get involved with a customer when they
+are having network problems of some type (generally adding a new machine).
+This means that I have access to the actual h/w.  I have been signed-on
+to the system at some level.  Depending on the conditions I find, I
+will explain the process.
+X    Frequently, the old passwd file has been left alone when the system
+X    is installed.  This means that if I disable ypbind, I have effectively
+X    changed to use of local w/s security.  Depending on what is there and
+X    how I was signed-on, I next become either root (by re-IPLing machine
+X    in local or maintenance mode, if necessary) or a valid user in the
+X    NIS network (I check for guest ids w/o passwd's before bringing
+X    down NIS on the local w/s).  Once I know valid userid's, uid's, &
+X    gid's; I merely make a local entry to match it in /etc/passwd and
+X    login to it (this approach obviously means I have acquired root access
+X    generally through write authority to /etc.).  Know that I am anyone
+X    I want to be, I can navigate the NIS network fairly easy.  This
+X    is especially a problem with the proliferation of single user
+X    workstations sitting in offices on peoples desks where they
+X    frequently (but not always) have a means of doing the above.
+X
+I am on the road this week,  but if you would like, I'll send you back
+the progs that I needed to change for AIX (with changes noted for easy
+before/after notation).  The one major exception to being able to "fix"
+FOO_BAR
+true || echo 'restore of beta/TODO failed'
+fi
+echo 'End of  part 1'
+echo 'File beta/TODO is continued in part 2'
+echo 2 > _shar_seq_.tmp
+exit 0

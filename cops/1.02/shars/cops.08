@@ -1,0 +1,1276 @@
+#!/bin/sh
+# This is part 08 of cops
+# ============= cops/extensions/questions ==============
+if test ! -d 'cops'; then
+    echo 'x - creating directory cops'
+    mkdir 'cops'
+fi
+if test ! -d 'cops/extensions'; then
+    echo 'x - creating directory cops/extensions'
+    mkdir 'cops/extensions'
+fi
+if test -f 'cops/extensions/questions' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/extensions/questions (File already exists)'
+else
+echo 'x - extracting cops/extensions/questions (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/extensions/questions' &&
+X   
+X   I polled a security mailing list and got about 40 responses to a
+Xselected number of questions dealing with security; it might be useful
+Xfor inclusion on how the net (at least some of the security minded ones)
+Xview security.  The answers to these questions shaped some of the philosophies
+Xof COPS and might be indicative of the type of security tools to be
+Xdeveloped in the future.  My questions start with a number and a ")".
+X
+X   1)  What kinds of problems should a software security system (SSS)
+X   such as COPS check for? (Mention specific examples, if you can.)
+X
+X  Just about everyone agreed that the more things checked, the better.
+XSome specific wants of items I didn't mention, more or less in the order
+Xof # of requests:
+X
+X  Some kind of _secure_ checksum method for checking up on binary files.
+X
+X  Checking binaries for known security problems - sendmail, fingerd,
+Xftpd, ect.
+X
+X  Checking the validity of the _format_ of key files rather than merely
+Xchecking if they are writable.
+X
+X  Checking for potential trojan horses; files such as "ls" in a users
+Xaccount.
+X
+X  Finding things hidden under mount points.
+X
+X  Keeping track of accounts in a seperate file from /etc/passwd and
+Xrun periodic checks to see if any accounts have been added by any
+Xunauthorized user.
+X  
+X  Report unusual system activity, such as burning lots of CPU time.
+X
+X  Record unsuccessful login attempts and su's to root, when and by whom
+Xif possible.
+X
+X
+X   2)  Are there any security problems too sensitive to be checked
+X   by a SSS?  That is, what things should *not* be built into a SSS?
+X
+X     Boy, this was a landslide.  Over 90% said NO, and not only no,
+Xbut basically "Hell No".  The only concerns I got were against password
+Xcracking and problems that could not be easily fixed.  There was also
+Xa small amount of concern about limiting access to root, but most realized
+Xthat no matter what, the benifits would outweigh any losses if the programs
+Xwere put out.
+X
+X   3) What should the primary goal of a SSS be -- discovering as many
+X   security holes as possible in a given system (including bugs or
+X   design flaws that may not be easily fixed -- especially without
+X   source code), or merely uncovering correctable errors (due to
+X   ignorance, carelessness, etc)?
+X
+X     Another landslide.  Of all the responses, only one person objected
+Xto finding all holes, although a few did say that finding the fixable
+Xholes was top priority.
+X
+X    One view:
+X
+X  My use for an SSS is as a system monitor, not as a diagnostic tool.
+XI suppose the diagnostic version also has its uses, but writing and
+Xdistributing such a program is asking for trouble.  I don't see
+Xanything wrong with writing it and distributing only the binaries.
+X
+X
+X   4)  Do you feel that SSS are a security threat themselves?
+X
+X     Some dissent begins to show.... It was almost even here, with the
+Xno's beating out the yes's by a single vote.  However, 2/3 of the yes
+Xvotes qualified there answer by stating something like "a tool can be
+Xmisused" and whatnot.  Here are some typical responses:
+X
+XOf course.  They point to way for bad guys.  Such is life.
+XThey are a tool.  They have the potential for anything.  The
+Xsecurity threat lies in how they are used....
+X
+XNo, as long as they don't breed complacency. Just by running
+Xa SSS each night should not make you thinks your systems are
+Xsecure.
+X
+XFire is also dangerous but VERY useful.
+X
+X
+X   5) Do you think that the SSS should be restricted to be used only
+X   by system administrators (or other people in charge), or should
+X   they be accessible to all?
+X
+X     Here's where the problems start :-)  Everyone wants as many
+Xfeatures as possible, but quite a few of you don't want anyone else
+Xto have it.  Hmm...   Out of 35 responses on this question:
+X  12 - Yes, only SA's.
+X  10 - No.
+X   6 - It would be nice to have it restricted, but... How?
+X   5 - Have two versions; one restricted, one not.  Needless to say,
+X        the dangerous stuff should go in the first.
+X   1 - Restrict only parts that detect bugs/whatever that cannot be
+X        repaired.
+X   1 - Argh!  Help!
+X
+X     Some quotable quotes:
+X
+XI don't see how it could be restricted.
+X
+XAdmins, etc only. (possibly said because I'm an admin. From an
+Xintellectual standpoint, I would want to know about this stuff even
+Xif I was just a user)
+X
+XI think the SSS should be restricted to system
+Xadministrators with the realisation that others can probably
+Xget their hands on the code if they want to. 
+X
+XDefinitely available to all, SA's can be as lazy as anyone and should not be 
+Xallowed to hide behind a veil of secrecy if, in doing so, they expose the 
+Xsystems they administer.
+X
+XIt seems to me that only an "administrator type" will have sufficient
+Xprivilege levels to make _effective_ use of such a tool.  Ordinary users
+Xmay be able to garner _some_ benefit though, if run on their own files.
+XIf possible, can there be an "administrator" mode and a (restriced/limited)
+X"user" mode?
+X
+X(and finally, my personal favorite...)
+X
+XI think that a check for a hole that can't be closed shouldn't be a part of
+Xthe check, if that hole is widespread.  I have no examples of any such hole,
+Xbut a weak spot that can't be closed and has no workaround is one of the few
+Xcandidates for the security by secrecy concept.  I have mixed feelings about
+Xthis, but if I can't fix the hole, I'd rather not have it's existence be
+X"public" knowledge.  A freely available routine to locate the hole would
+Xspread it's existence far and wide.....(?)
+XBut, if I didn't know about it beforehand then it would be good to have a
+Xtool to tell me it existed.  Gads, I hate moral conflicts!
+X 
+X
+X   6) When a SSS finds a security flaw in a system, do you want it to 
+X   indicate how they flaw could be used to compromise your system, or
+X   would you just accept the conclusion and apply a fix?
+X
+X      This question was ill worded and gramatically incorrect, but still
+Xmanaged to conjure up a lot of comments.  Some thought it was asking if
+Xthe system should apply a fix.
+X      In any case, almost 3/4 said Yes, indicate exactly how to exploit
+Xany potential hole.  As usual, there were a few with reservations about
+Xthe info getting out, but.... 
+X   Here are some of the more interesting comments:
+X
+X                (Think about this one!)
+X  *I* would like to know to futher my knowledge of Unix, but more importantly
+Xto make sure that the version I have was not modified by a cracker to
+Xput security holes *into* a system.  (That'd be sneaky :-)
+X
+X   Security by obfuscation doesn't work.
+X
+X   By definition, a SSS is a software system, and therefore has bugs in it.
+XIf it reported a problem which would cause quite a bit of inconvenience if
+Xfixed, or would be difficult to fix, then I would be much more apt to make
+Xthe fix if I knew how the problem could be exploited.  This is important,
+Xbecause many, if not most, sites require only a moderate level of security,
+Xand many security holes are fiendishly difficult to exploit.
+X
+X   We cannot assume that end-purchasers of a system can be as aware of 
+Xthe internal workings of a system as the designers of the system (or SSS)
+Xare.  If a security flaw is discovered, the administrators need to be
+Xinformed about what changes are necessary to remove that flaw, and what
+Xrepercussions they may have.
+X   [...]
+X   Imagine a SSS that knew sendmail(8) was a security flaw
+Xallowing a worm to enter systems.  It would report that sendmail is a 
+Xsecurity flaw, please disable it like....  If the vendor had released
+Xa patch, and the SSS didn't know how it, the administrator (in blind
+Xfaith to this SSS program) might disable a *very* useful program
+Xunnecessarily.
+X
+X
+X   7)  Do you think that there is too much, not enough, or just about
+X   the right amount of concern over computer security?  How about at 
+X   your computer site?  At other sites?
+X
+X      The "not enough"s won, but not by much.  I thought that given
+Xthe paranoia of a security group, this would be a larger victory.
+XLots of people said it depends -- on the type of facility, the size, etc.
+XLarge sites seem to have a healthier view of security (paranoia :-)) than
+Xsmaller/non-governmental.  Only 4 or 5 said there was enough concern.
+XA couple of people mentioned _The Cuckoo's Egg_ as suggested reading
+X(I heartily agree.)
+X
+X   More quotes:
+X
+X  (I don't know if the next answer is true, but I like it anyway!)
+X
+X  This is really a deep philosophical question---something to talk about
+Xover a few beers at the bar, but not here.
+X
+X  I think it's a site dependent problem, and all the above are
+Xtrue: too much, too little, and just right. Computer is not a
+X"one size fits all" situation. Having offered that opinion, I
+Xthink an assessment of my site or other sites is extraneous, and I
+Xwill reserve that opinion.
+X
+X  ... more attention to unauthorized use of the networks.
+X
+X   8)  Do you think that there should be a ruling body that governs
+X   and enforces rules and regulations of the net -- sort of a net.police?
+X
+X     Some of you wondered what this had to do with software security, but
+Xjust about everyone answered anyway.  This one scared me!  The "No's" only
+Xbeat out the "yes's" by one vote.  Yikes!  Maybe I'm from the old school
+Xof thought, but....  Several people said that it couldn't be done anyway;
+Xa couple mentioned they a CERT-like agency to help out, but not control,
+Xand finally two said that the laws and government were already there to
+Xdo this.
+X
+X   It's there, defacto.  The free market is working pretty well.
+X
+X   Absolutely. I quarrel with the "net.police" designation, per se, of
+Xcourse, as do many others. But perhaps something more like a recognized
+Xtrade association, and providing similar services. Also, it is time that
+Xthe basic duties which must be reasonably performed by a site in order for
+Xit to remain on the net should become a requirement rather than a matter
+Xof individual whim.
+X
+X   Yuck!  This is very distasteful to me.  It will probably be necessary
+Xthough as more and more people participate in the net.  Enforcement will
+Xhave to be judicious until secure networking is developed and implemented
+Xgenerally.
+X
+X   No.  Aside from the fact that it'd never work, I like Usenet as an
+Xanarchy.  It has some rough edges, but for the most part it works.  What
+Xdoes this question have to do with SSS-type programs?
+X
+X   Enforcement will be tough and may hold back legitimate users.  But
+Xwe have to start somewhere.  So I suppose that I agree with having
+Xnet.police, as long as they don't turn things into a police.state.net. 
+X
+X
+X   9)  Do you believe that breaking into other people's systems should
+X   continue to be against the law?
+X
+X      Only one said "no", and s/he had a smiley following the answer.
+XBut there were some of you who voiced concern that it wasn't really
+Xagainst the law to begin with.  In _The Cuckoo's Nest_, Cliff Stoll talked
+Xabout a (Canadian, I think) case that the only reason the cracker was
+Xprosecuted was for stealing electricity!  Less than a watt or something.
+XA few of you mentioned denial of services as being a just reason, but
+Xwhat if they break in only at night, when no one else is on, and they
+Xreally don't take anything at all?  Should that be less punishable than
+Xsomeone who sucks away user CPU/disk/whatever?
+X
+X   Breakins should be encouraged and rewarded (1/2 :-).
+X
+X   Yes.  Unquestionably.  However, those laws should not attempt to regulate
+Xinter-system traffic to cause these things to happen.
+X
+X   Yes - and as a felony in all cases, without exception.
+X
+X   Yes but murder, rape, robbery... are more important and laws and
+Xsentencing should reflect this. There are some around who want to treat
+Xcracking as a capital crime!
+X
+X   Yes, from the denial of services standpoint.  I pay $XXX,XXX.XX for a
+Xsystem, and joe blow slides in and sucks away at those resources, there
+Xshould be a nontrivial penalty for getting caught.  Don't behead the guy,
+Xbut monetary fines or community service would be just fine.
+X
+X
+X   I don't know.  I'm not a philosopher.  Certainly causing
+Xdamage to others is wrong, including denial of service,
+Xcompromising sensitive info, or whatever.  I'm concerned
+Xthough that clamping down on young kids will discourage them
+Xfrom becoming computer geeks.  I think we need to encourage
+Xour young people to become technically literate.  If we
+Xdon't become a more expert society we can kiss it goodbye;
+Xall we'll have left is our military solutions, like some
+Xbrainless jock bully...
+X
+X   I'm not sure that it is everywhere - but: Yes.  Should attempting 
+Xto break in be against the law: No.  Is this vague: Yes.
+X
+X   I did not know that it was. The laws about it have not been tested and 
+Xare vague and unclear. You need to be very clear about what the laws
+Xare going to do. 
+X
+X   **HELL FUCKING YES** Those of us who started in UNIX years ago have
+Xfor the most part *always* respected others!! This I can't stress strong
+Xenough.
+X
+X
+X  10)  Is your site academic, government, or commercial in nature?
+X
+X      Just over 1/2 of those that answered claimed university ties,
+Xwith about 1/4 being commercial, 1/6 government, a few research sites,
+Xand a couple that were a mixture.  Sites included Sun, AT&T, SCO (Xenix),
+Xthe DoD, and the Army, among others.
+X
+X(Guess where this one came from :-)
+X
+XResearch.  We invented Unix.
+X
+XAcademic with commercial applications.
+X
+XPrimarily academic, but we are part of the government.
+X
+XAcademic, except when collecting student fees *) *)
+SHAR_EOF
+chmod 0600 cops/extensions/questions ||
+echo 'restore of cops/extensions/questions failed'
+Wc_c="`wc -c < 'cops/extensions/questions'`"
+test 13339 -eq "$Wc_c" ||
+	echo 'cops/extensions/questions: original size 13339, current size' "$Wc_c"
+fi
+# ============= cops/pass_diff.chk ==============
+if test -f 'cops/pass_diff.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/pass_diff.chk (File already exists)'
+else
+echo 'x - extracting cops/pass_diff.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/pass_diff.chk' &&
+X:
+X#
+X#  pass_diff.chk
+X#
+X#   This shell script is a wrapper for the pass.chk password guessing
+X# program.  What this does is save the password file from the last time
+X# passwords were guessed, and then do a "diff" on this file and the
+X# current password file.  This will prevent accounts being checked over
+X# and over again for the same passwords, assuming the password has not
+X# been changed.  If you have a fairly stable passwd environment, this
+X# can save you quite a bit of CPU time...
+X#
+X#   Mechanism:  As explained above, it just diff's the password file
+X# with the password file used last time you checked passwords, and then
+X# calls pass.chk with any flags pass_diff.chk was called with on the
+X# difference of the two files.
+X#
+X#  If the variable $YP is set to "YES", then it will use the the
+X# yppassword file; it is not used automatically, because the idea is
+X# that this can be, used on any password file, by changing the $etc_passwd
+X# var.  See the next paragraph:
+X#
+X#   Warning!  This only checks for changes in the password file itself --
+X# if you change the flags to pass.chk, or if you increase the size of
+X# your dictionary, or whatever, this will not detect the change...
+X# Also, if you want to use this wrapper with to check alternate pasword
+X# files, don't use the "-P" flag (which normally specifies an alternate
+X# password file); instead, change the $etc_passwd variable to whatever
+X# passwd file you want to check.  Otherwise, this wrapper will force
+X# /etc/passwd.
+X# 
+X#  Yellow Pages/NIS?
+XYP=YES
+X
+X# Locations of commands
+XDIFF=/bin/diff
+XCMP=/bin/cmp
+XAWK=/bin/awk
+XTEST=/bin/test
+XCP=/bin/cp
+XMV=/bin/mv
+XRM=/bin/rm
+XYPCAT=/usr/bin/ypcat
+XTOUCH=/bin/touch
+X
+X#
+X# Important files:
+Xetc_passwd=/etc/passwd
+Xold_passwd=./old_passwd
+Xyp_pass=./yp.$$
+Xpasswd_diff=passwd.diff
+X
+X# password guessing program:
+Xpass_chk=./pass.chk
+X
+X# make a dummy password file if it doesn't exist
+Xif $TEST ! -f $old_passwd ; then
+X	$TOUCH $old_passwd
+X	fi
+X
+X# if you use YP:
+Xif $TEST "$YP" = "YES" ; then
+X	$YPCAT passwd > $yp_pass
+X	etc_passwd=$yp_pass
+X	fi
+X
+X# has anything changed?  If so, check passwords, if not, leave quietly.
+Xif $TEST -n "`$CMP $etc_passwd $old_passwd`" ; then
+X	#  If old_passwd file exists, use it, else just use the
+X	# existing passwd file.
+X	$DIFF $etc_passwd $old_passwd | $AWK -F: '/^[<]/{
+X		split($1, user, " "); printf("%s",user[2]); \
+X		for (i=2;i<=NF;i++){
+X			printf(":%s", $i)}; print ""}' > $passwd_diff
+X	$CP $etc_passwd $old_passwd
+X
+X	#  Finally, crack them passwords and get rid of the diff file,
+X	# but only if the file is !0 length.
+X	if $TEST -s $passwd_diff ; then	
+X		$pass_chk $* -P $passwd_diff
+X	fi
+X	$RM -f $passwd_diff
+Xfi
+X
+X# kill off the evidence
+X$RM -f $yp_pass
+X
+X# end
+SHAR_EOF
+chmod 0700 cops/pass_diff.chk ||
+echo 'restore of cops/pass_diff.chk failed'
+Wc_c="`wc -c < 'cops/pass_diff.chk'`"
+test 2685 -eq "$Wc_c" ||
+	echo 'cops/pass_diff.chk: original size 2685, current size' "$Wc_c"
+fi
+# ============= cops/patchlevel.h ==============
+if test -f 'cops/patchlevel.h' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/patchlevel.h (File already exists)'
+else
+echo 'x - extracting cops/patchlevel.h (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/patchlevel.h' &&
+X#define PATCHLEVEL 2
+SHAR_EOF
+chmod 0600 cops/patchlevel.h ||
+echo 'restore of cops/patchlevel.h failed'
+Wc_c="`wc -c < 'cops/patchlevel.h'`"
+test 21 -eq "$Wc_c" ||
+	echo 'cops/patchlevel.h: original size 21, current size' "$Wc_c"
+fi
+# ============= cops/rc.chk ==============
+if test -f 'cops/rc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/rc.chk (File already exists)'
+else
+echo 'x - extracting cops/rc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/rc.chk' &&
+X:
+X#
+X#  Usage: rc.chk
+X#
+X#  This checks pathnames and files inside the shell script files /etc/rc*
+X# for writability.
+X#
+X#  Mechanism:  The commands inside the files /etc/rc* are executed when
+X# the machine is booted.  This shell script greps for commands/paths that
+X# are of these forms:
+X#
+X#	/path/command			# or whatever
+X#		or
+X#	PATH=:/bin:/usr/bin:.		# or whatever
+X#		or
+X#	MYVAR=`/path/command`		# or whatever
+X#	
+X#  It then takes each potential problem-string and uses the program
+X# "is_writable" to determine if it is world writable.  All results are
+X# echoed to standard output.
+X#
+X# 12 Apr 90, Mark Plumbly made it ignore lines starting with rm -f
+X# (popular in rc files) and fixed my code so it would ignore everything
+X# after a ">".
+X#
+XSED=/bin/sed
+XCAT=/bin/cat
+XAWK=/bin/awk
+XLS=/bin/ls
+XTEST=/bin/test
+XEGREP=/usr/bin/egrep
+XECHO=/bin/echo
+XSORT=/usr/bin/sort
+X
+X
+X# CHANGE THIS LINE OR PUT IN FILE NAMES IF/AS NEEDED!
+X#    (for example: init_files="/etc/rc /etc/rc.local")
+X#
+Xinit_files=`$LS /etc/rc*`
+X
+X#
+X#  This should get all paths in /etc/rc* files; at least two types here.
+X# First type starts with a "/", the second is either in the form :
+X#
+X#	PATH=:/bin:/usr/bin:.		# or whatever
+X# or
+X#	MYVAR=`/bin/echo "hello"`	# or whatever
+X#
+X#   Notice also I strip out any references to /tmp, /usr/tmp,
+X# /dev/*ty's, and /dev/null.
+X#
+X# 12 Apr mdp: 	Modified to remove "> file" as well as ">file"
+X#		and remove "rm -f file" (this removes a few bogus ones).
+X#		(i.e. things which are written to or removed only are ignored).
+X#
+Xfirst_pass=`${CAT} ${init_files} 	|				\
+X${SED} -e 's/ *#.*$//'			|				\
+X$AWK '
+X{									\
+X  for (i=1;i<=NF;i++) {							\
+X    if 	((index($i,"/")) &&						\
+X	((first=substr($i,1,1)!=">")) &&				\
+X	$(i-1)!=">" && 							\
+X	( i<=2 || $(i-2)!="rm" || $(i-1)!="-f" ) &&			\
+X	first!="#" &&							\
+X	first!="$" &&							\
+X	(last=substr($i,length($i),1))!="\"")				\
+X	print $i							\
+X    }									\
+X}' | $EGREP -v "/dev/.*ty|/tmp|/usr/tmp|/dev/null" | $SORT -u`
+X
+Xall_files=`$ECHO $first_pass| $SORT | $UNIQ`
+X
+X#  First, get the ones starting with "/":
+X#
+X#   DANGER!  DANGER!  DANGER Will Robinson! Awk runs out of room ("bails
+X# out") if too many files are here....
+Xall_files=`$ECHO $first_pass|$AWK 'BEGIN{RS=FS}{if(substr($0,1,1)=="/")print $0}'`
+X
+Xfor i in $all_files
+X	do
+X	if ./is_writable $i
+X		then
+X		$ECHO "Warning!  File $i (in /etc/rc*) is _World_ writable!"
+X	fi
+X	done
+X
+X# end of script
+SHAR_EOF
+chmod 0700 cops/rc.chk ||
+echo 'restore of cops/rc.chk failed'
+Wc_c="`wc -c < 'cops/rc.chk'`"
+test 2403 -eq "$Wc_c" ||
+	echo 'cops/rc.chk: original size 2403, current size' "$Wc_c"
+fi
+# ============= cops/reconfig ==============
+if test -f 'cops/reconfig' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/reconfig (File already exists)'
+else
+echo 'x - extracting cops/reconfig (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/reconfig' &&
+X:
+X#
+X#  Usage: reconfig
+X#
+X#   This replaces the program paths (e.g. /bin/awk) in COPS with an
+X# alternate path that is found in the file "file.paths".
+X#   All programs are renamed "name.old", and the new version replaces
+X# the original name.  It then uses sed to replace all occurances of
+X# the target strings.
+X#   Basically, the program looks through all directories listed in
+X# $all_dirs for the list of programs in $all_commands and when it finds
+X# them, puts them in a sed source file.  It then goes to all of the
+X# shell files COPS uses ($shell_scripts) and replaces all occurances of
+X# the variables found with the new value.  It goes through some
+X# contortions trying to look for test (it has to find test without
+X# using test), and does some other not so smart things, but it seems
+X# to get the job done.
+X
+X# shell is always here, isn't it?
+XSH=/bin/sh
+X
+X# need these later
+XTEST=
+XAWK=
+XSED=
+XTR=
+X
+X#  Potential directories to find commands:
+Xall_dirs='/bin /usr/bin /usr/ucb /usr/local/bin'
+X
+X#   First things first; are test and echo built-in shell commands?
+X# Theory.  If test is executed correctly and not found in the path
+X# I set, then they should be built into the shell, right?
+XPATH=/bin:/usr/bin
+Xfor dir in $all_dirs
+X	do
+X	if test -f $dir/test
+X		then
+X		TEST=$dir/test
+X		break
+X	fi
+X	done
+X# if not set, then set to default
+Xif test -z "$TEST"
+X	then
+X	TEST=test
+X	fi
+X
+Xfor dir in $all_dirs
+X	do
+X	if $TEST -f $dir/echo
+X		then
+X		ECHO=$dir/echo
+X		break
+X	fi
+X	done
+X
+X# if not set, then set to default
+Xif $TEST -z "$ECHO"
+X	then
+X	ECHO=echo
+X	fi
+X
+X# The sed filter file
+Xlocation=./file.paths
+X
+X#  Target shell scripts in question:
+Xdoc_make=docs/makefile
+Xshell_scripts="makefile $doc_make chk_strings cops crc.chk misc.chk dev.chk ftp.chk is_able.chk cron.chk group.chk passwd.chk rc.chk root.chk suid.chk kuang init_kuang res_diff pass_diff.chk yp_pass.chk"
+X
+X#  Target commands in question, sans those checked above:
+Xall_commands='cc nroff awk cat chmod cmp comm cp date diff egrep expr find grep ls mail mkdir mv rm sed sh sort tftp touch uniq uudecode ypcat'
+X
+Xrest_of_them=' echo test'
+X
+X$ECHO checking to make sure all the shell scripts are here...
+X#  make sure everything is here:
+Xfor i in $shell_scripts
+X	do
+X	if $TEST ! -s $i
+X		then
+X		$ECHO  ERROR -- $i not found!
+X		exit
+X	fi
+Xdone
+X
+X#   This finds the paths to any program used in COPS, then prints out
+X# a sed filter to the file "file.paths" that is used by this shell
+X# script to change all occurances of that command in the COPS system.
+X#
+X#   For example, if sed is in /usr/bin, it will create a line that looks
+X# like this:
+X#
+X# s.AWK=*$.AWK=/usr/bin/sed.
+X#
+X#  This corresponds to the sed command substitute ("-" is used as a
+X# delineator instead of "/" because the strings will be containing
+X# "/"'s) /usr/bin/sed in place of whatever was to the right of the
+X# equal sign.  This works because all commands are accessed by the
+X# variable "$XYZ", where "XYZ" corresponds to the lowercase command
+X# "xyz".  And, of course, all command variables are set at the top
+X# of each command file.
+X#
+X
+X# First we need awk and sed if this shell script will work....
+Xfor dir in $all_dirs
+X	do
+X	if $TEST -f $dir/awk ; then
+X		AWK=$dir/awk
+X		fi
+X	if $TEST -f $dir/sed ; then
+X		SED=$dir/sed
+X		fi
+X	if $TEST -f $dir/tr ; then
+X		TR=$dir/tr
+X		fi
+X	done
+X
+Xif $TEST -z "$AWK" ; then
+X	$ECHO "Cannot find awk; awk is needed to run this shell script"
+X	exit 1
+X	fi
+X
+Xif $TEST -z "$SED" ; then
+X	$ECHO "Cannot find sed; sed is needed to run this shell script"
+X	exit 1
+X	fi
+X
+Xif $TEST -z "$TR" ; then
+X	$ECHO "Cannot find tr; tr is needed to run this shell script"
+X	exit 1
+X	fi
+X
+X# zero out the file, then put in the real locations...
+X$ECHO > $location
+X
+X$ECHO So far so good...
+X$ECHO Looking for all the commands now...
+Xfor command in $all_commands
+X	do
+X	found=false
+X	for dir in $all_dirs
+X		do
+X		# if find the command in one of the directories, print string
+X		if $TEST -f $dir/$command
+X			then
+X			# this converts to upper case
+X			upper=`$ECHO $command | $TR '[a-z]' '[A-Z]'`
+X
+X		$ECHO "s-^$upper=.*\$-$upper=$dir/$command-" >> $location
+X			found=true
+X			break
+X			fi
+X		done
+X	if $TEST "$found" = "false" ; then
+X		if $TEST $command = "strings" ; then
+X			$ECHO Warning!  $command not found!  chk_strings will not work as planned.
+X		elif $TEST $command = tftp ; then
+X			$ECHO Warning!  $command not found!  misc.chk will not work as planned.
+X		elif $TEST $command = uudecode ; then
+X			$ECHO Warning!  $command not found!  misc.chk will not work as planned.
+X		elif $TEST $command = ypcat ; then
+X			$ECHO Warning!  $command not found!  passwd.chk will not work as planned.
+X		elif $TEST $command = nroff ; then
+X			$ECHO Warning!  $command not found!  docs cannot be formatted.
+X		else
+X			$ECHO ERROR!  $command not found!  Change or delete command!
+X			exit
+X			fi
+X		fi
+X	done
+X
+X$ECHO "s-^ECHO=.*\$-ECHO=$ECHO-" >> $location
+X$ECHO "s-^TEST=.*\$-TEST=$TEST-" >> $location
+X
+X# almost forgot -- we need chmod & mv to make this reconfig work, too:
+Xfor dir in $all_dirs
+X	do
+X	if $TEST -f $dir/mv ; then
+X		MV=$dir/mv
+X		fi
+X	if $TEST -f $dir/chmod ; then
+X		CHMOD=$dir/chmod
+X		fi
+X	done
+X
+X$ECHO Ok, now doing substitutions on the shell scripts...
+Xfor i in $shell_scripts
+X	do
+X	$ECHO "Changing paths in $i..."
+X	$SED -f $location $i > $i.new
+X	$MV $i $i.old
+X	$MV $i.new $i
+X	# finally, make sure everything is back to executable status
+X	$CHMOD 700 $i
+X
+Xdone
+SHAR_EOF
+chmod 0700 cops/reconfig ||
+echo 'restore of cops/reconfig failed'
+Wc_c="`wc -c < 'cops/reconfig'`"
+test 5322 -eq "$Wc_c" ||
+	echo 'cops/reconfig: original size 5322, current size' "$Wc_c"
+fi
+# ============= cops/res_diff ==============
+if test -f 'cops/res_diff' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/res_diff (File already exists)'
+else
+echo 'x - extracting cops/res_diff (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/res_diff' &&
+X:
+X#
+X#  res_diff /path/to/secure_directory current_report
+X#
+X#   This shell script just looks to see if anything has changed since
+X# the last time... it just cuts out the first line (the date) and does
+X# a diff... returns a 0 if it has changed, a 1 otherwise...
+X#
+X#  Started to use head and tail, but some SysV doesn't have 'em.  Bah!  Who
+X# needs 'em anyway, when you have awk :-)
+X# 
+XDIFF=/bin/diff
+XTEST=/bin/test
+XAWK=/bin/awk
+XLS=/bin/ls
+XRM=/bin/rm
+X
+X#
+X# Important files:
+Xif $TEST -d "$1" ; then
+X	old_file=`$LS -t $1 | $AWK 'NR==1'`
+Xelse
+X	exit 2
+X	fi
+X
+X# has anything changed?
+X$AWK 'NR > 5' $1/$old_file > /tmp/tmp.$$.foo
+X$AWK 'NR > 5' $2 > /tmp/tmp.$$.bar
+X
+Xif $TEST -n "`$DIFF /tmp/tmp.$$.foo /tmp/tmp.$$.bar`" ; then
+X	$RM -f /tmp/tmp.$$.foo /tmp/tmp.$$.bar
+X	echo There is a difference....
+X	exit 1
+X	fi
+X
+X$RM -f /tmp/tmp.$$.foo /tmp/tmp.$$.bar
+X# echo There is no difference....
+Xexit 0
+X# end
+SHAR_EOF
+chmod 0700 cops/res_diff ||
+echo 'restore of cops/res_diff failed'
+Wc_c="`wc -c < 'cops/res_diff'`"
+test 886 -eq "$Wc_c" ||
+	echo 'cops/res_diff: original size 886, current size' "$Wc_c"
+fi
+# ============= cops/root.chk ==============
+if test -f 'cops/root.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/root.chk (File already exists)'
+else
+echo 'x - extracting cops/root.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/root.chk' &&
+X:
+X#
+X#  Usage: root.chk
+X#
+X#  This shell script checks pathnames inside root's startup files for 
+X# writability, improper umask settings (world writable), non-root
+X# entries in /.rhosts, and to ensure that root is in /etc/ftpusers.
+X# Also check for a single "+" in /etc/hosts.equiv (world is trusted),
+X# and that /bin, /etc and certain key files are root owned, so that you
+X# can't, say, rcp from a host.equived machine and blow over the password
+X# file... this may or may not be bad, decide for yourself.
+X# Startup files are /.login /.cshrc /.profile
+X#
+X#  Mechanism:  These files contain paths and filenames that are stripped
+X# out using "grep".  These strings are then processed by the "is_writable"
+X# program to see if they are world writable.  Strings of the form:
+X#
+X#	path=(/bin /usr/bin .)
+X#		and
+X#	PATH=/bin:/usr/bin:.:
+X#
+X# are checked (using grep) to ensure that "." is not in the path.  All
+X# results are echoed to standard output.  In addition, some effort was
+X# put into parsing out paths with multiple lines; e.g. ending in "\",
+X# and continuing on the next line.
+X#  For umask stuff, simply grep for umask in startup files, and check
+X# umask value.  For /etc/ftpuser, simple grep to check if root is in
+X# the file.  For /etc/hosts.equiv, just check to see if "+" is alone
+X# on a line by awking it.
+X#
+X#
+XAWK=/bin/awk
+XSED=/bin/sed
+XTEST=/bin/test
+XECHO=/bin/echo
+XGREP=/bin/grep
+XSORT=/usr/bin/sort
+XEXPR=/bin/expr
+XLS=/bin/ls
+X
+X# root startup/important files
+Xcsh=/.cshrc
+Xsh=/.profile
+Xrhosts=/.rhosts
+Xbig_files="/.login /.cshrc /.profile"
+X
+X# root should own *at least* these, + $big_files; you can check for all files
+X# in /bin & /etc, or just the directories (the default.)
+X# root_files="/bin /bin/* /etc /etc/* $big_files $rhosts"
+Xroot_files="/bin /etc $big_files $rhosts /etc/passwd /etc/group"
+X
+X# misc important stuff
+Xftp=/etc/ftpusers
+Xequiv=/etc/hosts.equiv
+X
+X#   should't have anyone but root owning /bin or /etc files/directories
+X# In case some of the critical files don't exist (/.rhost), toss away error
+X# messages
+Xnon_root=`$LS -ld $root_files | $AWK '{if ($3 != "root") print $NF}'`
+Xif $TEST -n "$non_root" ; then
+X	$ECHO "Warning!  Root does not own the following file(s):"
+X	$ECHO $non_root
+X	fi
+X
+X# parse into separate paths:
+Xfor i in $big_files
+X	do
+X	if $TEST -s $i
+X		then
+X		./chk_strings $i
+X
+X		# check for umask stuff (thanks to Bruce Spence):
+X		if umsk=`$GREP umask $i ` 2>/dev/null
+X			then
+X			mask=`$ECHO $umsk|$AWK '{if($2!=""){if(length($2)==1) print "00"$2; \
+X				else if (length($2)==2) print "0"$2; \
+X				else print $2} else print "000"}'`
+X#			perm=`$EXPR substr $mask 3 1`
+X			perm=`$ECHO $mask | $SED 's/[0-9][0-9]//'`
+X			if $TEST "$perm" -lt 2 -o "$perm" = 4
+X				then
+X				if $TEST "$umsk"
+X					then
+X					$ECHO "Warning!  Root's umask set to $umsk in $i"
+X					fi
+X				fi
+X			fi
+X		fi
+X	done
+X
+X# check to see if root is in ftpusers file
+Xif $TEST -s $ftp
+X	then
+X	if $TEST ! "`$GREP "root" $ftp`"
+X		then
+X		$ECHO Warning!  $ftp exists and root is not in it
+X		fi
+X	fi
+X
+X# check for a "+" in hosts.equiv.  Bad.  Bad dog.
+Xif $TEST -f $equiv ; then
+X	$AWK '{if (NF==1 && $1=="+") printf("Warning!  A \"+\" entry in %s!\n", "'$equiv'")}' $equiv
+X	fi
+X
+X# check for non-root entries in /.rhosts
+X#$AWK '{if ((NF==1&&!($1=="localhost" || $1=="root"))||(NR!=1&&$2!="root")) printf("Warning!  Non root entry in %s! %s\n", $rhosts, $0)}' $rhosts
+X
+X
+X# checking paths...
+X#
+X#  For both the .profile and .cshrc, the methods are similar.  Awk for
+X# lines with "path" or "PATH", rip out the guts, then check with is_writable 
+X# Trying to pull out the multi line stuff was a pain...  no thanks to
+X# Jay Batson for telling me this was broken :-)
+X#
+X{
+X#
+X# Get the root paths from $csh.
+Xif $TEST -f $csh; then
+X	$AWK '{foo=substr($NF,1,length($NF)); \
+X	if (bar && foo=="\\" )
+X		foobar[i++] = $0; \
+X	if (bar && foo==")") {
+X		bar = 0; \
+X		foobar[i++] = $0;}}
+X/path/	{ foobar[i++] = $0; \
+X	foo=substr($NF,1,length($NF)); \
+X	if (foo=="\\" )
+X		bar = NR \
+X	}
+XEND { for (j=0; j<=i; j++)
+X	print foobar[j] } ' $csh |
+X	$SED -e 's/#.*$//' -e 's/(//' -e 's/)//' -e 's/.*=//' |
+X  	$AWK '{for (i=1;i<=NF;i++) print $i}'
+Xfi
+X
+X#
+X# Get the root paths from $sh.
+Xif $TEST -f $sh; then
+X	$AWK -F: '{foo=substr($NF,1,length($NF)); \
+X	if (bar && foo=="\\" )
+X		foobar[i++] = $0; \
+X	if (bar) {
+X		bar = 0; \
+X		foobar[i++] = $0;}}
+X	/PATH/	{ foobar[i++] = $0; \
+X		foo=substr($NF,1,length($NF)); \
+X		if (foo=="\\" )
+X			bar = NR \
+X		}
+X	END { for (j=0; j<=i; j++)
+X		print foobar[j] }' $sh |
+X	$SED -e 's/#.*$//' -e 's/^export.*$//' -e 's/PATH=//' |
+X 	$AWK '{split($0,temp,":"); for (i in temp) \
+X 			if (temp[i] == "") print "."; \
+X 			else print temp[i]}'
+Xfi
+X} |
+X $SORT -u |
+X  while read i
+X  do
+X	# check to see if "." is in path
+X	if $TEST "." = "$i"
+X	then
+X		$ECHO "Warning!  \".\" (or current directory) is in roots path!"
+X	fi
+X
+X	if ./is_writable $i
+X	then
+X		$ECHO "Warning!  Directory $i is _World_ writable and in roots path!"
+X	fi
+X  done
+X
+X# end of script
+SHAR_EOF
+chmod 0700 cops/root.chk ||
+echo 'restore of cops/root.chk failed'
+Wc_c="`wc -c < 'cops/root.chk'`"
+test 4901 -eq "$Wc_c" ||
+	echo 'cops/root.chk: original size 4901, current size' "$Wc_c"
+fi
+# ============= cops/stop.sample ==============
+if test -f 'cops/stop.sample' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/stop.sample (File already exists)'
+else
+echo 'x - extracting cops/stop.sample (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/stop.sample' &&
+X-rwsr-xr-x  1 root     bin         10240 Jun 13 13:13 /bin/chgrp
+X-rwsr-xr-x  1 root     bin         12288 Jun 13 13:13 /bin/df
+X-rws--s---  1 root     term        22528 Aug 13 13:13 /bin/login
+X-rws------  1 root     bin         21504 Jun 13 13:13 /bin/login.old
+X-rwsr-xr-x  1 root     bin         22528 Jun 13 13:13 /bin/mail
+X-rwsr-xr-x  1 root     bin         14336 Jun 13 13:13 /bin/passwd
+X-rwxr-sr-x  1 root     MEM         22528 Jun 13 13:13 /bin/ps
+X-rwsr-xr-x  1 root     bin         16384 Jun 13 13:13 /bin/su
+X-rwxr-sr-x  1 root     MEM         14336 Jun 13 13:13 /etc/dmesg
+X-rwsr-x---  1 root     operator    29696 Jun 13 13:13 /etc/dump
+SHAR_EOF
+chmod 0600 cops/stop.sample ||
+echo 'restore of cops/stop.sample failed'
+Wc_c="`wc -c < 'cops/stop.sample'`"
+test 644 -eq "$Wc_c" ||
+	echo 'cops/stop.sample: original size 644, current size' "$Wc_c"
+fi
+# ============= cops/suid.chk ==============
+if test -f 'cops/suid.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/suid.chk (File already exists)'
+else
+echo 'x - extracting cops/suid.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/suid.chk' &&
+X:
+X#
+X#   Shell script intended to be run periodically by cron in order
+X#   to spot changes in files with the suid or sgid bits set.
+X#
+X#	suid.chk	840919		Prentiss Riddle
+X#
+X#     This changes into the $SECURE directory first, then 
+X#   uses find(1) to search the directories in $SEARCH for all
+X#   files with the 4000 or 2000 permission bits set.  $STOP is a file
+X#   containing "ls -lga" output for known setuid or setgid programs.
+X#   Any additions or changes to this list represent potential security
+X#   problems, so they are reported to the users named in $INFORM.
+X#
+X#  Modified 8/15/89, Dan Farmer:
+X#	Just changed the program/doc names and some of the temp
+X#  files to make it fit in with the rest of the programs....
+X#  Modified 12/26/90, Dan Farmer:
+X#       Now flags SUID shell scripts and world writeable SUID files, too.
+X#
+X
+X#  CHANGE THIS LINE!
+XINFORM="foo@bar.edu"
+X#
+X
+XTEST=/bin/test
+XECHO=/bin/echo
+XLS=/bin/ls
+XCAT=/bin/cat
+XMAIL=/bin/mail
+XCHMOD=/bin/chmod
+XSORT=/usr/bin/sort
+XCOMM=/usr/bin/comm
+XFIND=/usr/bin/find
+XRM=/bin/rm
+XAWK=/bin/awk
+XSED=/bin/sed
+XGREP=/bin/grep
+XEGREP=/usr/bin/egrep
+XYPCAT=/usr/bin/ypcat
+X
+X#   Checking for non-executable SUID files;
+X#
+X#   simple way; just see if file says it's a script -- this is a *definite*
+X# no-no, and the default:
+X#	type_filter="$GREP script"
+X#
+X#   Safer/paranoid way; anything but an executable is flagged (may not be
+X# good over NFS mounts with different binaries...
+X#	type_filter="$GREP -v xecut"
+X#
+X#   You may want to grep out "ermission" string, too, in case NFS mount
+X# stuff that you can't read gives you "permission denied", even as root:
+X#	type_filter="$EGREP"' -v '"xecut|ermiss"
+X#
+Xtype_filter="$GREP script"
+X
+X# Yellow Pages check further down...
+Xetc_passwd=/etc/passwd
+XSECURE=.
+XSEARCH=/
+XSTOP=./suid.stop
+XTEMPOLD=./fsold$$
+XTEMPCUR=./fscur$$
+XTEMPNEW=./fsnew$$
+XTEMPGON=./fsgon$$
+XTEMPM=./fsm$$
+X
+Xumask 077
+XOLDCWD=`pwd`
+X
+Xif $TEST ! -d "$SECURE"
+X	then
+X	$ECHO "Error -- Security directory $SECURE doesn't exist"
+X	exit 1
+Xfi
+X
+X$CHMOD 700 $SECURE
+Xcd $SECURE
+X
+X# find the setuid programs and sort
+X$FIND $SEARCH \( -perm -4000 -o -perm -2000 \) -exec $LS -ldga {} \; | \
+X	$SORT > $TEMPCUR
+X
+X# compare with the sorted stop list
+X$SORT <$STOP >$TEMPOLD
+X$COMM -13 $TEMPOLD $TEMPCUR | $SORT +8 >$TEMPNEW
+X$COMM -23 $TEMPOLD $TEMPCUR | $SORT +8 >$TEMPGON
+X
+X# report changes
+Xif $TEST -s $TEMPNEW -o -s $TEMPGON; then
+X
+X	# YP?  Thanks again, to Rob Kolstad...
+X	# Scratch files for testing:
+X	yp_passwd=./ypsuid.$$
+X
+X	# generic test to check for yp use?
+X	if $TEST -f $YPCAT -a -s $YPCAT ; then
+X		$YPCAT passwd > $yp_passwd
+X		if $TEST $? -eq 0 ; then
+X			etc_passwd=$yp_passwd
+X			fi
+X		fi
+X
+X	# get the hostname:
+X	if $TEST -s /bin/hostname ; then
+X		HOSTNAME=`/bin/hostname`
+X	elif $TEST -s /bin/uname ; then
+X		HOSTNAME=`/bin/uname -n`
+X	elif $TEST -s /usr/bin/uuname ; then
+X		HOSTNAME=`/usr/bin/uuname -l`
+X		fi
+X	if $TEST -z "$HOSTNAME" ; then
+X		HOSTNAME="foobar"
+X		fi
+X
+X	$ECHO >>$TEMPM
+X        $ECHO ATTENTION:                        >> $TEMPM
+X        $ECHO "SUID Security Report for "`$DATE`>> $TEMPM
+X
+X        $ECHO "from host $HOSTNAME"             >> $TEMPM
+X	$ECHO >>$TEMPM
+X
+X# NEW STUFF... $TEMPNEW holds the new SUID files; stuff the results in $TEMPM:
+X	for i in `$AWK '{print $NF}' $TEMPNEW`
+X		do
+X		# don't want SUID files to be world writable!
+X		./is_able $i w w >> $TEMPM
+X
+X		type=`file "$i" | $SED 's/.*://' | $type_filter`
+X
+X		if $TEST -n "$type" ; then
+X			owner=`$LS -ldga $i | $AWK '{print $3}'`
+X			uid=`$AWK -F: '/^'"$owner"'/{print $3}' $etc_passwd`
+X
+X			# set to nobody, if can't find 'em in the password file
+X			if $TEST -z "$uid" ; then
+X				uid="-2"
+X				fi
+X
+X			if $TEST "$uid" -eq "0" ; then
+X				$ECHO Warning!  ROOT owned SUID file $i is type: $type! >> $TEMPM
+X			else
+X				$ECHO Warning!  User: $owner SUID file $i is type: $type! >> $TEMPM
+X				fi
+X			fi
+X		done
+X
+X	if $TEST -s $TEMPNEW; then
+X		$ECHO 'These files are newly setuid/setgid:' >>$TEMPM
+X		$ECHO '' >>$TEMPM
+X		$CAT $TEMPNEW >>$TEMPM
+X		$ECHO '' >>$TEMPM
+X	fi
+X	if $TEST -s $TEMPGON; then
+X		$ECHO 'These files are no longer setuid/setgid:' >>$TEMPM
+X		$ECHO '' >>$TEMPM
+X		$CAT $TEMPGON >>$TEMPM
+X	fi
+X	$MAIL $INFORM <$TEMPM
+X	$RM -f $TEMPM
+Xfi
+X$RM -f $TEMPOLD $TEMPCUR $TEMPNEW $TEMPGON $yp_passwd
+X
+X#  end it all....
+Xexit 0
+SHAR_EOF
+chmod 0700 cops/suid.chk ||
+echo 'restore of cops/suid.chk failed'
+Wc_c="`wc -c < 'cops/suid.chk'`"
+test 4209 -eq "$Wc_c" ||
+	echo 'cops/suid.chk: original size 4209, current size' "$Wc_c"
+fi
+# ============= cops/README.yp ==============
+if test -f 'cops/README.yp' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/README.yp (File already exists)'
+else
+echo 'x - extracting cops/README.yp (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/README.yp' &&
+X
+X  There are a couple of things to keep in mind if you're using yellow
+Xpages/NIS.  Automatic checks are made in the passwd.chk, group.chk, suid.chk,
+Xand ftp.chk.  However, if you want to crack passwords from that database,
+Xyou need to do one of three things:
+X
+X1)  If you're using "pass_diff.chk" to check only changed passwords (on
+Xline 108 of "cops"), change the flag on line 33 in "pass_diff.chk" from
+X"NO" to "YES"
+X
+X2)  If you're not running "pass_diff.chk", replace "pass.chk" with
+X"yp_pass.chk" on line 109 of "cops".
+X
+X3)  Create a file with ypcat and run "pass.chk -P file".
+X
+SHAR_EOF
+chmod 0600 cops/README.yp ||
+echo 'restore of cops/README.yp failed'
+Wc_c="`wc -c < 'cops/README.yp'`"
+test 582 -eq "$Wc_c" ||
+	echo 'cops/README.yp: original size 582, current size' "$Wc_c"
+fi
+# ============= cops/yp_pass.chk ==============
+if test -f 'cops/yp_pass.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops/yp_pass.chk (File already exists)'
+else
+echo 'x - extracting cops/yp_pass.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops/yp_pass.chk' &&
+X:
+X#
+X#  yp_pass.chk [whatever flags you want to pass to pass.chk]
+X#
+X#   This shell script is a wrapper for the pass.chk password guessing
+X# program for systems using Yellow Pages/NIS.  All this does is dump the
+X# yppassword file into a temp file, then runs "pass.chk" with whatever
+X# flags were passed to it.
+X#
+X#   Obviously, it doesn't make any sense to use the "-P" flag (which
+X# specifies an alternate password file.)
+X# 
+X
+XTEST=/bin/test
+XRM=/bin/rm
+XYPCAT=/usr/bin/ypcat
+X
+X# Important files:
+Xyp_pass=./yp.$$
+X
+X# password guessing program:
+Xpass_chk=./pass.chk
+X
+X# generic test to check for yp use?
+Xif $TEST -f $YPCAT -a -s $YPCAT ; then
+X	$YPCAT passwd > $yp_pass
+Xelse
+X	$RM -f $yp_pass
+X	exit 1
+X	fi
+X
+X#  crack them passwords
+Xif $TEST -s "$yp_pass" ; then	
+X	$pass_chk $* -P $yp_pass
+X	fi
+X
+X# kill off the evidence
+X$RM -f $yp_pass
+X
+X# end
+SHAR_EOF
+chmod 0600 cops/yp_pass.chk ||
+echo 'restore of cops/yp_pass.chk failed'
+Wc_c="`wc -c < 'cops/yp_pass.chk'`"
+test 827 -eq "$Wc_c" ||
+	echo 'cops/yp_pass.chk: original size 827, current size' "$Wc_c"
+fi
+exit 0

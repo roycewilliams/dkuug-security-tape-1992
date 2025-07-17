@@ -1,0 +1,189 @@
+From mojo!mimsy!haven!uvaarpa!mcnc!rutgers!tut.cis.ohio-state.edu!snorkelwacker!bloom-beacon!athena.mit.edu!raeburn Fri Apr 20 05:43:34 EDT 1990
+Article: 1 of alt.security:
+Path: mojo!mimsy!haven!uvaarpa!mcnc!rutgers!tut.cis.ohio-state.edu!snorkelwacker!bloom-beacon!athena.mit.edu!raeburn
+>From: raeburn@athena.mit.edu (Ken Raeburn)
+Newsgroups: alt.security
+Subject: Re: This group, and a security problem I have noticed on the internet
+Keywords: One large can of worms please
+Message-ID: <1990Apr20.063526.7390@athena.mit.edu>
+Date: 20 Apr 90 06:35:26 GMT
+References: <22952@uflorida.cis.ufl.EDU>
+Sender: news@athena.mit.edu (News system)
+Reply-To: Ken Raeburn <Raeburn@MIT.Edu>
+Distribution: alt
+Organization: MIT Project Athena
+Lines: 47
+Status: R
+
+
+In article <22952@uflorida.cis.ufl.EDU>, esj@bikini.cis.ufl.edu (Eric S.
+Johnson) writes:
+|> The above doesn't worry me to much. What worries me more are all the
+|> sites on the internet which actually export their filesystems 
+|> to the world. I have noticed this on MANY sites. I have sent notes
+|> to a few postmasters. Some respond, some dont. Some fix it, and 
+|> some major sites out there are still exporting root filesystems to
+|> the world. Often with critical files (like say.. /.rhosts or /etc/rc.local) 
+|> group writable. 
+
+|> Do some folks out there just not care? Do some managers just assume since 
+|> 3.2NFS based systems are unsecurable anyway that it don't matter? 
+|> The thought of some doof out on the internet with root on his workstation
+|> who simply knows how to use the mount command writing all over my disks
+|> with no audit trace whatsoever gives me a bit of the heebie-jeeebies.
+
+In the version of NFS that we are using here at MIT's Project Athena,
+we've added some state to the server side to record what users are on
+what workstations.  When a request comes in, the {IP-address,
+remote-UID} pair is looked up in the appropriate kernel table, and
+either a local UID (and GID set) is retrieved, or the request is
+executed with the uid of "nobody".  This would seem to plug most of
+these sorts of problems, unless you're concerned about people off-site
+reading your world-readable files.
+
+Since we use Kerberos to authenticate the RPC transaction that sets up
+this information, it is reasonably difficult to fake out.  However,
+there are still some problems: Another workstation could send a packet
+using your IP address.  The next user on your workstation could "su"
+to you and do some damage, if you don't tell the server you're going
+away.  And, of course, letting someone else log in to your workstation
+while you're still logged in is also a good way to run into trouble.
+(The workstations we put in publicly-accessible clusters all have the
+same well-publicized root password.)
+
+I think the only way to really get around most of these problems is to
+provide cryptographic checksums (or encryption, if you're concerned
+about someone seeing the stuff you're doing), with short-lifetime keys
+established between workstation and server.  (I was under the
+impression that newer versions of NFS from Sun were doing something
+like that, but I think it assumed a secure workstation.)
+
+Has anyone heard of anything being done along these lines with the
+assumption of an unsecure workstation?  (Well, let's make it easy:
+Only one user at a time, and he can do anything to the machine except
+leave altered system software for the next guy.)
+
+
+From mojo!mimsy!haven!uflorida!rex!samsung!think!mintaka!bloom-beacon!bloom-beacon!wesommer Sun Apr 22 21:22:25 EDT 1990
+Article: 6 of alt.security:
+Path: mojo!mimsy!haven!uflorida!rex!samsung!think!mintaka!bloom-beacon!bloom-beacon!wesommer
+>From: wesommer@athena.mit.edu (Bill Sommerfeld)
+Newsgroups: alt.security
+Subject: NFS security problems.
+Message-ID: <1990Apr20.123059.17990@athena.mit.edu>
+Date: 20 Apr 90 12:30:36 GMT
+Sender: news@athena.mit.edu (News system)
+Organization: None.
+Lines: 30
+Status: R
+
+If you are connected to the Internet or any other network with
+potentially "hostile" users, are running "standard" NFS, and don't
+have your router filtering out NFS packets (UDP port 2059, I believe),
+you are really asking for trouble.  Note that filtering out packets to
+the "mount" service or to portmap is not sufficient.
+
+I won't go into details (I've been flamed enough times for explaining
+the holes in other contexts), but there are a number of attacks on NFS
+which make any measures short of the above insufficient for preventing
+off-net NFS attacks.
+
+It doesn't take much work to build a user-space NFS client for UNIX (I
+built one myself in less than a day, using only the NFS protocol spec
+and the Sun's so-called RPC package); given the reasonably wide
+availability of socket emulation libraries for MS-DOS, the same code
+should run with minor modifications on any PC with an ethernet card.
+No, I won't give it away; if you really want one, you can spend the
+day or so it takes to build it.
+
+If you want a distributed file system which was designed with security
+(and performance, and scalability) in mind from the start, take a look
+at the Andrew File System, which should soon be available as a product
+from the Transarc corporation (located in beautiful downtown
+Pittsburgh, PA).
+
+				- Bill
+--
+The USSR is one of the few places |    Bill Sommerfeld at MIT/Project Athena
+on earth where the currency is    |    sommerfeld@mit.edu
+softer than the toilet paper      |
+
+
+From mojo!mimsy!haven!uflorida!rex!samsung!zaphod.mps.ohio-state.edu!uwm.edu!uwvax!rang Sun Apr 22 21:23:06 EDT 1990
+Article: 7 of alt.security:
+Path: mojo!mimsy!haven!uflorida!rex!samsung!zaphod.mps.ohio-state.edu!uwm.edu!uwvax!rang
+>From: rang@cs.wisc.edu (Anton Rang)
+Newsgroups: alt.security
+Subject: Beware of default ownership of system directories under NFS
+Summary: Directories owned by 'bin' can be exploited via NFS
+Message-ID: <RANG.90Apr20094918@derby.cs.wisc.edu>
+Date: 20 Apr 90 14:49:18 GMT
+Sender: news@spool.cs.wisc.edu
+Organization: UW-Madison CS department
+Lines: 30
+Status: R
+
+Many SunOS versions, and probably other systems, set the ownership of
+system files to 'root' when they are installed, but make many system
+directories owned by 'bin'.  If somebody manages to break into some
+machine (for instance a workstation) which NFS-mounts these
+directories, this becomes a security problem.
+
+  The problem, simply stated, is that NFS prevents requests made by
+'root' on a remote machine from having special privilege by
+translating them into requests from 'nobody'.  It doesn't give 'bin'
+the same treatment.  So, while a root workstation user can't, for
+instance, directly replace /usr/ucb/vi (for instance) by becoming
+root, if the /usr/ucb directory is owned by 'bin', they can replace it
+by first deleting (or renaming) it and then putting their own in its
+place.
+
+  The easy fix to this problem is to make sure that all directories
+containing important files which are mounted on remote machines are
+owned by 'root', not 'bin'.  In my experience, changing the ownership
+of these directories does not affect system operation.
+
+  There are many other NFS-related security holes, but this is an easy
+one to fix, and one of the more commonly exploited ones that I know of.
+
+  Hope this helps someone,
+
+	Anton
+   
++---------------------------+------------------+-------------+
+| Anton Rang (grad student) | rang@cs.wisc.edu | UW--Madison |
++---------------------------+------------------+-------------+
+
+
+From mojo!mimsy!haven!uflorida!rex!samsung!cs.utexas.edu!uunet!snorkelwacker!apple!well!nagle Sun Apr 22 21:24:07 EDT 1990
+Article: 8 of alt.security:
+Path: mojo!mimsy!haven!uflorida!rex!samsung!cs.utexas.edu!uunet!snorkelwacker!apple!well!nagle
+>From: nagle@well.sf.ca.us (John Nagle)
+Newsgroups: alt.security
+Subject: Re: NFS security
+Message-ID: <17343@well.sf.ca.us>
+Date: 20 Apr 90 16:40:41 GMT
+References: <22952@uflorida.cis.ufl.EDU> <1990Apr20.063526.7390@athena.mit.edu>
+Reply-To: nagle@well.UUCP (John Nagle)
+Distribution: alt
+Lines: 16
+Status: R
+
+
+      Also bear in mind that you can't really trust source IP addresses.
+If someone just wants to cause trouble, they can send datagrams with forged
+source addresses, and make things happen at the receiving end.  This is hard
+to do with TCP services, but with UDP-based services, it can be made to work.
+The attacker doesn't get any confirmation back that anything happened, since
+all the replies go to the wrong place.  But it may be possible to do something
+improper, such as change the mode on a file or delete something.
+
+      One can improve defenses against IP-level impersonation by having all
+routers which connect yourlocal net to the outside world detect and reject
+source IP addresses which come from the "wrong side" of the router.  This
+also has the advantage of squelching traffic being misrouted in a circle due
+to routing loops.
+
+					John Nagle
+
+

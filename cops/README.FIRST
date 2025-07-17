@@ -1,0 +1,22 @@
+
+   This is version 1.02 of COPS.  The two files "cops.102.tar" and
+"cops.102.tar.Z" are identical, except the latter is in compressed
+format.  The first patch is unneccesary if you use the tar file; it
+is included in case you have made changes to the original release
+and wish to apply the patches yourself.  The README file is the same
+as the README file contained in the tar files, and contains somewhat
+of an overview of the package.  Finally, if you prefer a shar format,
+check out the "shars" directory.  They should be identical to the
+tar files, but might be useful if binary transfers are giving you
+troubles (the shars are fully patched too, BTW).
+
+  The next release, 1.03 is in beta form, in directory 1.03.beta.
+
+  Good luck, and if you have any questions, write or call me:
+
+df@cert.sei.cmu.edu
+
+(412) 268-7197
+
+-- dan
+

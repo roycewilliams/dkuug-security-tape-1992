@@ -1,0 +1,77 @@
+From stripes@eng.umd.edu Fri Dec 28 17:35:25 1990
+Received: from frob.eng.umd.edu 
+	by bacchus.eng.umd.edu (5.64/UMDENG-0.4/09-20-90)
+	id AA02816; Fri, 28 Dec 90 17:35:22 -0500
+Received: by frob.eng.umd.edu (5.64/umdeng-0.4/09-20-90)
+	id AA00786; Thu, 27 Dec 90 00:36:07 -0500
+Date: Thu, 27 Dec 90 00:36:07 -0500
+From: stripes@eng.umd.edu (Joshua Osborne)
+To: istari@eng.umd.edu
+Subject: passwords...
+Status: RO
+
+In article <1990Dec21.023312.29311@lokkur.dexter.mi.us>, scs@lokkur.dexter.mi.us (Steve Simmons) writes:
+> The best way to prevent guessable passwords is to prevent users from
+> using guessable ones.  Dan Klein has a paper in the Proceedings of the
+> Second UNIX Security Workshop "A Survey of, and Improvements to,
+> Password Security".  It's available from the USENIX Association, 2560
+> Ninth Street, Suite 215, Berkeley, CA 94710, $13.00 for members, $16.00
+> for nonmembers.  He presents the following list of things to reject in
+> passwords (I've assigned numbers so I can refer to them):
+> 
+> 1.	Passwords based on the user's account name
+> 2.	Passwords which exactly match a word in a dictionary (not just
+> 	/usr/dict/words)
+> 3.	2, with words reversed
+> 4.	Passwords which are simple conjugations of a dictionary word
+> 	(ie, plurals, adding "ing" or "ed" to the end of the word, etc.)
+> 5.	Passwords which match a word in a dictionary with an arbitrary
+> 	letter turned into a control character [[I'd assume this means
+> 	mapping A to ^A, B to ^B, etc.  --scs ]]
+> 6.	Passwords based on the users initials or given name
+> 7.	Passwords which match a word in the dictionary with some or all
+> 	letters capitalized
+> 8.	6, with words reversed
+> 9.	Passwords which match a dictionary word with the numbers `0',
+> 	`1', `2' and `5' substituted for the letters `o', `l' [[the
+> 	rest of this sentence is scrambled.]]
+> 10.	Passwords which are patterns from the keyboard (i.e, "aaaaaa"
+> 	or "qwerty").
+> 11.	Passwords which are shorter than a specific length.
+> 12.	Passwords which do not contain mixed upper and lower case, or
+> 	mixed letters and number, or mixed letters and punctuation
+> 13.	Passwords which consist solely of numeric characters (SSN,
+> 	telephone numbers, etc)
+> 14.	Passwords which look like licence numbers from Your State.
+> 
+> (advance apologies for any errors in transcription, Dan).
+> 
+> The Bishop passwd program Tom Christiansen mentioned gives you the
+> ability to screen passwords in categories 1-3, 6-8, and 10-14.  Running
+> this on a DECSystem 5810 (a bit faster than a 3100, but not twice as
+> fast) it requires about 2 seconds of wall time to change a password on
+> a loaded system.  About 90% of this time is spent comparing against the
+> dictionary(ies).  A hashed dictionary would shorten this tremendously.
+> Even so, given the relative infrequency with which users change passwords
+> two seconds is acceptable.  It's my not-so-humble opinion that Bishops
+> program could be trivially modified to handle case 5, and a proper
+> `dictionary' could be built to handle case 4.
+> 
+> And Bishop's passwd program can give reasonable descriptions of why
+> a given password was rejected.
+> 
+> So what's my point?  If you want your users to use better passwords,
+> there is no technical barrier to prevent it.  The only real hard parts
+> are political acceptance and explaining to them what's a good password.
+> The password program will tell them explicitly what's not.
+> -- 
+> "SO be it!  The fate of the UNIVERSE is in your hands!"
+> "Talk about job-related stress."
+
+-- 
+           stripes@eng.umd.edu          "Security for Unix is like
+      Josh_Osborne@Real_World,The          Multitasking for MS-DOS"
+      "The dyslexic porgramer"                  - Kevin Lockwood
+"Don't over-comment"     - p151 The Elements of Programming Style 2nd Edition
+                                   Kernighan and Plauger
+

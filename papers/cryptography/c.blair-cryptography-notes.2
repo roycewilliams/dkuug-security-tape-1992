@@ -1,0 +1,577 @@
+% This is part 2 of a LaTeX file of cryptography notes.  It will not
+% run correctly unless concatenated with part 1.
+%
+\section{A probabilistic test for primality}\label{prim}
+Suppose we want to test whether 247 is a prime number.  Recall two facts
+about prime numbers $p$:\begin{enumerate}\item $\co{a^{p-1}}1p$ if 
+$a\not\equiv0$.\item If $\co{a^2}1p$, then $a\equiv1$ or $a\equiv-1$.
+\end{enumerate} Suppose we randomly choose $a=2$ and test for consistency
+with these conditions.  Since $\co{2^{246}}{220}{247}$ we can conclude
+immediately that 247 is {\it not\/} a prime.\pq Perhaps we were lucky
+with $a=2$.  If we try $a=27$, we get $\co{a^{246}}1{247}$.  However,
+$$27^{246}\equiv \left(27^{123}\right)^2\hbox{ and }\co{27^{123}}{170}{247}$$
+which is inconsistent with the second condition, again implying 247 is not
+a prime.\pq Not every choice of $a$ is inconsistent with the conditions.
+For example, $160^{123}\equiv-1$ (hence $160^{246}\equiv1$) and 
+$178^{123}\equiv1$. However, the fact that some choices of $a$ give a
+proof that a number is not prime suggests the following test:
+\pq{\bf Rabin's Primality Test.} Let $p-1=2^km$, where m is an odd number.
+Choose $a$ at random.  Compute the sequence $$a^m\quad a^{2m}\quad a^{4m}
+\dots a^{p-1}\qquad\hbox{mod $p$}$$This sequence is consistent with $p$
+being a prime if $a^m\equiv1$ or if the sequence has  $-1$ at some point,
+followed by 1 for all subsequent terms.  In all other cases, $a$ provides
+a proof that $p$ is not prime (this is usually described by saying that
+$a$ is a {\it witness\/} that $p$ is not prime).  Repeat this test for
+some number of random choices of $a$, and conclude that $p$ is a prime
+if none of the chosen $a$ is a witness.
+\pq Two features of the test should be emphasized.  It does not provide
+an absolute guarantee that $p$ is a prime, only that it is probably a prime
+(we will analyze exactly how probable in the next section).  Secondly,
+when we know $p$ is not a prime, we do not know what its factors are---
+factoring is much more difficult than testing for primality.\pq[A different
+probabilistic test is described near the end of the RSA paper.]
+\subsection{Analysis of the Rabin test}
+We will calculate how many $a$ are witnesses that 247 is not a prime.  Our
+analysis will make use of the fact that $247=13(19)$ and that 2 is a
+primitive root for both 13 and 19.  However, it should be emphasized that
+this information (which will not be available in general) was not used
+when we did the test itself.
+\pq How many $a$ satisfy $\co{a^{123}}1{247}$?  We must have 
+$\co{a^{123}}1{13}$
+and $\co{a^{123}}1{19}$.  Let $\co a{2^x}{13}$.  Then we must have $123x$
+divisible by 12.  This gives the possible values $0,4,8$ for $x$, which
+implies $a\equiv1,3$,~or~9 mod 13.  Similarly, if $\co a{2^x}{19}$, $123x$
+must be divisible by 18, which leads to $a\equiv1,7$,~or~11 mod~19.  (we
+actually found 178 above by solving $\co a9{13}$ and $\co a7{19})$
+The 3 choices mod~13 and mod~19 imply there are 9 $a$ with $a^{123}\equiv1$.
+\pq How many $a$ satisfy $\co{a^{123}}{-1}{247}$? If $\co{2^{123x}}{-1}{13}$,
+we must have $\co{123x}6{12}$, which leads to $a\equiv4,7$, or~17 mod~13.
+Similarly, we get $a\equiv8,18$, or~12 mod~19.  Thus we get 9 $a$ satisfying
+this condition.\pq If we choose $1\le a\le246$ at random, the chances of
+getting an $a$ that is not a witness are $18/246\approx.073$.  If we do the
+test 5~times, the chance of incorrectly concluding 247 is a prime is 
+$\approx2(10^{-6})$.\pq [We actually did more work than necessary, ident%
+ifying the exact set of numbers which would lead to a wrong conclusion.
+If we only want to count how many numbers there are, we could make use 
+of observations such as that, for any $k$, an equation $\co{123x}k{12}$
+will either have 3 solutions or no solutions.]
+\begin{Th}[Rabin]If $p$ is not a prime, at least $3/4$
+of $1\le a\le p-1$ are witnesses.\end{Th}
+This implies that for any non-prime $p$, the chance of being incorrectly
+identified after 5 tests is $\le4^{-5}<.001$.
+\section{Probabilistic Encryption\label{pro}}
+[References to ``the paper'' in this section are to ``Probabilistic
+Encryption,'' in {\it Journal of Computer \& System Sciences\/}~28,
+pp.~270--299. I have also used {\it Primality and Cryptography},
+by E.~Kranakis]\pq
+So far, the public key systems have been functions $f$ such that 
+the message $M$ presumably cannot be computed from the encoding $f(M)$.
+A further concern arises as to whether, even if the adversary cannot
+identify $M$ exactly, he may be able to obtain some partial information
+about $M$, for example tell whether $M$ is an even number, a square,
+a power of 2, etc.\pq An extreme case of this would be a scenario
+in which the adversary knows the message is one of two possibilities,
+$M_1$ or $M_2$. Since we have been assuming that the function $f$ is
+easy to calculate, all the adversary needs to do is compare $f(M_1)$ and
+$f(M_2)$ with the ciphertext.
+\pq Probabilistic encryption is a system designed to avoid these problems.
+Instead of $f(M)$ being a single number, the calculation of $f(M)$ involves
+the sender doing some things randomly during the calculation, so that $M$
+has many different encryptions.  Indeed, the probability should be very
+close to 1 that if the same message is sent twice, the encryptions should
+be different.
+\subsection{The Goldwasser-Micali encryption system}
+As in many previously discussed systems, the person receiving messages
+chooses two primes ($\sim100$ digits) $p,q$ and announces $n=pq$.
+This system is concerned with whether, for a given number $a$, there is
+$x$ with $\co{x^2}an$. Such $a$ are called {\it squares\/} or (in most
+books and papers) {\it quadratic residues}. For technical reasons, when
+we refer to squares mod $n$, we will exclude $a$ which are divisible by
+$p$ or $q$.
+The following facts are easy to prove, in some cases using primitive roots.
+\begin{Le} If $a,b$ are squares, then $ab$ is a square.
+If $a$ is a square and $b$ is not a square, then $ab$ is not a square.
+\label{prod}\end{Le}
+\begin{Le} $a$ is a square mod $n$ if and only if it is a square mod $p$
+and a square mod $q$.\label{kn1}\end{Le}
+\begin{Le} Let $h=\frac{p-1}2$.  If $a$ is a square mod $p$, $\co {a^h}1p$.
+If $a$ is not a square, $a^h\equiv-1$.\label{kn2}\end{Le}
+This implies that, if $p$ and $q$ are known, it is easy to decide whether
+$a$ is a square.  The encryption system depends on the assumption (called
+QRA in the paper [p.~294]) that this problem is very difficult if $p,q$
+are unknown.\begin{Le} $1/2$ of the numbers from 1 to $p-1$ are squares
+mod $p$.     Take the numbers from 1 to $n$ and leave out those divisible
+by $p$ or by $q$. Divide the remaining $(p-1)(q-1)$ numbers into four groups 
+according to whether they are squares or not mod $p$ and also mod $q$.
+There are $(p-1)(q-1)/4$ numbers in each group.\end{Le}
+\pq The numbers which are not squares mod $p$ and also not squares mod $q$
+are called {\it pseudo-squares}.  Example: If $p=5$, $q=7$, the squares
+mod~35 are 1, 4, 9, 16, 29, 11 ($29\equiv8^2$, $11\equiv9^2$; 
+note we don't include 25 and 14, because
+they're divisible by $p,q$).  The pseudo-squares must be congruent to
+2 or 3 mod~5 and to 3, 5, or 6 mod~7.  Thus the pseudo-squares are
+17, 12, 27, 3, 33, 13.
+\pq The encryption system is primarily concerned with the union of the
+set of squares and pseudo-squares--- this set is unfortunately denoted
+both by $Z^1_n$ (p.~291) and by $Z^{{}+1}_n$. Since exactly half the
+members of $Z^1_n$ are squares, the crude idea of saying ``this is a
+square'' all the time will
+only be right half the time.  (QRA) says that no algorithm that runs
+in a reasonable amount of time can do much better than this.  [the precise
+definitions of ``reasonable'' and ``much better'' are what require the
+concepts of circuits of size $k$ and ``$\epsilon$-approximating'']
+\pq In addition to announcing $n$, the person receiving messages announces
+one pseudo-square $y$.  To send a sequence of 0's and 1's, the sender 
+converts them into numbers as follows: for each number in the sequence,
+an $x$ is chosen {\it at random}.   0 is converted into $x^2$ mod~n,  1 is
+converted into $yx^2$.  Each 0 or 1 in the sequence can be converted
+(depending on the choice of $x$) into one of $(p-1)(q-1)/4$ different
+numbers.  If the message is of length 500 (about one line of ordinary
+text), and $p,q\approx10^{100}$, the message can be encoded into 
+$~(1/4)10^{100000}$ different possible ciphertexts.
+\pq By Lemma~\ref{prod}, 0's are converted to squares, 1's are converted
+to pseudo-squares.  Since the receiver knows $p,q$, Lemmas~\ref{kn1}
+and~\ref{kn2} show he can efficiently decode the message.
+\pq In the subsequent sections, we will give the essential ideas
+of Goldwasser \& Micali's proof that (assuming QRA) this system will
+prevent the adversary from 
+obtaining any partial information about the plaintext.
+\subsection{Weak laws of large numbers}
+Both the encryption algorithm and the hypothetical algorithms used by
+the adversary involve random events.  We will need a theorem that says
+that, if an event with probability $p$ is tried $r$ times, the chance that
+the number of successes is not close to $pr$ is small.  The paper uses%
+\footnote{The usual central limit theorem cannot be used because it does
+not tell you how large $r$ must be for the normal distribution to give
+a good estimate.}
+(p.~293) \begin{Le}Let $S_r$ be the number of successes in $r$ tries.
+For any $\psi$ $$\Pr\left(\left|\frac{S_r}r-p\right|
+>\psi\right)<\frac1{4r\psi^2}$$
+\label{weak}\end{Le}
+\par{\bf Proof:} $S_r$ is a random variable, which is the sum of $r$
+independent random variables, each having value 0 or 1.  Let $V$ be the
+variance of $S_r$.  Each of the 0--1 variables has variance $\le1/4$,
+so $$r^2\psi^2\Pr(|S_r-rp|>r\psi)<V\le\frac r4$$
+\pq Lemma \ref{weak} provides a very rough estimate of the probability.
+An improvement requiring much more work is:
+\begin{Le} \label{strong}With the same notation as Lemma~\ref{weak}, 
+\begin{eqnarray*}&&\Pr\left(\frac{S_r}r\ge p+\psi\right)\\&&
+\le\frac1{\sqrt{2\pi r(p+\psi)(1-p-\psi)}}
+\left(\frac{(1-p)(p+\psi)}\psi\right)\exp\left(
+-\frac{r\psi^2(1+\psi)}{2(1-p)(p+\psi)}\right)
+\qquad(*)\end{eqnarray*}\end{Le}
+\par For comparison, if $p=.5$, $r=1000$, the probability that there are
+$\ge520$ successes is .1087.  Lemma~\ref{weak} gives%
+\footnote{We divide by 2 to eliminate the probability of $\le480$.}
+an upper limit of .3125,
+while Lemma~\ref{strong} gives .1498.  (these figures courtesy of 
+Mathematica)\pq One reason the paper does not
+use Lemma~\ref{strong} is that it does not give a simple formula for
+how large $r$ would have to be in terms of the other quantities. We will
+not use this result later, and you should skip to the section~\ref{Sa}
+unless you like to manipulate formulas.
+\pq{\bf Proof:} We will assume $pr+r\psi$ is integer.
+>From the binomial theorem:
+\begin{eqnarray*}
+\Pr(S_r\ge rp+r\psi)&=&\sum_{i\ge pr+r\psi}
+\left(\begin{array}{c}r\\i\end{array}
+\right)p^i(1-p)^{r-i}\\&\le&\left(\begin{array}{c}r\\pr+r\psi\end{array}
+\right)p^{pr+r\psi}(1-p)^{r-pr-r\psi}(1+\alpha+\alpha^2+\dots)\\
+&&\hbox{where }\alpha=\frac{p(r-pr-r\psi)}{(1-p)(pr+r\psi+1)}
+\end{eqnarray*}$p+\psi\le1$ implies $p-p\psi-p^2>0$ and
+$$\sum\alpha^i=\frac1{1-\alpha}=\frac{(1-p)(pr+r\psi+1)}{r\psi+1-p}\le
+\frac{(1-p)(p+\psi)}\psi$$ which gives the second factor of $(*)$. We
+use Stirling's formula on the binomial coefficient and group it with the
+powers of $p$ and $1-p$ to obtain:
+$$\left(\frac 1{\sqrt{2\pi r(p+\psi)(1-p-\psi)}}\right)
+\left(\frac p{p+\psi}\right)^{pr+r\psi}
+\left(\frac{1-p}{1-p-\psi}\right)^{r-pr-\psi r}\quad(**)$$
+The first factor of $(**)$ is the first factor of $(*)$.  We
+obtain upper bounds on the rest of $(**)$, using $$-A-\frac{A^2}{2(1-A)}
+\le \ln(1-A)\le-A-\frac{A^2}2$$(the lower bound on $\ln(1-A)$ 
+involves a geometric series)
+\begin{eqnarray*}(pr+r\psi)\ln\left(1-\frac\psi{p+\psi}\right)
+&\le&-r\psi-\frac{r\psi^2}{2(p+\psi)}\\
+(pr+\psi r-r)\ln\left(1-\frac\psi{1-p}\right)&\le&
+\frac{(r-pr-r\psi)\psi}{1-p}+
+\frac{(r-pr-r\psi)\psi^2(1-p)}{2(1-p)^2(1-p-\psi)}\\
+&=&r\psi-\frac{\psi^2r}{1-p}\left(-1+\frac12\right)\end{eqnarray*}
+Adding these and using $\exp$ gives the remaining factor of $(*)$.
+\subsection{The magic of sampling\label{Sa}}
+We have $10^6$ envelopes.  Inside each envelope is a piece of paper with
+0 or 1 written on it.  If we want to know exactly how many envelopes have
+each number, we have to open them all.  Suppose we want to estimate the
+fraction of the envelopes of each kind, and we want the proportion to be
+accurate to within .05.  Now we need only open $9(10^5)$ envelopes.
+\pq The situation changes dramatically if we only want to estimate the
+proportion with high probability.  If we are willing to accept a .01
+probability of an error $>.05$, Lemma~\ref{weak} implies we only need
+to open a randomly chosen sample of $10^4$ envelopes\footnote{Lemma
+\ref{strong} and Mathmatica suggest 400 envelopes are enough.}.
+\pq The special feature of problems involving squares and pseudo-%
+squares is that sampling is possible.  We saw in our discussion of
+the Rabin system that every number mod $n$ has four square roots.
+Thus if we choose one of the $(p-1)(q-1)$ numbers $x$ not divisible%
+\footnote{Even though $p,q$ are unknown, the gcd of $x,n$ can
+be computed.} by $p$ or $q$
+ and compute $x^2$~mod~n, each square has a $(p-1)(q-1)/4$
+chance of being chosen.  It is also important that it is possible to
+sample from $Z^1_n$ (the set of squares and pseudo-squares) even if
+$p,q$ are not known.\begin{Le} \label{Jac}There is an efficient algorithm for
+deciding if $a\in Z^1_n$.\end{Le}The proof of this is difficult, 
+involving ``quadratic reciprocity'' and the ``Jacobi symbol.''  The
+algorithm itself is not that complicated, and is given in the RSA 
+paper.\pq Given this lemma, we can sample in $Z^1_n$ by choosing $x$
+at random and testing if it is in the set.  If not, another $x$ is
+chosen.  Since roughly half of $1\le x\le n$ is in $Z^1_n$, this won't
+take too long.\pq The different sampling possibilities we have discussed
+so far have all assumed that only $n$ was known.  If we are given a single
+pseudo-square $y$, we can sample among all pseudo-squares by calculating
+$yx^2$ for $x$ randomly chosen.
+\pq The possibility of doing these various kinds of sampling
+is closely related to properties 2(a) and (c) in the paper (p.~277).
+\subsection{Determining algorithm performance by sampling}\label{samp}
+We are interested in algorithms for deciding whether a given number
+is or is not a square.  As with the algorithm in Section~\ref{prim},
+there is some probability that, for a given input $a$, the algorithm
+may give the wrong answer.
+\pq Let $p_a$ be the probability that a given algorithm gives the correct
+answer for input $a$.  We are also interested in $p_S$, which is the
+average of $p_a$ over all squares $a$, and $p_{PS}$, the average over
+all pseudo-squares, and $p_Z$, the average of $p_a$ over all $a\in Z^1_n$.
+\pq If we are given an algorithm, we can easily determine $p_S$ by
+running it with input $a=x^2$ on a sample of randomly chosen $x$ and
+counting the number of times the algorithm answers ``this is a square.''
+\pq The procedure for determining $p_Z$ is more elaborate.  Suppose we
+have an algorithm for which $p_S=.6$.  Using Lemma~\ref{Jac}, generate
+a sample of 100 members of $\zo$, and run the algorithm on each of them.
+Suppose we get the answer ``this is a square'' 65 times.  There are 
+$\sim50$ squares in the sample, on which there have been .6(50) correct
+responses and 20 incorrect.  Pseudo-squares have been identified as 
+squares $65-30=35$ times, which suggests $\ps\approx15/50$.  Finally
+$p_Z=(p_S+\ps)/2\approx.45$.\pq Lemma~\ref{weak} or \ref{strong} can
+be used to determine the probability that these estimates come within
+a specified amount.
+\subsection{Two versions of QRA}
+\begin{enumerate}\item There is no efficient algorithm for distinguishing
+squares from pseudo-squares with $p_a>1-\epsilon$ for all $a\in \zo$.
+\item There is no efficient algorithm with $p_Z>.5+\epsilon$
+\end{enumerate}\par It would seem that (1) is not as strong as (2). Note
+that (2) allows an algorithm with $p_S=.9$ and $\ps=.2$.  This would be
+something that says ``this is a square'' almost all the time, occasionally
+correctly identifying a pseudo-square.  However, the paper (p.~293)
+shows that (1) implies (2).
+\pq Suppose we are given an algorithm.  We estimate $p_S,\ps,p_Z$ with
+high probability using the techniques in Section~\ref{samp}.
+To take a specific example, we will assume we find $p_S=.6$, $\ps=.45$.
+We want to test whether $a$ is a square.  Run the algorithm on $ax^2$
+for 1000 randomly chosen $x$. If $a$ is a square, the algorithm will say
+``this is a square'' $\approx600$ times.  If $a$ is a pseudo-square, the
+answer will be ``this is a square'' $\approx550$ times.
+\subsection{Knowing a pseudo-square does not help much}
+QRA talks about the ability to identify squares when only $n$ is known.
+In the proposed encryption system, a pseudo-square $y$ is also announced.
+The paper shows (p.~295) that this does not make the problem easier.\pq
+Suppose we have an algorithm which takes as input $a,y$ and tries to
+decide if $a$ is a square. Assume $p_Z=.55$ whenever $y$ is a pseudo-square.
+Choose $y\in\zo$ at random, then use the techniques from Section~\ref{samp}
+to estimate $p_Z$.  Since half the numbers in $\zo$ are pseudo-squares,
+you will quickly find a $y$ for which $p_Z=.55$.
+\subsection{The inability to distinguish two plaintexts}
+Theorem~5.1 of the paper addresses the issue we mentioned at the
+beginning of section~\ref{pro}.  It shows that if we have an algorithm
+which
+can identify messages $m_1$ and $m_2$
+and  efficiently tell the difference between an en%
+cryption of $m_1$ and an encryption of $m_2$, then we could construct
+an algorithm which efficiently distinguishes squares from pseudo-squares.
+Thus (QRA) implies we cannot tell the difference between $m_1$
+and $m_2$. \pq {\bf Proof:}\footnote{The argument we give is a
+simplification of the one in the paper, in that we do not use the
+``sampling walk.''  The more complicated argument seems to be necessary
+to analyze encryption systems in general, as opposed to those based
+on squares and pseudo-squares.} Suppose we are trying to decide
+whether $a\in\zo$
+ is a square and that the two distinguishable
+ messages are \begin{eqnarray*}m_1&=&01001011\\m_2&=&11101101 \end{eqnarray*}Choose
+8 $x_i$ randomly and consider the sequences $$\vbox{\halign{&\hfil\quad$#$\cr
+x_1^2&ax_2^2&x_3^2&x_4^2&ax_5^2&x_6^2 &ax_7^2&ax_8^2\cr ax_1^2&ax_2^2&ax_3^2&x_4^2&ax_5^2&ax_6^2&x_7^2&ax_8^2\cr}}$$
+If $a$ is a pseudo-square, these will be randomly chosen encodings
+of  $m_1$ and $m_2$.  In this case, the performance of our assumed
+algorithm on the two sequences (averaged over repeated random choices
+of $x_i$) will be different.  If $a$ is a square, both sequences
+will be randomly chosen encodings of the message consisting of
+all 0's, so the algorithm's response on average to the two sequences
+will be identical.
+\subsection{Semantic Security} Theorem~5.2 of the paper shows that
+there is no property of the plaintext message which can be efficiently
+estimated by looking at the ciphertext.  Typical properties might
+be ``the last bit of the plaintext is 0'' or ``the number of 1's
+is twice as much as the number of 0's.''  In general, a property
+is defined in the paper as the value of a function $f(m)$ which
+takes a message as input and gives a number as output.  If $f(m)$
+is constant for all $m$, prediction of $f(m)$ is trivial.  Similarly,
+if $f(m)$ is almost constant for almost all $m$, there is a simple
+algorithm which will be close to right with high prob% ability.
+ \pq We wish to show that, except in the special cases we've  mentioned,
+there is no efficient algorithm which will predict $f(m)$ from
+the ciphertext for $m$.  If there were,
+  we  could run our algorithm to estimate $f(m)$
+on the ciphertext from randomly generated $m$ until we found $m_1$,
+$m_2$ on which the algorithm behaved differently.  But this would
+contradict the result of the previous section.
+\pq [The paper points out that it is not assumed that $f(m)$ is
+an easily computable function.  I think this is a minor issue.
+ The theorem really discusses the capabilities of a an easily computable
+program for estimating $f$.]
+\subsection{How to play poker over the telephone}
+We will not analyze an entire game of poker, but just the task
+of each player [we will assume only two players]
+ getting dealt cards so that (i) each player gets his cards at
+random, with all cards equally likely (ii) neither player knows
+what his opponent has (iii) the players cannot get the same cards.
+You will probably appreciate the procedure more if you first try
+to devise a way of doing this yourself.\pq
+Several previous attempts to use cryptographic devices for this
+purpose were flawed\footnote{R.\ Lipton, ``How to cheat at mental
+poker,'' {\it Proceedings of AMS Short Course on Cryptography}}.
+ The elaborate procedure we describe is based on some number-theory
+tools developed in section~\ref{Ra}
+ and earlier in this section:\begin{enumerate}
+\item If $n=pq$ and $a$ is a square mod~$n$, it has four square
+roots. If we know roots $r_1,r_2$ with $r_1\not\equiv\pm r_2$,
+we can find $p$, $q$.\item If $\co p34$, $a$ is a square mod $p$
+if and only if $-a$ is not a square (Lemma~\ref{kn2}).
+If we also have $\co q34$,
+then $a\in\zo$ if and only if $-a\in\zo$.\item We can test whether
+or not $a\in\zo$ without knowing $p,q$.\end{enumerate}
+\pq Two techniques are used repeatedly.  They are also of interest
+in other applications.\begin{Th}[random numbers]\label{R} B can generate
+a random number so that A does not know its value now, but can
+verify it later. \end{Th}A ``first try'' might be for B to generate
+a random number and give an encryption of it to A, with the key
+ revealed for verification later.  This does not work, since
+A cannot be sure that B chose his number at random.\pq To insure
+randomness, A gives B a second number (which A is supposed to
+choose at  random) after receiving B's encryption, 
+and the number used by B is the ``exclusive or'' of the two:
+\begin{center}\begin{tabular}{r} A chooses 0110001\\B chooses 1011011\\
+\cline{1-1}B uses 1101010\end{tabular}\end{center}
+Even if one of the players does not choose his number at random,
+the result will be random as long as the other player does.
+\begin{Th}\label{UU}B can ask A a question related to $n$.  The answer to
+this question may or may not allow B to factor $n$.  At the time
+the question is asked, A cannot tell whether the answer he gives
+B is useful or  useless, but this can be verified later.\end{Th}
+{\bf Proof:} A chooses primes $\co{p,q}34$, and announces $n=pq$.
+ Using the technique of Theorem~\ref{R}, B generates a random $x$, and
+will ask A for a square root of $a\equiv x^2$.  At the time the
+question is asked, A will know $a$ but not $x$.  B is allowed to
+specify whether the square root A gives him is or is not in $\zo$.\pq
+ If $x\in\zo$ and B specifies that the square root is in $\zo$,
+A will give B $\pm x$, which is useless.  B can get useful information
+by specifying that the square root is not in $\zo$.  If $x\not\in\zo$,
+the square root in $\zo$ will be useful, and the other will be
+useless.  \pq Since $x$ is  randomly chosen, and half the possible
+$x$ are in $\zo$ and half are not, A will not be able to guess
+right more than half the time whether he is being asked for useful
+or useless information.
+\subsubsection*{The procedure}
+\begin{enumerate}\item A announces $n_1,\dots n_{52}$, each of
+which is a product of two large primes $\co{}34$.  He encodes the
+names of the different cards using different $n_i$ and also announces
+these.  [if B finds the factors
+of one of the $n_i$, it does not help him identify the other cards]
+B does the same thing using $m_1,\dots m_{52}$.
+\item To get a card, B asks A one question for each $n_i$, using
+the procedure of Theorem~\ref{UU}.  51 of the questions will be useless.
+ The  useful question allows B to decode the name of the card he
+receives. [it is crucial that A will be able to verify the uselessness
+of the other 51 questions after the game.]
+\item B deletes the $m_i$ corresponding to the card he received
+(this ensures A will not get this card).
+\item A gets a card by asking 51 questions about the remaining
+$m_i$,  of which 50 are useless.
+He deletes the $n_i$ corresponding to this card.
+\item If B gets a second card, he asks 51 questions.  He avoids
+getting the same card twice by not asking a useful question about
+the same $n_i$ as the first time.\end{enumerate}
+This procedure is too cumbersome to be practical, but it is a good
+example of the kinds of things that can be done using cryptographic
+procedures.  Current research focusses on other tasks involving
+exchanges of encrypted and partially encrypted information between
+two players. 
+\section{Pseudo-random number generators}[This section is based on Blum, Blum,
+\& Shub, ``A simple unpredictable pseudo-random number generator,''
+{\it SIAM J. Computing\/}~15, 364--383.]\pq
+Many programs (e.~g., simulations, one-time-pads) make use of numbers
+that are supposed to be random.  A genuine source of randomness might
+be a subroutine that made calls on something like a built-in Geiger
+counter.  We will be concerned with algorithms that produce a sequence
+of numbers (usually 0's and 1's) which appears random (precise definition
+will be given later).\pq A typical example of such an algorithm is the
+function {\tt rand()} in the C programming language. Each call updates
+an internally maintained $N$ using the formula
+$$N=N*1103515245+12345\quad\hbox{mod } 4294967296=2^{32}$$with the 
+output given by $2^{-16}N$~mod~$2^{15}$.\pq I recently wrote a program
+to roll dice which involved using {\tt rand()}~mod~6.  In over 100
+calls, it never happened that the same number occurred on two consecutive
+ rolls, even though this should have happened about $1/6(100)$ times!
+This suggests this particular generator has some problems.\footnote{Knuth
+suggests that a better way to obtain a random number between 0 and~$k-1$
+is to use $k\,${\tt rand()}${}/M$, where $M$ is the maximum value of {\tt
+rand()}.}\pq In this section, we will present random number generators
+for which it can be proved (given assumptions like (QRA)) that such
+problems will not occur.
+\subsection{The Quadratic Generator} Let $n=pq$, where $p,q$ are primes
+$\co{}34$.  For each prime, $a$ is a square if and only if $-a$ is not
+a square.  This implies that, if $\co x{\pm a_1}p$ and $\co x{\pm a_2}q$,
+there will be exactly one choice which makes $x$ a square mod~$n$.
+Hence, if $b$ is a square mod~$n$, exactly one of its four square roots
+will also be a square.  This {\it principal\/} square root will be
+denoted by $\sqrt b$.
+\pq The quadratic generator uses a randomly chosen square $x$ (called the 
+{\it seed\/}) not divisible by $p$ or $q$ to generate a sequence of
+0's and 1's ({\it bits\/}).  The sequence is $a_i$~mod~2, where $a_0=x$
+and $\co{a_{i+1}}{\sqrt{a_i}}n$:$$x\ \hbox{mod }2\quad\sqrt x\hbox{ mod }2
+\quad\sqrt{\sqrt{x}}\hbox{ mod }2\quad\dots$$
+(from a practical point of view, it is simpler to generate the sequence
+starting with the last number and squaring)\pq
+As a small example with $n=589=19(31)$ and $x=81$, the sequence of $a_i$ is
+$$81\quad9\quad586\quad175\quad112\quad443\quad214\quad237\dots$$(note
+that $\sqrt 9=-3$, not~3) which gives the sequence of bits 11010101.
+\subsection{The Next Bit Theorem}
+It would certainly be undesirable if there were an efficient algorithm
+which took as input the first $k$ bits of the sequence from the generator
+and guessed the $(k+1)$-st bit with probability much greater than $1/2$.
+We say a generator satisfies the {\it Next Bit Condition\/} if there is
+no such algorithm.\begin{Th}If (QRA) is true, the quadratic generator
+satisfies the Next Bit Condition.\end{Th}{\bf Proof:} We will show that
+an algorithm that could predict the $(k+1)$-st bit could be used to
+distinguish squares from pseudo-squares mod~$n$.\pq Let $b\in\zo$. The
+sequence of length $k$ $$b^{2^k}\quad b^{2^{k-1}}\dots b^4\quad b^2$$
+can be considered as coming from the quadratic generator with seed the
+first term of the sequence.  If we take this sequence mod~2 and give
+it to our predictor, we would get a guess as to whether $$\co
+{\sqrt{b^2}}{0\hbox{ or }1}2$$which has probability $>1/2$ of being
+right.  The principle square root of $b^2$ is $b$ if $b$ is a square,
+$n-b$ if $b$ is a pseudo-square.  Since $b\not\equiv n-b$~mod~2, the
+information from the predictor gives us a guess as to whether $b$ is
+a square.
+\subsection{The Efficient Test Theorem}
+When we are given a sequence of bits from a pseudo-random number generator,
+we often test the quality of the generator by doing things like counting
+the fraction of 0's, the fraction of subsequences of the form 111, etc.
+\pq A {\it test\/} is defined to be an efficiently computable function
+$T$ which takes as input a sequence of bits of length $m$ 
+and gives as output a number between 0 and 1.  Define
+\begin{eqnarray*}A_r&=&\hbox{Average over all sequences $s$ }\{T(s)\}\\
+A_g&=&\hbox{Average over $s$ from the generator }\{T(s)\}\end{eqnarray*}
+These averages both involve finite operations--- $A_r$ involves adding
+up $T(s)$ over the $2^m$ possible $s$ and dividing.  Similarly $A_g$
+deals with an average over all possible seeds (presumably the number of
+possible seeds is much less than $2^m$).
+\pq It would take too much time to calculate $A_r,A_g$ exactly, but they
+can be estimated with high probability using the sampling ideas in
+section~\ref{Sa}.
+\pq A generator is said to {\it satisfy\/} the test $T$ if $A_g$ is close
+to $A_r$, i.~e., $T$ cannot tell the difference between sequences from
+the generator and genuinely random sequences. [we are being deliberately
+vague about the precise definition of ``close.'']
+\begin{Th} If a generator satisfies the Next Bit Condition, it satisfies all
+efficiently computable tests $T$.\end{Th}
+{\bf Proof:} We will show that, if we had $T$ with $A_r$ significantly
+different from $A_g$, then for some $k$, $T$ could be used to predict
+the $(k+1)$-st bit from the first $k$ bits with probability somewhat
+larger than $1/2$. This would contradict the Next Bit Condition.
+\pq If $s$ is a sequence of $i$ bits, let $f_s$ be the fraction of all
+possible seeds whose first $i$ bits are $s$.  For some $s$, we may have
+$f_s=0$.  Note that$$A_g=\sum_sf_sT(s)$$where the sum is over all $s$ of
+length~$m$.\pq
+The proof involves two steps:\begin{enumerate}\item Identify a $0\le
+k\le m-1$ such that the behavior of $T(s)$ depends in a significant way
+on the $(k+1)$-st bit of $s$.\item Use $T$ to make a prediction for
+the $(k+1)$-st bit.\end{enumerate}
+\pq The proof of step~1 uses ideas similar to the ``sampling walk'' used
+to prove Theorem~5.1 in the Goldwasser-Micali paper.  Define
+$$A_i=\sum_{s,t}f_s2^{i-m}T(s\circ t)$$where the sum is over all $s$ of length
+$i$ and $t$ of length $m-i$, with $\circ$ meaning to combine
+$s$ and $t$ to create a sequence of length $m$.
+$A_i$ is the expected value of $T$ applied to a sequence in which the
+first $i$ bits come from the generator (using a randomly chosen seed),
+with the remaining bits coming from a genuinely random source.
+\pq Note that $A_0=A_r$, $A_m=A_g$, and that all $A_i$ can be 
+estimated with high probability using sampling. Since\begin{equation}
+|A_r-A_g|\le\sum_1^{m}|A_i-A_{i-1}|\hbox{ there is $k$ with }
+|A_{k+1}-A_{k}|\ge |A_r-A_g|/m\label{kch}\end{equation}
+  This completes step 1.\footnote{Instead of estimating
+all the $A_i$, we could begin by estimating $A_{.5m}$.  We would next
+estimate either $A_{.75m}$ or $A_{.25m}$, depending on whether $A_{.5m}$
+was closer to $A_0$ or $A_m$.}
+\pq In step 2, we are concentrating on a specific sequence $s$ of length
+$k$, where $k$ satisfies (\ref{kch}).  We
+wish to use the behavior of $T$ to predict whether the $(k+1)$-st bit
+should be 0 or 1.  Intuitively, we ask $T$ which of the two possibilities
+would make the sequence look more random.  
+\pq We will need to look at the analogues of the averages $A_k$ and
+$A_{k+1}$, restricting attention to those sequences which begin with
+$s$:\begin{eqnarray*}A_k(s)&=&\sum_t2^{k-m}T(s\circ t)\\
+A_{k+1}(s)&=&\sum_t(f_{s\circ0}/f_s)2^{k+1-m}T(s\circ0\circ t)+\\
+&&\sum_t(f_{s\circ1}/f_s)2^{k+1-m}T(s\circ1\circ t)\end{eqnarray*}
+The definition of $A_{k+1}(s)$ is based on the idea that $s\circ0$
+and $s\circ1$ are the only sequences of length $k+1$ which begin with $s$.
+Note that, for $i=k$~or~$k+1$, $A_i=\sum_sf_sA_i(s)$, where the
+sum is taken over all $s$ of length $k$.
+\begin{eqnarray*}\hbox{Define\quad}A_{s,0}&=&\sum_t2^{k+1-m}
+T(s\circ0\circ t)\\
+A_{s,1}&=&\sum_t2^{k+1-m}T(s\circ1\circ t)\end{eqnarray*}
+These are the expected values of $T$ for a sequence which begins with $s$, has
+either 0 or 1 as its $(k+1)$-st term, and continues randomly.  They
+can be estimated by sampling.  Let $p_s$ be the
+fraction of the seeds which give $s$ as the first $k$ bits which give
+0 as the $(k+1)-st$ bit (thus $p_s=f_{s\circ0}/f_s$).
+Then \begin{eqnarray}A_k(s)&=&\frac12A_{s,0}+
+\frac12A_{s,1}\label{ado}
+\\A_{k+1}(s)&=&p_sA_{s,0}+(1-p_s)A_{s,1}\label{but}\end{eqnarray}
+If we could estimate $p_s$ from (\ref{but}), it would be simple to predict
+the next generated bit after $s$.  Unfortunately, we cannot efficiently
+estimate $A_{k+1}(s)$.  The problem is that we would have to sample 
+among the seeds which generate $s$, and there is no easy way to find
+such seeds.  Instead, we must find a way to use the information that
+the average of $A_{k+1}(s)$ is $A_{k+1}$, which we can estimate.
+\pq The (far from obvious) idea will be to have the prediction of the
+$(k+1)$-st bit itself be random.  As we will see below, the probabilities
+can be assigned to the two possible predictions can be chosen so that
+the expected number of correct guesses looks like the right-hand side
+of (\ref{but}).
+\pq We will assume $A_{k+1}>A_k$ [remember, we chose $k$ so that the
+difference between the two is significant]. The other case can be
+handled similarly.  If $A_{s,0}>A_k(s)>A_{s,1}$, we would
+expect sequences beginning with $s\circ0$ to look more like things
+from the generator than sequences beginning with $s\circ1$.  Our
+prediction for the next bit following $s$ will be random, given by
+$${\renewcommand{\arraystretch}{1.2}
+\hbox{Predict }\left\{{}\begin{tabular}{l}
+0 with probability $\frac12+A_{s,0}-A_k(s)$\\
+1 with probability $\frac12+A_{s,1}-A_k(s)$\end{tabular}\right.}$$
+[The probabilities add to 1 by equation (\ref{ado}).]\pq
+The probability that the prediction for input $s$ is correct is
+\begin{eqnarray*}p_s\left(\frac12+A_{s,0}-A_k(s)\right)+(1-p_s)\left(
+\frac12+A_{s,1}-A_k(s)\right)&=\\ \frac12+p_sA_{s,0}+(1-p_s)A_{s,1}
+-A_k(s)&=&\frac12+A_{k+1}(s)-A_k(s)\end{eqnarray*}
+When we average over all seeds resulting in all possible $s$, we get 
+a correct prediction which probability $1/2+A_{k+1}-A_k$, which,
+by (\ref{kch}), is significantly greater than $1/2$.
+\footnote{Thanks to R.\ Sengupta for pointing out the importance of the
+expression for $A_{k+1}(s)-A_k(s)$.}
+\subsubsection{A consequence involving symmetry}
+The Next Bit Condition was stated in a way that clearly distinguished
+the beginning of the pseudo-random sequence from the end.  By contrast,
+the Efficient Test Theorem treats a pseudo-random sequence in a completely
+symmetrical way.  From that point of view, it does not matter which
+end of the sequence is used to start the construction. This leads to
+\begin{Co}Let $n=pq$.  Start with a random $1\le x\le n-1$ not divisible
+by $p$ or $q$.  Let $a_0=x$, $\co{a_{i+1}}{a_i^2}n$.  The sequence of
+bits given by $a_i$~mod~2 satisfies all efficient tests.\end{Co}
+\end{document}
+

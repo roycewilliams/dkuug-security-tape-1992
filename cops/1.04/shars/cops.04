@@ -1,0 +1,1472 @@
+#!/bin/sh
+# this is p4.shar.04 (part 4 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/docs/kuang.man continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 4; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/docs/kuang.man'
+else
+echo 'x - continuing file cops_104/docs/kuang.man'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/docs/kuang.man' &&
+X.FE
+X.sp
+X}
+X.PP
+X\fBrsh, rlogin, rcp\fP
+X.PP
+XBerkeley Unix includes several remote execution commands that greatly
+Ximprove the usability of multiple Unix hosts connected by a network.
+XThe underlying authentication protocol does not resist an attacker
+Xthat can transmit arbitrary messages on the network, but even if that
+Xproblem was fixed, the databases used by these programs would have to
+Xbe considered as part of the protection system.
+X.PP
+XThe file /etc/hosts.equiv lists the names of the hosts that are
+Xtrusted by the target machine's administrators.  If a user has an
+Xaccount on the target machine, and on one of the trusted hosts, then
+Xthat user can log into the target machine from the trusted machine
+Xwithout supplying a password.  Users can list additional hosts (or
+Xother users) that they trust in a file (.rhosts) in their home
+Xdirectory.
+X.PP
+XThe expression \*QNotEmpty(/d/f)\*U is true if the file /d/f exists and
+Xit is not empty.  The label, \*Q~U\*U, refers to the home directory of user
+X\*QU\*U.
+X.sp
+XRules{
+X.sp
+X.ul
+X<Goal/Condition/Subgoal/Note>
+X.PP
+XBecome U (~U/.rhosts) /etc/hosts\**
+X.FS
+XIf there is
+Xa host listed in the user's remote access database and the host name
+Xtable is replaceable, then an attacker can make his host appear to be
+Xthe host listed in the user's database.  This assumes that the
+Xattacker has super-user privileges on some host that can talk to the
+Xtarget host, because the attacker will need to create an account with
+Xthe target's user name.  This attack will become obsolete when hosts
+Xstart using a distributed name server rather than a fix hostname
+Xdatabase.  However, the name server will open other avenues of attack.
+X.FE
+X.PP
+XBecome U Write ~U/.rhosts\**
+X.FS
+XThe remote execution routines insist that the target user be the owner
+Xof the database file, so replace access is not sufficient to use this
+Xattack.
+X.FE
+X.PP
+XBecome U root Replace /etc/hosts.equiv\**
+X.FS
+XRemote execution with super-user privileges is only accepted from
+Xthe hosts listed in ~root/.rhosts, so replacing the hosts.equiv file
+Xcannot be used to directly gain access to super-user privileges.
+X.FE
+X.sp
+X}
+X.PP
+X\fBshells\fP
+X.PP
+XSeveral command interpreters, called shells, have been written for
+XUnix.  Different users can use different shells, but all shell have
+Xsome mechanism for executing a list of commands when a user logs in.
+XThe files that specify these initialization commands are a part of the
+Xprotection configuration that each user can change.
+X.PP
+XThe expression \*QExists(/d/f)\*U is true if the file /d/f exists.
+X.sp
+XRules{
+X.sp
+X.ul
+X<Goal/Condition/Subgoal/Note>
+X.PP
+XBecome U Exists(~U/.login) Replace ~U/.login\**
+X.FS
+XThis file contains the commands read when a user logs in.
+XThe conditional should really test to see if the user is actually using
+Xthe /bin/csh command interpreter.  If csh is being used, then
+Xthis rule will work even if the file .login doesn't exist, so
+Xthe conditional is overly strict.
+X.FE
+X.PP
+XBecome U Exists(~U/.cshrc) Replace ~U/.cshrc\**
+X.FS
+XThis file is read each time a /bin/csh is executed such as at login
+Xand when a command file is executed.  The conditional is also overly
+Xstrict.
+X.FE
+X.PP
+XBecome U Exists(~U/.profile) Write ~U/.profile\**
+X.FS
+XSame trick for the /bin/sh command interpreter.
+X.FE
+X.sp
+X}
+X.PP
+X\fBcron\fP
+X.PP
+XCron is a program that is forked off when a Unix system is booted.
+XThis means that it runs with super-user privileges.  Cron reads a
+Xdatabase (/usr/lib/crontab) that describes the commands that should be
+Xexecuted periodically.  By default these commands are executed with
+X\*Qroot\*U privileges.
+X.sp
+XRules{
+X.sp
+X.ul
+X<Goal/Condition/Subgoal/Note>
+X
+XBecome root none Replace /usr/lib/crontab
+X.sp
+X}
+X.PP
+X\fBsendmail\fP
+X.PP
+XThe Unix mail system has many features that allow flexible forms of
+Xinformation sharing.  The most interesting feature (to system builders
+Xand to attackers) is that receiving mail can trigger the invocation of
+Xa program which is passed the mail message as its input.  The file
+X/usr/lib/aliases specifies the human readable form of a binary
+Xdatabase that describes mailing lists, mail forwarding, and programs
+Xto invoke when mail is received by certain mailboxes.  Being able to
+Xmodify this database allows an attacker to get access to other
+Xpeople's user and group IDs because the mail sending program runs with
+Xthe privileges of the user who invokes it.  If the destination of the
+Xmessage is on the same host as the source, then the receiving program
+X(also sendmail) will run with the invoker's privileges.  If the source
+Xof the message is on another computer, then sendmail will run under
+Xthe UID \*Qdaemon\*U.
+X.sp
+XRules{
+X.sp
+X.ul
+X<Goal/Condition/Subgoal/Note>
+X.PP
+XBecome daemon none Replace /usr/lib/aliases\**
+X.FS
+XThis assumes
+Xthat the command to build the binary database can be executed by
+Xeveryone, or that it is executed automatically when the mailer detects
+Xthat the binary database is out of date.  There should also be rules
+Xto see if the binary database can be written directly.
+X.FE
+X.PP
+XBecome root none Replace /usr/lib/aliases\**
+X.FS
+XAssumes that
+X\*Qroot\*U sends mail to some user on this machine.  Such users can be
+Xfound by scanning the mail logs, which are usually World readable.  If
+Xsuch a user exists, the aliases database can be set up to tell sendmail to
+Xdeliver mail to the recipient and invoke the attacker's program.  Next
+Xtime root sends mail to that user, the attacker's program will be
+Xinvoked with root privileges.  The program would test to see if it was
+Xrunning with \*Qroot\*U privileges, and if so plant a trap door such as
+Xmaking /.rhosts publicly writable.
+X.FE
+X.sp
+X}
+X.PP
+X\fBboot\fP
+X.PP
+XWhen a Unix reboots, it executes the commands in the file /etc/rc.
+XThis file usually executes the commands in the file /etc/rc.local.
+X.sp
+XRules{
+X.sp
+X.ul
+X<Goal/Condition/Subgoal/Note>
+X
+XBecome root Exists(/etc/rc) Replace /etc/rc
+X
+XBecome root Exists(/etc/rc.local) Replace /etc/rc.local
+X}
+X.PP
+X\fBExtensions to the Unix model\fP
+X(extensions)
+X.PP
+XThis section lists some of the important pieces of the Unix protection
+Xsystem that were left out of the SU-Kuang's model.  Most of these
+Xpieces could be added easily.
+X.PP
+XThe major deficiency of the model is that it does not include all of the
+Xprograms that run with super-user privileges.  Each of these
+Xprograms must be modeled if there is some way that an attacker could
+Xuse the programs' databases to get access to root privileges.
+X.PP
+XLocating all the programs that run with super-user privileges is not
+Xeasy.  Many ordinary programs are executed inside of command files
+Xthat are run with root privileges.  This points out another
+Xshortcoming of SU-Kuang.  It does not look inside of command files.
+XFor example, on system restart, Unix executes the commands in the file
+X/etc/rc with super-user privileges.  That file executes additional
+Xcommands in the file /rc.local, so those commands also runs as root.
+XThe prototype has an explicit rule that covers this case, whereas it
+Xshould deduce this and other cases by parsing the commands in /etc/rc.
+X.PP
+XThe prototype does not understand search paths.  On Unix, as with most
+Xsystems, users do not specify the full pathname of the programs they
+Xwant to execute.  Instead, users specify a sequence of directories
+Xthat should be searched to find the program.  Often users tell their
+Xcommand interpreter to first look in a private directory of commands,
+Xand quite often that directory is writable by any member of the user's
+Xprimary group.  If an attacker can write a user's private command
+Xdirectory, then the attacker can plant a trojan horse on that user.
+XFor example, the user may want to execute /usr/local/gnuemacs, but the
+Xuser may end up executing the attacker's program in
+X/usr/smith/@_bin/gnuemacs.  To model this attack, SU-Kuang would need to
+Xbe able to read each user's startup command file to determine each
+Xuser's search path.
+X.PP
+XThe file goals considered by the model only include write and replace
+Xaccess to a file.  Read access is not considered.  To include read
+Xaccess, each piece of the protection system must be re-examined to see
+Xif it could provide read access to an arbitrary file.  For example,
+Xthe Unix finger program, which displays information about users, runs
+Xwith super-user privileges so it can read an information file (.plan)
+Xin the specified user's home directory.  Unfortunately, some
+Ximplementations of the finger program allow the .plan file to be a
+Xsymbolic link to another file, and thus the finger program allows read
+Xaccess to any file on the system.
+X.PP
+XThe rules that model the file system do not include the fact that the
+Xdisks can be accessed via the raw device files.  Reading and writing
+Xthe device files can be used to read and write arbitrary blocks on the
+Xdisks.  These files should only be accessible to the super-user, but
+Xoften anyone can read them.  If so, an attacker can read any file on
+Xthe disk.
+X.PP
+XA different kind of deficiency in the model is that it does not allow
+Xthe attacker to guess at passwords.  On a system that allows users to
+Xpick their own passwords, an attacker can usually guess a few of the
+Xpasswords.  Assuming that an attacker can read the password file,
+X\**
+X.FS
+XProtecting the password file from users logged in on a guest
+Xaccount or using anonymous file transfer is a good idea.  However,
+Xprotecting it from ordinary users is hard.  Many programs need read
+Xaccess to the non-password information kept in that file, and making
+Xall those programs run with special privileges may create more
+Xproblems than it solves.
+X.FE
+Xthe attacker can test passwords at the rate of about ten per second.\**
+X.FS
+XThere are lots of tricks that speed up the execution of
+Xthe Unix salted DES function on a 32 bit machine.
+X.FE
+XA 2000 word dictionary of common passwords can be processed at the
+Xrate of a few minutes per account.
+X.PP
+XAs in any kind of modeling, the better the model, the better the
+Xresults.  Fortunately, in the case of Unix, making the model more
+Xdetailed does not require using a more complicated framework. The
+Xrule-based framework of SU-Kuang is flexible enough to model all the
+Xfeatures described in this section.
+X.PP
+X\fBPrototype Implementation\fP
+X(implementation)
+X.PP
+XThe SU-Kuang program described in this paper is easy to
+Ximplement.  The primary inputs to the program are a list of groups
+X(privileges) accessible to the attacker (including the special group
+X\*QWorld\*U), and the target goal (usually \*Qbecome root\*U).  The
+Xprogram examines the protection configuration of the machine it is
+Xrunning on, so this can be considered a secondary input.  The
+Xprimary output is a list of the ways that an attacker can achieve the
+Xtarget goal from the initial privileges.  Internally, the program
+Xbuilds a goal-tree based on a set of rules that are compiled into the
+Xprogram.  When a node of the goal-tree can be directly achieved using
+Xthe initial privileges, the program prints out the sequence of steps
+Xthat describe the path from the given node of the goal-tree to the
+Xroot of the goal-tree.
+X.PP
+XIn classic Unix style, the prototype was initially implemented by a
+Xset of shell scripts (command files).  Later, to improve performance,
+Xsome of the shell scripts were re-written in C.  The top level
+Xshell script keeps track of the goal-tree, and invokes other shell
+Xscripts to generate successive levels of the goal-tree.  For each of the
+Xthree kinds of goals (user, group, and file), there is a shell script
+Xthat reads a list of goals of that kind and produces a list of
+Xsubgoals.
+X.PP
+XAssociated with each node of the goal-tree is a human readable comment
+Xthat describes the path from each node to the root of the goal-tree.
+XThis comment is appended to a list of 'successes' if the
+Xassociated goal can be directly achieved using the initial privileges
+Xof the attacker.  Since each comment specifies the sequence of steps
+Xan attacker could use to achieve the target goal given the current
+Xgoal, it is easy to derive the comments for subgoals from the comments
+Xof parent goals.  The subgoal comments is the parent goal's comment
+Xplus an indication of which rule was used to derive the subgoal.
+X.PP
+XThe basic data abstraction used by SU-Kuang is a goal-table.  There
+Xare three goal-tables, one for each type of goal.  The operations on a
+Xgoal table are: 
+X.ul
+Xnew, 
+X.ul
+Xaddto, and 
+X.ul
+Xnext.  The 
+X.ul
+Xnew
+Xoperation creates an empty goal table.  It takes a set of initial
+Xgoals that are directly achievable by the attacker.  The 
+X.ul
+Xaddto
+Xoperation adds a goal and a comment to the table.  If the goal is
+Xalready in the table, the table is not changed.  If the goal is in the
+Xset of directly achievable goals, then 
+X.ul
+Xaddto also appends the
+Xcomment to the file that contains a list of successes.  The operation,
+X.ul
+Xnext, examines a goal-table and returns any goal-comment pair that
+Xit has not already returned.  The 
+X.ul
+Xaddto
+Xoperation is effectively
+Xthe inner loop of a rule interpreter.
+X.PP
+XThe goal-table abstraction is implemented by four files.  One file
+Xkeeps track of all of the goals in the table and it is used to avoid
+Xduplicate goals.  Another file holds the list of goals initially
+Xavailable to the attacker.  Two files are used to support the next
+Xoperation.  One file records all the goal-comment pairs that have been
+Xreturned by the next operations, the other file lists the goal-comment
+Xpairs that have been added to the table but not yet selected by the
+Xnext operation.
+X.PP
+XUsing the goal-table abstraction it is easy to express rules as lines
+Xof a shell script.  Figure
+X.ul
+Xshell
+Xrule shows a rule and its shell
+Xscript implementation.  The conditional part of the rules are
+Xexpressed by shell script conditionals (e.g., \*Q-z\*U means that a file
+Xexists and has a length of zero, \*Q!\*U and \*Q&&\*U mean logical
+Xnegation and conjunction).
+X.sp
+XRules{
+X.sp
+X.ul
+X<Goal/Condition/Subgoal>
+X
+XBecome root NotEmpty(/.rhosts) Replace /etc/hosts
+X.sp
+X}
+X
+X.nf
+X# $User and $OldComment are set by the goal-table next operation.
+X# $FileGoals refers to the goal-table object for file type goals.
+Xif (($User == "root") && (! -z /.rhosts))  then
+X    set NewComment="Fake HostAddress, $OldComment"
+X    set SubGoal="Replace /etc/hosts"
+X    addto $FileGoals $SubGoal $NewComment
+Xendif
+X.fi
+XSample rule and corresponding shell script line.
+X
+X.PP
+XThe implementation of SU-Kuang is straight forward.  The only reason
+Xfor describing it in this paper is to demonstrate how easy it is to
+Xprocess the attacker-oriented rules that describe a protection system.
+X.PP
+X\fBExperience\fP
+X(experience)
+X.PP
+XThe SU-Kuang system has been run on a large number of
+Xsites managed by personnel with a wide range of skills and interests
+Xin security.  It has almost always found a hole.  A Kuang that
+Xincorporates the extensions described in section
+X.ul
+Xextensions
+Xwould find more holes.
+X.PP
+XI believe that holes are created because users do not understand how
+Xthe various pieces of the protection system interact.  The main
+Xevidence for this is that fact that most holes are found in the
+Xprotection databases that are maintained by ordinary users (e.g.,
+X.login and .rhosts).  Also, users who have recently been given special
+Xprivileges tend to create holes that allow anyone to achieve
+Xsuper-user privileges.  When I tell users about the problems SU-Kuang
+Xfinds, they often do not understand what was wrong with the decision
+Xthey made.
+X.PP
+XUsers create security holes periodically.  When I ran SU-Kuang
+Xperiodically on one computer that had a large complicated protection
+Xconfiguration (e.g., the authorization databases included 300 users
+Xand 25 groups), SU-Kuang found new holes every week or two.  Often
+Xthese new holes were created when someone modified a security
+Xdatabase.  One common procedure for modifying a database is to first
+Xrename the original, then copy of the original into a file with the
+Xproper name, and finally edit the copy.  The motivation for the first
+Xrename step is to preserve the timestamp that indicates when the
+Xdatabase was last written.  Unfortunately, the file copy step does not
+Xcopy the protection information from the original database.  The
+Xprotection for the copy is determined by the defaults for the
+Xcurrently running process.  It is not determined by the original.  The
+Xfile UID is set to the UID of the process that performs the copy,
+Xand the GID is set to the GID of the directory that contains
+Xthe file.  The permission bits are set to a default value specified in
+Xthe copier's login command file.
+X.PP
+XThe holes found by SU-Kuang point out that it is hard to set up multiple
+Xseparate security groups under BSD4.2 Unix.  For example, a group
+Xthat allows its members to install programs in the /etc directory,
+Xalso allows its members to replace the authentication database in
+X/etc/passwd.  The fact that users run with their full privileges (i.e.,
+Xthey can access multiple groups in the same process), makes Berkeley
+XUnix easier to use than other versions of Unix that force users to
+Xaccess one group at a time.  However, that same feature makes it
+Xeasier for an attacker to plant a trojan horse on a user that is a
+Xmember of a lower privilege group (e.g., the implementors of some
+Xproject) and a member of a high privilege group (e.g., staff).
+X.PP
+XThe impression I have gotten from running SU-Kuang is that most of the
+Xfeatures that make Unix easy to use also make Unix hard to secure.
+XHowever, SU-Kuang does make it easier to build a secure protection
+Xconfiguration for Unix.	
+X
+X.PP
+X\fBDiscussion\fP
+X(conclusions)
+X.PP
+XTo increase the usefulness of computers, systems designers have
+Xprovided an increasing number of mechanisms that allow users to
+Xexecute commands and share information.  Since these new mechanisms
+Xmust be considered part of the protection system, this trend has made
+Xprotection systems larger and progressively harder to understand.  As
+Xa protection system becomes more complex, it becomes unlikely that
+Xall the protection decisions are made correctly, and these mistakes
+Xcan ruin the overall security of the information and resources
+Xcontrolled by computers.  The commercial environment presents a
+Xspecial problem because usability is the primary goal of commercial
+Xinformation systems, but security cannot be neglected.  There needs to
+Xbe some way to manage the complexity of the protection systems that arise
+Xon information systems that stress usability.
+X.PP
+XThis paper presents one approach for achieving both usability and
+Xsecurity.  The idea is to use rule-based systems to analyze the
+Xinteractions between all the decisions that make up a computer's
+Xprotection configuration.  If analyzing a protection configuration is
+Xeasy, then the manager of a system can ensure that the system meets
+Xthe security objectives of its users.  A program that performs a
+Xsimple analysis of a Unix protection configuration was presented to
+Xillustrate that this sort of rule-based system is easy to build if
+Xthe protection system is described from the attacker's viewpoint.
+XThis simple Unix analysis system, called SU-Kuang, answered the
+Xquestion "given access to a particular set of privileges,
+Xcan an attacker achieve super-user privileges?".  Using SU-Kuang,
+Xa security manager could ensure that a system did not allow ordinary
+Xuser to achieve super-user privileges.
+X.PP
+XSU-Kuang is just one of many helpful Kuang-type systems.  For example,
+Xmany security objectives are expressed in terms of limiting the set of
+Xpeople who have access to particular privileges.  A Kuang-type system
+Xthat computed the set of privileges accessible to each user would help
+Xa security manager determine whether the security objectives are being
+Xmet.  Even better, if the bulk of the security objectives can be
+Xexpressed in computer understandable form, then the bulk of the work
+Xof checking computer security could be automated.
+X
+SHAR_EOF
+echo 'File cops_104/docs/kuang.man is complete' &&
+chmod 0600 cops_104/docs/kuang.man ||
+echo 'restore of cops_104/docs/kuang.man failed'
+Wc_c="`wc -c < 'cops_104/docs/kuang.man'`"
+test 36594 -eq "$Wc_c" ||
+	echo 'cops_104/docs/kuang.man: original size 36594, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/rc.chk ==============
+if test -f 'cops_104/docs/rc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/rc.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/rc.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/rc.chk' &&
+X.TH RC.CHK 1 "December 31, 1989"
+X.UC 4
+X.SH NAME
+Xrc.chk  \- Checks contents of /etc/rc* file(s) for potential danger.
+X.SH SYNOPSIS
+X.B rc.chk
+X.SH DESCRIPTION
+X.I rc.chk
+Xchecks pathnames and files inside the shell script files /etc/rc*
+X(e.g. /etc/rc, /etc/rc.local, etc.) for writability.
+XIt filters out all paths or files that have a /tmp, /dev/null,
+Xor /dev/*ty, plus everything after a ">"; e.g. if crontab is writing
+Xto a file it doesn't care.
+X.SH FILES
+X.br
+X.nf
+X/etc/rc*
+X.fi
+X.SH BUGS
+XAwk runs out of room ("bails out") if too many files are found in the
+X/etc/rc* files.
+X.PP
+XSpurious messages can occur --
+X.I rc.chk
+Xonly uses a approximation of which files should be checked.  Also, 
+XUnless a file has a full pathname (i.e. begins with a "/", it will
+Xnot be checked for writability.
+SHAR_EOF
+chmod 0600 cops_104/docs/rc.chk ||
+echo 'restore of cops_104/docs/rc.chk failed'
+Wc_c="`wc -c < 'cops_104/docs/rc.chk'`"
+test 782 -eq "$Wc_c" ||
+	echo 'cops_104/docs/rc.chk: original size 782, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/is_able.chk ==============
+if test -f 'cops_104/docs/is_able.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/is_able.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/is_able.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/is_able.chk' &&
+X.TH IS_ABLE.CHK 1 "Jan 4, 1991"
+X.UC 4
+X.SH NAME
+Xis_able.chk \- Check for write/read\-ability of files listed a configuration file.
+X.SH SYNOPSIS
+X.B is_able.chk
+X.SH DESCRIPTION
+X.I is_able.chk
+Xchecks all files listed in the file
+X.I is_able.lst
+Xto see if files are either write/read-able by group or by
+Xall, or if they are setuid/setgid, or a combination of these.
+X.PP
+X.I is_able.lst
+Xis merely a list of files (or regular expressions representing a file
+Xor files), one per line, that are checked by
+X.I is_able.
+XAny line starting with a "#" is ignored, and any file checked for
+Xwritability also checks the parent directories (if a complete path is
+Xgiven) for writeability.
+X.SH EXAMPLE
+X.br
+X.nf
+X#   Lines are of the format:
+X#	/path/to/file
+X/etc/*
+X/.profile
+X.fi
+X.SH FILES
+Xis_able.lst
+X.SH Bugs
+XWhen using wildcards and checking a directory with a lot of files, overflow
+Xof the shell variables can occur, causing incorrect arguments to be passed
+Xto the driving program.
+X.SH See Also
+Xis_able(1)
+SHAR_EOF
+chmod 0600 cops_104/docs/is_able.chk ||
+echo 'restore of cops_104/docs/is_able.chk failed'
+Wc_c="`wc -c < 'cops_104/docs/is_able.chk'`"
+test 983 -eq "$Wc_c" ||
+	echo 'cops_104/docs/is_able.chk: original size 983, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/release.notes ==============
+if test -f 'cops_104/docs/release.notes' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/release.notes (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/release.notes (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/release.notes' &&
+X
+X  Brief Info-Capsule of COPS programs and files (release 1.03):
+X-------------------------------------------------------------------------
+X   Programs and some important files that are included in this release:
+X-------------------------------------------------------------------------
+X
+X   cops			A driving shell script for most of the programs
+X			below.  It tosses output to /dev/null (unless
+X			the -b flag is used) except what it wants to see,
+X			and either saves the results a report file or mails
+X			any pertinent output (depending if the -m flag is
+X			used).
+X			Usage: cops [-a:b:s:m:xvV]
+X
+X   chk_strings		Checks for writable paths/files in a file.
+X			Usage: chk_strings <file>
+X
+X   crc.chk		Creates and compares a database of CRC's (a kind
+X			of digital signature that changes as the file
+X			changes size or is otherwise modified) that warns
+X			against changes in the filesystem.  Concievably,
+X			virii and worms could be detected in this manner,
+X			but I wouldn't hold my breath.
+X   crc_list		List of files that are checked.
+X   crc_seed		If run automatically, crc.chk creates a semi-random
+X			seed to use, to make your CRC's unique.  This is
+X			where it is stored (not recommended, but handy.)
+X
+X   cron.chk		Checks for writable paths/files in crontab entries.
+X			Usage: cron.chk
+X
+X   dev.chk		Checks /dev/*mem and all devs listed by "/etc/fstab"
+X   			command for world read/writability (respectively.)
+X			Usage: dev.chk [-g]
+X			(-g checks for group read/writability as well)
+X
+X   disclaimer		Vital document to COPS usage.  Read closely.
+X
+X   ftp.chk		Used mostly to check anonymous ftp setup; it
+X			goes over the etc, pub, ~ftp, and bin directories,
+X			for writability, ownership, general correctness, etc.
+X			Usage: ftp -a
+X			(-a checks for anon-ftp setup.)
+X
+X   is_able.chk		Checks files and dirs listed in "is_able.lst"
+X			for writability, readability, etc.
+X   is_able.lst		List of directories for above.
+X			Usage: is_able.chk [-g]
+X			(-g checks for group writability as well)
+X
+X   group.chk		Checks /etc/group for non-unique groups, invalid
+X			fields, non-numeric group ids, etc.
+X			Usage: group.chk
+X
+X   home.chk		Checks all users home-dirs listed in /etc/passwd
+X			for bad modes (basically world write, strangeness).
+X			Usage: home.chk
+X
+X   is_writable		Checks a file/directory and determines writability
+X			status; returns a "0" if is writable, a "1"
+X			otherwise.
+X			Usage: is_writable [-g] filename
+X   
+X   kuang		The U-Kuang expert system.  Read the accompanying
+X			instructions in kuang.man.  It basically checks
+X			to see if a given user (by default root) is
+X			compromisible, given that certain rules are true
+X			(i.e. /etc/passwd writable gives root access, etc.)
+X			Usage: kuang
+X   (init_kuang)		Contains the targets for the kuang system.
+X
+X   misc.chk             Checks various miscellaneous things -- tftp, decode
+X			alias, rexd, etc.
+X			Usage: misc.chk
+X
+X   passwd.chk		Checks /etc/passwd for non-unique uids, invalid
+X			fields, non-numeric user ids, etc.
+X			Usage: passwd.chk
+X
+X   pass.chk		Checks /etc/passwd for crummy passwords; lots
+X			of options.  Defaults to checking for the users' id.
+X   pass.words		A list of words that can be used by pass.chk;
+X			use "pass.chk -w pass.words" to use them.
+X			Usage: pass.chk [-flags]
+X
+X   pass_diff.chk	A wrapper for pass.chk.  Only checks passwords in
+X			accounts that have *changed* their passwords since
+X			last time run, though.
+X			Usage: pass_diff.chk [-flags]
+X
+X   pass.mail		Will scan a COPS result file, grabbing users that
+X			have guessed passwords, and mail to them a letter
+X			informing them of the fact, along with a "how2"
+X			guide to create a good (i.e. hard to guess) password.
+X			Usage: pass.mail cops_result_file
+X
+X   makefile		A makefile for programs enclosed.
+X			Type "make" or "make install" to make things (see
+X			Makefile for more information.)
+X
+X   patchlevel.h		Contains the version information of COPS; multiply
+X			by .01 and add one, and that's the current version.
+X			Used by "cops -x" to determine the version.
+X
+X   quickstart		A lightning guide on how to start using COPS.
+X
+X   rc.chk		Checks all commands and paths listed in /etc/rc*
+X			for writability.
+X			Usage: rc.chk
+X
+X   reconfig		Changes the (hard coded) paths for the programs
+X			used in COPS.
+X   (file.paths)		Data file for reconfig (created by reconfig.)
+X			Usage: reconfig [file]
+X
+X   res_diff		Looks to see if anything has changed since
+X			the last report that was generated for the host.
+X			Usage: res_diff /path/to/secure_dir current_report
+X
+X   suid.chk		Checks the system for _changes_ in SUID status.
+X			This is the one program that should be run as
+X			superuser.  You must first run a find on all
+X			SUID programs from the / directory, and then use
+X			that as a "stop file".
+X   suid.stop		The database originally set up with "find".
+X			Usage: suid.chk [-s:n]
+X
+X   user_chk.c		Checks all users listed in /etc/passwd; looks at
+X			.login/.cshrc/.rhosts/.profile, etc., for bad 
+X			modes (basically world write, strangeness).
+X			Usage: user_chk
+X
+SHAR_EOF
+chmod 0600 cops_104/docs/release.notes ||
+echo 'restore of cops_104/docs/release.notes failed'
+Wc_c="`wc -c < 'cops_104/docs/release.notes'`"
+test 4988 -eq "$Wc_c" ||
+	echo 'cops_104/docs/release.notes: original size 4988, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/suid.man ==============
+if test -f 'cops_104/docs/suid.man' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/suid.man (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/suid.man (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/suid.man' &&
+X.TH FINDSUID 1S
+X.UC 4
+X.SH NAME
+Xsuid.chk \- find changes in setuid and setgid files
+X.SH SYNOPSIS
+X.B suid.chk
+X[
+X\-m user
+X]
+X[
+X\-n
+X]
+X[
+X\-o file
+X]
+X[
+X\-s secure_dir
+X]
+X[
+X\-S start_dir
+X]
+X[
+X\-x
+X]
+X.SH DESCRIPTION
+X.I suid.chk
+Xis a shell script intended to be run periodically by \fIcron (8)\fP
+Xin order to spot changes in files with the suid or sgid bits set.
+X.PP
+X.I suid.chk
+Xuses \fIfind (1)\fP
+Xto search system directories for all files with the 4000 or 2000 permission
+Xbits set.  It then compares these files with the contents of a ``stop file''
+X(by default \fIsuid.stop\fP) containing
+X\fI``ls -lga''\fP
+Xoutput for known setuid or setgid programs.  In addition, it flags any
+Xsetuid or setgid programs that are either world-writable or shell scripts.
+XAny additions or changes to this list represent potential security
+Xproblems, so they are reported by mail to system administrators for further
+Xinvestigation.
+X.SH OPTIONS
+X.TP
+X.B \-m user
+XMail the results to this user.
+X.TP
+X.B \-n
+XDo *not* follow NFS mounted partitions.  This is probably not
+Xportable on most machines -- check the string in the source code
+Xthat does the work; on a sun, it's:
+X.TP
+X.B \-o
+XWrites the results to a file, rather than mailing it.
+X.TP
+X.B \-s secure_dir
+XSets the secure dir, good for running this in cron -- 
+Xelse it'll think it's "/", and you'll chmod that to 700 :-)
+X.TP
+X.B \-S
+XSet the search directory where the \fIfind\fP starts.  Warning -- does not
+Xwork with the
+X.B \-x
+Xflag!
+X.br
+X"-type d \\( -fstype nfs -prune \\)";
+X.SH FILES
+X.nf
+Xsuid.stop (the ``stop file'')
+X.fi
+X.SH SEE ALSO
+X.nf
+Xfind(1), chmod(1), cron(8)
+X.fi
+X.SH BUGS
+XThe location of the stop file and the directories to be searched
+Xare all defined by shell variables in the source.  The
+X.B \-S
+Xand
+X.B \-x
+Xflags do not work together.
+X.PP
+XKeeping the stop files up to date with changes to all
+Xthe suid files on more than a couple of hosts is a royal pain!
+SHAR_EOF
+chmod 0600 cops_104/docs/suid.man ||
+echo 'restore of cops_104/docs/suid.man failed'
+Wc_c="`wc -c < 'cops_104/docs/suid.man'`"
+test 1882 -eq "$Wc_c" ||
+	echo 'cops_104/docs/suid.man: original size 1882, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/tilde ==============
+if test -f 'cops_104/docs/tilde' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/tilde (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/tilde (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/tilde' &&
+X.TH TILDE 1 "December 31, 1989"
+X.UC 4
+X.SH NAME
+Xtilde  \- returns a user's home directory.
+X.SH SYNOPSIS
+X.B tilde 
+Xuser
+X.SH DESCRIPTION
+XThis merely prints a user's home directory, or "Error" if not found.
+XNamed for the Csh feature.
+SHAR_EOF
+chmod 0600 cops_104/docs/tilde ||
+echo 'restore of cops_104/docs/tilde failed'
+Wc_c="`wc -c < 'cops_104/docs/tilde'`"
+test 230 -eq "$Wc_c" ||
+	echo 'cops_104/docs/tilde: original size 230, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/warnings ==============
+if test -f 'cops_104/docs/warnings' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/warnings (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/warnings (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/warnings' &&
+X
+X   This file contains a list of most of the security warnings that you
+Xmight see while using the COPS system.  Not included here are messages
+Xthat you may receive from the Kuang system and the ftp checker.  For
+Xhelp on using those tools, read the appropriate documentation on each
+Xof those ("kuang.doc" and "ftp.1".)
+X
+X   First, I'll define some arbitrary terms which I'll use when describing
+Xany problems you may encounter, then I'll list the messages, what they may
+Xmean, and how you can change your system to eliminate any danger posed.
+XSome almost identical warnings were eliminated from the list; however
+Xmost warnings should have an analogous entry that is very close syntactically
+Xto it in this file.  All messages in COPS are prepended by "Warning!";
+Xthis has been excluded here for brevity.
+X
+X   There may be more than one way to overcome any problem listed here.  If
+Xyou are unsure about whether to change a problem, try looking at some of
+Xthe references listed at the end of the technical report (cops.report) for
+Xmore information on how an attacker may compromise your system.  Some of
+Xthe more dangerous security holes include writable directories and key files
+X(such as /etc/passwd), root owned SUID files writable to world or that give
+Xa root shell, null passwords, and writable files that are executed by root.
+XThey are more or less aranged in like groups (all the writable files/dirs/
+Xwhatever in one part, etc.)
+X
+X   Don't take everything that COPS says as gospel!  What may be a serious
+Xsecurity hole on one machine may not be on your own, and vice-versa.
+XHowever, the more you value the information on your machine, the more you
+Xshould be concerned about security. 
+X
+X  Some terms I'll use:
+Xxyz           -- An arbitrary number.  Usually a line number in a file.
+Xfoo_file      -- stands for a file you might see in your warning message.
+Xfoo_file2     -- Same as "foo_file", stands for a different file than the
+X                 first (used when two filenames are needed in one message.)
+Xfoo_dir       -- a typical directory.
+XGroup file    -- /etc/group or the yellow pages group.  If the warning starts
+X                 with "Group", it is the former, "YGroup" is the latter.
+Xfoo_group     -- either /etc/group or ygroup.
+XPassword file -- /etc/passwd or the yellow pages password.  If the warning
+X                 starts with "Password", it is the former, "YPassword" refers
+X                 to the latter.
+Xfoo_pass      -- either /etc/passwd or ypasswd.
+Xcron_file     -- will be either /usr/cron or
+X                 /usr/spool/cron/crontabs/foo_file.  
+Xfoo           -- anything that doesn't fit above.  Usually an arbitrary
+X                 name, or group name, or whatever.
+Xbar           -- As "foo", if more than one name is needed in one message.
+Xfoo_bar       -- As "foo", if more than two names are needed in one message.
+X
+X
+X  WARNING MESSAGES
+X  -----------------
+X
+X0)
+Xfoo_file is _World_ writable!
+Xfoo_file is group readable!
+X
+X   This simply means that a file is world writable; e.g. Anyone can modify
+Xor delete this file.  This can be especially bad if the file can (even
+Xindirectly) give root access, such as the system password file, "/etc/passwd".
+X   To fix, type:
+X        chmod a-w foo_file
+XThis removes write access for group "all/world".
+X
+X1)
+Xfoo_file (in cron_file) is World writable!"
+XFile foo_file (inside root executed file foo_file2) is _World_ writable!"
+XFile foo_file (in /etc/rc*) is _World_ writable!"
+X
+X   Similar to the above messages, but potentially more serious.  Files
+Xin this group are being used by root, and either being utilized as input,
+Xoutput, or for execution.  Examine the file they are inside and see how
+Xit is being used.  Files being executed are the most dangerous because
+Xif they are changed, the new file gets executed with root privileges.  Input
+Xfiles are next, because changing them can alter what the executing program
+Xdoes and cause undesirable side affects.  Even output files can be dangerous,
+Xhowever, because they may be used as an output or even as a program file
+Xlater on.
+X   To fix, either delete the reference to foo_file inside the
+Xcron/rc*/foo_file2/whatever file, or type:
+X        chmod a-w foo_file
+Xto remove write access for group "all/world".
+X
+X2)
+XDirectory foo_dir is _World_ writable!
+X
+X   This simply means that a directory (or it's parent directories) is world
+Xwritable; e.g. Anyone can delete this directory, as well as mess with the
+Xfiles and subdirectories inside of it.  For instance, if /usr/spool is world
+Xwritable, even if cron is not writable, this is a problem, because the cron
+Xdirectory can be replaced and new crontab files put in (which all run with
+Xroot privileges.)  As a general rule, if you wish to have a file or
+Xdirectory secure, all directories that are parent directories must be secure.
+X   To fix, type:
+X        chmod a-w foo_dir
+X            and/or
+X        chmod a-w [foo_dir's parent directory]
+XThis removes write access for group "all/world".
+X
+X3)
+XDirectory foo_dir is _World_ writable and in roots path!
+X
+X   This is the same as (2), but the directory was found to be in the
+Xpath variable set either in /.login or /.profile.  This is a bad thing
+Xbecause if it is writable, a trojan horse can be placed there, and
+Xroot will execute the command.  See also (23).
+X
+X4)
+XDuplicate Group(s) found in foo_group:
+X
+X   This means that one or more duplicate group names have been found.
+XThis is mostly a system accounting problem; when adding or deleting names
+Xfrom a group you will have problems.
+X   To fix, remove all but one instance of each group in your /etc/group file.
+X
+X5)
+XGroup foo_bar has duplicate user(s):
+X
+X   Similar to (4), a group has the same user listed more than once.  If
+Xall instances of the user is not deleted, they probably will remain with
+Xtheir old privileges.
+X   To fix, remove all but one instance of a user in each group of your
+X/etc/group file.
+X
+X6)
+XGroup file, line xyz, non-numeric group id: foo
+X
+X   Group id's must be numeric.  Testing a non-numeric id will give 
+Xunpredictable results.
+X   To fix, change the old id to a valid group id.
+X
+X7)
+XGroup file, line xyz, is blank
+X
+X   To fix, remove all blank lines.
+X
+X8)
+XGroup file, line xyz, does not have 4 fields: foo
+X
+X   More trouble.  Testing of one or more of the groups will result
+Xin invalid results, depending which is the missing field(s).
+X   To fix, ensure group has four valid fields. 
+X
+X9)
+XGroup file, line xyz, nonalphanumeric user id: foo
+X   
+X   As (6).
+X   To fix, change the old id to a valid group id.
+X
+X10)
+XGroup file, line xyz, group has password: foo
+X
+X   To fix, change the old password to an asterisk ("*").
+X
+X11)
+XPassword Problem: Guessed:    foo    shell: bar    passwd: foo_bar
+X
+X   If an account has a guessed password, it is susceptible to other password
+Xguessing programs (the one in COPS is rather crude and slow).  Obviously, if
+Xthe password is known, the account is compromised.
+X   To fix, either have the user change her/his password or change it yourself.
+X
+X12)
+XPassword Problem: null passwd:    foo    shell: bar
+XPassword file, line xyz, no password:     foo
+X
+X   If an account has no password, anyone can log into the account at will.
+X   To fix, either have the user change her/his password or change it yourself.
+X
+X13)
+XDuplicate uid(s) found in foo_passwd:
+X
+X   This is a problem, especially if the accounts have different permissions
+Xor privileges.  When the user's account is deleted, one or more accounts may
+Xremain active.
+X   To fix, simply delete all but one occurrence of the users account.
+X
+X14)
+XPassword file, line xyz, user foo has uid = 0 and is not root    bar
+X   
+X   Ideally, no one but root should have uid = 0.  Anyone with uid=0 is
+Xsuperuser, for all purposes.  Occasionally, a maintenance account has
+Xuid=0, or perhaps a small group of administrators.  Be very careful!
+X   To fix, change the uid from 0 to some other valid number.  If the
+Xaccount or person really needs root privileges, have them su to the root
+Xaccount so you can keep track of who is using root.
+X
+X15)
+XPassword file, line xyz, nonalphanumeric login:     foo
+X
+X   Another maintenance problem.  Someone's been messing with the password
+Xfile, or you have some bugs in your software that fools around with it.
+X   To fix, delete or change the login to a valid login.
+X
+X16)
+XPassword file, line xyz, invalid login directory:     foo
+XUser foo's home directory bar is not a directory!
+X
+X   A user has a non-existent or invalid login directory listed in the password
+Xfile.  Sometimes these are maintenance accounts, but it is discouraged.
+XExamine the account to see if it should really exist.
+X   To fix, either delete the account or put in a valid login directory.
+X
+X17)
+XPassword file, line xyz, nonnumeric group id:     foo
+XPassword file, line xyz, nonnumeric user id:     foo
+X
+X   A user has a invalid user or group id.  Dangerous if, when checked, it
+Xtranslates to invalid number (who knows what would happen), or worse yet, 0.  
+X   To fix, change the field to a legal, numeric value.
+X
+X18)
+XPassword file, line xyz, negative user id: foo
+X
+X   A user id is negative.  This is most common with user name "nobody",
+Xand with an id of "-2".  This can be dangerous, especially if you are running
+Xa Sun, with 4.xx SunOS.  It is uncertain if it is dangerous for other
+Xversions or machines.  Changing it to 32767 is the usual course of action.
+X
+X19)
+XPassword file, line xyz, does not have 7 fields:     foo
+X
+X   Dangerous, because when a program checks for a field value it will come
+Xup with who knows what.
+X   To fix, ensure all fields have legal values.
+X
+X20)
+XPassword file, line xyz, is blank
+X
+X   To fix, delete all blank lines.  This can be very bad, because a blank
+Xline can give a uid=0 account with no password.
+X
+X21)
+XNFS file system foo exported with no restrictions.
+X
+X   Anyone can mount the file system.  May or may not be a problem, but
+Xlook over closely, if you value ANY of the info on it!
+X   To fix, put in a valid list of hosts that may mount it.
+X
+X22)
+XRoot's umask set to xyz
+X
+X   If root's umask is set incorrectly, any files that it creates will be
+Xhave bad permissions (e.g. world writable if 000, x00, or xy0).
+X   To fix, put a "safe" value; 077 or whatever.
+X
+X23)
+X"." (or current directory) is in roots path!
+X
+X   Trojan horses traditionally play upon having the current directory in
+Xa users path.  A bad user will put a trojan horse with a the same name as
+Xa common system command ("ls" is a favorite) and place it in a location that
+Xs/he thinks might be executed.  When the trojan horse is executed, it will
+Xnot only execute the command, but will also either steal your account
+Xprivileges or have your account perform some action that they desire.
+X
+X24)
+XA "+" entry in foo_file!
+X
+X   Host.equiv files specify which machines are equivalent; e.g., user foo on
+Xanother machine listed in your hosts.equiv can log in as user foo onto your
+Xmachine.  A "+" means your machine trusts everyone (I trust no one :-)), which
+Xis usually not desired, at least in these troubled times.  Sun, in it's
+Xinfinite stupidity, makes this the default on all of it's machines.
+X
+X   To fix, either remove the "+", put in your own list of trusted machines,
+Xor delete the file.
+X
+X25)
+Xrexd is enabled in foo_file!
+X
+X   This can allow commands to be excecuted remotely.  (foo_file is usually
+X/etc/inetd.conf, of course.)
+X   
+X   To fix, comment it out of foo_file (put a "#" sign in front of the line.)
+X
+X25)
+XUser foo's home directory foo_dir is mode xyz!
+X
+X   If a user's home directory is writable, you have the same problems as (3),
+Xexcept all of the user's files are in jeopardy this time.
+X
+X   To fix, type:
+X        chmod a-w foo_dir
+X
+X26)
+XUser foo: .bar is mode xyz!
+X
+X   In this case, ".bar" stands for one of the user's initialization files,
+Xsuch as .login, .profile, .exrc, ect.  If the user's file is world writable,
+Xthen anyone can modify that file, and whenever the user logs in or executes
+Xa command (such as "vi", when referring to ".exrc"), they will execute
+Xwhatever commands the bad girl/boy wants them to.
+X
+X   To fix, type:
+X        chmod a-w foo_file
+X
+X27)
+Xtftp is enabled on foo_host!
+X
+X   This means that people can steal your password file remotely, and run
+Xa password cracking program on it.  Bad news, unless you _really_ have great
+Xpassword security, or you're running shadowpasswords.  But even then, they
+Xcan still steal any world readable file on your system.
+X
+X   To fix, comment out (put a pound sign ("#") in the front of the line)
+Xtftp -- usually a line in your /etc/inetd.conf file.
+X
+X28)
+Xuudecode is enabled in foofile!
+X
+X   If the decode mail alias is a valid mail address, people can mail to it,
+Xand create files on your system.  If the uudecode is SUID root, or something
+Xequally insane, it can overwrite any file.
+X
+X   To fix, comment out the alias in your (usually /usr/lib/alias) mail alias
+Xfile.
+X
+X29)
+Xuudecode creates setuid files!
+X
+X   A common problem, it seems.  Uudecode should not create any kind of
+Xspecial files; if combined with (30), you can create hidden SUID files,
+Xperfect for an attacker.  If combined with (28), then it can be an even
+Xworse remote attack.
+X
+X30)
+Xuudecode is suid!
+X
+X   Worse and worse.  If this is true, then you can create files that are
+Xowned by whomever it is SUID to.
+X
+X   To fix, just make it non-suid.  If it has to be suid for some unknown
+Xreason, make it SUID to user nobody, or guest, or something relatively
+Xinoccuous, even though it won't be.
+X
+X31)
+XROOT owned SUID file foo_file is type: foo_type!
+X
+X   No root owned SUID file should be anything other than an executable
+Xbinary; however, since this test depends on the "file" command, it may get
+Xconfused, especially when using NFS, since, for example, a Sun won't recognize
+Xa MIPS executable binary as such.  In any case, examine all SUID root files
+X*very* carefully.  And under *no* circumstance should it be a shell script.
+XNo, no, no.
+X
+X32)
+XUser: foo SUID file is type: foo_type!
+X
+X   As (31), but possibly less severe.
+X
+X33)
+Xfoo should be in /etc/ftpusers!
+X/etc/ftpusers should exist!
+X
+X  Problems 33-42 deal with ftp and anonymous ftp setup.  All system
+Xaccounts (root, bin, etc.) should be in /etc/ftpusers, to prevent them
+Xfrom using ftp.
+X
+X34)
+XNeed user foo for anonymous ftp to work!
+X
+X  ("foo" usually means "ftp", BTW.)  For anonymous ftp to work, it
+Xneeds this login to exist in the password file.
+X  To fix, remove all but one instance of a user in each group of your
+X
+X35)
+XHome directory for ftp doesn't exist!
+Xftp's home directory should not be "/"!
+X
+X  The home directory for ftp, found in the password file, should exist
+Xand should *not* be "/".  Make it some innocuous place on the file
+Xsystem where you can keep an eye on things and dump/store stuff without
+Xcausing any damage.
+X
+X36)
+X~ftp/etc/passwd and /etc/passwd are the same!
+X~ftp/etc/group and /etc/group are the same!
+X
+X  Login names, passwords, and such should be kept hidden from the
+Xaverage anonymous ftp browser.  Do *not* put your password/group
+Xfiles in the ~ftp/etc directory; if you must have the actual user
+Xnames in the file, then at least star out (put an asterix ("*") in
+Xplace of the encrypted password) the password entry.
+X
+X37)
+XFile foo_file is missing (anon-ftp setup)!
+X
+X  Some critical file is missing, such as the password or group file.
+XOn some versions of ftpd, this is not a problem, and on others, it
+Xwill simply not work.
+X
+X38)
+Xfoo_file should be owned by foo_user or bar_user!
+X
+X  If key files and/or directories are owned by the wrong user, then
+Xtrouble can happen.  For instance, if ftp's home directory is owned
+Xand/or writable by ftp, then anonymous ftp users can insert .rhosts
+Xand .forward files to cause mischief.
+X  To fix, chown the files to root.
+X
+X39)
+X~ftp should be mode 555!
+X
+X  Unless ftp's home directory is owned by root, no one should be
+Xable to write on this directory (if root owns this, it can be
+Xmode 755.)
+X
+X40)
+X~ftp/.rhosts should be be empty!
+X
+X  There is usually no good reason to let user "ftp" trust other sites.
+XIf any .rhosts file exists, it should be empty.
+X
+X41)
+XIncorrect permissions on foo_file in foo_dir!
+X
+X  Certain files (the password file, etc.) should be set to be readable
+Xto all, but writable by root.  Other files must be executable, etc.
+XThis flags any abberations in the setup.
+X
+X42)
+XAnon-ftp directory foo_dir is World Writable!
+X
+X  If a directory is kept open for an "incoming" upload/downloads,
+Xit is a good idea to keep the directory unreadable by all, and that it
+Xshould not hold other "trusted" software in that same directory, else
+Xa normally "safe" program could be overwritten with a trap door,
+Xvirus, whatever.
+X
+SHAR_EOF
+chmod 0600 cops_104/docs/warnings ||
+echo 'restore of cops_104/docs/warnings failed'
+Wc_c="`wc -c < 'cops_104/docs/warnings'`"
+test 16483 -eq "$Wc_c" ||
+	echo 'cops_104/docs/warnings: original size 16483, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/root.chk ==============
+if test -f 'cops_104/docs/root.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/root.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/root.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/root.chk' &&
+X.TH ROOT.CHK 1 "Jan 4, 1991"
+X.UC 4
+X.SH NAME
+Xroot.chk  \- Checks contents of root owned startup files as well as
+Xa variety of miscellaneous potential dangers.
+X.SH SYNOPSIS
+X.B root.chk
+X.SH DESCRIPTION
+X.I root.chk
+Xchecks the paths inside root's startup files for writeability as well
+Xas looking to see if the current directory is in root's path, for
+Ximproper umask settings (world writable), and if /bin, /etc, /.login, /.cshrc, /.rhosts, and /.profile
+Xare all owned by root.
+X.SH FILES
+X.br
+X.nf
+X/.login
+X/.cshrc
+X/.profile
+X.fi
+SHAR_EOF
+chmod 0600 cops_104/docs/root.chk ||
+echo 'restore of cops_104/docs/root.chk failed'
+Wc_c="`wc -c < 'cops_104/docs/root.chk'`"
+test 521 -eq "$Wc_c" ||
+	echo 'cops_104/docs/root.chk: original size 521, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/cron.chk ==============
+if test -f 'cops_104/docs/cron.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/cron.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/cron.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/cron.chk' &&
+X.TH CRON.CHK 1 "December 31, 1989"
+X.UC 4
+X.SH NAME
+Xcron.chk  \- Checks contents of cron file(s) for potential danger.
+X.SH SYNOPSIS
+X.B cron.chk
+X.SH DESCRIPTION
+X.I cron.chk
+Xchecks pathnames and files inside the cron files for writability.
+XIt filters out all paths or files that have a /tmp, /dev/null,
+Xor /dev/*ty, plus everything after a ">"; e.g. if crontab is writing
+Xto a file it doesn't care.
+X.PP
+XSince cron is run with root privileges, any file that root uses as input
+Xinside the cron files or any program that root executes is potential danger.
+XWorld writable files can be changed by anyone to cause a root owned process
+Xto give away unwarranted privileges.
+X.SH FILES
+X/usr/lib/cron
+X/usr/spool/cron/crontabs/*
+X.SH "SEE ALSO"
+Xis_able(1)
+X.SH BUGS
+XSpurious messages can occur; a more stringent method (if perhaps less
+Xcareful of a check) would be to test just the 6th field, instead of
+Xall the fields after the fifth.  Also throwing away /tmp, etc. could
+Xbe a mistake.
+SHAR_EOF
+chmod 0600 cops_104/docs/cron.chk ||
+echo 'restore of cops_104/docs/cron.chk failed'
+Wc_c="`wc -c < 'cops_104/docs/cron.chk'`"
+test 969 -eq "$Wc_c" ||
+	echo 'cops_104/docs/cron.chk: original size 969, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/group.chk ==============
+if test -f 'cops_104/docs/group.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/group.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/group.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/group.chk' &&
+X.TH GROUP.CHK 1 "December 31, 1989"
+X.UC 4
+X.SH NAME
+Xgroup.chk  \- Checks group file(s) for inconsistencies.
+X.SH SYNOPSIS
+X.B group.chk
+X.SH DESCRIPTION
+X.I group.chk
+Xchecks the group files -- /etc/group and ypgroup if yellow pages are being
+Xused -- for incorrect number of fields, duplicate groups, non-alphanumeric
+Xgroup names, blank lines, and non-numeric group id's. 
+X.SH FILES
+X.br
+X.nf
+X/etc/group
+Xgroup.chk uses the process id as a temporary file name for the ypchecking.
+X.fi
+X.SH "SEE ALSO"
+X.br
+X.nf
+Xgroup(5)
+X.fi
+XAwk part based on _passwd_ from _The AWK Programming Language_, page 78.
+X.SH BUGS
+XIt doesn't use the exact syntax of yellow pages to check for errors.
+SHAR_EOF
+chmod 0600 cops_104/docs/group.chk ||
+echo 'restore of cops_104/docs/group.chk failed'
+Wc_c="`wc -c < 'cops_104/docs/group.chk'`"
+test 662 -eq "$Wc_c" ||
+	echo 'cops_104/docs/group.chk: original size 662, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/pass_diff.chk ==============
+if test -f 'cops_104/docs/pass_diff.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/pass_diff.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/pass_diff.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/pass_diff.chk' &&
+X.TH PASS_DIFF.CHK 1 "Jan 4, 1991"
+X.UC 4
+X.SH NAME
+Xpass_diff.chk  \- Checks passwords of accounts that have changed their passwords
+Xsince the last run.
+X.SH SYNOPSIS
+X.B pass_diff.chk
+X[
+Xoptions
+X]
+X.SH DESCRIPTION
+X.I pass_diff.chk
+Xis a front end for the
+X.I pass.chk
+Xprogram.  All it does is run a diff on the last password file checked, and
+Xpass the accounts with changed passwords to
+X.I pass.chk,
+Xalong with any options it is called with.  It will not run
+X.I pass.chk
+Xat all if no difference was found.
+X.PP
+X.SH FILES
+X.br
+X.nf
+Xold_passwd
+Xpasswd.diff
+Xpass.chk
+X.fi
+SHAR_EOF
+true || echo 'restore of cops_104/docs/pass_diff.chk failed'
+fi
+echo 'End of  part 4'
+echo 'File cops_104/docs/pass_diff.chk is continued in part 5'
+echo 5 > _shar_seq_.tmp
+exit 0
+

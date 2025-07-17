@@ -1,0 +1,1701 @@
+#!/bin/sh
+# this is cops103.beta.02 (part 2 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file beta/TODO continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 2; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping beta/TODO'
+else
+echo 'x - continuing file beta/TODO'
+sed 's/^X//' << 'FOO_BAR' >> 'beta/TODO' &&
+for AIX is filewriters.c.  This is because of the stanza format used
+in /etc/filesystems instead of the flat positional /etc/fstab.  I'll
+try an work on a parser that will recognize and handle various mount
+responses (but I won't have access to a variety of machines for several
+weeks).  If you happen to have several cases I could work on, I'll start
+working on it sooner.
+X
+Thanks again,
+Lynn
+FOO_BAR
+echo 'File beta/TODO is complete' &&
+chmod 0600 beta/TODO ||
+echo 'restore of beta/TODO failed'
+Wc_c="`wc -c < 'beta/TODO'`"
+test 3346 -eq "$Wc_c" ||
+	echo 'beta/TODO: original size 3346, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/XTRA_CREDIT ==============
+if test -f 'beta/XTRA_CREDIT' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/XTRA_CREDIT (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/XTRA_CREDIT (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/XTRA_CREDIT' &&
+X
+X  Code credits are where code credits are due.  If I miss anyone, please
+forgive (and notify) me!
+X
+Gene Spafford -- overall design help.
+X
+Robert Baldwin and Steve Romig -- the original kuang package/design, and
+the perl rewrite, respectively.
+X
+Craig Leres, Jef Poskanzer, Seth Alford, Roger Southwick, Steve Dum,
+and Rick Lindsley all get credit for the password guessing program.
+X
+Prentiss Riddle -- the suid checker.
+X
+Mark Mendel and Jon Zeef -- the crc generator.
+X
+X  Round IV (this release) -- lots of people again -- the perl crew, of
+course; Ethan Lish with the Xenix stuff.  Wolfgang Denk and Jerry Carlin
+wiped out some more SysV problems.
+X
+X  In round III (second patch), Muffy Barkocy and Michelle Crabb both gave me
+good ideas to use.  Pete Shipley fixed up some code (is_able) and generally
+helped my motivation to get things out the door.  Gandalph suggested ftp.chk,
+Jay Batson made me fix root.chk, Shelley Shostak fixed and added features
+to pass.chk, and Brian Moore gave me the shell script checking --> SUID
+concept.  Jim W Lai pointed out some other pass.chk things (what a buggy
+program :-)).  Rob Kolstad told me about some bugs in the ftp checker, and
+gently pointed out that some stuff wasn't using the YP passwd files when
+they should be, and Jim Ellis helped get this to work on a Cray.  There
+are probably more that I've forgotten (sorry, if so!) Thanks, people...
+X
+X  In round II (the first patch), Mark Plumbly fixed rc.chk so it would
+work like I said it would, as well as pointing out a few problems with
+the password guesser.
+X
+X  And of course lots of credit goes to my great Beta-release sweatshop team;
+especially Adri Verhoef for tightening up lots of my crummy code (cops,
+group.chk, root.chk, is_writable, dev.chk, dir.chk & file.chk among others),
+Steve Romig for good ideas _and_ letting me use a system V machine to test
+on (how many people do you know that would let you test a security
+system on their system with no strings attached!) Jason Levitt, Jim
+Kimble, Jim Rowan, Stefan Vorkoetter, Judy Scheltema, Pete Troxell (all
+the Sun C2 stuff....), Dennis Conley, and of course John Sechrest.
+Tony Petrost pointed out some of my incorrect assumptions and helped
+fix cron.chk.  Kudos also to Bruce Spence for giving me some good
+implementation ideas at LISA III.
+X
+X  If strings is not available to you, a version is available on uunet;
+also a nifty install program written by Kevin Braunsdorf that can be used
+as a super directory/file mode checker/security device might be available
+soon in comp.unix.sources (these programs large sizes preculudes their
+inclusion in COPS, but I recommend looking into them.)  Both can be gotten
+via anonymous ftp.  Strings is in comp.unix.sources directory, install,
+should be in j.cc.purdue.edu, methinks.
+X  Everything else not explicitely mentioned in the COPS.report.ms paper
+or here was written by me.  Not mentioned execpt in the source code are
+some small changes made by myself to make everything fit in as a cohesive
+whole; I tried to make comments in the source code if I changed it (never
+to drastic in any case.)
+X
+X  For a good story on the subject, you might want to read _The Cuckoo's
+Egg_, by Clifford Stoll.  This is a true tale of a sysadmin's fight 
+against beaurocracy and a system cracker.  Good stuff.
+X
+X  For a a good read on Unix security in general, look at Dave Curry's now
+infamous "white paper", via anon-ftp, SPAM.ITSTD.SRI.COM (128.18.4.3) as
+the file "pub/security-doc.tar.Z.  But don't believe him when he says Yellow
+Pages is secure.  It's not.  Not much is, these days... good luck, tho!
+X
+X -- dan
+FOO_BAR
+chmod 0600 beta/XTRA_CREDIT ||
+echo 'restore of beta/XTRA_CREDIT failed'
+Wc_c="`wc -c < 'beta/XTRA_CREDIT'`"
+test 3599 -eq "$Wc_c" ||
+	echo 'beta/XTRA_CREDIT: original size 3599, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/chk_strings ==============
+if test -f 'beta/chk_strings' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/chk_strings (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/chk_strings (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/chk_strings' &&
+:
+#
+#  Usage: chk_strings filename
+#
+#  This will check pathnames inside executable files for writability,
+# using the "strings" command and egrep.
+#
+#  I have identified three basic types of strings containing paths to files:
+# 1)
+#    /path1/path2/file			/* standard */
+# 2) 
+#    '/path1/path2/file'		/* standard, in single quotes */
+# 3)
+#    :/path1/file1:/path2/file2		/* a path for searching */
+#
+#  For the first two, I simply test the writability; for the last, I
+# parse it into seperate paths and check each one in turn.
+#
+AWK=/bin/awk
+SED=/bin/sed
+EGREP=/usr/bin/egrep
+TEST=/bin/test
+ECHO=/bin/echo
+SORT=/usr/bin/sort
+STRINGS=/usr/ucb/strings
+X
+if test ! -s $STRINGS
+X	then
+X	exit 0
+fi
+X
+if test $# -eq 0
+X	then
+X	$ECHO "Usage: $0 file"
+X	exit 2
+fi
+X
+while test 0 -ne $#
+X	do
+X	# $ECHO Checking $1...
+X	if ./is_writable $1 ; then
+X		$ECHO "Warning!  Root executed File $1 is _World_ writable!"
+X		fi
+X
+X	# get the first two types:
+X
+#   /path1/path2/file			/* standard */
+#   '/path1/path2/file'		/* standard, in single quotes */
+#   :/path1/file1:/path2/file2		/* a path for searching */
+X
+# test_files=`$STRINGS $1 | $EGREP "/.*/" | $AWK '{for (i=1;i<=NF;i++) 
+test_files=`$STRINGS $1|$SED -n -e 's/^.*[pP][aA][tT][hH]=//' -e '/\/.*\//p' |
+X	$AWK '{for (i=1;i<=NF;i++) 
+X	if ((res = substr($i,1,1))=="/") 
+X		printf("%s\n",$i)
+X	else if ((res != ":") && (res2=substr($i,2,1))=="/")
+X		printf("%s\n",substr($i,2,length($i)-2))}
+X	/:/ {
+X		resk=substr($0, index($0,"=")+1, length($0) - index($0,"=")) \
+X		split($0, path, ":");	\
+X		for (j in path) printf("%s\n",path[j])}' | $SORT -u`
+X
+X	shift
+X	done
+X
+X	for i in $test_files
+X		do
+X		if $TEST ! -d "$i" -o ! -f "$i" ; then
+X			i=`$ECHO $i | $SED -e 's/[:;"]//g' -e "s/[']//g"`
+X			if $TEST ! -f "$i" ; then
+X				continue
+X				fi
+X			fi
+X		
+X		if $TEST -n "`$ECHO $i | $EGREP /tmp\|/dev/null\|/dev/tty\|/dev/printer\|/dev/console`" ; then
+X			continue
+X			fi
+X		if ./is_writable "$i" ; then
+X			$ECHO "Warning!  File $i (inside root executed file $1) is _World_ writable!"
+X			fi
+X		done
+X
+# end of script
+FOO_BAR
+chmod 0700 beta/chk_strings ||
+echo 'restore of beta/chk_strings failed'
+Wc_c="`wc -c < 'beta/chk_strings'`"
+test 2023 -eq "$Wc_c" ||
+	echo 'beta/chk_strings: original size 2023, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/cops ==============
+if test -f 'beta/cops' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/cops (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/cops (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/cops' &&
+:
+#
+#  Usage cops [-a architecture] [-b bit_bucket] [-s secure_dir] [-vV]
+#
+#  -a specifies the architecure subdirectory you want to run in; you
+#     must run "make install" to install the appropriate binaries there
+#  -b specifies the "bit bucket", where all the error messages go to
+#  -s tells cops where the secure directory is; mostly this is used by
+#     cops itself, when it is run with the -a flag; it will rerun itself
+#     with the -a flag's argument as an argument to this.
+#  -[vV] are the verbose flags.  Small "v" says print whatever program
+#     is running, when it is executed, in the output fille; capital
+#     "V" says print it to the screen.
+#
+# Overall --
+#
+#  Cops will change into the $SECURE/architecture directory, ensure all
+# the security programs (listed below) indeed do exist, and run all of the
+# security programs.  If any of the programs find any security problems, it
+# either sends mail to everyone in the $SECURE_USERS list, or saves the results
+# in a file $SECURE/architecture/hostname.  It then destroys all temporary
+# files, and exits the program.  Programs that are run (besides this one):
+#
+#	root.chk	dev.chk		group.chk
+#	home.chk 	rc.chk		passwd.chk
+#	is_able.chk	pass.chk 	user.chk
+#	cron.chk	misc.chk	ftp.chk
+#
+# The U-kuang system runs these additional programs:
+#	init_kuang	kuang		addto
+#	clearfiles	filewriters	members
+X
+#
+#  If this is changed to "NO", the report that cops creates
+# will not be deleted and the results will not be mailed to anyone.
+MMAIL=NO
+X
+#
+# Foreign language users can change this (thanks to Wolfgang Denk!):
+LANGUAGE=english
+export LANGUAGE
+X
+#
+#  If this is changed to "YES", then the report will only be mailed
+# if it detects a difference between the last report and this one.
+# Note that this makes no sense unless the mail is set to "YES" as well.
+ONLY_DIFF=YES
+X
+# Where is everyone?
+ECHO=/bin/echo
+TEST=/bin/test
+RM=/bin/rm
+CAT=/bin/cat
+MAIL=/bin/mail
+DATE=/bin/date
+CHMOD=/bin/chmod
+AWK=/bin/awk
+SED=/bin/sed
+MV=/bin/mv
+MKDIR=/bin/mkdir
+X
+# send errors and verbosity to...
+BIT_BUCKET=/dev/null
+# send verbose messages to...
+VERBUCKET=/dev/null
+X
+######################
+#  Change these lines!
+######################
+SECURE=/usr/users/df/COPS/beta
+SECURE_USERS="df"
+######################
+X
+# argh stuff:
+while $TEST $# != 0
+X	do      case "$1" in
+X        -a)     arch=$2 ; SECURE=$SECURE"/"$arch ; shift ;;
+X        -b)	BIT_BUCKET=$2 ; shift ;;
+X        -s)     SECURE=$2 ; shift ;;
+X        -v)	verbose=yes ; v="-v" ;;
+X        -V)	verbose=yes ; VERBUCKET="/dev/tty" ;;
+X        *)      $ECHO Usage $0 [-a architecture] [-b bit_bucket] [-s secure_dir] [-v] ; exit ;;
+X        esac
+X        shift
+X	done
+X
+#  architecture?  change to that dir, and execute cops there:
+if $TEST -n "$arch" ; then
+X	if $TEST ! -d "$SECURE" ; then
+X 		$ECHO Architecture directory $1 does not exist
+X 		exit 1
+X 		fi
+X 	cd $SECURE
+X 	./cops -s $SECURE $v
+X 	exit
+X 	fi
+X
+SECURE_PROGRAMS="root.chk dev.chk is_able.chk group.chk \
+X                 home.chk rc.chk passwd.chk pass.chk misc.chk ftp.chk \
+X		 cron.chk user.chk init_kuang kuang addto \
+X		 clearfiles filewriters members is_able"
+X
+if $TEST ! -d "$SECURE" ; then
+X	$ECHO "Error -- Security directory $SECURE doesn't exist"
+X	exit 1
+fi
+X
+$CHMOD 700 $SECURE
+cd $SECURE
+X
+for i in $SECURE_PROGRAMS
+X	do
+X	if $TEST ! -s "$i" ; then
+X		$ECHO "Error -- Security program $SECURE/$i doesn't exist"
+X		exit 1
+X	fi
+done
+X
+# results go:
+RESULT=$SECURE/result.$$
+if $TEST x"-v" = "x$v" ; then
+X	VERBUCKET=$RESULT
+X	fi
+X
+if $TEST -n "$verbose" ; then
+X	$ECHO "**** root.chk ****" > $VERBUCKET ; fi
+$SECURE/root.chk		>>	$RESULT 2>  $BIT_BUCKET
+if $TEST -n "$verbose" ; then 
+X	$ECHO "**** dev.chk ****" >> $VERBUCKET ; fi
+$SECURE/dev.chk			>>	$RESULT 2>> $BIT_BUCKET
+if $TEST -n "$verbose" ; then 
+X	$ECHO "**** is_able.chk ****" >> $VERBUCKET ; fi
+$SECURE/is_able.chk		>>	$RESULT 2>> $BIT_BUCKET
+if $TEST -n "$verbose" ; then 
+X	$ECHO "**** rc.chk ****" >> $VERBUCKET ; fi
+$SECURE/rc.chk			>>	$RESULT 2>> $BIT_BUCKET
+if $TEST -n "$verbose" ; then 
+X	$ECHO "**** cron.chk ****" >> $VERBUCKET ; fi
+$SECURE/cron.chk		>>	$RESULT 2>> $BIT_BUCKET
+if $TEST -n "$verbose" ; then 
+X	$ECHO "**** group.chk ****" >> $VERBUCKET ; fi
+$SECURE/group.chk		>>	$RESULT 2>> $BIT_BUCKET
+if $TEST -n "$verbose" ; then 
+X	$ECHO "**** home.chk ****" >> $VERBUCKET ; fi
+$SECURE/home.chk		>>	$RESULT 2>> $BIT_BUCKET
+if $TEST -n "$verbose" ; then 
+X	$ECHO "**** passwd.chk ****" >> $VERBUCKET ; fi
+$SECURE/passwd.chk		>>	$RESULT 2>> $BIT_BUCKET
+if $TEST -n "$verbose" ; then 
+X	$ECHO "**** user.chk ****" >> $VERBUCKET ; fi
+$SECURE/user.chk		>>	$RESULT 2>> $BIT_BUCKET
+if $TEST -n "$verbose" ; then 
+X	$ECHO "**** misc.chk ****" >> $VERBUCKET ; fi
+$SECURE/misc.chk		>>	$RESULT 2>> $BIT_BUCKET
+X
+# use the -a option for checking anon-ftp; e.g., "$SECURE/ftp.chk -a"
+if $TEST -n "$verbose" ; then 
+X	$ECHO "**** ftp.chk ****" >> $VERBUCKET ; fi
+$SECURE/ftp.chk			>>	$RESULT 2>> $BIT_BUCKET
+X
+#   Optional -- use "pass_diff.chk", instead of "pass.chk" to make your
+# life easier!
+# if $TEST -n "$verbose" ; then 
+#	$ECHO "**** pass.chk ****" >> $VERBUCKET ; fi
+# $SECURE/pass_diff.chk		>>	$RESULT 2>> $BIT_BUCKET
+$SECURE/pass.chk 		>>	$RESULT 2>> $BIT_BUCKET
+X
+#   Optional -- use "kuang.pl", instead of "kuang", if you have perl
+# installed on your system, for extra speed and functionality:
+# if $TEST -n "$verbose" ; then 
+#	$ECHO "**** kuang ****" >> $VERBUCKET ; fi
+# $SECURE/kuang.pl		>>	$BIT_BUCKET 2>> $BIT_BUCKET
+# $SECURE/kuang			>>	$BIT_BUCKET 2>> $BIT_BUCKET
+# kuang puts it's results in a file called "Success"; check it out:
+if $TEST -s "$SECURE/Success" ; then
+X	$CAT $SECURE/Success >> $RESULT
+fi
+$RM -f $SECURE/Success
+X
+# Optional!  Should use this interactively, with a secret key!
+# if $TEST -n "$verbose" ; then 
+#	$ECHO "**** crc.chk ****" >> $VERBUCKET ; fi
+# $SECURE/crc.chk		>>	$RESULT 2>> $BIT_BUCKET
+# crc.chk puts it's results in a file called crc.results; check it out:
+# if $TEST -s "$SECURE/crc.results" ; then
+# 	$CAT $SECURE/crc.results >> $RESULT
+# fi
+X
+#
+#   Save or Mail the final report to $SECURE_USERS and remove the evidence.
+#
+#  (Thanks to Ian Darwin for the next nifty idea!)
+#  If the result is not mailed, it will be saved in a directory with the
+# same name as the host, in a file with the name:
+#
+#  Year_Month_Day  (for example: $SECURE/ucbvax/1999_Dec_31 )
+#
+if $TEST -s "$RESULT" ; then
+X	# want to put the date and hostname at top; use tmp file: report.$$
+X	REPORT=$SECURE/report.$$
+X
+X	# name of final resting place:
+X	NAME=`$DATE | $AWK '{print $NF"_"$2"_"$3}'`
+X	#
+X	if $TEST -s /bin/hostname ; then
+X		HOSTNAME=`/bin/hostname`
+X	elif $TEST -s /bin/uname ; then
+X		HOSTNAME=`/bin/uname -n`
+X	elif $TEST -s /usr/bin/uuname ; then
+X		HOSTNAME=`/usr/bin/uuname -l`
+X		fi
+X	if $TEST -z "$HOSTNAME" ; then
+X		HOSTNAME="foobar"
+X		fi
+X	HOST=`$ECHO $HOSTNAME | $SED 's/[.].*$//'`
+X
+X	$ECHO                                   >  $REPORT
+X	$ECHO ATTENTION:			>> $REPORT
+X	$ECHO "Security Report for "`$DATE`	>> $REPORT
+X
+X	$ECHO "from host $HOSTNAME"		>> $REPORT
+X	$ECHO					>> $REPORT
+X	$ECHO					>> $REPORT
+X	$CAT $SECURE/result.$$			>> $REPORT
+X
+X
+X	#   figure out where all the old reports are kept, or where the new
+X	# one should be kept; make directories if needed...
+X	if $TEST -d $SECURE/$HOST -a "$MMAIL" = "YES" ; then
+X		if $TEST $ONLY_DIFF = "YES" ; then
+X			if $TEST -n "`./res_diff $SECURE/$HOST $REPORT`" ; then
+X				$MAIL $SECURE_USERS < $REPORT
+X				$MV $REPORT $SECURE/$HOST/$NAME
+X				fi
+X		else
+X			$MAIL $SECURE_USERS < $REPORT
+X		fi
+X		$RM -f $REPORT
+X	elif $TEST ! -d $SECURE/$HOST -a "$MMAIL" = "YES" ; then
+X		$MAIL $SECURE_USERS < $REPORT
+X		if $TEST -n "$HOST" ; then
+X			$MKDIR $SECURE/$HOST 2> /dev/null
+X			$MV $REPORT $SECURE/$HOST/$NAME
+X		else
+X			$MV $REPORT $NAME
+X			fi
+X	else
+X		#  Either saving it to a hostname, in which case move to
+X		# the hostname directory, or just move result to
+X		# the current dir
+X
+X		if $TEST -n "$HOST" ; then
+X			$MKDIR $SECURE/$HOST 2> /dev/null
+X			$MV $REPORT $SECURE/$HOST/$NAME
+X		else
+X			$MV $REPORT $NAME
+X			fi
+X	fi
+fi
+X
+$RM -f $SECURE/result.$$
+X
+#  end it all....
+Xexit 0
+FOO_BAR
+chmod 0700 beta/cops ||
+echo 'restore of beta/cops failed'
+Wc_c="`wc -c < 'beta/cops'`"
+test 8062 -eq "$Wc_c" ||
+	echo 'beta/cops: original size 8062, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/cops.c ==============
+if test -f 'beta/cops.c' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/cops.c (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/cops.c (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/cops.c' &&
+XFrom wpg!russ@uunet.UU.NET Mon Mar 18 17:07:50 1991
+Received: from SEI.CMU.EDU by death.cert.sei.cmu.edu (5.65/2.3)
+X        id AA01851; Mon, 18 Mar 91 17:07:47 -0500
+Received: from uunet.UU.NET by sei.cmu.edu (5.64/2.3)
+X        id AA28497; Mon, 18 Mar 91 17:03:05 -0500
+Received: from wpg.UUCP by uunet.uu.net with UUCP 
+X	(5.61/UUNET-primary-gateway) id AA22925; Mon, 18 Mar 91 17:08:45 -0500
+Received: by wpg.com (smail2.5)
+X	id AA18248; 18 Mar 91 16:06:47 CST (Mon)
+Subject: thanks for cops + diffs
+To: df@sei.cmu.edu
+Date: Mon, 18 Mar 91 16:06:40 CST
+XX-Mailer: ELM [version 2.3 PL10]
+Message-Id: <9103181606.AA18244@wpg.com>
+XFrom: russ@wpg.com (Russell Lawrence)
+Status: OR
+X
+Thanks for the new version of cops.
+X
+My ancient compiler didn't like the compiled in size of the array
+for Wordlist in pass.c so I changed the code to allow dynamic allocation.
+It only takes a few seconds more.
+-- 
+Russell Lawrence, WP Group, New Orleans (504) 443-5000
+russ@wpg.com  uunet!wpg!russ  
+X
+*******************************************************************
+X
+pass.c
+X
+5,7d4
+< /* number of words the dictionary can suck up */
+< #define ARB_CONST	32000
+< 
+102a100
+> 
+207c205
+<     
+---
+>    
+262d259
+< 
+268,270c265,266
+<     char		*wordarray[ARB_CONST];
+<     char		*malloc(), **wordptr, **endptr;
+<     int			done = 0;
+---
+>     char		*malloc(), **wordarray, **wordptr, **endptr;
+>     int			c, done = 0, numwords = 0;
+272d267
+< 
+280a276,287
+>         numwords = 0;
+>         while ((c = getc(wlf)) != EOF)
+>            if (c == '\n')
+>               numwords++; 
+> 	rewind(wlf);
+> 
+>         if ((wordarray=(char **) malloc(sizeof(char *) * numwords + 1)) == NULL)
+> 	{
+> 	   fprintf(stderr,"malloc: not enough memory for wordlist\n");
+> 	   exit (1);
+>         }
+> 
+281a289
+> 
+285d292
+< 	endptr = wordarray + (sizeof(wordarray)/sizeof(char *));
+286a294,298
+> 	endptr = wordarray + numwords; 
+> 
+>         /* fprintf (stderr, "elements %d size %d wordarray %d endptr %d\n", 
+> 	    numwords, sizeof(char *) * numwords, wordarray, endptr); */
+> 
+289,290c301
+< 
+< 	    if (wordptr == endptr)
+---
+> 	    if (wordptr >= endptr)
+292c303
+< 		fprintf(stderr,"Ran out of wordlist space. ARB_CONST %d must be too small.\n", ARB_CONST);
+---
+> 		fprintf(stderr,"Ran out of wordlist space.\n");
+294a306
+> 
+299a312
+> 
+301a315
+> 
+302a317
+> 
+304a320
+> 
+310d325
+< 
+X
+XFrom wjw@eb.ele.tue.nl Fri Jan 25 08:55:21 1991
+Received: from CERT.SEI.CMU.EDU by death.cert.sei.cmu.edu (5.65/2.3)
+X        id AA00795; Fri, 25 Jan 91 08:55:14 -0500
+Received: from adder.maths.su.oz.au by cert.sei.cmu.edu (5.65/2.2)
+X        id AA14079; Fri, 25 Jan 91 08:54:49 -0500
+Received: from eba.eb.ele.tue.nl by adder.maths.su.oz.au with SMTP (5.61++/9.1 to SMTP)
+X	id AA05083; Sat, 26 Jan 91 00:50:18 +1100
+Received: by eb.ele.tue.nl; id AA09049; Fri, 25 Jan 91 14:39:51 +0100
+Date: Fri, 25 Jan 91 14:39:51 +0100
+XFrom: wjw@eb.ele.tue.nl (Willem Jan Withagen)
+Message-Id: <9101251339.AA09049@eb.ele.tue.nl>
+To: apsec@maths.su.oz.au
+Subject: Another simple way to become root.
+Status: ORS
+X
+X
+Oke first what was wrong. We've got this inprot-template which sets 
+most things right. Even after the system really gets f...ed up.
+X
+In this template r-x rights were given to all files in /sys/subsys.
+So this include /sys/subsys/login. (The AA has it 'pr' for root and the
+rest is r-only)
+X
+The r-x made it possible for everybody to do the following:
+(After creation of a program which set the effective UID and GID to 0 )
+X
+user:barf > ensubs login
+$ subs -up
+$ /usr/user/barf/bin/root_shell
+# 'Something like rm -r / '
+X
+And all of this because one 'x' to much. This must certainly be tested for
+in the dangerous files with COPS.
+X
+I know that the system is initially delivered without the bug, but everybody
+who uses the script from 'caen.engin.umich.edu' is liable to get caught by this
+one. 
+X
+To my honest opinion is the login-subsystem even more dangerous than the
+SUID and SGID, because you can only check it by running acl on files. And this
+is going to be an even more cumbersome task.
+X
+The positive side on this is that if things never went wrong before it's not
+very likely to wrong. You have to be root, on a secure system, to add a manager
+to the login-subsystem. 
+X
+None the less, I wonder?
+Can somebody create a file with subsystem-login access on a not secure system,
+transfer a wbak-file to a safe system. And then have rbak give him the acl's
+as were they on the creation of the wbak-file.
+X
+Willem Jan Withagen
+X
+Eindhoven University of Technology   DomainName:  wjw@eb.ele.tue.nl    
+Digital Systems Group, Room EH 10.10 BITNET: ELEBWJ@HEITUE5.BITNET
+P.O. 513                             Tel: +31-40-473401
+5600 MB Eindhoven                    The Netherlands
+X
+XFrom jwtlai@watcgl.waterloo.edu Thu Feb 21 20:16:45 1991
+Received: from CERT.SEI.CMU.EDU by death.cert.sei.cmu.edu (5.65/2.3)
+X        id AA29915; Thu, 21 Feb 91 20:16:41 -0500
+Received: from watcgl.waterloo.edu by cert.sei.cmu.edu (5.65/2.2)
+X        id AA06350; Thu, 21 Feb 91 20:16:46 -0500
+Received: by watcgl.waterloo.edu
+X	id <AA02610>; Thu, 21 Feb 91 20:16:35 EST
+Date: Thu, 21 Feb 91 20:16:35 EST
+XFrom: Jim W Lai <jwtlai@watcgl.waterloo.edu>
+Message-Id: <9102220116.AA02610@watcgl.waterloo.edu>
+To: df@cert.sei.cmu.edu
+Subject: cops pass.c
+Status: ORr
+X
+I checked out the latest on cert.  I've got a patch that allows two new
+options for your perusal.  One option restricts the guesses to a single
+user id.  The other option, which is probably more useful, checks for another
+obvious password type not in pass.c but in the 1984 Unix system security
+paper in the AT&T Bell Labs tech journal by Grampp and Morris: doubling
+of the username.
+X
+---cut-here---
+57a58
+>  *		-i user: only guess passwords for the given "user"
+58a60
+>  *		-d:	check the doubling of the username
+71c73
+<     chknulls = 0, printit = 0, users = 0, chkwords = 0;
+---
+>     chknulls = 0, printit = 0, users = 0, chkwords = 0, checkdouble = 0;
+85c87
+< char	*Curpw, *Wordlist = NULL;
+---
+> char *Curpw, *Wordlist = NULL, *Iduser = NULL;
+138a141,146
+> 		    case 'd':
+> 			/*
+> 			 * check the doubling of the username
+> 			 */
+> 			checkdouble++;
+> 			break;
+182a191,202
+> 		    case 'i':
+> 			/*
+> 			 * restrict guesses to a single user
+> 			 */
+> 			if ((Iduser = argv[i+1]) == NULL) {
+> 			    fprintf(stderr,
+> 				"%s: No user supplied with -i option\n",
+> 				argv[0]);
+> 			    exit (1);
+> 			    }
+> 			argv[i+1] = NULL;
+> 			break;
+196a217
+> 			fprintf(stderr,"-i user:\trestrict guess to the indicated user\n");
+197a219
+> 			fprintf(stderr,"-d:\t\tcheck for double repetition of the username\n");
+312a335,340
+> 	/* 
+> 	 * Restrict check to a single userid if requested
+> 	 */
+> 	if (Iduser != NULL && strcmp(Iduser,pwd->pw_name) != 0)
+> 	    continue;
+> 
+339a368,377
+> 	 *
+> 	 */
+> 	if (checkdouble) {
+> 	    strcpy(guess,pwd->pw_name));
+> 	    strcat(guess,pwd->pw_name));
+> 	    if (uandltry(pwd,guess))
+> 		continue;
+> 	}
+> 
+> 	/*
+567d604
+<     char	*malloc();
+X
+XFrom LNAGEL@DALVMIC5.vnet.ibm.com Tue Apr 23 13:51:08 1991
+Received: from CERT.SEI.CMU.EDU by death.cert.sei.cmu.edu (5.65/2.3)
+X        id AA20896; Tue, 23 Apr 91 13:51:06 -0400
+Received: from IINUS1.IBM.COM by cert.sei.cmu.edu (5.65/2.2)
+X        id AA04454; Tue, 23 Apr 91 13:50:59 -0400
+Message-Id: <9104231750.AA04454@cert.sei.cmu.edu>
+Received: from DALVMIC5 by vnet.ibm.com (IBM VM SMTP V2R1) with BSMTP id 5318;
+X   Tue, 23 Apr 91 13:27:46 EDT
+Date: Tue, 23 Apr 91 11:58:21 CDT
+XFrom: "Lynn Nagel" <lnagel@dalvmic5.vnet.ibm.com>
+To: df@cert.sei.cmu.edu
+Subject: COPS
+Reply-To: lnagel@dalvmic5.vnet.ibm.com
+Status: ORr
+X
+Dan,
+I am very impressed with what you have assembled.  However, the more I get
+into the code, the more I find that the litereary liscense some large
+computer vendors take in delivering systems can cause significant special
+conditions  (ie. Sun's C2 implementation versus IBM's -> similar, but not
+quite the same).
+X
+Another problem that I am starting to see is the AIX product trying to
+become more systems manageable has implemented several files in a
+stanza format (ie. /etc/securty/* & /etc/filesystems in leiu of fstab).
+X
+I did find a hole.  AIX uses a file .Xdefaults which isn't checked for,
+(I did notice .Xintrc being chked but not in Kaung - and I understand
+the issues).
+X
+NIS security exposure:  I generally get involved with a customer when they
+are having network problems of some type (generally adding a new machine).
+This means that I have access to the actual h/w.  I have been signed-on
+to the system at some level.  Depending on the conditions I find, I
+will explain the process.
+X    Frequently, the old passwd file has been left alone when the system
+X    is installed.  This means that if I disable ypbind, I have effectively
+X    changed to use of local w/s security.  Depending on what is there and
+X    how I was signed-on, I next become either root (by re-IPLing machine
+X    in local or maintenance mode, if necessary) or a valid user in the
+X    NIS network (I check for guest ids w/o passwd's before bringing
+X    down NIS on the local w/s).  Once I know valid userid's, uid's, &
+X    gid's; I merely make a local entry to match it in /etc/passwd and
+X    login to it (this approach obviously means I have acquired root access
+X    generally through write authority to /etc.).  Know that I am anyone
+X    I want to be, I can navigate the NIS network fairly easy.  This
+X    is especially a problem with the proliferation of single user
+X    workstations sitting in offices on peoples desks where they
+X    frequently (but not always) have a means of doing the above.
+X
+I am on the road this week,  but if you would like, I'll send you back
+the progs that I needed to change for AIX (with changes noted for easy
+before/after notation).  The one major exception to being able to "fix"
+for AIX is filewriters.c.  This is because of the stanza format used
+in /etc/filesystems instead of the flat positional /etc/fstab.  I'll
+try an work on a parser that will recognize and handle various mount
+responses (but I won't have access to a variety of machines for several
+weeks).  If you happen to have several cases I could work on, I'll start
+working on it sooner.
+X
+Thanks again,
+Lynn
+X
+XFrom LNAGEL@DALVMIC5.vnet.ibm.com Fri Apr 19 16:01:12 1991
+Received: from CERT.SEI.CMU.EDU by death.cert.sei.cmu.edu (5.65/2.3)
+X        id AA12114; Fri, 19 Apr 91 16:01:08 -0400
+Received: from IINUS1.IBM.COM by cert.sei.cmu.edu (5.65/2.2)
+X        id AA11618; Fri, 19 Apr 91 16:01:02 -0400
+Message-Id: <9104192001.AA11618@cert.sei.cmu.edu>
+Received: from DALVMIC5 by vnet.ibm.com (IBM VM SMTP V2R1) with BSMTP id 2472;
+X   Fri, 19 Apr 91 15:59:19 EDT
+Date: Fri, 19 Apr 91 14:56:48 CDT
+XFrom: "Lynn Nagel" <lnagel@dalvmic5.vnet.ibm.com>
+To: df@cert.sei.cmu.edu
+Subject: Fixes to AWK
+Reply-To: lnagel@dalvmic5.vnet.ibm.com
+Status: OR
+X
+Dan,
+I have looked at all the *.chk files.  I found that three files had the
+AWK problems (group.chk, rc.chk, & dev.chk).  The fix is simple, break
+the second conditional brace onto a new line (without a on the end of the
+orignal line), the opening ' continues untill closing ' encountered.
+X
+I did find another problem with group.chk.  AIX uses a ! in the passwd
+field to point to a C2 security group file.  I had to add to the if condition
+on line 79 to include       && "!" !=$2)      .
+X
+Have a good weekend, talk with you later,
+Lynn
+X
+P.S. I'll put together something on NIS next week.
+FOO_BAR
+chmod 0600 beta/cops.c ||
+echo 'restore of beta/cops.c failed'
+Wc_c="`wc -c < 'beta/cops.c'`"
+test 11389 -eq "$Wc_c" ||
+	echo 'beta/cops.c: original size 11389, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/cover_letter ==============
+if test -f 'beta/cover_letter' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/cover_letter (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/cover_letter (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/cover_letter' &&
+X
+X To all women and men of the net, greetings...
+X
+X  Here are the latest changes, additions, and bug fixes to COPS; this brings
+it up to version 1.02, for those who care.  My personal stash (the latest
+copy) should always be available via anon-ftp at cert.sei.cmu.edu
+(128.237.253.5), in ~pub/cops.  In this header, I'll go through some
+thoughts, background notes, then finally get to the changes made, so if
+you don't want to listen to me, just unpack the shar files, read the README
+file, follow instructions, and you should be ready to roll.
+X
+X  For those who don't know, COPS is a static security checking tool that
+checks common procedural (non-bug) problems of a Un*x system.  It basically
+takes a snapshot of a system, and then generates a report of it's findings.
+On a purely empirical basis, it has successfully discovered problems that
+could compromise root on over 3/4 or more of the systems I've run it on; of
+course, the idea here is not to break root, but to let someone fix the
+problems it shows.  Note, of course, that it gives info indiscriminately, to
+whoever runs it.  Decide if you do or don't want to learn about the
+information it can give about your system, but remember -- someone else
+probably already has it.
+X
+X  After writing COPS, I started working for CERT.  I had always suspected,
+but didn't know, that most breakins were caused by pretty trivial problems...
+now I *know* it's true (or at least the ones we've found out about :-)).
+In the breakins I've seen while working for CERT, using COPS probably could
+have prevented 60-75% of them.  The most common problems?  Poor passwords,
+guest accounts, accounts with no passwords, and improperly managed systems
+(+ in host.equiv, poorly set up remote daemons, etc.)  Interestingly, to
+me at least, I wrote the original intro to COPS exactly one year ago today.
+How times don't change... I was worried this would be fairly obsolete soon,
+but it looks like it'll be good at least for another few years.
+X
+X   The kit is broken into modules, each one driven by a master shell script;
+you can usually get it running within 30 minutes or so if you've never used
+it before (5 or 10 if you only scan the README); if you've used it in the
+past, you can set it up on a new machine in a minute or two.  With no
+modifications, it takes perhaps 2 to 30 minutes to generate a report;
+however, the password cracking program can add lots of time to this,
+depending on the options.  There is also a SUID finder, which can also take
+a long time (hours) to run, since it does a "find" on "/".  There's a new
+option that tells it not to mail a report if the results are the same as
+the last report, so you can just stuff it into cron and wait until a report
+comes around.  Of course, if someone breaks in, changes cron, and you just
+rely on COPS, then you're f*cked anyway.  Use it as a tool, not as a crutch.
+X
+X   Ok, changes... there are a couple of totally new modules here.  One is
+simply labled "misc.chk"; this checks for a potpourri of things -- right
+now it checks for unrestricted tftp, uuencode & decode problems (including
+the "decode" alias) writability of things in /etc/inetd.conf|/etc/services,
+and to see if rexd is enabled.  The second is a CRC generator, called,
+amazingly enough, "crc.chk" (Jon Zeef was kind enough to let me use his
+version).  It's similar to the SUID trouble finder, in that you run it once,
+create a database, then compare future runs against that standard.  It
+reports any changes that are found.  There are some problems with this -- 
+nothing is functionally wrong with the program, as far as I know, but there
+are a few operational hazards -- for more information, read the README file,
+and the man page.
+X
+X   Now the rest... I'll try to put the more important things at the top,
+but perceptions vary, of course.  Here are the major changes I can remember:
+X
+-- a newer, faster, better, more powerful version of kuang, in perl, is
+X   included.
+X
+-- an anonymous ftp setup checker (ftp.chk -a)
+X
+-- the SUID finding program now also flags any world writable SUID files and
+X   SUID shell scripts.
+X
+-- you can optionally check only passwords that have changed since the last
+X   time they were checked (pass_diff.chk.)
+X
+-- optionally, cops will mail you a report only if things have changed since
+X   last report.
+X
+-- the password cruncher can chew on arbitrary password files now, plus some
+X   bugs fixed.  Interesting how this program, the main one I didn't write/port,
+X   generates more little bugs than all the others... the original program
+X   worked fine (written by Craig Leres and Jef Poskanzer), but the more
+X   features that were added by different people over the years, the more
+X   things broke.  I should have just included my perl version instead.
+X
+-- checks made for world writable files now looks at the parent directory
+X   structure of a path, instead of just the file.
+X
+-- New, optional directory structure (for multiple machine/binary sites) for
+X   the entire system.  Reports are now saved in a file with the name
+X   "year_month_day", and by default, are saved in a directory with the
+X   same name as the host.  Looks something like:
+X
+X   $SECURE/cops
+X               | -- docs
+X               | -- src
+X               |--- archtype1 binaries (sun, or whatever)
+X               |             |
+X               |             | - results for sun workstation 1
+X               |             | - results for sun workstation 2
+X               |       
+X               |--- archtype2 binaries(dec)
+X               |             |
+X               |             | - results for dec workstation 1
+X               |             | - results for dec workstation 2
+X               |            
+X               |--- archtype3 binaries(vax)
+X                             |
+X                             | - results for vax 1
+X                             | - results for vax 2
+X
+X   You run "cops archtype", and it would cd into the binary directory,
+X   use those binaries, and put any results in a subdirectory of the
+X   appropriate host name.  Results would be stored with a date as the title,
+X   not some stupid number.  Alternately, you can just run "cops", and it will
+X   take your hostname as a directory to store the results.  More in the
+X   README file, under "How to Configure/Install COPS".
+X
+-- user.chk checks .logout and .rhosts files (was .rhost) now, too, as well
+X   as reporting if any .netrc files are readable.
+X
+-- file.chk and dir.chk have been replaced by is_able.chk, which performs
+X   the same function, with hopefully more flexibility and ease of use.
+X
+-- scripts now start with a ":" on line 1 instead of #!/bin/sh, since it
+X   didn't work on some stupid machines.
+X
+X
+X   The easiest thing to do is unpack everything, scan the README file,
+change whatever it tells you, run "reconfig", if you have a sysV based machine,
+or are just suspicious of your system, then blast off.  Finally, to steal an
+ending from the README file of a year ago...
+X
+X  "So good luck, and I hope you find COPS useful as we plunge into UNIX
+of the 1990's.
+X
+X   dan farmer
+X   January 31, 1989"
+X
+X
+X -- dan
+X   jan 31, 1990
+X
+FOO_BAR
+chmod 0600 beta/cover_letter ||
+echo 'restore of beta/cover_letter failed'
+Wc_c="`wc -c < 'beta/cover_letter'`"
+test 7085 -eq "$Wc_c" ||
+	echo 'beta/cover_letter: original size 7085, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/crc.chk ==============
+if test -f 'beta/crc.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/crc.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/crc.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/crc.chk' &&
+:
+X
+# commands 'n stuff:
+AWK=/bin/awk
+SED=/bin/sed
+SORT=/usr/bin/sort
+MV=/bin/mv
+MAIL=/bin/mail
+CAT=/bin/cat
+TEST=/bin/test
+ECHO=/bin/echo
+RM=/bin/rm
+DATE=/bin/date
+X
+# files used:
+crc_list=./crc_list	# lists files used
+crc_seed=./crc_seed	# optional -- contains seed
+crc_old=./crc_old	# old crc values
+crc_tmp=./crc_tmp	# temp storage for the new crc's
+crc_res=./crc_res	# difference between new and old crc's
+bit_bucket=/dev/null	# junk goes here
+results=./crc_results	# results go here; deleted & mailed, or
+X			# saved here, depending on the "MAIL" flag.
+X
+# Do you want it mailed?  If "YES", the results file gets deleted
+MMAIL=NO
+# who gets the report?
+INFORM="foo@bar.edu"
+X
+#   If you don't use an argument, and don't have a seed file, generate
+# a semi-random seed:
+if $TEST $# -eq 1 ; then
+X	seed=$1
+else
+X	if $TEST ! -s $crc_seed ; then
+X		seed=$$
+X		$ECHO $seed > $crc_seed
+X	else
+X		seed=`$CAT $crc_seed`
+X		fi
+X	fi
+X
+# AIX has a broken awk.
+# files=`$AWK '/^#/ {next} {print $1}' $crc_list | $SORT -u`
+files=`$SED '/^#.*$/d' $crc_list | $SORT -u`
+X
+# $ECHO crc\'ing, with seed $seed
+for i in $files
+X	do
+X	./crc -v -i $seed $i >> $crc_tmp 2> $bit_bucket
+X	done
+X
+# First time used, create the database:
+if $TEST ! -s $crc_old ; then
+X	$MV $crc_tmp $crc_old
+X	exit 0
+X	fi
+X
+# any differences?
+./crc_check $crc_old $crc_tmp > $crc_res
+X
+if $TEST -s $crc_res ; then
+X
+X	# get the hostname:
+X	if $TEST -s /bin/hostname ; then
+X                HOSTNAME=`/bin/hostname`
+X        elif $TEST -s /bin/uname ; then
+X                HOSTNAME=`/bin/uname -n`
+X        elif $TEST -s /usr/bin/uuname ; then
+X                HOSTNAME=`/usr/bin/uuname -l`
+X                fi
+X        if $TEST -z "$HOSTNAME" ; then
+X                HOSTNAME="foobar"
+X                fi
+X
+X	$ECHO >> $results
+X	$ECHO ATTENTION:                        >> $results
+X	$ECHO "CRC Security Report for "`$DATE` >> $results
+X	$ECHO "From host $HOSTNAME"             >> $results
+X	$ECHO >> $results
+X	$CAT $crc_res >>$results
+X
+X	if $TEST $MMAIL = "YES" ; then
+X		$MAIL $INFORM < $results
+X		$RM $results
+X		fi
+X	fi
+X
+$RM -f $crc_tmp $crc_res
+X
+#  end it all....
+Xexit 0
+FOO_BAR
+chmod 0700 beta/crc.chk ||
+echo 'restore of beta/crc.chk failed'
+Wc_c="`wc -c < 'beta/crc.chk'`"
+test 2093 -eq "$Wc_c" ||
+	echo 'beta/crc.chk: original size 2093, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/crc_list ==============
+if test -f 'beta/crc_list' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/crc_list (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/crc_list (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/crc_list' &&
+#  This lists any/all sensitive files the administration wants to have a
+# CRC value for.  Comments are lines starting with a "#".
+#
+X
+# some key files that might not change too often:
+/.login
+/.profile
+/.cshrc
+/.rhosts
+/etc/hosts.equiv
+/usr/lib/crontab
+/usr/lib/aliases
+/usr/spool/uucp/L.sys
+X
+#   some that you might like to keep an eye on, depending on your site
+# stability and/or paranoia:
+# /etc/passwd
+# /etc/group
+X
+# default is individual files; can use wildcards, or whatever;
+# here are some examples, using wildcards:
+# /bin/*
+# /usr/bin/*
+# /usr/lib/*
+# /usr/local/lib/*
+# /usr/local/bin/*
+X
+# Here are individual files:
+/bin/fsck
+/bin/rrestore
+/bin/csh
+/bin/login
+/bin/ls
+/bin/mail
+/bin/mount
+/bin/passwd
+/bin/ps
+/bin/sh
+/bin/su
+/usr/lib/sendmail
+/usr/ucb/telnet
+/usr/ucb/rlogin
+/usr/ucb/ftp
+/usr/bin/at
+/usr/bin/chgrp
+/usr/bin/cu
+/usr/bin/df
+/usr/bin/login
+/usr/bin/mail
+/usr/bin/passwd
+/usr/bin/ruusend
+/usr/bin/su
+/usr/bin/tip
+/usr/bin/uucp
+/usr/bin/uulog
+/usr/bin/uuname
+/usr/bin/uusend
+/usr/bin/uustat
+/usr/bin/uux
+/usr/bin/xterm
+FOO_BAR
+chmod 0600 beta/crc_list ||
+echo 'restore of beta/crc_list failed'
+Wc_c="`wc -c < 'beta/crc_list'`"
+test 1045 -eq "$Wc_c" ||
+	echo 'beta/crc_list: original size 1045, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/cron.chk ==============
+if test -f 'beta/cron.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/cron.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/cron.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/cron.chk' &&
+:
+#
+#  Usage: cron.chk
+#
+#  This checks pathnames and files inside the cron files /usr/lib/crontab
+# for writability.
+#
+#  Mechanism:  The commands inside the file /usr/lib/crontab are executed
+# by root.  This shell script greps for commands/paths that begins with
+# "/" and takes each potential problem-string and uses the program
+# "is_writable" to determine if it is world writable.  All results are
+# echoed to standard output.
+#  In addition, it throws away everything that has a /tmp, /dev/null, or
+# tty in the writable string, and everything after a ">"; e.g. if crontab
+# is writing to a file it doesn't care.
+#
+#  Cron.chk will try to find a file in /usr/lib/crontab first (bsd),
+# and then if it isn't there, it will look in the any alternate
+# possible locations next -- right now, /usr/spool/cron/crontab -- to
+# see if a directory exists, and, if it does, it checks all the cron
+# files in turn.
+#
+#  WARNING!
+#
+#  Spurious messages can occur; a more stringent method (if perhaps less
+# careful of a check) would be to test just the 6th field, instead of
+# all the fields after the fifth.  Also throwing away /tmp, etc. could
+# be a mistake.
+#
+X
+#  Location of stuff:
+AWK=/bin/awk
+SED=/bin/sed
+ECHO=/bin/echo
+EGREP=/usr/bin/egrep
+TEST=/bin/test
+CAT=/bin/cat
+X
+#  Possible location of crontab file:
+cron=/usr/lib/crontab
+#  alternate reality locations of crontab file:
+alt_cron="/usr/spool/cron/crontabs"
+X
+if $TEST ! -s $cron
+X	then
+X	cron=""
+X	for i in "$alt_cron"
+X		do
+X		if $TEST -d $i
+X			then
+X			cron=`$ECHO $alt_cron/*`
+X			fi
+X		done
+X
+X	if $TEST  -z "$cron"
+X		then
+X		exit
+X		fi
+X	fi
+X
+# finally, do the checking -- maybe for one, maybe for lots of
+# cron-ites:
+X
+for cron_kid in $cron
+X	do
+X	./chk_strings $cron_kid
+X	# A typical crontab entry might look something like this:
+X	#
+X	#   0,15,30,45 * * * * /bin/sh /usr/adm/newsyslog
+X	#
+X	risky_stuff=`$AWK '{for (i=6;i<NF;i++) printf("%s ", $i);
+X		if (NF!=6) printf("%s\n",$NF)}' $cron_kid | $SED -e 's/>.*//' |
+X		$AWK '{for (i=1;i<=NF;i++) if (substr($i,1,1)=="/") print $i}'`
+X
+X	for i in $risky_stuff
+X		do
+X		if $TEST `$ECHO $i | $EGREP "/tmp|/dev/null|tty"`
+X			then
+X			continue
+X			fi
+X		if ./is_writable $i
+X			then
+X			$ECHO "Warning!  $i (in $cron_kid) is World writable!"
+X			fi
+X		done
+X	done	# for all the cron-kids
+FOO_BAR
+chmod 0700 beta/cron.chk ||
+echo 'restore of beta/cron.chk failed'
+Wc_c="`wc -c < 'beta/cron.chk'`"
+test 2266 -eq "$Wc_c" ||
+	echo 'beta/cron.chk: original size 2266, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/dev.chk ==============
+if test -f 'beta/dev.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/dev.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/dev.chk (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/dev.chk' &&
+:
+#
+#  dev.chk [-g]
+#
+#   This shell script checks the permissions of all devs listed in the
+# file /etc/fstab (the "mount" command would be a preferable way of
+# getting the file system name, but the syntax of the output is variable
+# from machine to machine), and flags them if they are readable by using
+# the "is_readable" command.  It also checks for unrestricted NFS
+# mountings.  By default, dev_check will flag devs only if world readable
+# or writable.  The -g option tells it to print out devs that are also
+# group readable/writable.
+#   As an aside, the fact that NFS mounted dirs are world readable isn't
+# a big deal, but they shouldn't be world writable.  So do two checks here,
+# instead of one.
+#
+# (p.s. /dev/?mem and some misc files used to be checked here, but they
+# are now checked in is_able.chk)
+#
+#  Two types of /etc/fstab formats I've seen so far:
+#
+#  spec:file:type:freq:passno:name:options
+#      NFS are indicated by an "@"
+#
+#  fsname dir type opts freq passno
+#      NFS are indicated by an ":"
+#
+#  I check for the second; comment that code out (lines 83-84), and
+# uncomment the other style (lines 79-80), if you have the first type.
+#
+AWK=/bin/awk
+SED=/bin/sed
+LS=/bin/ls
+ECHO=/bin/echo
+TEST=/bin/test
+X
+# locations of vital stuff...
+mtab=/etc/fstab
+exports=/etc/exports
+X
+group=no
+X
+if $TEST $# -gt 1
+X	then
+X	$ECHO "Usage: $0 [-g]"
+X	exit 2
+fi
+X
+if $TEST $# -eq 1
+X	then
+X	if $TEST "X$1" = "X-g"
+X		then
+X		group=yes
+X	else
+X		$ECHO "Usage: $0 [-g]"
+X		exit 2
+X	fi
+fi
+X
+#  Testing filesystems and devices for improper read/write permissions...
+X
+# grab devices from "/etc/fstab"....
+#  Format of /etc/fstab:
+#
+#  spec:file:type:freq:passno:name:options
+#     NFS mounted:
+#  uther@foobar.edu:/usr/spaf:ect....
+#
+#  Or, the default means of checking:
+#
+#  filesystem   directory   type   options   freq   pass
+#     NFS mounted:
+#  uther:foobar.edu /usr/spaf....
+#
+#   kill comments, then get the device/filesystem in question.
+#
+# First style:
+# nfs_devs=`$SED 's/^#.*//' $mtab | $AWK -F: '/@/ {print $2}'`
+# local_devs=`$SED 's/^#.*//' $mtab | $AWK -F: '/@/
+#						{continue;}
+#                                               {print $1}'`
+#
+# Default style:
+nfs_devs=`$SED 's/^#.*//' $mtab | $AWK '/:/ {print $2}'`
+local_devs=`$SED 's/^#.*//' $mtab | $AWK '/:/
+X					 {continue;}
+X					{print $1}'`
+X
+all_devs=$nfs_devs" "$local_devs
+X
+# Alternate way; grab devices from "mount [-p]"....
+#   Format of output from mount (some machines use -p option, some
+# don't.  Check your local man page... you might have to add a "-F:" or
+# something, depending on your output:
+# crit_devs=`/etc/mount -p|$AWK 'index($1, "/")==1
+#					{print $1} \
+#				}'`
+X
+#
+# However, do check for single line entries in /etc/exports:
+if $TEST -s $exports
+X	then
+#	$AWK '{while(getline >0) if ($0 !~ /^#/ && NF == 1) \
+X	$AWK '$0 !~ /^#/ { if(NF == 1) \
+X		printf("Warning!  NFS file system %s exported with no restrictions.\n",$0)}' $exports
+X	fi
+X
+#
+#  Have to get them in the format that "is_able" likes:
+#
+#  filename {world|group} {writeable|readable|both}
+#
+# all things check world/group writability
+for i in $all_devs
+X	do
+X	./is_able $i w w
+X	if $TEST "$group" = "yes"
+X		then
+X		./is_able $i g w
+X		fi
+X	done
+X
+#  For local devices, we want to make sure that no one can bypass
+# security by reading straight from the device:
+for i in $local_devs
+X	do
+X	./is_able $i w r
+X	if $TEST "$group" = "yes"
+X		then
+X		./is_able $i g r
+X		fi
+X	done
+X
+# end of script
+FOO_BAR
+chmod 0700 beta/dev.chk ||
+echo 'restore of beta/dev.chk failed'
+Wc_c="`wc -c < 'beta/dev.chk'`"
+test 3437 -eq "$Wc_c" ||
+	echo 'beta/dev.chk: original size 3437, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/disclaimer ==============
+if test -f 'beta/disclaimer' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/disclaimer (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/disclaimer (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/disclaimer' &&
+/***********************************************************************
+* Copyright 1989, 1990 by Dan Farmer.  All rights reserved.  Some
+* individual files may be covered by other copyrights.
+* 
+* This material was originally written and compiled by Dan Farmer at
+* Purdue University in 1989 and 1990, under the direction and sponsorship
+* of Professor Gene Spafford.  Other material was contributed as noted
+* elsewhere.  Recently, development has been done at the Software
+* Engineering Institute.
+*
+* Redistribution and use in source and binary forms are permitted
+* provided that this entire copyright notice is duplicated in all such
+* copies.  No charge, other than an "at-cost" distribution fee, may be
+* charged for copies, derivations, or distributions of this material
+* without the express written consent of the copyright holders.
+*
+* THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+* MERCHANTIBILITY AND FITNESS FOR ANY PARTICULAR PURPOSE.
+************************************************************************/
+FOO_BAR
+chmod 0600 beta/disclaimer ||
+echo 'restore of beta/disclaimer failed'
+Wc_c="`wc -c < 'beta/disclaimer'`"
+test 1123 -eq "$Wc_c" ||
+	echo 'beta/disclaimer: original size 1123, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= beta/docs/COPS.report ==============
+if test ! -d 'beta/docs'; then
+    echo 'x - creating directory beta/docs'
+    mkdir 'beta/docs'
+fi
+if test -f 'beta/docs/COPS.report' -a X"$1" != X"-c"; then
+	echo 'x - skipping beta/docs/COPS.report (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting beta/docs/COPS.report (Text)'
+sed 's/^X//' << 'FOO_BAR' > 'beta/docs/COPS.report' &&
+.ps 12
+.vs 12
+.PH ````
+.pn
+.nr W 78
+.ce 2
+\fBCOPS and Robbers
+UN*X System Security\fP
+.sp
+.sp
+.PP
+In the last few years, computer security has received a great deal
+more attention than it has in the past.  Computerized break-ins and
+criminal activity, once merely the product of the imagination of
+science fiction writers,
+has became a fairly common occurence in both commercial and academic
+circles.  In this paper, I will go over the problems that face any
+multiuser computing system, then discuss how these problems apply to UNIX\**
+.FS
+Although originally designed and developed by Ken Thompson and
+Dennis Ritchie of AT&T, UNIX has grown far beyond its' original
+design and now numerous companies market their own \*Qflavor\*U of
+UNIX.  When I use the term UNIX in this paper, I don't mean merely
+AT&T's version, but instead I mean the majority of the most popular
+varieties, made by developers at Berkely, Sun, and a host of other
+manufacturers.  I believe UNIX is still a trademark of Bell
+Laboratories.
+.FE
+specifically, and finally present in detail a suite of programs that
+were developed in an attempt to address some of the main problems
+that could be solved via software.  UNIX, although considered to be
+a fairly secure operating system ([Wood 88], [Duff 89], etc), has the
+advantage of having many published works ([Grampp and Morris 84],
+[Bishop 83], etc) on the problems that a computing site can have with
+security, and in addition, on how a UNIX system administrator might
+make his/her system more secure by monitoring various aspects of his/her
+UNIX site.  This, combined with UNIX's popularity, make it an ideal
+target for a software security system to operate on.
+.PP
+In this report I am not going to discuss specific ways of breaking
+into a given UNIX machine (for a more detailed description on how to
+compromise UNIX security, see either [Baldwin88], [Bishop83],
+[Wood & Kochran 86], or [Grampp & Morris 84]) -- instead, I will
+concentrate on how to improve and strengthen the potentially good
+security of a generic UNIX system by means of a software toolkit
+that examines the weaker areas of UNIX that are either traditionally
+ignored (due to the time constraints or ignorance of the system
+administrators) or are simply reoccurring problems that need to be
+watched over.  In addition, this report is not meant for UNIX neophytes
+-- although a great deal of proficiency is not needed to read
+this report and use the programs described herein, a familiarity with
+basic UNIX features -- the file system and file permission modes for
+example -- and commands such as
+.ul
+awk, grep, sed
+as well as a working knowledge of shell and C programming are necessary
+to understand the internal workings of the security system described in
+this paper.
+.PP
+Although there is no reasonable way that all security problems can be
+solved (at least not with a software solution) on any arbitrary UNIX
+system, administrators and system programs can be assisted by a software
+security tool.  The Computer Oracle Password and Security system (COPS)
+that will be described in this paper is just such a device.  The COPS
+system is a collection of programs and shell scripts that attempt
+to address as many of these problems as possible in an efficient,
+portable, and above all in a reliable and safe way.  The main goal
+of COPS is one of prevention; it tries to anticipate and eliminate
+security problems by making sure people don't get a chance to
+compromise security in the first place.  Alerting the
+administrators of a potential intruder or that a virus has infected 
+the system is beyond the scope of the present system, although with 
+work with such capabilities could be added ([Bauer and Koblentz 88]
+and [Duff 89].)
+.PP
+To understand the reason COPS might check any specific problem, a
+look at computer security problems in general is in order.  The
+problems listed below are not meant to be inclusive, but they are
+indicative of the myriad types of dilemmas a typical computer multiuser
+system might encounter:
+.PP
+1)  Administrators, system programmers, and computer operators.  The
+very people that (should) worry the most about security are sometimes
+the ones that are the
+least concerned.  Carelessness is one of the main culprits; a mistake by a user
+might cause little or no problem, but when someone with no
+restrictions (or almost none) on their computer activity makes a mistake,
+a security hole can result.  \*QI can trust my users\*U is a fine
+statement to make -- but can you trust your users' friends?  How about
+the users of computers that are networked to yours?
+New software, systems, or procedures
+can facilitate extra problems; a computing staff is often ill or
+completely non-trained on new techniques and software.
+Too often \*QRTFM\*U is the only training that they will ever receive.
+Programs that are created for in-house use are often ill-documented and
+not debugged thoroughly, and when users other than the author start to
+use/abuse the program, problems can result.  Especially misunderstood,
+even by experienced UNIX system programmers, is the SUID program or,
+worse yet, the SUID shell script ([Bishop 83].)
+When a user says that his/her password was forgotten (or any
+other account/security related problem), what checks are made to verify
+that the person is really the owner of that account?  Are users that are
+security problems kept track of, so that repeated abuses of the system will
+result in punitive action?  Does your site even have a security policy?
+And of course, the last straw is that most system administrators simply
+have too much other work to do than to constantly check
+the system for potential security flaws -- let alone to double-check that
+any work done by other system programmers has been done correctly.
+These are the actions that often get left unsaid and undone.
+.PP
+A UNIX environment has no special defenses against this kind of
+\*Qattack\*U.  Fortunately, a number of these potential problems (unless
+catastrophic in scope) are not only correctable, but are
+easy to detect with a software toolkit such as COPS.  Even the most
+careful UNIX guru will periodically make a mistake; COPS has been
+designed to aid in her/his never ending battle against the forces of
+darkness.
+.PP
+2)  Physical security.  This is perhaps the most frustrating of all 
+possible problems because it effects all computer systems and is often the
+hardest to safeguard against.  Even if the software is secure, even if 
+the system administrators are alert to potential problems, what happens 
+if a user walks up to the root console and starts typing?  Does the night
+janitorial staff let anyone into the machine room without proper 
+identification? Who has access to the key that opens up the computing 
+center?  Are terminals that are logged on left unguarded or unlocked?
+Are passwords written on or near a users terminal or desk?
+No software in the world can help
+against human nature or carelessness.  Reiterating to your staff and users
+that terminals should not be left alone or unguarded and that passwords
+(especially root) should not be typed in front of unfriendly (and in
+this case, _everyone_ is your enemy) eyes would be a good start.  A
+simple analogy: since you would never give the keys to the company car
+away, why on earth would you give away the keys to your computer, which
+is certainly worth a hell of a lot more time and money (although it may
+not get as good mileage on the interstate.)  Common sense goes a long
+ways to help prevent this kind of risk.
+.PP
+3)  Authentication.  What is authentication?  All modern computing
+systems that have capabilities for multiple users have a means of
+identifying who is
+using the computer at any given time.  A common means of identification
+is by using a password; and since the inception of this idea, poor
+passwords have been a perennial problem.  People have a tendency to
+use their own name, or their social security number, or some other
+common word, name, or phrase for a password.  The problem then arises
+when an unauthorized user wants to access clandestine information,
+he/she simply tries one of these simple passwords until a successful
+match is found.
+.PP
+Other problems with authentication?  What computer hosts are
+\*Qtrusted\*U and allow users to log in from other machines without 
+any further authentication?  Are incorrect login attempts kept and/or
+monitored so as to allow administrators to keep track of any unusual
+activity?  What about \*QTrojan horses\*U -- programs that can steal
+passwords and the privileges that a user owns -- is there a program or a
+administrative method that detects a potential 'horse?
+.PP
+Fortunately UNIX systems again have some fairly good tools to aid in
+this fight.  Although finding simple passwords is indeed a trivial
+task, forcing the users on a system to use passwords that are harder to
+guess is also
+trivial, by either modifying the mechanism that gets/gives the password
+to the user, and/or by having the system administrators run a simple
+password detector periodically, and notifying users if their password is
+deemed too obvious.  The
+.ul
+crypt
+command, although proven to be insecure for a knowledgeable and
+resourceful attacker ([Reed and Weinberger 84], [Baldwin 86]), does
+offer an added shield against most unauthorized users.  Logs can be kept
+of incorrect login attempts, but as with most security measures, to be
+effective someone (usually the site administrator) must take the time to
+examine the evidence.
+.PP
+4)  Bugs/Features.  Massive software designs (such as an operating system)
+are usually the result of a team or of teams of developers working together.
+It only takes one programmer to make a mistake, and it will almost always
+happen.  \*QBack doors\*U that allow unauthorized entrances are sometimes
+purposefully coded in -- for debugging, maintenance, or other reasons.
+And there are always 
+unexpected side effects when thousands of people using the system start
+doing strange (stupid?) things.  The best kind of defense against this
+is to report the problems to the developer as they are discovered, and
+if possible, to also report a way to fix the problem.  Unfortunately,
+in many cases the
+source code is needed to make a bug fix, and especially in non-academic
+areas, this is simply not available due to the prohibitive costs involved.
+Combining this with the reluctance of a (usually) commercial developer
+to admit any problems with their product, and the end result is a
+security hole that will not be mended unless some kind of financial loss
+or gain is at stake -- for the developer of the product, not yours!
+.PP
+5)  Ignorance.  Users who don't know or care can be a problem as well.
+Even if
+someone doesn't care about their own security, they can unwittingly
+compromise the entire system -- especially if they are a user with
+high privileges.  Administrators and system operators are not immune to
+this either, but hopefully are better informed, or at least have access
+to a means of combating this dysfunction.  It may also be due to apathy,
+an unwillingness to learn a new system, a lack of time to explore all of
+the features of a large system, or simply not enough computer savvy to
+learn more about a very complex system, and no one willing to
+teach it to the user.  This problem is much like illiteracy; it is a
+never-ending battle that will never go completely away.  And while a 
+software toolkit such as COPS can help combat this problem by calling
+attention to neglected or misunderstood critical areas, by far and away
+FOO_BAR
+true || echo 'restore of beta/docs/COPS.report failed'
+fi
+echo 'End of  part 2'
+echo 'File beta/docs/COPS.report is continued in part 3'
+echo 3 > _shar_seq_.tmp
+exit 0

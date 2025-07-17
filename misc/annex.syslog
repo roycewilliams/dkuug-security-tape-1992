@@ -1,0 +1,79 @@
+From mojo!mimsy!haven!aplcen!samsung!cs.utexas.edu!rice!sun-spots-request Fri May 18 21:05:36 EDT 1990
+Article: 8920 of comp.sys.sun:
+Path: mojo!mimsy!haven!aplcen!samsung!cs.utexas.edu!rice!sun-spots-request
+From: sherk@nmc.cit.cornell.edu (Erik Sherk)
+Newsgroups: comp.sys.sun
+Subject: Syslogd not creating files
+Keywords: Software
+Message-ID: <7613@brazos.Rice.edu>
+Date: 10 May 90 21:10:32 GMT
+Sender: root@rice.edu
+Organization: Sun-Spots
+Lines: 33
+Approved: Sun-Spots@rice.edu
+X-Sun-Spots-Digest: Volume 9, Issue 159, message 14
+
+I am using the Xylogics Annex II terminal server capability to use syslog
+to collect statistics on usage of the terminal server. The problem I am
+having is that syslogd doesn't seem to want to create the log file. I have
+these lines in my /etc/syslog.conf
+
+#
+# syslog messages from Annex terminal server
+#
+local7.debug                                    /usr/local/etc/annex/syslog
+
+Now if I issue the commands:
+
+mv /usr/local/etc/annex/syslog /tmp/foo
+kill -HUP `cat /etc/syslog.pid`
+
+Syslog stops logging info from the terminal server, but if I issue the
+commands: (i.e. create a zero length file first)
+
+mv /usr/local/etc/annex/syslog /tmp/foo
+echo >/usr/local/etc/annex/syslog 
+kill -HUP `cat /etc/syslog.pid`
+
+It works fine. This does not make sense to me. The man page states:
+
+"syslogd reads the configuration file when it starts up,  and again
+whenever  it  receives a HUP signal, at which time it also closes all
+files it has open, re-reads  its  configura- tion file, and then opens
+only the log files that are listed in that file."
+
+Anyone have any ideas as to what is going on here?
+
+Erik Sherk
+sherk@nmc.cit.cornell.edu
+
+
+From mojo!mimsy!haven!aplcen!samsung!cs.utexas.edu!rice!sun-spots-request Fri May 18 21:08:24 EDT 1990
+Article: 8950 of comp.sys.sun:
+Path: mojo!mimsy!haven!aplcen!samsung!cs.utexas.edu!rice!sun-spots-request
+From: loverso@Xylogics.COM (John Robert LoVerso)
+Newsgroups: comp.sys.sun
+Subject: Re: Syslogd not creating files
+Keywords: Software
+Message-ID: <7672@brazos.Rice.edu>
+Date: 11 May 90 19:10:28 GMT
+Sender: root@rice.edu
+Organization: Sun-Spots
+Lines: 11
+Approved: Sun-Spots@rice.edu
+X-Refs:  Original: v9n159
+X-Sun-Spots-Digest: Volume 9, Issue 164, message 2
+
+In an article, Erik Sherk <sherk@nmc.cit.cornell.edu> writes:
+> I am using the Xylogics Annex II terminal server capability to use syslog
+> to collect statistics on usage of the terminal server. The problem I am
+> having is that syslogd doesn't seem to want to create the log file.
+
+A traditional syslogd won't create the log files; i.e., they have to exist
+before it is started or it is HUP'd.  This is the reason why
+/var/adm/newsyslog does a "cp /dev/null syslog" before the "kill -HUP".
+
+John Robert LoVerso		Xylogics, Inc.  617/272-8140 x284
+loverso@Xylogics.COM		Annex Terminal Server Development Group
+
+

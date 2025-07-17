@@ -1,0 +1,1491 @@
+#!/bin/sh
+# this is p4.shar.06 (part 6 of a multipart archive)
+# do not concatenate these parts, unpack them in order with /bin/sh
+# file cops_104/docs/readme.C2 continued
+#
+if test ! -r _shar_seq_.tmp; then
+	echo 'Please unpack part 1 first!'
+	exit 1
+fi
+(read Scheck
+ if test "$Scheck" != 6; then
+	echo Please unpack part "$Scheck" next!
+	exit 1
+ else
+	exit 0
+ fi
+) < _shar_seq_.tmp || exit 1
+if test ! -f _shar_wnt_.tmp; then
+	echo 'x - still skipping cops_104/docs/readme.C2'
+else
+echo 'x - continuing file cops_104/docs/readme.C2'
+sed 's/^X//' << 'SHAR_EOF' >> 'cops_104/docs/readme.C2' &&
+XX		$ECHO "these records in group adjunct file"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Test the fields in the group.adjunct file for validity
+XX	#
+XX	$AWK 'BEGIN {FS = ":" } \
+XX		{if (substr($1,1,1) != "+") { \
+XX		if ($0 ~ /^[ 	]*$/) { printf("\nWarning!  Group adjunct file, line %d, is blank\n", NR) } else {
+XX		if (NF != 2) {
+XX			printf("\nWarning!  Group adjunct file, line %d, does not have 2 fields: \n\t%s\n", NR, $0) } \
+XX		if ($1 !~ /[A-Za-z0-9]/) {
+XX			printf("\nWarning!  Group adjunct file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+XX		if ($2 != "" && $2 != "*") {
+XX			printf("\nWarning!  Group adjunct file, line %d, has password: \n\t%s\n", NR, $0) } \
+XX		}}}' $group_adjunct_file
+Xfi
+XX
+X#
+X# Clean up after ourself
+X#
+X$RM -f $join_group_1
+X$RM -f $join_group_2
+X$RM -f $sort_group
+X$RM -f $sort_secure_group
+X# end
+XSHAR_EOF
+Xchmod 0700 group.file.chk ||
+Xecho 'restore of group.file.chk failed'
+XWc_c="`wc -c < 'group.file.chk'`"
+Xtest 6191 -eq "$Wc_c" ||
+X	echo 'group.file.chk: original size 6191, current size' "$Wc_c"
+Xfi
+X# ============= passwd.chk ==============
+Xif test -f 'passwd.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping passwd.chk (File already exists)'
+Xelse
+Xecho 'x - extracting passwd.chk (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'passwd.chk' &&
+X#!/bin/sh
+X#
+X#   passwd.chk
+X#
+X#  Check passsword file -- /etc/passswd -- for incorrect number of fields,
+X# duplicate uid's, non-alphanumeric uids, and non-numeric group id's.
+X#
+X#
+XECHO=/bin/echo
+XRM=/bin/rm
+XTEST=/bin/test
+XYPCAT=/usr/bin/ypcat
+XX
+X#
+X# Enhanced Security Features added by Pete Troxell:
+X#
+X#   Used for Sun C2 security password adjunct file.  FALSE (default) will flag
+X# valid SUN C2 passwd syntax as an error, TRUE attempts to validate it. When 
+X# using this option, the script must be executed as root or su since the file
+X# /etc/security/passwd.adjunct is read protected from everybody except root.
+X#
+XSUN_SECURITY=FALSE
+XX
+X#
+X# Enable/Disable testing of the Yellow Pages password file(s)
+X#
+XTEST_YP=FALSE
+XX
+X#
+X# Important files:
+X#
+Xetc_passwd=/etc/passwd
+Xetc_secure_passwd=/etc/security/passwd.adjunct
+Xyp_passwd=./pwd$$
+Xyp_secure_passwd=./spwd$$
+XX
+Xyp=false
+Xyp_secure=false
+XX
+X#
+X# Testing $yp_passwd for potential problems....
+X#
+Xif $TEST -f $YPCAT -a $TEST_YP = "TRUE"
+XX	then
+Xif $TEST -s $YPCAT
+XX	then
+XX	$YPCAT passwd > $yp_passwd 2>/dev/null
+XX	if $TEST $? -eq 0
+XX		then
+XX		yp=true
+XX	fi
+XX	if $TEST $yp = "true" -a $SUN_SECURITY = "TRUE"
+XX		then
+XX		$YPCAT -t passwd.adjunct.byname > $yp_secure_passwd 2>/dev/null
+XX		if $TEST $? -eq 0
+XX			then
+XX			yp_secure=true
+XX		fi
+XX	fi
+Xfi
+Xfi
+XX
+X#
+X# Test the system password file
+X#
+Xpasswd.file.chk $etc_passwd $etc_secure_passwd $SUN_SECURITY
+XX
+X#
+X# Test yellow pages password file
+X#
+Xif $TEST "$yp" = "true"
+XX	then
+XX	$ECHO
+XX	$ECHO "***** Testing the Yellow Pages password file(s) *****"
+XX	$ECHO
+XX	passwd.file.chk $yp_passwd $yp_secure_passwd $SUN_SECURITY
+XX	fi
+XX
+X#
+X# Clean up after ourselfs
+X#
+X$RM -f $yp_passwd
+X$RM -f $yp_secure_passwd
+X# end
+XSHAR_EOF
+Xchmod 0700 passwd.chk ||
+Xecho 'restore of passwd.chk failed'
+XWc_c="`wc -c < 'passwd.chk'`"
+Xtest 1650 -eq "$Wc_c" ||
+X	echo 'passwd.chk: original size 1650, current size' "$Wc_c"
+Xfi
+X# ============= passwd.file.chk ==============
+Xif test -f 'passwd.file.chk' -a X"$1" != X"-c"; then
+X	echo 'x - skipping passwd.file.chk (File already exists)'
+Xelse
+Xecho 'x - extracting passwd.file.chk (Text)'
+Xsed 's/^X//' << 'SHAR_EOF' > 'passwd.file.chk' &&
+X#!/bin/sh
+X#
+X#   passwd.file.chk
+X#
+X#  Check passsword file -- /etc/passswd -- for incorrect number of fields,
+X# duplicate uid's, non-alphanumeric uids, and non-numeric group id's.
+X#
+X# Awk part from _The AWK Programming Language_, page 78
+X#
+X#  Mechanism:  Passwd.check uses awk to ensure that each line of the file
+X# has 7 fields, as well as examining the file for any duplicate users
+X# by using "sort -u".  It also checks to make sure that the password
+X# field (the second one) is either a "*", meaning the group has no password,
+X# or a non-null field (which would mean that the account has a null
+X# password.)  It then checks to ensure that all uids are alphanumeric,
+X# and that all user id numbers are indeed numeric.  For yellow pages
+X# passwords, it does the same checking, but in order to get a listing of
+X# all members of the password file, it does a "ypcat passwd > ./$$" and
+X# uses that temporary file for a passfile.  It removes the tmp file after
+X# using it, of course.
+X#   The /etc/passwd file has a very specific format, making the task
+X# fairly simple.  Normally it has lines with 7 fields, each field
+X# separated by a colon (:).  The first field is the user id, the second
+X# field is the encrypted password (an asterix (*) means the user id has no
+X# password, otherwise the first two characters are the salt), the third
+X# field is the user id number, the fourth field is the group id number,
+X# the fifth field is the GECOS field (basically holds miscellaneous
+X# information, varying from site to site), the sixth field is the home
+X# directory of the user, and lastly the seventh field is the login shell
+X# of the user.  No blank lines should be present.
+X#   The SUN /etc/security/passwd.adjunct file also has a very specific 
+X# format, making the check task simple. Each entry has 7 fields, each field 
+X# separated by a colon (:). The first field is the user name which matches 
+X# the user name contained in the /etc/passwd file. The second field is the 
+X# encrypted password (an asterix (*) means the user login is disabled,
+X# otherwise the first two characters are the salt). The password contained
+X# in the /etc/passwd file is comprised of ##user_id where the user_id 
+X# matches the entry of the first field in both password files. The third
+X# through fifth specify the minimum, maximum, and default security labels
+X# for the user. The sixth and seventh fields specify which auditing flags
+X# should be always or never monitored.
+X#   If a line begins with a plus sign (+), it is a yellow pages entry.
+X# See passwd(5) for more information, if this applies to your site.
+X#
+XX
+X#
+X# Parameters
+X#
+Xpasswd_file=$1
+Xpasswd_adjunct_file=$2
+XSUN_SECURITY=$3
+XX
+X#
+X# Utilities
+X#
+XAWK=/bin/awk
+XDIFF=/usr/bin/diff
+XECHO=/bin/echo
+XJOIN=/usr/bin/join
+XRM=/bin/rm
+XSORT=/usr/bin/sort
+XTEST=/bin/test
+XUNIQ=/usr/bin/uniq
+XX
+X#
+X# Important files:
+X#
+Xjoin_passwd_1=./pwd$$.1.join
+Xjoin_passwd_2=./pwd$$.2.join
+Xsort_passwd=./pwd$$.sort
+Xsort_secure_passwd=./spwd$$.sort
+XX
+X#
+X# Testing the passwd file for problems
+X#
+Xresult=`$AWK -F: '{print $1}' $passwd_file | $SORT -t: | $UNIQ -d`
+Xif $TEST "$result"
+XX	then
+XX	$ECHO
+XX	$ECHO "Warning!  Duplicate uid(s) found in password file:"
+XX	for USER in $result
+XX	do
+XX		$ECHO "	$USER"
+XX	done
+Xfi
+XX
+X#
+X#   First line is for a yellow pages entry in the password file.
+X# It really should check for correct yellow pages syntax....
+X#
+X$AWK 'BEGIN {FS = ":" } \
+XX	{if (substr($1,1,1) != "+") { \
+XX	if ($0 ~ /^[ 	]*$/) { printf("\nWarning!  Password file, line %d, is blank\n", NR) } else {
+XX	if (NF != 7) {
+XX		printf("\nWarning!  Password file, line %d, does not have 7 fields: \n\t%s\n", NR, $0) } \
+XX	if ($1 !~ /[A-Za-z0-9]/) {
+XX		printf("\nWarning!  Password file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+XX	if ($2 == "") {
+XX		printf("\nWarning!  Password file, line %d, no password: \n\t%s\n", NR, $0) } \
+XX 	if ("'$SUN_SECURITY'" == "TRUE" && "##"$1 != $2) {
+XX		printf("\nWarning!  Password file, line %d, invalid password field for SUN C2 Security: \n\t%s\n", NR, $0) } \
+XX	if ($3 !~ /[0-9]/) {
+XX		printf("\nWarning!  Password file, line %d, nonnumeric user id: \n\t%s\n", NR, $0) } \
+XX	if ($3 == "0" && $1 != "root") {
+XX		printf("\nWarning!  Password file, line %d, user %s has uid = 0 and is not root\n\t%s\n", NR, $1, $0) } \
+XX	if ($4 !~ /[0-9]/) {
+XX		printf("\nWarning!  Password file, line %d, nonnumeric group id: \n\t%s\n", NR, $0) } \
+XX	if ($6 !~ /^\//) {
+XX		printf("\nWarning!  Password file, line %d, invalid login directory: \n\t%s\n", NR, $0) } \
+XX	}}}' $passwd_file
+XX
+X#
+X# Perform checks on the security enhanced version of SUNOS
+X#
+Xif $TEST $SUN_SECURITY = "TRUE"
+XX	then
+XX	result=`$AWK -F: '{print $1}' $passwd_adjunct_file | $SORT -t: | $UNIQ -d`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Duplicate uid(s) found in password adjunct file:"
+XX		for USER in $result
+XX		do
+XX			$ECHO "	$USER"
+XX		done
+XX	fi
+XX	#
+XX	# Check that for each entry in the passwd file that there is a matching
+XX	# entry in the passwd.adjunct file.
+XX	#
+XX	$SORT -t: -o $sort_passwd $passwd_file
+XX	$SORT -t: -o $sort_secure_passwd $passwd_adjunct_file
+XX	$JOIN -t: $sort_passwd $sort_secure_passwd > $join_passwd_1
+XX	$JOIN -t: -a1 $sort_passwd $sort_secure_passwd > $join_passwd_2
+XX	result=`$DIFF $join_passwd_1 $join_passwd_2`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Matching record(s) in password adjunct file not found for"
+XX		$ECHO "these records in password file:"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Check that for each entry in the passwd.adjunct file that there is a 
+XX	# matching entry in the passwd file.
+XX	#
+XX	$RM -f $join_passwd_2
+XX	$JOIN -t: -a2 $sort_passwd $sort_secure_passwd > $join_passwd_2
+XX	result=`$DIFF $join_passwd_1 $join_passwd_2`
+XX	if $TEST "$result"
+XX		then
+XX		$ECHO
+XX		$ECHO "Warning!  Matching record(s) in password file not found for"
+XX		$ECHO "these records in password adjunct file"
+XX		PREV=$$
+XX		for USER in $result
+XX		do
+XX			if $TEST $PREV = ">"
+XX				then
+XX				$ECHO "	$USER"
+XX			fi
+XX			PREV=$USER
+XX		done
+XX	fi
+XX	#
+XX	# Test the fields in the passwd.adjunct file for validity
+XX	#
+XX	$AWK 'BEGIN {FS = ":" } \
+XX		{if (substr($1,1,1) != "+") { \
+XX		if ($0 ~ /^[ 	]*$/) { printf("\nWarning!  Password adjunct file, line %d, is blank\n", NR) } else {
+XX		if (NF != 7) {
+XX			printf("\nWarning!  Password adjunct file, line %d, does not have 7 fields: \n\t%s\n", NR, $0) } \
+XX		if ($1 !~ /[A-Za-z0-9]/) {
+XX			printf("\nWarning!  Password adjunct file, line %d, nonalphanumeric login: \n\t%s\n", NR, $0) } \
+XX		if ($2 == "") {
+XX			printf("\nWarning!  Password adjunct file, line %d, no password: \n\t%s\n", NR, $0) } \
+XX		#
+XX		# Fields 3-5 are ignored since they deal with labels which are
+XX		# currently unused on the SUN (perhaps a future B-level??)
+XX		#
+XX		# Fields 6+7 contain audit flags for the user and are selected
+XX		# from the following: dr, dw, dc, da, lo, ad, p0, p1, and all.
+XX		# More than 1 flag can be selected by separating flags with a 
+XX		# comma (,).
+XX		#
+XX		if ($6 != "") {
+XX			j=1
+XX			len=length($6)
+XX			for (i=1; i<=len; i++) {
+XX				if ((substr($6,i,1) != ",") && (i < len)) 
+XX					continue
+XX				if (i == len)
+XX					token=substr($6,j,i-j+1)
+XX				else
+XX					token=substr($6,j,i-j)
+XX				j=i+1
+XX				if (token == "dr") continue
+XX				if (token == "dw") continue
+XX				if (token == "dc") continue
+XX				if (token == "da") continue
+XX				if (token == "lo") continue
+XX				if (token == "ad") continue
+XX				if (token == "p0") continue
+XX				if (token == "p1") continue
+XX				if (token == "all") continue
+XX			printf("\nWarning!  Password adjunct file, line %d, invalid audit flag: %s\n\t%s\n", NR, token, $0) } \
+XX			}
+XX		}}}' $passwd_adjunct_file
+Xfi
+XX
+X#
+X# Clean up after ourself
+X#
+X$RM -f $join_passwd_1
+X$RM -f $join_passwd_2
+X$RM -f $sort_passwd
+X$RM -f $sort_secure_passwd
+X# end
+XSHAR_EOF
+Xchmod 0700 passwd.file.chk ||
+Xecho 'restore of passwd.file.chk failed'
+XWc_c="`wc -c < 'passwd.file.chk'`"
+Xtest 7715 -eq "$Wc_c" ||
+X	echo 'passwd.file.chk: original size 7715, current size' "$Wc_c"
+Xfi
+Xexit 0
+SHAR_EOF
+echo 'File cops_104/docs/readme.C2 is complete' &&
+chmod 0755 cops_104/docs/readme.C2 ||
+echo 'restore of cops_104/docs/readme.C2 failed'
+Wc_c="`wc -c < 'cops_104/docs/readme.C2'`"
+test 20591 -eq "$Wc_c" ||
+	echo 'cops_104/docs/readme.C2: original size 20591, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/readme.apollo ==============
+if test -f 'cops_104/docs/readme.apollo' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/readme.apollo (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/readme.apollo (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/readme.apollo' &&
+X
+X  Try setting the $OVER_8 variable (line 50) in "passwd.chk" to "YES",
+Xif you get warnings about having extra long uid's.
+X
+X
+X  This little script can be used to generate a better password file for
+Xthe password cracker, if you use those funky more-than-one-field in field
+Xone of the password file; e.g., if you have something that looks like:
+X
+Xroot.foo.bar:xxxxxxxxxxxxx:0:0:Mr. Fu Bear:/:/bin/sh
+X
+X  This will change it to:
+X
+Xroot:xxxxxxxxxxxxx:0:0:foo bar Mr. Fu Bear:/:/bin/sh
+X
+X  So that you can use the extra fields as gcos information for password
+Xcracking.  You can substitute the normal password cracking stuff in "cops"
+X("pass.chk") with something like (assuming you call this "apollo.sh"):
+X
+Xapollo.sh > ./apollo.pw.$$
+Xpass.chk -P ./apollo.pw.$$
+Xrm -f ./apollo.pw.$$
+X
+X
+X  In addition, you can add these 2 lines to the "passwd.chk" shell script
+X(right before the start of the awk on line 82 would be fine):
+X
+X$AWK -F: '{print $1}' $etc_passwd | $AWK -F. '{if (NF > 3)
+X		printf("Warning!  Password file, line %d, has %d sub-fields in the user field: \n\t%s\n", NR, NF, $0) }'
+X
+X  And if you're running YP (is that possible, with all of that?  :-)
+XYou can add these 2 lines before line 119:
+X
+X$AWK -F: '{print $1}' $yp_passwd | $AWK -F. '{if (NF > 3)
+X		printf("Warning!  YPassword file, line %d, has %d sub-fields in the user field: \n\t%s\n", NR, NF, $0) }'
+X
+X
+X:
+X#
+X#  apollo.pw
+X#
+XAWK=/bin/awk
+X
+X# Quote from the man page (passwd):
+X# On DOMAIN systems, passwords are kept in the registry files (/registry/*).
+X#
+X# Important files:
+Xetc_passwd=/etc/passwd
+X
+X$AWK -F: '{split($1,temp,"."); \
+X		$1=temp[1]; \
+X		for (i in temp) {
+X			if (i!=1) \
+X				$5 = $5" "temp[i]; \
+X			} \
+X		for (j=1;j<=NF;j++)
+X			printf("%s:",$j); \
+X		printf("\n") \
+X		}' $etc_passwd
+X
+X# end
+SHAR_EOF
+chmod 0755 cops_104/docs/readme.apollo ||
+echo 'restore of cops_104/docs/readme.apollo failed'
+Wc_c="`wc -c < 'cops_104/docs/readme.apollo'`"
+test 1752 -eq "$Wc_c" ||
+	echo 'cops_104/docs/readme.apollo: original size 1752, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/readme.ibm ==============
+if test -f 'cops_104/docs/readme.ibm' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/readme.ibm (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/readme.ibm (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/readme.ibm' &&
+X
+X  Make sure you uncomment out line 92 in dev.chk:
+X
+X# On an IBM/AIX box, you can try something like:
+X# all_devs=`$GREP 'dev.*=' /etc/filesystems | $AWK '{print $NF}'`
+X
+X  So that COPS can read the right devices.  Also, read the "readme.shadow"
+Xfile for shadow-password info, and how to crack passwords, etc, on this
+Xbeast.
+SHAR_EOF
+chmod 0600 cops_104/docs/readme.ibm ||
+echo 'restore of cops_104/docs/readme.ibm failed'
+Wc_c="`wc -c < 'cops_104/docs/readme.ibm'`"
+test 322 -eq "$Wc_c" ||
+	echo 'cops_104/docs/readme.ibm: original size 322, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/readme.shadow ==============
+if test -f 'cops_104/docs/readme.shadow' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/readme.shadow (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/readme.shadow (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/readme.shadow' &&
+X
+X  Part of a conversation I had with a guy about cracking shadow passords;
+Xat the end of this is a script that should work with SVR3.2; I'm not
+Xsure about the rest, but minor changes should make it work on
+Xjust about anything (for instance, I think on my sun, the variable
+X$num_fields should be changed to 15 (or you could compile pass.c with
+Xthe C2 flag)).  Let me know if you can't get it to work, and I'll
+X*make* it work :-)  In any case, you'll need to run as root to get the
+Xpasswords for cracking.
+X
+X>On system V3.2, both  AT&T, SCO, and us (Interactive) use the following format
+X> /etc/passwd looks pretty much normal;
+X> adm:x:4:4:0000-Admin(0000):/usr/adm:
+X[...]
+X> except that the passwd field always contains an "x".
+X> Then, the etc/shadow file, which is owned by root and perms 400 looks
+X> like;
+X[...]
+X> sally:e4T6g5HbjOnck:7449:0:7000
+X[...]
+X> The first field is the account name, the second field is the excrypted
+X> passwd string, and the rest is password aging garbage.
+X> Ignore the password fields above containing "LOCKED".  I do that by
+X> hand to secure an account, since the output of crypt will never match it.
+X
+X  Try this on for size:
+X
+X========== shadow.stuff ================
+X#!/bin/sh
+X#
+X#  Usage: shadow.stuff [shadow_password_file]
+X#
+X#   Extracts the correct info from shadow pass to use for processing with
+X# pass.chk and passwd.chk.
+X#
+X# (written by me, modified by John F Haugh II, remodified by me.  Hope
+X# it still works :-))
+X#
+Xif test -f "$1" ; then
+X	shadow=$1
+Xelse
+X	if test -f "/etc/shadow" ; then
+X		shadow=/etc/shadow
+X	else
+X		echo "Can't find shadow password file..."
+X		exit 1
+X	fi
+Xfi
+X
+X# This is 15, I think, for a sun?  Others seem to want 13
+Xnum_fields=13
+X
+Xpasswd=/etc/passwd
+Xfoo_pass="./shadow.tmp.$$"
+Xptmp="./pfile.tmp.$$"
+Xstmp="./sfile.tmp.$$"
+X
+Xsed -e 's/^/p:/' $passwd | sort > $ptmp
+Xsed -e 's/^/s:/' $shadow | sort > $stmp
+Xcat ./pfile.tmp.$$ ./sfile.tmp.$$ | \
+X	sort -t':' +1 -2 +0r -1 | \
+X	sed -e 's/^[sp]://' > $foo_pass
+X
+Xawk -F: '{parray[$1] = $0":"parray[$1]} END { \
+X	for (line in parray) { \
+X		nf=split(parray[line], pline, ":"); \
+X		if (nf == '"$num_fields"') {
+X			print pline[1]":"pline[9]":"pline[3]":"pline[4]":" \
+X			pline[5]":"pline[6]":"pline[7]; \
+X		      	} \
+X		      } \
+X		}' $foo_pass
+X
+Xrm -f $ptmp $stmp $foo_pass
+X==========================================
+X
+X  Ok, the way you use this is just to type "shadow.stuff > tempfile";
+Xthis will create a file, "tempfile" (or whatever), that *should*
+Xbe the equivalent to a normal password file.  Of course, you'll have
+Xto run this as root so that you can read the shadow password file.
+XThis should work, but no blame if it doesn't, please :-)  Just let
+Xme know if it does or not; I can put it in the normal distribution,
+Xif so.
+X
+X  Hope this helps -- 'luck!
+X
+X -- dan
+SHAR_EOF
+chmod 0755 cops_104/docs/readme.shadow ||
+echo 'restore of cops_104/docs/readme.shadow failed'
+Wc_c="`wc -c < 'cops_104/docs/readme.shadow'`"
+test 2759 -eq "$Wc_c" ||
+	echo 'cops_104/docs/readme.shadow: original size 2759, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/readme.svr4 ==============
+if test -f 'cops_104/docs/readme.svr4' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/readme.svr4 (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/readme.svr4 (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/readme.svr4' &&
+X
+X  In bug.chk, you'll need to change this line (29) to "no":
+X
+X# Do you decend from 4.3 BSD?
+Xbsd43=yes
+SHAR_EOF
+chmod 0600 cops_104/docs/readme.svr4 ||
+echo 'restore of cops_104/docs/readme.svr4 failed'
+Wc_c="`wc -c < 'cops_104/docs/readme.svr4'`"
+test 102 -eq "$Wc_c" ||
+	echo 'cops_104/docs/readme.svr4: original size 102, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/readme.xenix ==============
+if test -f 'cops_104/docs/readme.xenix' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/readme.xenix (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/readme.xenix (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/readme.xenix' &&
+X
+X  Uncomment the "BRAINDEADFLAGS=-lcrypt" in the makefile, and put the line:
+X
+Xextern char *crypt();
+X
+X  Right after the #include lines in "pass.c".  This apparently came from 
+Xthe makers of Xenix, about the availability of crypt(3):
+X
+X========================
+XSubject: crypt in Xenix
+X
+XDue to the export restrictions on CRYPT, we do not ship it with the
+Xstandard product.  We do ship it as an SLS: the relevant numbers are
+Xlng190 (for shipment inside the U.S. only) and lng225, which can be
+Xshipped outside the U.S..
+X========================
+X
+X  Make the following change in dev.chk:
+X
+Xline 39:
+X> mtab=/etc/fstab
+X
+XTo:
+X< mtab=/etc/checklist
+X
+X
+X(note to myself:
+XNeed to change something... checklist has has one fs per line...)
+SHAR_EOF
+chmod 0755 cops_104/docs/readme.xenix ||
+echo 'restore of cops_104/docs/readme.xenix failed'
+Wc_c="`wc -c < 'cops_104/docs/readme.xenix'`"
+test 720 -eq "$Wc_c" ||
+	echo 'cops_104/docs/readme.xenix: original size 720, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/readme.yp ==============
+if test -f 'cops_104/docs/readme.yp' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/readme.yp (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/readme.yp (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/readme.yp' &&
+X
+X  There are a couple of things to keep in mind if you're using yellow
+Xpages/NIS.  Automatic checks are made in the passwd.chk, group.chk, suid.chk,
+Xand ftp.chk.  However, if you want to crack passwords from that database,
+Xyou need to do one of three things:
+X
+X1)  If you're using "pass_diff.chk" to check only changed passwords (on
+Xline 108 of "cops"), change the flag on line 33 in "pass_diff.chk" from
+X"NO" to "YES"
+X
+X2)  If you're not running "pass_diff.chk", replace "pass.chk" with
+X"yp_pass.chk" on line 109 of "cops".
+X
+X3)  Create a password file with ypcat and run "pass.chk -P file".
+X
+SHAR_EOF
+chmod 0755 cops_104/docs/readme.yp ||
+echo 'restore of cops_104/docs/readme.yp failed'
+Wc_c="`wc -c < 'cops_104/docs/readme.yp'`"
+test 591 -eq "$Wc_c" ||
+	echo 'cops_104/docs/readme.yp: original size 591, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/bug.chk ==============
+if test -f 'cops_104/docs/bug.chk' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/bug.chk (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/bug.chk (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/bug.chk' &&
+X.TH CARP 1 "February 16, 1992"
+X.UC 4
+X.SH NAME
+Xbug.chk \- bug date testing tool
+X.SH SYNOPSIS
+X.B bug.chk
+X[
+Xarchitecture
+X]
+X.SH DESCRIPTION
+X.I bug.chk
+Xuses publically available (available via anonymous ftp from 
+Xcert.sei.cmu.edu) data to determine if a security bug is present.  The
+Xway it does this is by checking the modification time of the program in
+Xquestion against the cert advisory date (or patch date, if available),
+Xand, if it is older than that, it flags it as a potential
+Xbug/vulnerability (the awk program "bug_cmp" is used to check dates).
+XIt attempts to determine the machine type run on
+Xautomatically, but, failing that, can be run with the machine type
+Xas an argument.
+X.PP
+XThere are numerous problems with this approach!  One, no actual check
+Xis done; whether or not the bug actually does exist has nothing to
+Xdo with the date.  Also, if someone changes, updates, or even touches
+Xthe file, then this is pretty worthless.  A far better check would
+Xbe to either try to exploit the bug or to have lists of all good and
+Xbad crc's for the files in questions, and just test against it.  Still,
+Xthis seems to be a good compromise for the time being.  However,
+Xupdates should be made for each new CERT advisory as they are made
+Xpublic.
+X.PP
+XRight now, it either uses your argument as an architecture type, or
+Xtries to figure out what kind of platform you're running
+Xon (see the program "platform"), and then looks at the bugs known
+Xfor your host in a file named "bug.chk.architecture_type".
+X.PP
+XBugs bug.chk currently tries to look at:
+X.br
+X.IP
+XMorris Worm threats: sendmail, login, fingerd, and ftpd.
+X.IP
+XGeneric BSD problem: rdist.
+X.IP
+XIBM/AIX tftpd.
+X.IP
+XApollo -- /usr/apollo/bin/crp
+X.IP
+XUltrix/DEC -- chroot, /usr/bin/mail.
+X.IP
+XNeXT -- restore0.9, npd, BuildDisk, npd, and perms on /private/etc.
+X.IP
+XSGI -- /usr/sbin/Mail, /usr/sbin/fmt.
+X.IP
+XSun -- sendmail, restore, TIOCCONS, sel_svc, lpd, bin_mail,
+Xtelnetd/rlogind, makeinstall/winstall, mountd,
+Xdivide/multiply by 0, nfs, loadmodule.
+X.IP
+XSVR4 -- /bin/login, /usr/etc/rexecd.
+X.br
+X.PP
+XNote that many of the bugs that Sun has reported either have
+Xnot been publically reported and fixed by other vendors, even though
+Xthey usually exist on their hosts.  I don't think that Sun's
+XOS is designed any worse than any other OS; instead, I think
+Xthat Sun is more open in reporting them to their constituents
+Xand CERT, as well as having the largest user base to beat on
+Xtheir boxes.
+X.SH "SEE ALSO"
+XCERT advisories, available via anon-ftp from cert.sei.cmu.edu,
+Xor by calling (412) 268-7090.  Perusing the source code might
+Xbe beneficial as well.
+X.SH BUGS
+XEasily fooled, doesn't actually do anything :-)
+SHAR_EOF
+chmod 0700 cops_104/docs/bug.chk ||
+echo 'restore of cops_104/docs/bug.chk failed'
+Wc_c="`wc -c < 'cops_104/docs/bug.chk'`"
+test 2652 -eq "$Wc_c" ||
+	echo 'cops_104/docs/bug.chk: original size 2652, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/readme.filter ==============
+if test -f 'cops_104/docs/readme.filter' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/readme.filter (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/readme.filter (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/readme.filter' &&
+X
+XA quick primer on "cops_filter"
+X
+X  "cops_filter" is a mechanism for eliminating warning messages in
+Xthe final COPS report that you deem spurious.  It's a simple awk
+Xprogram that looks at a list of regular expressions and prunes
+Xout any that match.  As simple as it is, however, it is an extremely
+Xdangerous program -- a slip of the ol' regular expression and bam --
+Xyou don't get notified that /etc/passwd is world writable, or something
+Xlike that.  Hence this file, in hopes to enlighten the masses (yeah,
+Xright, like I can do that... anyway, on to business.)
+X
+X  Awk uses regular expressions to search for things, which means you
+Xcan use wildcards or even a part of a line to nuke a warning.  For
+Xinstance -- let's say on a particular host you have NIS explicitly
+Xincluded in your password file (e.g. no "+" there), but you are a
+Xmember of a NIS domain that does have NIS password maps.  Since COPS
+Xisn't smart enough right now to figure out that you might not care
+Xabout the NIS password maps on your machine (and I'm not sure that
+Xit would be a good idea to ignore this anyway), it checks everything...
+Xyou might get a warning like:
+X
+XWarning!  YPassword file, line 9, no password:
+X	ypg::2200:10:YP guest acct:/tmp:/bin/rsh
+X
+X  There are several things you can do to eliminate this message.
+XIf you're familiar with awk, there are some example lines in
+X"cops_filter"; you can just change those to do what you want.  If
+Xyou're not an awk hacker, run out and by the book by aho, kernighan,
+Xand weinberger, and learn awk.  Well, no, you don't have to -- it's
+Xvery easy to do simple things.
+X
+X
+X
+XIMPORTANT!  All filter lines in "cops_filter" will *ONLY* match the
+Xfirst line of this multi-line warning message (at least, and do the
+Xright thing.)  Do not try to filter out the second line -- it won't
+Xwork.
+X
+X
+X
+X(No new information below to awk/shell people that you couldn't get
+Xby just glancing at the filter file -- you can go play with "cops_filter"
+Xnow if you wish.)
+X
+X  The simplest thing to do is to add a line (actually 4 lines, as you'll
+Xsee below -- but the most important one is the first line) that exactly
+Xmatches what you want to get rid of; e.g., for the above example,
+Xyou could put something like:
+X
+Xif ($0 ~ /Warning!  YPassword file, line 9, no password:/) {
+X	skip_next = 1
+X	next
+X	}
+X
+X  An explanation.  In awk, every line of code in the awk program
+Xwill act on every line in the input file.  In most programming languages
+Xyou need to put a loop around the program, but in awk, it is implied.
+XThe $0 here refers to the current input line that the awk program
+Xis looking at.  This line says that if the current input line is
+Xequal to "Warning!  YPassword file, line 9, no password:", then
+Xyou should do what it says between the two curly braces.  In this case,
+Xyou just set a variable (don't worry about exactly what it does right
+Xnow), and then skip to the next line of input from the COPS report file.
+XThat's all there is to it.  Notice that at the bottom half of the awk
+Xprogram, there are places where information gets printed out -- all
+Xthose mean is that unless awk sees a pattern that it matches and gets
+Xtold to go to the next line, it will print out the current line.
+X
+X  Well, this is probably as clear as mud, but the basic idea is
+Xthat you'll be putting a regular expression inbetween two forward
+Xslanting lines ("/"), and if awk matches that, then it will not
+Xprint that out in the final COPS report file.
+X
+X  If you don't want to use an exactly matching line, either because
+Xyou're a poor typist or lazy or perhaps you have a group of warnings,
+Xall alike, and you'd like to get rid of them, then you can use
+Xwildcards, or even a part of the line(s) in question -- be careful with
+Xthis, and make sure you test your awk program out before inflicting it
+Xfor real on your cops reports.
+X
+X  For instance, to match the above example, you could say:
+X
+X	if ($0 ~ /Warning!  YPassword file, line 9, no password:/)
+X
+Xor:
+X
+X	if ($0 ~ /YPassword file, line 9, no password/)
+X
+Xor, if you really don't want to see any YP/NIS messages, you could use:
+X
+X	if ($0 ~ /YPassword file/)
+X
+Xalternately, an example with wildcards:
+X
+X	if ($0 ~ /YP.* no password/)
+X
+X  All of these would match the example line.  However, the bottom two
+Xwould match other lines as well -- something like:
+X
+XWarning!  YPassword file, line 12, invalid login directory:
+X
+X  Would also be eliminated from the result file.  Be careful especially
+Xwhen you're dealing with anything that is in the report file that looks
+Xlike a regular expression -- characters like "*", "+", and "?", as
+Xwell as the forward slash "/" (to keep it separate from the awk
+Xregular expression separator character) should be preceded with a
+Xbackslash -- e.g. something like:
+X
+X	if ($0 ~ /\/usr\/spool\/mail is _World_ writable!/)
+X
+X  Check your awk program as described before, and compare the output
+Xwith the old report file with diff -- does it do what you thought?
+XBe careful.
+X
+X
+X
+X  Almost the last Important note -- you can test your filter by saying
+Xsomething like:
+X
+Xawk -f cops_filter cops_result_file
+X
+X  Where cops_result_file is usually named something like "1992_Dec_31".
+XWell, that's about it -- good luck!
+X
+X -- dan
+SHAR_EOF
+chmod 0600 cops_104/docs/readme.filter ||
+echo 'restore of cops_104/docs/readme.filter failed'
+Wc_c="`wc -c < 'cops_104/docs/readme.filter'`"
+test 5158 -eq "$Wc_c" ||
+	echo 'cops_104/docs/readme.filter: original size 5158, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/obligitory.joke ==============
+if test -f 'cops_104/docs/obligitory.joke' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/obligitory.joke (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/obligitory.joke (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/obligitory.joke' &&
+X(Many forwards deleted)
+X 
+XAn excerpt from Herb Caen:
+X 
+X"We're still trying to check this, but around USAir, staffers are
+Xcirculating the story of an employee last-named Gay who boarded a USAir
+Xflight with a non-revenue ticket.  Finding the seat assigned to him
+Xoccupied by a paying passenger, he slipped into an empty one a couple
+Xof rows back.  Then, due to a mechanical delay on another flight, the
+Xplane began filing up so the gate agent came aboard to get all
+Xnon-paying passengers off.  Stopping at the seat assigned to Mr. Gay,
+Xhe said to the man, "Are you Gay?"  Looking startled, the man nodded,
+Xat which the agent said, "Then you'll have to get off."  Mr. Gay,
+Xhearing this, called out to the agent, "You've got the wrong man --
+X*I'm* Gay."  Whereupon a young man seated across the aisle leaped to
+Xhis feet and announced, "Hell, I'm gay, too--they can't kick us *all*
+Xoff!"
+X 
+SHAR_EOF
+chmod 0600 cops_104/docs/obligitory.joke ||
+echo 'restore of cops_104/docs/obligitory.joke failed'
+Wc_c="`wc -c < 'cops_104/docs/obligitory.joke'`"
+test 885 -eq "$Wc_c" ||
+	echo 'cops_104/docs/obligitory.joke: original size 885, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/docs/obligitory.album ==============
+if test -f 'cops_104/docs/obligitory.album' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/docs/obligitory.album (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/docs/obligitory.album (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/docs/obligitory.album' &&
+X
+X_Big Circumstance_, by Bruce Cockburn (1988, Gold Castle Records, may
+Xhave been rereleased by Sony.)  A blend of introspection, love, political,
+Xecological, and religious songs; kind of bouncy rock/folk/blues.  Great album!
+X
+SHAR_EOF
+chmod 0600 cops_104/docs/obligitory.album ||
+echo 'restore of cops_104/docs/obligitory.album failed'
+Wc_c="`wc -c < 'cops_104/docs/obligitory.album'`"
+test 226 -eq "$Wc_c" ||
+	echo 'cops_104/docs/obligitory.album: original size 226, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extensions/THINGS_2_DO ==============
+if test ! -d 'cops_104/extensions'; then
+    echo 'x - creating directory cops_104/extensions'
+    mkdir 'cops_104/extensions'
+fi
+if test -f 'cops_104/extensions/THINGS_2_DO' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extensions/THINGS_2_DO (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extensions/THINGS_2_DO (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extensions/THINGS_2_DO' &&
+X
+X Possible improvements/extensions of the COPS package might (will?) include
+X(other than merely fixing bugs existing in the package) :
+X
+X 0) Smarter detection of problems -- a lot of problems can be found in
+Xconfiguration files; the way they are set up, not merely if they are
+Xwritable.  These aren't neccessarily hard to check for, but take someone
+Xwith a good understanding for the file to write.
+X
+X 1) Better and more thorough Yellow Pages checking.
+X
+X 2) Ditto for UUCP stuff.  Fix the perl stuff to work in shell, too.
+X
+X 3) Once again for NFS things.
+X
+X 4) Problems that are specific to a certain flavor of UNIX.  For
+Xinstance, HP-UX has different files in different places.  Perhaps
+Xthe system could look for and hunt for the vital files in the various
+Xplaces rather than having to be put in a configuration file.  Also
+Xsupport for various secure UNIX varieties; e.g. C2 level Sun, IBM's
+Xsecure AIX, etc.
+X
+X 5) More problems to be added; by no means are all security problems detected
+Xby COPS.  More potential hazards should not be difficult to detect -- merely
+Xadding another module to the system or simply modifying what is here might
+Xsuffice.
+X
+X 6) Trying to detect what kind of machine you are on, then acting on that,
+Xpossibly using larry wall's configure program.
+X
+X 7) Automounters... a problem.  Can we divorce all the home-dir
+Xaccessing stuff?  Sounds interesting in theory, hard in fact.  Maybe
+Xthe perl version could handle it?
+X
+X 8) Make a version/script that would run on a "fake" filesystem; e.g. a
+Xfull unix filesystem that starts someplace other than root ("/"), like
+Xa diskless client or something.
+X
+SHAR_EOF
+chmod 0600 cops_104/extensions/THINGS_2_DO ||
+echo 'restore of cops_104/extensions/THINGS_2_DO failed'
+Wc_c="`wc -c < 'cops_104/extensions/THINGS_2_DO'`"
+test 1615 -eq "$Wc_c" ||
+	echo 'cops_104/extensions/THINGS_2_DO: original size 1615, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extensions/YAR ==============
+if test -f 'cops_104/extensions/YAR' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extensions/YAR (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extensions/YAR (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extensions/YAR' &&
+X
+X
+X  (YAR -- Yet Another README file)
+X
+X    This is where the odds 'n ends go.
+X    "THINGS_2_DO" is a file that says what I'd like to see done, either
+Xin COPS or in other packages.
+X
+X    "crypto-stuff" tells you where you can get some programs to do
+Xsecure digital signatures.
+X
+X    "questions" is a questionaire and some answers I recieved about
+Xcomputer security.  It might prove of interest for general reading.
+X
+X    "netstuff" is a short list of net.references for further information.
+X
+X    "passwords" gives a reference for Matt Bishop's replacement passwd 
+Xprogram, and his fast password cracker.
+X
+X    "uucp.hardening" is a couple of articles taken from the net on how
+Xyou beef up uucp security.
+X
+X    "writing.suid" is a nice writeup on how to write a SUID program correctly.
+X
+SHAR_EOF
+chmod 0600 cops_104/extensions/YAR ||
+echo 'restore of cops_104/extensions/YAR failed'
+Wc_c="`wc -c < 'cops_104/extensions/YAR'`"
+test 779 -eq "$Wc_c" ||
+	echo 'cops_104/extensions/YAR: original size 779, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extensions/crypto-stuff ==============
+if test -f 'cops_104/extensions/crypto-stuff' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extensions/crypto-stuff (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extensions/crypto-stuff (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extensions/crypto-stuff' &&
+X
+X
+X  Snefru and MD4 are both digital signature algorithms that are much more
+Xsecure than the crc producer in this package.  Snefru was posted to
+Xcomp.unix.sources, volume 21, I believe, and is hence available from any
+Xc.u.s. archive site, like uunet.uu.net; MD4 is available via anon-ftp from
+Xtheory.lcs.mit.edu.  You might check them out if you're really serious about
+Xyour binaries and stuff.
+X
+SHAR_EOF
+chmod 0600 cops_104/extensions/crypto-stuff ||
+echo 'restore of cops_104/extensions/crypto-stuff failed'
+Wc_c="`wc -c < 'cops_104/extensions/crypto-stuff'`"
+test 395 -eq "$Wc_c" ||
+	echo 'cops_104/extensions/crypto-stuff: original size 395, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extensions/netstuff ==============
+if test -f 'cops_104/extensions/netstuff' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extensions/netstuff (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extensions/netstuff (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extensions/netstuff' &&
+X
+X
+X    For additional information, help on various subjects, etc., there
+Xare various resources available on the net.  By no means is this list
+Xexclusive:
+X
+X   alt.security -- high noise, but has some real gems in here.  If
+Xyou had to read one newsgroup/mailing list for security, this is it.
+XIf you don't read it, you're endangering your system by not keeping
+Xup on the latest methods used to attack and defend systems...
+X
+X   comp.risks -- a moderated newsgroup that talks about the risks of
+Xcomputing, often discussing computer security.
+X
+X   comp.unix.wizards -- a high noise free-for-all group that has
+Xsome choice tidbits of information.  Now that this is gone, you might
+Xcheck out comp.unix.esoterica, or any of the other weird new names.
+X*I* voted to keep comp.unix.wizards :-)
+X
+X   Security Mailing list -- moderated by Neil Gorsuch, fits and bursts
+Xof information that can be gotten nowhere else.  Hard to join the elite
+Xwho are on the list, and a long wait for acceptance.  Security programs
+Xcan be snarfed off of this list at times.
+X
+X   CERT -- the Computer Emergency Response Team has a mailling list
+Xdevoted to the development of security tools.  As quoted from
+Xtheir initial mailing:
+X
+X"The Computer Emergency Response Team Coordination Center (CERT/CC) has
+Xestablished a new Internet mailing list named CERT-TOOLS.  This new
+Xmailing list is now available.
+X
+XThe purpose of this new mailing list is to encourage the exchange of
+Xinformation on security tools and security techniques.  The list
+Xshould not be used for security problem reports.
+X[...]
+XMailing list problems, additions, changes, and deletions requests should
+Xbe sent to:
+X        cert-tools-request@cert.sei.cmu.edu
+X
+X[...]
+XCERT/CC is planning to collect many of the tools and will make the
+Xarchive available via anonymous ftp on the cert.sei.cmu.edu system.
+XA trusted archive service will also be available for tools not intended
+Xfor general public usage.
+X
+XAll mail intended to be redistributed should be mailed to:
+X	cert-tools@cert.sei.cmu.edu
+X
+XComputer Emergency Response Team
+XEmail: cert@cert.sei.cmu.edu
+XTelephone: 412-268-7090 (answers 24 hours a day)"
+SHAR_EOF
+chmod 0600 cops_104/extensions/netstuff ||
+echo 'restore of cops_104/extensions/netstuff failed'
+Wc_c="`wc -c < 'cops_104/extensions/netstuff'`"
+test 2126 -eq "$Wc_c" ||
+	echo 'cops_104/extensions/netstuff: original size 2126, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extensions/passwords ==============
+if test -f 'cops_104/extensions/passwords' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extensions/passwords (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extensions/passwords (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extensions/passwords' &&
+X
+X   For those who need _fast_ password cracking, for whatever reason,
+XMatt Bishop wrote a fairly incredible password cracking engine, which
+Xis detailed in:
+X
+X"An Application of a Fast Data Encryption Standard Implementation",
+XMatt Bishop, Computing Systems 1(3) pp. 221-254 (Summer 1988).
+X
+X  If you have a valid reason for using it, you can mail to Matt at:
+X    
+X   bishop@bear.dartmouth.edu
+X
+X  for more information on his package.
+X
+X
+X  For an even better solution, try Matt's replacement for "passwd", which
+Xallows you to configure it to your site to dissallow stupid passwords or
+Xlocalisms.  Highly recomended, available right now via anon-ftp, at
+Xbear.dartmouth.edu, in ~pub/passwd.tar.Z
+X
+SHAR_EOF
+chmod 0600 cops_104/extensions/passwords ||
+echo 'restore of cops_104/extensions/passwords failed'
+Wc_c="`wc -c < 'cops_104/extensions/passwords'`"
+test 690 -eq "$Wc_c" ||
+	echo 'cops_104/extensions/passwords: original size 690, current size' "$Wc_c"
+rm -f _shar_wnt_.tmp
+fi
+# ============= cops_104/extensions/questions ==============
+if test -f 'cops_104/extensions/questions' -a X"$1" != X"-c"; then
+	echo 'x - skipping cops_104/extensions/questions (File already exists)'
+	rm -f _shar_wnt_.tmp
+else
+> _shar_wnt_.tmp
+echo 'x - extracting cops_104/extensions/questions (Text)'
+sed 's/^X//' << 'SHAR_EOF' > 'cops_104/extensions/questions' &&
+X   
+X   I polled a security mailing list and got about 40 responses to a
+Xselected number of questions dealing with security; it might be useful
+Xfor inclusion on how the net (at least some of the security minded ones)
+Xview security.  The answers to these questions shaped some of the philosophies
+Xof COPS and might be indicative of the type of security tools to be
+Xdeveloped in the future.  My questions start with a number and a ")".
+X
+X   1)  What kinds of problems should a software security system (SSS)
+X   such as COPS check for? (Mention specific examples, if you can.)
+X
+X  Just about everyone agreed that the more things checked, the better.
+XSome specific wants of items I didn't mention, more or less in the order
+Xof # of requests:
+X
+X  Some kind of _secure_ checksum method for checking up on binary files.
+X
+X  Checking binaries for known security problems - sendmail, fingerd,
+Xftpd, ect.
+X
+X  Checking the validity of the _format_ of key files rather than merely
+Xchecking if they are writable.
+X
+X  Checking for potential trojan horses; files such as "ls" in a users
+Xaccount.
+X
+X  Finding things hidden under mount points.
+X
+X  Keeping track of accounts in a seperate file from /etc/passwd and
+Xrun periodic checks to see if any accounts have been added by any
+Xunauthorized user.
+X  
+X  Report unusual system activity, such as burning lots of CPU time.
+X
+X  Record unsuccessful login attempts and su's to root, when and by whom
+Xif possible.
+X
+X
+X   2)  Are there any security problems too sensitive to be checked
+X   by a SSS?  That is, what things should *not* be built into a SSS?
+X
+X     Boy, this was a landslide.  Over 90% said NO, and not only no,
+Xbut basically "Hell No".  The only concerns I got were against password
+Xcracking and problems that could not be easily fixed.  There was also
+Xa small amount of concern about limiting access to root, but most realized
+Xthat no matter what, the benifits would outweigh any losses if the programs
+Xwere put out.
+X
+X   3) What should the primary goal of a SSS be -- discovering as many
+X   security holes as possible in a given system (including bugs or
+X   design flaws that may not be easily fixed -- especially without
+X   source code), or merely uncovering correctable errors (due to
+X   ignorance, carelessness, etc)?
+X
+X     Another landslide.  Of all the responses, only one person objected
+Xto finding all holes, although a few did say that finding the fixable
+Xholes was top priority.
+X
+X    One view:
+X
+X  My use for an SSS is as a system monitor, not as a diagnostic tool.
+XI suppose the diagnostic version also has its uses, but writing and
+Xdistributing such a program is asking for trouble.  I don't see
+Xanything wrong with writing it and distributing only the binaries.
+X
+X
+X   4)  Do you feel that SSS are a security threat themselves?
+X
+X     Some dissent begins to show.... It was almost even here, with the
+Xno's beating out the yes's by a single vote.  However, 2/3 of the yes
+Xvotes qualified there answer by stating something like "a tool can be
+Xmisused" and whatnot.  Here are some typical responses:
+X
+XOf course.  They point to way for bad guys.  Such is life.
+XThey are a tool.  They have the potential for anything.  The
+Xsecurity threat lies in how they are used....
+X
+XNo, as long as they don't breed complacency. Just by running
+Xa SSS each night should not make you thinks your systems are
+Xsecure.
+X
+XFire is also dangerous but VERY useful.
+X
+X
+X   5) Do you think that the SSS should be restricted to be used only
+X   by system administrators (or other people in charge), or should
+X   they be accessible to all?
+X
+X     Here's where the problems start :-)  Everyone wants as many
+Xfeatures as possible, but quite a few of you don't want anyone else
+Xto have it.  Hmm...   Out of 35 responses on this question:
+X  12 - Yes, only SA's.
+X  10 - No.
+X   6 - It would be nice to have it restricted, but... How?
+X   5 - Have two versions; one restricted, one not.  Needless to say,
+X        the dangerous stuff should go in the first.
+X   1 - Restrict only parts that detect bugs/whatever that cannot be
+X        repaired.
+X   1 - Argh!  Help!
+X
+X     Some quotable quotes:
+X
+XI don't see how it could be restricted.
+X
+XAdmins, etc only. (possibly said because I'm an admin. From an
+Xintellectual standpoint, I would want to know about this stuff even
+Xif I was just a user)
+X
+XI think the SSS should be restricted to system
+Xadministrators with the realisation that others can probably
+Xget their hands on the code if they want to. 
+X
+XDefinitely available to all, SA's can be as lazy as anyone and should not be 
+Xallowed to hide behind a veil of secrecy if, in doing so, they expose the 
+Xsystems they administer.
+X
+XIt seems to me that only an "administrator type" will have sufficient
+Xprivilege levels to make _effective_ use of such a tool.  Ordinary users
+Xmay be able to garner _some_ benefit though, if run on their own files.
+XIf possible, can there be an "administrator" mode and a (restriced/limited)
+X"user" mode?
+X
+X(and finally, my personal favorite...)
+X
+XI think that a check for a hole that can't be closed shouldn't be a part of
+Xthe check, if that hole is widespread.  I have no examples of any such hole,
+Xbut a weak spot that can't be closed and has no workaround is one of the few
+Xcandidates for the security by secrecy concept.  I have mixed feelings about
+Xthis, but if I can't fix the hole, I'd rather not have it's existence be
+X"public" knowledge.  A freely available routine to locate the hole would
+Xspread it's existence far and wide.....(?)
+XBut, if I didn't know about it beforehand then it would be good to have a
+Xtool to tell me it existed.  Gads, I hate moral conflicts!
+X 
+X
+X   6) When a SSS finds a security flaw in a system, do you want it to 
+X   indicate how they flaw could be used to compromise your system, or
+X   would you just accept the conclusion and apply a fix?
+X
+X      This question was ill worded and gramatically incorrect, but still
+Xmanaged to conjure up a lot of comments.  Some thought it was asking if
+Xthe system should apply a fix.
+X      In any case, almost 3/4 said Yes, indicate exactly how to exploit
+Xany potential hole.  As usual, there were a few with reservations about
+Xthe info getting out, but.... 
+X   Here are some of the more interesting comments:
+X
+X                (Think about this one!)
+X  *I* would like to know to futher my knowledge of Unix, but more importantly
+Xto make sure that the version I have was not modified by a cracker to
+Xput security holes *into* a system.  (That'd be sneaky :-)
+X
+X   Security by obfuscation doesn't work.
+X
+X   By definition, a SSS is a software system, and therefore has bugs in it.
+XIf it reported a problem which would cause quite a bit of inconvenience if
+Xfixed, or would be difficult to fix, then I would be much more apt to make
+Xthe fix if I knew how the problem could be exploited.  This is important,
+Xbecause many, if not most, sites require only a moderate level of security,
+Xand many security holes are fiendishly difficult to exploit.
+X
+X   We cannot assume that end-purchasers of a system can be as aware of 
+Xthe internal workings of a system as the designers of the system (or SSS)
+Xare.  If a security flaw is discovered, the administrators need to be
+Xinformed about what changes are necessary to remove that flaw, and what
+Xrepercussions they may have.
+X   [...]
+X   Imagine a SSS that knew sendmail(8) was a security flaw
+Xallowing a worm to enter systems.  It would report that sendmail is a 
+Xsecurity flaw, please disable it like....  If the vendor had released
+Xa patch, and the SSS didn't know how it, the administrator (in blind
+Xfaith to this SSS program) might disable a *very* useful program
+Xunnecessarily.
+X
+X
+X   7)  Do you think that there is too much, not enough, or just about
+X   the right amount of concern over computer security?  How about at 
+X   your computer site?  At other sites?
+X
+X      The "not enough"s won, but not by much.  I thought that given
+Xthe paranoia of a security group, this would be a larger victory.
+XLots of people said it depends -- on the type of facility, the size, etc.
+XLarge sites seem to have a healthier view of security (paranoia :-)) than
+Xsmaller/non-governmental.  Only 4 or 5 said there was enough concern.
+XA couple of people mentioned _The Cuckoo's Egg_ as suggested reading
+X(I heartily agree.)
+X
+X   More quotes:
+X
+X  (I don't know if the next answer is true, but I like it anyway!)
+X
+X  This is really a deep philosophical question---something to talk about
+Xover a few beers at the bar, but not here.
+X
+X  I think it's a site dependent problem, and all the above are
+Xtrue: too much, too little, and just right. Computer is not a
+X"one size fits all" situation. Having offered that opinion, I
+Xthink an assessment of my site or other sites is extraneous, and I
+Xwill reserve that opinion.
+X
+X  ... more attention to unauthorized use of the networks.
+X
+X   8)  Do you think that there should be a ruling body that governs
+X   and enforces rules and regulations of the net -- sort of a net.police?
+X
+X     Some of you wondered what this had to do with software security, but
+Xjust about everyone answered anyway.  This one scared me!  The "No's" only
+Xbeat out the "yes's" by one vote.  Yikes!  Maybe I'm from the old school
+Xof thought, but....  Several people said that it couldn't be done anyway;
+Xa couple mentioned they a CERT-like agency to help out, but not control,
+Xand finally two said that the laws and government were already there to
+Xdo this.
+X
+X   It's there, defacto.  The free market is working pretty well.
+X
+X   Absolutely. I quarrel with the "net.police" designation, per se, of
+Xcourse, as do many others. But perhaps something more like a recognized
+Xtrade association, and providing similar services. Also, it is time that
+Xthe basic duties which must be reasonably performed by a site in order for
+Xit to remain on the net should become a requirement rather than a matter
+Xof individual whim.
+X
+X   Yuck!  This is very distasteful to me.  It will probably be necessary
+Xthough as more and more people participate in the net.  Enforcement will
+Xhave to be judicious until secure networking is developed and implemented
+Xgenerally.
+X
+X   No.  Aside from the fact that it'd never work, I like Usenet as an
+Xanarchy.  It has some rough edges, but for the most part it works.  What
+Xdoes this question have to do with SSS-type programs?
+X
+X   Enforcement will be tough and may hold back legitimate users.  But
+Xwe have to start somewhere.  So I suppose that I agree with having
+Xnet.police, as long as they don't turn things into a police.state.net. 
+X
+X
+X   9)  Do you believe that breaking into other people's systems should
+X   continue to be against the law?
+X
+X      Only one said "no", and s/he had a smiley following the answer.
+XBut there were some of you who voiced concern that it wasn't really
+Xagainst the law to begin with.  In _The Cuckoo's Nest_, Cliff Stoll talked
+Xabout a (Canadian, I think) case that the only reason the cracker was
+Xprosecuted was for stealing electricity!  Less than a watt or something.
+XA few of you mentioned denial of services as being a just reason, but
+Xwhat if they break in only at night, when no one else is on, and they
+Xreally don't take anything at all?  Should that be less punishable than
+Xsomeone who sucks away user CPU/disk/whatever?
+X
+X   Breakins should be encouraged and rewarded (1/2 :-).
+X
+X   Yes.  Unquestionably.  However, those laws should not attempt to regulate
+SHAR_EOF
+true || echo 'restore of cops_104/extensions/questions failed'
+fi
+echo 'End of  part 6'
+echo 'File cops_104/extensions/questions is continued in part 7'
+echo 7 > _shar_seq_.tmp
+exit 0
+

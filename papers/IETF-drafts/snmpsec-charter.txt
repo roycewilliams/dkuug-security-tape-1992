@@ -1,0 +1,41 @@
+
+SNMP Security (snmpsec)
+
+Charter
+
+Chair(s):
+     James Galvin, galvin@tis.com
+     Keith McCloghrie, kzm@hls.com
+
+Mailing Lists:
+     General Discussion:  snmp-sec-dev@tis.com
+     To Subscribe:  snmp-sec-dev-request@tis.com
+     Archive:  snmp-sec-dev-request@tis.com
+
+Description of Working Group:
+
+     The SNMP Security Working Group is chartered to determine the
+     set of security services needed by the SNMP. The specification
+     of those services, the supporting mechanisms, and the adjunct
+     infrastructure will become an enhancement to the SNMP and
+     eventually an Internet standard.
+
+     The specification must not alter the fundamental SNMP network
+     management philosophy and must not entail changes to existing
+     SNMP standards or framework.
+
+Goals and Milestones:
+
+Done       Publish internet-draft specifications.
+
+Jul 1991   Submit specification to IESG for consideration as a Proposed
+           Standard.
+
+Dec 1991   Submit specification to IESG for consideration as a Draft
+           Standard.
+
+Ongoing    Submit specification to IESG for consideration as a Standard.
+
+
+
+                                   1

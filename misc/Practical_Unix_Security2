@@ -1,0 +1,17 @@
+PRACTICAL UNIX SECURITY
+
+O'Reilly & Associates has discovered that in the first printing of
+_Practical_UNIX_Security_ by Simson Garfinkel and Gene Spafford (June,
+1991) a formatting error caused the grave quotes (`) in the shell
+scripts in our final PostScript files to be printed as forward quotes
+(').  Of course, this breaks the scripts and is certainly not what the
+authors, editor, or publisher intended.
+
+An errata sheet is available from the publisher that corrects the
+shell script examples and other minor technical errors found in the
+first printing.  Please call O'Reilly & Associates at 1-800-338-6887
+to obtain a copy of this sheet.  Alternatively, you may send email to
+steph@ora.com, to request a copy of the errata sheet -- be sure to
+include your surface mail address.
+
+We apologize for any difficulties these errors may have caused.  

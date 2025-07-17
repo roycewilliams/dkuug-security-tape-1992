@@ -1,0 +1,2879 @@
+
+
+
+
+Network Working Group                                         Kent (BBN)
+Internet Draft                                             IAB IRTF PSRG
+28 June 1991
+
+
+
+             Privacy Enhancement for Internet Electronic Mail:
+                 Part II: Certificate-Based Key Management
+
+
+STATUS OF THIS MEMO
+
+   This draft document will be submitted to the RFC editor as a
+   standards document, and is submitted as a proposed successor to
+   current RFC-1114.  References within the text of this Internet-Draft
+   to this document as an RFC, or to related Internet-Drafts cited as
+   "RFC [1113D]", "RFC [1115B]", and "RFC [FORMS-A]" are not intended to
+   carry any connotation about the progression of these Internet-Drafts
+   through the IAB standards-track review cycle.  Distribution of this
+   memo is unlimited.  This specification was developed by the Internet
+   Research Task Force's Privacy and Security Research Group.  Comments
+   should be sent to <pem-dev@tis.com>.
+
+
+ACKNOWLEDGMENT
+
+   This RFC is the outgrowth of a series of IAB Privacy And Security
+   Research Group meetings and of internal working papers distributed
+   for those meetings.  In particular, John Linn contributed
+   significantly to the predecessor to this document (RFC 1114).  I
+   would like to thank the members of the PSRG for their comments and
+   contributions at the meetings which led to the preparation of this
+   RFC. I also would like to thank contributors to the PEM-DEV mailing
+   list who have provided valuable input which is reflected in this RFC.
+
+
+
+1  Executive Summary
+
+   This is one of a series of RFCs defining privacy enhancement
+   mechanisms for electronic mail transferred using Internet mail
+   protocols. RFC [1113D] prescribes protocol extensions and processing
+   procedures for RFC-822 mail messages, given  that suitable
+   cryptographic keys are held by originators and recipients as a
+   necessary precondition. RFC [1115B] specifies algorithms, modes and
+   associated identifiers for use in processing privacy-enhanced
+   messages, as called for in RFC [1113D] and this RFC.  This RFC
+   defines a supporting key management architecture and infrastructure,
+
+
+
+Kent (BBN)                                                      [Page 1]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   based on public-key certificate techniques, to provide keying
+   information to message originators and recipients.  RFC [FORMS-A]
+   provides additional specifications for services in conjunction with
+   the key management infrastructure described herein.
+
+   The key management architecture described in this RFC is compatible
+   with the authentication framework described in CCITT 1988 X.509 [1].
+   This RFC goes beyond X.509 by establishing procedures and conventions
+   for a key management infrastructure for use with Privacy Enhanced
+   Mail (PEM) and with other protocols, TCP/IP and OSI, in the future.
+   There are several motivations for establishing these procedures and
+   conventions (as opposed to relying only on the very general framework
+   outlined in X.509):
+
+       -The quality of user authentication offered by the key management
+           infrastructure should be as uniform as possible throughout
+           the Internet community to help instill user confidence in the
+           overall system.  This requires the introduction and
+           standardization of procedures and conventions that are
+           outside the scope of X.509.
+
+       -The procedures for authenticating originators and recipient in
+           the course of message submission and delivery should be
+           automated.  Users should not have to engage in careful
+           examination of a complex set of assertions in order to
+           evaluate the credibility of a claimed identity.
+
+       -The authentication framework defined by X.509 is designed to
+           operate in the X.500 directory server environment.  However
+           X.500 directory servers are not expected to be ubiquitous in
+           the Internet for some time and so some conventions are
+           adopted to facilitate operation of the key management
+           infrastructure in the near term.
+
+       -Organizations which can most appropriately vouch for the
+           identity of users may not possess specialized technology
+           required to manage cryptographic keys in a secure fashion.
+           Thus provisions must be made to provide such technology to
+           support uniformly high quality authentication.
+
+       -Public key cryptosystems, which are central to the
+           authentication technology of X.509, are patented in the U.S.
+           In particular, PEM makes use of the RSA cryptosystem and
+
+
+
+
+Kent (BBN)                                                      [Page 2]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+           special license arrangements (1) have been made so that this
+           algorithm may be used with freely distributed software in the
+           Internet environment.  Appendix B provides additional details
+           on user and organization registration within the purview of
+           the RSA patent.
+
+   The infrastructure specified in this RFC specifies procedures for the
+   registration of PEM users.  The registration procedures apply not
+   only to individuals but also to mailing lists and organizational
+   roles (see Section 3.6).  Initially, we expect the majority of users
+   will be registered via organizational affiliation, consistent with
+   current practices for how most user mailboxes are provided.  In this
+   sense the registration is analogous to the issuance of a university
+   or company ID card.  Nonetheless, the RFC establishes procedures for
+   users to be registered independent of any organizational affiliation.
+   Over time, we anticipate that civil government entities which already
+   provide analogous identification services in other contexts, e.g.,
+   driver's licenses, may provide this service.  Also, in support of
+   personal privacy, special provisions have been made for registration
+   of users who do not wish to disclose their identity.  Naming
+   conventions are established to ensure that users registered under
+   these provisions will not be be confused with other users who are
+   asserting validated identities.
+
+
+
+2  Overview of Approach
+
+   This RFC defines a key management architecture based on the use of
+   public-key certificates, primarily in support of the message
+   encipherment and authentication procedures defined in RFC [1113D].
+   The concept of public-key certificates is defined in X.509 and this
+   architecture is compliant with X.509.
+
+
+_______________
+(1) No use of the RSA public-key cryptosystem outside  the  scope
+defined  in  this  RFC  is  authorized by this license as of this
+time,  although  expansion  of  the  license  to  other  Internet
+security  applications  is  anticipated.   The license alluded to
+here  does  not  authorize  the  sale  of  software  or  hardware
+incorporating the RSA algorithm; it is an end-user license, not a
+developer's license.
+
+
+
+
+Kent (BBN)                                                      [Page 3]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   Briefly, a (public-key) certificate is a data structure which
+   contains the name of a user (the "subject"), the public component (2)
+   of that user, and the name of an entity (the "issuer") which vouches
+   that the public component is bound to the named user.  This data,
+   along with a time interval over which the binding is claimed to be
+   valid, is cryptographically signed by the issuer using the issuer's
+   private  component.  The subject and issuer names in certificates are
+   Distinguished Names (DNs) as defined in the directory system (X.500).
+
+   Once signed, certificates can be stored in directory servers,
+   transmitted via non-secure message exchanges, or distributed via any
+   other means that make certificates easily accessible to message
+   system users, without regard for the security of the transmission
+   medium.  Certificates are used in PEM to provide the originator of a
+   message with the (authenticated) public key of each recipient and to
+   provide each recipient with the (authenticated) public key of the
+   originator.  The following brief discussion illustrates the
+   procedures for both originator and recipients.
+
+   Prior to sending an encrypted message, an originator must acquire a
+   certificate for each recipient and must validate these certificates.
+   Briefly, validation is performed by checking the digital signature in
+   the certificate, using the public component of the issuer whose
+   private component was used to sign the certificate.  The issuer's
+   public component is made available via some out of band means
+   (described later) or is itself distributed in a certificate to which
+   this validation procedure is applied recursively.  In the latter
+   case, the issuer of a user's certificate becomes the subject in a
+   certificate issued by another certifying authority, thus giving rise
+   to a certification hierarchy.  The validity interval for each
+   certificate is checked and Certificate Revocation Lists (CRLs) are
+   checked to ensure that none of the certificates employed in the
+   validation process has been revoked by an issuer.
+
+
+_______________
+(2) Throughout this  RFC  we  have  adopted  the  terms  "private
+component"  and   "public  component"  to refer to the quantities
+which are, respectively, kept secret and made publicly  available
+in  asymmetric cryptosystems. This convention is adopted to avoid
+possible confusion arising from use of the term "secret  key"  to
+refer  to  either  the former quantity or to a key in a symmetric
+cryptosystem.
+
+
+
+
+Kent (BBN)                                                      [Page 4]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   Once a certificate for a recipient is validated, the public component
+   contained in the certificate is extracted and used to encrypt the
+   data encryption key (DEK) that is used to encrypt the message itself.
+   The resulting encrypted DEK is incorporated into the Key-Info field
+   of the message header.  Upon receipt of an encrypted message, a
+   recipient employs his private component to decrypt this field,
+   extracting the DEK, and then uses this DEK to decrypt the message.
+
+   In order to provide message integrity and data origin authentication,
+   the originator generates a message integrity code (MIC), signs
+   (encrypts) the MIC using the private component of his public-key
+   pair, and includes the resulting value in the message header in the
+   MIC-Info field.  The certificate of the originator is (optionally)
+   included in the header in the Certificate field as described in RFC
+   [1113D].  This is done in order to facilitate validation in the
+   absence of ubiquitous directory services.  Upon receipt of a privacy
+   enhanced message, a recipient validates the originator's certificate,
+   checks to ensure that it has not been revoked, extracts the public
+   component from the certificate, and uses that value to recover
+   (decrypt) the MIC.  The recovered MIC is compared against the locally
+   calculated MIC to verify the integrity and data origin authenticity
+   of the message.
+
+
+
+3  Architecture
+
+3.1  Scope and Restrictions
+
+   The architecture described below is intended to provide a basis for
+   managing public-key cryptosystem values in support of privacy
+   enhanced electronic mail in the Internet environment.  The
+   architecture describes procedures for registering certification
+   authorities and users, for generating and distributing certificates,
+   and for generating and distributing CRLs.  RFC [1113D] describes the
+   syntax and semantics of header fields used to transfer certificates
+   and to represent the DEK and MIC in this public-key context.
+   Definitions of the algorithms, modes of use and associated
+   identifiers are separated in RFC [1115B] to facilitate the addition
+   of other algorithms in the future.  This RFC focuses on the
+   management aspects of certificate-based, public-key cryptography for
+   privacy enhanced mail.
+
+
+
+
+
+Kent (BBN)                                                      [Page 5]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   The proposed architecture imposes conventions for the certification
+   hierarchy which are not strictly required by the X.509 recommendation
+   nor by the technology itself.  These conventions are motivated by
+   several factors, including the need for authentication semantics
+   compatible with automated validation, a near-term dearth of
+   electronic mail directory services, and some implications of the
+   patent status of public-key cryptosystems in the U.S.  Over time we
+   anticipate that some of these constraints, e.g., directory service
+   availability, will change and the procedures specified in the RFC
+   will be reviewed and modified as appropriate.
+
+   Specifically, the architecture proposes a system in which user
+   certificates represent the leaves in a shallow certification
+   hierarchy.  This certification hierarchy is largely isomorphic to the
+   X.500 directory naming hierarchy, with two exceptions:  a small
+   number of "top level" certification authorities (TLCAs) which form
+   the "roots" of the certification tree, and an interim convention
+   which allows users unaffiliated with an organization in the
+   certification hierarchy to obtain public-key certificates
+   nonetheless.
+
+   Not every level in the directory hierarchy need correspond to a
+   certification authority.  For example, the appearance of geographic
+   entities in a name (e.g., states, provinces, cities) does not require
+   that various local governments become certifying authorities in order
+   to instantiate this architecture.
+
+   These conventions minimize the complexity of validating user
+   certificates by limiting the length of "certification paths" and by
+   making explicit the relationship between a certificate issuer and the
+   user (via the naming hierarchy).  Note that in this architecture,
+   only organizations may act as issuers; a user certificate may appear
+   in a certification path only as the terminal node in the path.  These
+   conventions result in a certification hierarchy which is a compatible
+   subset of that permitted under X.509, with respect to both syntax and
+   semantics.
+
+   Although the key management architecture described in this RFC has
+   been designed primarily to support privacy enhanced mail, this
+   infrastructure also supports X.400 mail security facilities (as per
+   1988 X.411) and X.500 directory authentication facilities.  Thus
+   establishment of this infrastructure paves the way for use of these
+   and other OSI protocols in the Internet in the future.  In the
+   future, these certificates also may be employed in the provision of
+
+
+
+Kent (BBN)                                                      [Page 6]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   security services in other protocols in the TCP/IP suite as well.
+
+
+
+3.2  Relation to X.509 Architecture
+
+   CCITT 1988 Recommendation X.509, "The Directory - Authentication
+   Framework", defines a framework for authentication of entities
+   involved in a distributed directory service.  Strong authentication,
+   as defined in X.509, is accomplished with the use of public-key
+   cryptosystems.  Unforgeable certificates are generated by
+   certification authorities; these authorities may be organized
+   hierarchically, though such organization is not required by X.509.
+   There is no implied mapping between a certification hierarchy and the
+   naming hierarchy imposed by directory system naming attributes.
+
+   This RFC interprets the X.509 certificate mechanism to serve the
+   needs of privacy-enhanced mail in the Internet environment.  The
+   certification hierarchy proposed in this RFC in support of privacy
+   enhanced mail is intentionally a subset of that allowed under X.509.
+   This certification hierarchy also embodies semantics which are not
+   explicitly addressed by X.509, but which are consistent with X.509
+   precepts.  An overview of the rationale for these semantics is
+   provided in Section 1.
+
+
+
+3.3  Certificate Definition
+
+   Certificates are central to the key management architecture for X.509
+   and PEM.  This section provides a brief description of the syntax and
+   semantics of certificates.  Appendix A includes the ASN.1 syntax for
+   certificates.   A certificate includes the following contents:
+
+       1.  version
+
+       2.  serial number
+
+       3.  certificate signature (and associated algorithm ID)
+
+       4.  issuer name
+
+       5.  validity period
+
+
+
+
+Kent (BBN)                                                      [Page 7]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+       6.  subject name
+
+       7.  subject public key (and associated algorithm ID)
+
+
+
+
+3.3.1  Version Number
+
+   The version number field is intended to facilitate orderly changes in
+   certificate formats over time.  The initial version number for
+   certificates used in PEM is the X.509 default which has a value of
+   zero (0).
+
+
+
+3.3.2  Serial Number
+
+   The serial number field provides a short form, unique identifier for
+   each certificate generated by an issuer.  The serial number is used
+   in CRLs to identify revoked certificates, as described in Section
+   3.4.3.4.  Although this attribute is an integer, PEM processing of
+   this attribute need not involve any arithmetic operations.  All PEM
+   implementations must be capable of processing serial numbers up to 48
+   bits in length and support for larger serial numbers is encouraged.
+
+
+
+3.3.3  Certificate Signature
+
+   A certificate carries a signature algorithm identifier and a
+   signature, applied to the certificate by its issuer.  The signature
+   is validated by the UA processing a certificate, in order to
+   determine that the integrity of its contents have not been
+   compromised subsequent to generation by a CA.  In this context, a
+   signature is effected through the use of a Certificate Integrity
+   Check (CIC) algorithm and a public-key encryption algorithm.  RFC
+   [1115B] contains the definitions and algorithm IDs for signature
+   algorithms employed in this architecture.
+
+
+
+
+
+
+
+
+Kent (BBN)                                                      [Page 8]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+3.3.4  Subject Name
+
+   A certificate provides a representation of its subject's identity in
+   the form of a Distinguished Name (DN).  The fundamental binding
+   ensured by the key management architecture is that between the public
+   component and the user's identity in this form.  A distinguished name
+   is an X.500 directory system concept and if a user is already
+   registered in an X.500 directory, his distinguished name is defined
+   via that registration.  Users who are not registered in a directory
+   should keep in mind likely directory naming structure (schema) when
+   selecting a distinguished name for inclusion in a certificate.
+   Section 3.6 describes constraints imposed on the form of
+   distinguished names for use in this architecture.
+
+
+
+
+3.3.5  Issuer Name
+
+   A certificate provides a representation of its issuer's identity, in
+   the form of a Distinguished Name.  The issuer identification is used
+   to select the appropriate issuer public component to employ in
+   performing certificate validation.  The issuer is the Certifying
+   Authority (CA) who vouches for the subject identity contained in the
+   certificate.
+
+
+
+
+3.3.6  Validity Period
+
+   A certificate carries a pair of time specifiers, indicating the start
+   and end of the time period over which a certificate is intended to be
+   used.  The duration of the interval may be constant for all user
+   certificates issued by a given CA or it might differ based on the
+   nature of the user's affiliation.  For example, an organization might
+   issue certificates with shorter intervals to temporary employees
+   versus permanent employees.
+
+   The longer the interval, the greater the likelihood that compromise
+   of a private component or name change will render it invalid and thus
+   require that the certificate be revoked.  Once revoked, the
+   certificate must remain on the issuer's CRL (see Section 3.4.3.4)
+   until the validity interval expires.  TLCAs may impose restrictions
+
+
+
+Kent (BBN)                                                      [Page 9]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   on the maximum interval that may be elected by CAs operating in their
+   certification domain (see Appendix B).
+
+
+
+3.3.7  Subject Public Key
+
+   A certificate carries the public component of its associated subject,
+   as well as an indication of the algorithm with which the public
+   component is to be used.  For purposes of this RFC, the algorithm
+   identifier will indicate use of the RSA algorithm, as specified in
+   RFC [1115B].  If other public key algorithms are supported in the
+   future, additional algorithm identifiers will be specified.
+
+
+
+3.4  Entities' Roles and Responsibilities
+
+   One way to explain the architecture proposed by this RFC is to
+   examine the roles which are defined for various entities in the
+   architecture and to describe what is required of each entity in order
+   for the proposed system to work properly.  The following sections
+   identify three types of entities within this architecture: users and
+   user agents, organizational notaries and certification authorities
+   (including "top level" certification authorities).  For each class of
+   entity we describe the procedures which the entity must execute as
+   part of the architecture and what responsibilities the entity assumes
+   as a function of its role in the architecture.
+
+
+
+3.4.1  Users and User Agents
+
+   The term User Agent (UA) is taken from CCITT X.400 Message Handling
+   Systems (MHS) Recommendations, which define it as follows: "In the
+   context of message handling, the functional object, a component of
+   MHS, by means of which a single direct user engages in message
+   handling."  UAs exchange messages by calling on a supporting Message
+   Transfer Service (MTS).
+
+
+
+
+
+
+
+
+Kent (BBN)                                                     [Page 10]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+3.4.1.1  Generating and Protecting Component Pairs
+
+   A UA process supporting PEM must protect the private component of its
+   associated entity (e.g., a human user or a mailing list) from
+   disclosure, though the means by which this is effected is a local
+   matter.  It is essential that the user take all available precautions
+   to protect his private component as the secrecy of this value is
+   central to the security offered by PEM to that user.   For example,
+   the private component might be stored in encrypted form protected
+   with a locally managed symmetric encryption key (e.g., using DES).
+   The user would supply a password or passphrase which would be
+   employed as a symmetric key to decrypt the private component when
+   required for PEM processing (either on a per message or per session
+   basis).   Other precautions, based on local operating system security
+   facilities, also should be employed.
+
+   We recommend that each user employ ancillary software or hardware
+   (not otherwise associated with normal UA operation) to generate his
+   personal public/private component pair.  Software for generating user
+   component pairs will be available as part of the reference
+   implementation of PEM distributed freely in the (U.S.) Internet. It
+   is critically important that the component pair generation procedure
+   be effected in as secure a fashion as possible, to ensure that the
+   resulting component pair is unpredictable.
+
+   There is no requirement imposed by this architecture that anyone
+   other than the user, including any certification authority, have
+   access to the user's private component.  Thus a user may retain his
+   component pair even if his certificate changes, e.g., due to rollover
+   in the validity interval or because of a change of certifying
+   authority.  Even if a user is issued a certificate in the context of
+   his employment, there is generally no requirement that the employer
+   have access to the user's private component.  The rationale is that
+   any messages signed by the user are verifiable using his public
+   component.   In the event that the corresponding private component
+   becomes unavailable, any ENCRYPTED messages directed to the user
+   would be indecipherable and would require retransmission.
+
+   Note that if the user stores messages in ENCRYPTED form, these
+   messages also would become indecipherable in the event that the
+   private component is lost or changed.  To minimize the potential for
+   loss of data in such circumstances messages can be transformed into
+   MIC-ONLY or MIC-CLEAR form if cryptographically-enforced
+   confidentiality is not required for the messages stored within the
+
+
+
+Kent (BBN)                                                     [Page 11]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   user's computer.  Alternatively, these messages can be forwarded (in
+   ENCRYPTED form) to a (trivial) distribution list which serves in a
+   backup capacity and for which the user's employer holds the private
+   component.
+
+   Many details of user registration are a local matter, but in general
+   a user must provide his public component and distinguished name to a
+   representative of a certification authority for inclusion in the
+   user's certificate.  The representative will employ some (locally
+   defined) means to validate the user's claimed identity and to ensure
+   that the public component provided is associated with the user whose
+   distinguished name is to be bound into the certificate.  The
+   certifying authority generates a certificate containing the user's
+   distinguished name and public component, the authority's
+   distinguished name and other information (see Section 3.3) and signs
+   the result using the private component of the authority.
+
+   For users affiliated with organizations which register as CAs, there
+   will be one or more individuals identified as Organizational Notaries
+   (ONs) (see below) within each organization who will act as CA
+   representatives.  In such cases the distinguished name of the user
+   (subject) will be subordinate to the distinguished name of the
+   issuer, emphasizing the relationship between the issuer and the
+   subject.
+
+   A user who does not wish to claim affiliation with an organization
+   can register as a "residential user" (see Section 3.6).  Over time
+   such registration is expected to be provided by state and municipal
+   government, but in the near term such users will be able to register
+   with one or more organizations which will provide some degree of
+   public registration services as described in RFC [FORMS-A].  In the
+   latter case the resulting certificate will indicate that the CA is
+   not vouching for the user's identity via an organizational
+   affiliation.  Such certificates are designated "NOTARY" certificates
+   and are unambiguously identified via a naming convention employed by
+   the issuer and described in Section 3.4.3.1.
+
+   An additional provision is made to accommodate any user who wishes to
+   engage in secure communication without revealing his true identity
+   (as would otherwise occur in the course of certificate management).
+   Such users can be issued "PERSONA" certificates which are
+   unambiguously identified via a naming convention employed by the
+   issuer and described in Section 3.4.3.2.  Such certificates
+   explicitly DO NOT represent a validated identity attested to by the
+
+
+
+Kent (BBN)                                                     [Page 12]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   issuer.  The issuer of a PERSONA certificate represents only that he
+   maintains records sufficient to prevent issuance of the same
+   distinguished name to different users.
+
+   The transmission of a user's identifying information and public
+   component to an organizational (or "public") notary is a local
+   matter, but we expect electronic mail will be the preferred approach
+   in many circumstances.  RFC [FORMS-A] describes electronic mail
+   formats and procedures in support of user registration.  Software
+   compliant with RFC [FORMS-A] will be included in the PEM reference
+   implementation in support of this procedure.
+
+
+
+3.4.2  Organizational Notaries
+
+   An organizational notary (ON) is an individual who acts as a
+   representative of a CA to register users within an organization such
+   as a corporation or a university.  A CA may be represented by one or
+   more ONs.  Each ON represents an organization or some division
+   thereof, e.g., an organizational unit in X.500 naming terms.  An ON
+   is required to have some independence from the users on whose behalf
+   certificates are ordered, so as not be to subject to influence by the
+   user who he is registering.  Each ON should be a "trustworthy"
+   individual (as determined by the organization) and the role of an ON
+   should be viewed as a position of trust within the organization.  An
+   ON must be in a position to verify the identity of each individual to
+   whom he issues a certificate, otherwise he is not properly executing
+   his responsibility. ("PERSONA" certificates represent an exception to
+   this latter requirement, as discussed later.)
+
+   In order to maintain the structure of the certification hierarchy, an
+   ON must issue certificates only for users whose DN is subordinate to
+   that of the CA in the directory hierarchy.  ("NOTARY" certificates,
+   defined in Section 3.4.3.1, represent an exception to this general
+   rule).  Procedural, legal and/or technical means may be employed by
+   TLCAs to enforce this requirement.  In addition, PEM software must
+   reject any certificate which does not comply with this convention,
+   i.e., a certificate in which the subject DN is not subordinate to the
+   issuer DN, except as provided elsewhere in this RFC.  For example, an
+   ON at BBN must not issue certificates for users who are affiliated
+   with MIT or MITRE (as indicated by their DNs).
+
+
+
+
+
+Kent (BBN)                                                     [Page 13]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   It can be assumed that the set of organizations and ONs changes
+   relatively slowly and that that set is relatively small in comparison
+   with the number of users.  Thus a more extensive, higher assurance
+   process may reasonably be associated with the registration of
+   organizations and ONs than with per-user registration.  Restrictions
+   on the range of information which an ON is authorized to certify are
+   established as part of this more elaborate registration process.  The
+   procedures for registering certifying authorities with top-level CAs
+   vary both internationally and within the U.S.  Appendix B describes
+   procedures for registration of non-government certifying authorities
+   in the U.S. (where patent licensing issues impose a specific
+   structure).  Registration with TLCAs in other countries, and within
+   the U.S.  government, are outside the scope of this RFC, but are
+   expected to be comparable in terms of security procedures, in order
+   to maintain uniform assurance across TLCA domains.
+
+   An ON is responsible for establishing the correctness and integrity
+   of information incorporated in an order, and will generally vouch for
+   (certify) the accuracy of identity information at a granularity finer
+   than that provided by certifying authorities offering a "public
+   service."  Although it is probably infeasible to enforce absolutely
+   uniform standards for the user certification process across all ONs,
+   we anticipate that organizations will endeavor to maintain high
+   standards in this process in recognition of the "visibility"
+   associated with the identification data contained in certificates.
+   Moreover, minimum requirements for ON registration and user
+   registration may be specified by a TLCA in the course of registering
+   CAs within its purview.  For example, RSADSI, the TLCA for the (non-
+   governmental) U.S. community has established such requirements as
+   part of the legal agreement it executes with prospective CAs (see RFC
+   [OrgAgreement]).
+
+   An ON must supply or may constrain the validity period of a
+   certificate prior to signing it (to comply with the policy of the CA
+   which the ON represents or with a policy imposed by the cognizant
+   TLCA).  If distributed CA functionality is offered through multiple
+   ONs, provisions must be made to ensure that the serial number and the
+   subject DN contained in each certificate is unique among all issued
+   under the auspices of the CA.
+
+
+
+
+
+
+
+
+Kent (BBN)                                                     [Page 14]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+3.4.3  Certification Authorities
+
+   In X.509 the term "certification authority" is defined as "an
+   authority trusted by one or more users to create and assign
+   certificates".  X.509 imposes few constraints on CAs, but practical
+   implementation of a worldwide certification system requires
+   establishment of technical and procedural conventions by which all
+   CAs are expected to abide.  Such conventions are established
+   throughout this RFC.
+
+   Note that the signature applied to each certificate is that of the
+   issuer (CA), not that of the ON.  Thus, if multiple ONs implement a
+   distributed CA function, provisions must be made so that all of the
+   ONs can cause certificates which they have approved to be signed
+   using the same issuer private component.  The means by which this can
+   be accomplished is a local matter, but Appendix B describes two
+   mechanisms which may be employed to effect this distributed issuer
+   function in a secure fashion.
+
+   It is critical that the private component of a CA be afforded a very
+   high level of security, otherwise the authenticity guarantee implied
+   by certificates signed by the CA is voided.  TLCAs may impose
+   stringent requirements on CAs within their purview to ensure that a
+   high level of security is afforded the certificate signing process.
+   These requirements are expected to address both technical and
+   procedural security concerns.  Specific requirements for CAs under
+   the certification hierarchy established by RSADSI are described in
+   Appendix B.
+
+
+
+3.4.3.1  The NOTARY Convention
+
+   Some users may wish to obtain certificates which do not imply any
+   organizational affiliation but which do purport to accurately and
+   uniquely identify them.  Such users can be registered as "residential
+   persons" under the DN conventions described in Section 3.6.  Such a
+   DN consists entirely of geographic and postal attributes, i.e., no
+   organizational attributes are allowed.  Over time we anticipate that
+   such users will be accommodated by civil government entities who will
+   assume electronic certification responsibility at geographically
+   designated points in the naming hierarchy.  Until civil authorities
+   are prepared to issue certificates of this form, the NOTARY
+   convention is established to accommodate such users.  Under this
+
+
+
+Kent (BBN)                                                     [Page 15]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   convention, certificates issued to residential users are identified
+   by requiring the last attribute of the issuer name to  be an
+   organizationalUnit with the value "NOTARY".  In this case the subject
+   DN is explicitly NOT subordinate to the issuer DN.  Thus this is one
+   of the two exceptions to the general rule of issuer and subject DN
+   relationship (see also Section 3.4.3.3).
+
+   Every TLCA must establish at least one CA which will issue NOTARY
+   certificates to users within its purview.  This CA may be affiliated
+   with the TLCA, but this is not required.  We expect that each TLCA
+   will have responsibility for a (non-overlapping) portion of the
+   naming hierarchy and thus if only one CA provides this service under
+   the auspices of each TLCA, it should be possible to avoid issuance of
+   NOTARY certificates with conflicting subject DNs.  However, if
+   multiple CAs issue NOTARY certificates under the auspices of a single
+   TLCA, there is a potential naming conflict problem.  In such
+   circumstances the TLCA must institute some co-ordination mechanisms
+   to ensure that duplicate subject DNs are not certified by different
+   CAs. Also note that CAs issuing NOTARY certificates are expected to
+   implement procedures that provide a reasonable degree of confidence
+   in the user's claimed identity.  Such procedures might include
+   written confirmation of the user's identity, including claimed postal
+   address, by a Notary Public or equivalent.  (3)
+
+   To illustrate the NOTARY certificate convention, consider the
+   following example in which RSADSI acts as an issuer in this capacity.
+   A user certified by RSADSI under this convention may hold a
+   certificate in which the issuer DN might consist of the following
+   sequence of attributes: C = "US" S = "CA"  O = "RSA Data Security
+   Inc." OU = "Notary."  The subject of such a certificate might contain
+   the following DN: C = "US" S = "Massachusetts" L = "Boston" PA = "19
+   North Square" CN = "Paul Revere."
+_______________
+(3) Users should be  aware  that  the  subject  DN  in  a  NOTARY
+certificate  may  fail  to  match  the  naming  schema adopted by
+directory authorities for residential users in the future.   Thus
+the certificate may have to be reissued to comply with the naming
+schema at some future date.  This situation may arise whenever  a
+user  is  issued  a  certificate  prior  to being registered in a
+directory.   It  is  even  more  likely  to  be  a  problem   for
+residential users since provisions for registration of such users
+by appropriate (e.g., civil) authorities may take  some  time  to
+implement.
+
+
+
+
+Kent (BBN)                                                     [Page 16]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   One final note about NOTARY certificates.  There is no provision made
+   to issue certificates to individuals who claim organizational
+   affiliation to an organization which is not registered as a CA.  Thus
+   no NOTARY certificates will be issued by a TLCA for organizational
+   persons (vs. residential persons, see Section 3.6).  The motivation
+   underlying this constraint is that only an organization should be
+   able to authorize individuals to be certified as being affiliated
+   with that organization.  Thus no CA, not even a TLCA, is empowered to
+   certify a user as being affiliated with another organization.
+
+
+
+3.4.3.2  The PERSONA Convention
+
+   A second convention is adopted to accommodate users who wish to
+   conceal their identities while making use of PEM security features,
+   e.g., to preserve the anonymity offered by "arbitrary" mailbox names
+   in the current mail environment.  In this case the certifying
+   authority is explicitly NOT vouching for the identity of the user.
+   Such certificates are identified by the presence, in the subject DN,
+   of an organizationalUnit attribute with the value "PERSONA".  This
+   convention is established to warn other users that the subject DN is
+   NOT a validated user identity.  Note that a PERSONA certificate
+   differs from a NOTARY certificate in that the distinguished attribute
+   appears not in the issuer's DN but in the subject's DN.  Note also
+   that, unlike a NOTARY certificate, the subject DN must be subordinate
+   to the issuer in the naming hierarchy, and thus the subject's DN will
+   include the issuer's DN (as a prefix).
+
+   A CA issuing PERSONA certificates must institute procedures to ensure
+   that it does not issue the same subject DN to multiple users (a
+   constraint required for all certificates of any type issued by any
+   CA).  There are no requirements on an issuer of PERSONA certificates
+   to maintain any other records that might bind the true identity of
+   the subject to his PERSONA certificate.  However, a CA issuing
+   PERSONA certificates must establish procedures (not specified in this
+   RFC) in order to allow the holder of a PESRONA certificate to request
+   that the certificte be revoked (i.e., list on a CRL).
+
+
+
+
+
+
+
+
+
+Kent (BBN)                                                     [Page 17]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+3.4.3.3  The GUEST Convention
+
+   As noted earlier, an organization acting as a CA may issue
+   certificates to users who may not be "closely affiliated" with the
+   organization.  For example, a user whose access to Internet mail
+   facilities is the result of his guest affiliation with a company or
+   university may be an inappropriate candidate for the strong
+   association typically implied by that organization's granting of his
+   certificate.  In such a case, the organization acting as a CA should
+   be able to issue a certificate which does not imply that the user is
+   closely affiliated with the organization.
+
+   This situation is addressed by adopting a third convention by which
+   organizations wishing to certify these less closely affiliated users
+   do so by including an organizationalUnit attribute with the value
+   "GUEST" in the subject DN of the user certificate.  The subject name
+   in such a certificate is still constrained by the general requirement
+   set forth in this RFC that the subject DN be subordinate to the
+   issuer DN in the naming hierarchy and thus uniqueness of subject DNs
+   in GUEST certificates is readily ensured by CAs.  A CA issuing a
+   GUEST certificate may employ less stringent standards of identity
+   validation than are applied to users closely affiliated with the CA's
+   organization.  However, GUEST certificates are intended to accurately
+   convey a user's identity and thus a GUEST certificate must not be
+   issued as an alternative to a PERSONA certificate (see above).
+
+
+
+3.4.3.4  Interoperation Across Certification Domains
+
+   Interoperation across the certification domains implied by the
+   purviews of distinct TLCAs is a goal of PEM.  In support of that
+   goal, all TLCAs which impose comparable security requirements for
+   user certification are expected to "cross certify" one another.  For
+   example, RSADSI would generate a certificate in which it is
+   identified as the issuer and a certifying authority for the U.S.
+   government is identified as the subject.  Conversely, the U.S.
+   government certifying authority would generate a certificate in which
+   it is the issuer and RSADSI is the subject.
+
+   Cross certification is always symmetric, i.e., no TLCA shall issue a
+   certificate with another TLCA as subject unless the latter TLCA also
+   issues a certificate with the former TLCA as subject.  This
+   requirement is intended to preclude circumstances where users in
+
+
+
+Kent (BBN)                                                     [Page 18]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   different certification domains are unable to exchange PEM message
+   because of asymmetries in certification paths.  Note that "cross
+   certificates", because they involve TLCAs as both issuer and subject,
+   also violate the general rule about the required relationship between
+   issuer and subject DNs.
+
+   This cross certification of TLCAs establishes a basis for "lower
+   level" (e.g., organization and user) certificate validation across
+   the domain boundaries.  Starting with the public component for one's
+   "native" TLCA, (4) one can validate a certificate in another
+   certification domain through the use of a cross certificate.  This
+   avoids the need for users in one certification domain to engage in
+   some "out-of-band" procedure to acquire a public-key for use in
+   validating certificates from a different certification domain.
+
+   Because the trust implied by cross certification between TLCAs will
+   likely be based on bilateral agreements between the TLCAs, cross
+   certification is NOT transitive.  Thus, in the course of validating a
+   certificate, at most one cross certificate may be encountered.  This
+   convention prevents cross certification by TLCAs from extending the
+   certification hierarchy without the explicit consent of the involved
+   TLCAs.  Mechanistically, this constraint can be enforced because of
+   the convention which requires a TLCA to be identified as such via
+   inclusion of an organizationalUnit attribute with value "TLCA" in its
+   distinguished name.  Thus a cross certificate is one in which both
+   issuer and subject DNs contain this reserved organizationalUnit
+   attribute.
+
+   In the absence of ubiquitous directory services or knowledge that a
+   recipient already possesses the necessary cross certificates, it is
+   recommended that an originator include the appropriate cross
+   certificate(s) (using the "Issuer-Certificate" field) when
+   communicating with a recipient outside the originator's certification
+   domain.  When an originator submits an ENCRYPTED message (as per RFC
+   [1113D], his UA must validate the certificates of the recipients.  In
+   the course of performing this validation it will be apparent if any
+   of the recipients are registered under a TLCA other than the user's
+   native TLCA.  It is recommended that PEM software include a provision
+   for the user to specify the automatic inclusion of all appropriate
+_______________
+(4) Each PEM implementation must include facilities to identify a
+native  TLCA,  specified either by the user or as a configuration
+paramater.
+
+
+
+
+Kent (BBN)                                                     [Page 19]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   cross certificates when sending ENCRYPTED message.
+
+   Submission of a MIC-ONLY or MIC-CLEAR message (as per RFC [1113D)
+   does not entail validation of recipient certificates and thus is may
+   not be possible for the UA to automatically determine when cross
+   certificates are required for the validation of the message
+   signature.  In such cases it may be necessary for the user to
+   explicitly specify which cross certificates are required.  It is
+   recommended that PEM software provide an interface to allow the user
+   to explicitly specify the inclusion of cross certificates when
+   submitting MIC-CLEAR or MIC-ONLY messages.
+
+   Thus, additional steps may be required to validate certificates when
+   certification domain boundaries are crossed, but the same basic
+   procedure (described in Section 3.5) is employed.  Caching of
+   certificates by UAs can significantly reduce the effort required to
+   process messages and so these examples should be viewed as "worst
+   case" scenarios.
+
+
+
+3.4.3.5  Certificate Revocation
+
+   3.4.3.5.1  X.509 CRLs
+
+   X.509 states that it is a CA's responsibility to maintain: "a time-
+   stamped list of the certificates it issued which have been revoked."
+   There are two primary reasons for a CA to revoke a certificate, i.e.,
+   suspected compromise of a private component (invalidating the
+   corresponding public component) or change of user affiliation
+   (invalidating the DN).  The use of Certificate Revocation Lists
+   (CRLs) as defined in X.509 is one means of propagating information
+   relative to certificate revocation, though it is not a perfect
+   mechanism.  In particular, an X.509 CRL indicates only the age of the
+   information contained in it; it does not provide any basis for
+   determining if the list is the most current CRL available from a
+   given CA.
+
+   The proposed architecture establishes a format for a CRL in which not
+   only the date of issue, but also the next scheduled date of issue is
+   specified.  Adopting this convention, when the next scheduled issue
+   date arrives a CA will issue a new CRL, even if there are no changes
+   in the list of entries.  In this fashion each CA can independently
+   establish and advertise the frequency with which CRLs are issued by
+
+
+
+Kent (BBN)                                                     [Page 20]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   that CA.  Note that this does not preclude CRL issuance on a more
+   frequent basis, e.g., in case of some emergency, but no system-wide
+   mechanisms are architected for alerting users that such an
+   unscheduled issuance has taken place.  This scheduled CRL issuance
+   convention allows users (UAs) to determine whether a given CRL is
+   "out of date," a facility not available from the (1988) X.509 CRL
+   format.
+
+   The description of CRL management in the text and the format for CRLs
+   specified in X.509 (1988) are inconsistent.  For example, the latter
+   associates an issuer distinguished name with each revoked certificate
+   even though the text states that a CRL contains entries for only a
+   single issuer (which is separately specified in the CRL format).  The
+   CRL format adopted for PEM is a (simplified) format consistent with
+   the text of X.509, but not identical to the accompanying format. The
+   ASN.1 format for CRLs used with PEM is provided in Appendix A.
+
+   These deficiencies are the subject of two recently submitted defect
+   reports (in process at the time of RFC publication).  These reports
+   suggest addressing the defects with exactly the CRL format outlined
+   in this architecture.  Thus, although the format of a PEM CRL is a
+   deviation from the format specified in X.509 (1988), it is hoped that
+   it will be consistent with the next version of the X.509 standard (in
+   1992), and with implementations of X.509 whose CRL format is
+   consistent with the solutions in an updated "CCITT Directory
+   Implementor's Guide."
+
+   X.509 also defines a syntax for the "time-stamped list of revoked
+   certificates representing other CAs."  This syntax, the
+   "AuthorityRevocationList" (ARL) allows the list to include references
+   to certificates issued by CAs other than the list maintainer.  There
+   is no syntactic difference between these two lists except as they are
+   stored in directories.  Since PEM is expected to be used prior to
+   widespread directory deployment, this distinction between ARLs and
+   CRLs is not syntactically significant.
+
+   The requirement for this syntax may be occasioned because, in its
+   most general form, X.509 allows all certification paths within the
+   transitive closure of cross-certifications by CAs.  For example, a CA
+   may wish to include in its ARL the revocation of the certificate for
+   a CA which would otherwise be recognized as a valid issuer through an
+   implied path of cross certifications.  The requirement for ARLs of
+   this sort is considerably weakened in the PEM environment where the
+   cross certification of hierarchies is considerably limited (e.g.,
+
+
+
+Kent (BBN)                                                     [Page 21]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   cross certification takes place only between TLCAs and is not
+   transitive).  As a simplification, this RFC proposes to use CRLs for
+   revocation both of user and of authority certificates.
+
+
+
+3.4.3.5.2  PEM CRL Format
+
+   Appendix A contains the ASN.1 description of CRLs specified by this
+   RFC.  This section provides an informal description of CRL components
+   analogous to that provided for certificates in Section 3.3.
+
+       1. CRL signature (and associated algorithm ID)
+
+       2. issuer
+
+       3. last update
+
+       4. next update
+
+       5. revoked certificates
+
+   The "CRL signature" is a data item completely analogous to a
+   certificate signature and the "issuer" is the DN of the CA which
+   signed the CRL.  The "last update" and "next update" fields contain
+   time and date values (UTCT format) which specify, respectively, when
+   this CRL was issued and when the next CRL is scheduled to be issued.
+   Finally, "revoked certificates" is a sequence of ordered pairs, in
+   which the first element is the serial number of the revoked
+   certificate and the second element is the time and date of the
+   revocation for that certificate.  The semantics for this second
+   element are not made clear in X.509.  For example, the time and date
+   specified might indicate when a private component was thought to have
+   been compromised or it may reflect when the report of such compromise
+   was reported to the CA.  For uniformity, this RFC adopts the latter
+   convention, i.e., the revocation date specifies the time and date at
+   which a CA formally acknowledges a report of a compromise or a change
+   or DN attributes.
+
+
+
+
+
+
+
+
+
+Kent (BBN)                                                     [Page 22]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+3.4.3.5.3  CA Responsibilities for CRL Management
+
+   As X.500 directory servers become available, CRLs should be
+   maintained and accessed via these servers.  However, prior to
+   widespread deployment of X.500 directories, this RFC adopts some
+   additional requirements for CRL management by CAs and TLCAs.  As per
+   X.509, each CA is required to maintain a CRL (in the format specified
+   by this RFC in Appendix A) which contains entries for all
+   certificates issued and later revoked by the CA.  Once a certificate
+   is entered on a CRL it remains there until the validity interval
+   expires.  Each TLCA is required to maintain a CRL for revoked CA
+   certificates within its domain.  The interval at which a CA issues a
+   CRL is not fixed by this RFC, but TLCAs are expected to establish
+   minimum and maximum intervals for such issuance (e.g., see Appendix
+   B).
+
+   Each TLCA is required to establish a database which maintains CRLs
+   for all of the CAs within its domain.  At a minimum, access to the
+   database must be provided via electronic mail as described in RFC
+   [FORMS-A].  Other access means also may be provided, e.g., file
+   transfer, as appropriate to the network environment.  In support of
+   this requirement, each CA must supply its current CRL to its TLCA in
+   a timely fashion, consistent with CRL issuance rules imposed by the
+   TLCA.   CAs may transfer CRLs to subordinate UAs using the CRL
+   processing type available in PEM messages (see RFC [1113D]).  CAs
+   also may provide access to CRLs via the database mechanism described
+   in RFC [FORMS-A] and alluded to immediately above.
+
+
+
+3.4.3.5.4  UA Responsibilities for CRL Management
+
+   The X.509 recommendation calls for each CRL to contain the serial
+   numbers of certificates which have been revoked by the CA
+   administering that list, i.e., the CA that is identified as the
+   issuer for the corresponding revoked certificates.  Mechanisms for
+   managing a certificate cache are, in typical standards parlance, a
+   local matter.  However the following discussion provides a paradigm,
+   the functional equivalent of which must be embodied in any PEM
+   implementation compliant with this RFC.
+
+   As noted above, X.500 makes provision for the storage of CRLs as
+   directory attributes associated with CA entries.  Thus, when X.500
+   directories become widely available, UAs could retrieve CRLs from
+
+
+
+Kent (BBN)                                                     [Page 23]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   directories as required.  In the interim, and to support a "push"
+   (vs. "pull")  model of CRL distribution, a PEM header format has been
+   defined specifically for CRL propagation (see RFC [1113D]).  As noted
+   in RFC [1113D], every PEM UA must be capable of processing CRLs
+   distributed via such messages.
+
+   Upon receipt and validation of a CRL, (5) a PEM UA must compare the
+   CRL entries against any cached certificate information, and must mark
+   as revoked any cache entries which match CRL entries.  (Recall that
+   the certificate serial numbers are unique only for each issuer, so
+   care must be exercised in effecting this cache search.)  This
+   procedure applies to cache entries associated with CAs as well as
+   user entries.  The UA also must retain the CRL to screen incoming
+   messages to detect use of revoked certificates carried in PEM message
+   headers.  A UA must be capable of processing CRLs issued by various
+   CAs, i.e., any CA which issues certificates which the UA employs in
+   the submission or delivery of PEM messages.  Thus a UA must, in
+   general, be capable of storing a number of CRLs from different CAs.
+
+
+
+3.5  Certificate Validation
+
+   3.5.1  Validation Basics
+
+   Validating a certificate begins with verifying that the signature
+   affixed to the certificate is valid, i.e., that the hash value
+   computed on the certificate contents matches the value that results
+   from decrypting the signature field using the public component of the
+   issuer.  In order to perform this operation the user must possess the
+   public component of the issuer, either via some integrity-assured
+   channel, or by extracting it from another (validated) certificate.
+   In order to rapidly terminate this recursive validation process, we
+   recommend each TLCA sign certificates for all CAs within its domain,
+   even CAs which are certified by other, superior CAs in the
+   certification hierarchy.  One additional validation step is required
+   for certificates issued by a TLCA other that the one which certified
+   the user's CA, as described in section 3.4.3.3.
+_______________
+(5) A CRL is validated in much the same manner as a  certificate,
+i.e.,  the  CIC  is calculated and compared against the decrypted
+signature value obtained from  the  CRL.   See  Section  3.5  for
+additional details related to validation of certificates.
+
+
+
+
+Kent (BBN)                                                     [Page 24]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   The public component needed to validate certificates signed by the
+   TLCA (in its role as a CA for subordinate CAs) is made available to
+   each user as part of the registration or via the PEM installation
+   process.  Thus a user will be able to validate any user certificate
+   in at most two or three steps.  Consider the situation in which a
+   user receives a privacy enhanced message from an originator with whom
+   the recipient has never previously corresponded.  Based on the
+   certification convention described above, the recipient can use his
+   TLCA's public component to validate the issuer's certificate
+   contained in the Issuer-Certificate field.  (We recommend that,
+   initially, the originator include his organization's certificate in
+   this optional field so that the recipient need not access a server or
+   cache for this public component.)  Using the issuer's public
+   component (extracted from this certificate), the recipient can
+   validate the originator's certificate contained in the Certificate
+   field of the header.
+
+   Having performed this certificate validation process, the recipient
+   can extract the originator's public component and use it to decrypt
+   the content of the MIC-Info field.  By comparing the decrypted
+   contents of this field against the MIC computed locally on the
+   message the user verifies the data origin authenticity and integrity
+   of the message.  It is recommended that implementations of privacy
+   enhanced mail cache validated public components (acquired from
+   incoming mail) to speed up this process.  If a message arrives from
+   an originator whose public component is held in the recipient's
+   cache, the recipient can immediately employ that public component
+   without the need for the certificate validation process described
+   here.  Also note that the arithmetic required for certificate
+   validation is considerably faster than that involved in digitally
+   signing a certificate, so as to minimize the computational burden on
+   UAs.
+
+
+
+   3.5.2  Display of Certificate Validation Data
+
+   PEM provides authenticated identities for message recipients and
+   originators expressed in the form of distinguished names.  Mail
+   systems in which PEM is employed may not employ DNs as the primary
+   means of identifying recipients or originators.  Thus, in order to
+   benefit from these authentication facilities, each PEM implementation
+   must employ some means of binding native mail system identifiers to
+   distinguished names in a fashion which does not undermine this basic
+
+
+
+Kent (BBN)                                                     [Page 25]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   PEM functionality.
+
+   For example, if a human user interacts directly with PEM, then the
+   full DN of the originator of any message received using PEM should be
+   displayed for the user.  Merely displaying the PEM-protected message
+   content, containing an originator name from the native mail system,
+   does not provide equivalent security functionality and could allow
+   spoofing.  If the recipient of a message is a forwarding agent such
+   as a list exploder or mail relay, display of the originator's DN is
+   not a relevant requirement.  However, in all cases the essential
+   requirement is that the ultimate recipient of a PEM message be able
+   to ascertain the identity of the originator based on the PEM
+   certification system, not on unauthenticated identification
+   information, e.g., extracted from the native message system.
+
+   Conversely, for the originator of an ENCRYPTED message, it is
+   important that recipient identities be linked to the DNs as expressed
+   in PEM certificates.  This can be effected in a variety of ways by
+   the PEm implementation, e.g., by display of recipeint DNs upon
+   message submission or by a tightly controlled binding between local
+   aliases and the DNs.  Here too, if the originator is a forwarding
+   process this linkage might be effected via various mechanisms not
+   applicable to direct human interaction.  Again, the essential
+   requirement is to avoid procedures which might undermine the
+   authentication services provided by PEM.
+
+   As described above, it is a local matter how and what certification
+   information is displayed for a human user in the course of submission
+   or delivery of a PEM message.  Nonetheless all PEM implementations
+   must provide a user with the ability to display a full certification
+   path for any certificate employed in PEM upon demand.  Implementors
+   are urged to not overwhelm the user with certification path
+   information which might confuse him or distract him from the critical
+   information cited above.
+
+
+
+   3.5.3  Validation Procedure Details
+
+   Every PEM implementation is required to perform the following
+   validation steps for every public component employed in the
+   submission of an ENCRYPTED PEM message or the delivery of an
+   ENCRYPTED, MIC-ONLY, or MIC-CLEAR PEM message.  Each public component
+   may be acquired from an internal source, e.g., from a (secure) cache
+
+
+
+Kent (BBN)                                                     [Page 26]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   at the originator/recipient or it may be obtained from an external
+   source, e.g., the PEM header of an incoming message or a directory.
+   The following procedures applies to the validation of certificates
+   from either type of source.
+
+   Validation of a public component involves constructing a
+   certification path between the component and the public component of
+   the user's (native) TLCA.  The validity interval for every
+   certificate in this path must be checked.  PEM software must, at a
+   minimum, warn the user if any certificate in the path fails the
+   validity interval check, identifying the certificate in question.
+   Local security policy may prohibit use of expired certificates. Each
+   certificate also must be checked against the current CRL from the
+   certificate's issuer to ensure that revoked certificates are not
+   employed.  If the UA does not have access to the current CRL for any
+   certificate in the path, the user must be warned.  The warning must
+   indicate whether the CRL is unavailable or, if available but not
+   current, the CRL issue date should be displayed.  Local policy may
+   prohibit use of a public component which cannot be checked against a
+   current CRL, and in such cases the user should receive the same
+   information provided by the warning indications described above.
+
+   If any revoked certificates are encountered in the construction of a
+   certification path, the user must be warned.  The warning must
+   display the issuer and subject DNs from the revoked certificate and
+   the date of revocation.  The user must provide a positive response to
+   the warning before the submission or delivery process may proceed.
+   In the case of message submission, it is recommended that the
+   identity of the recipient affected by this validation failure also be
+   displayed and that the user be provided with the option to specify
+   that this recipient be dropped from recipient list processing without
+   affecting PEM processing for the remaining recipients.  Local policy
+   may prohibit PEM processing if a revoked certificate is encountered
+   in the course of constructing a certification path.
+
+   Note that in order to comply with these validation procedures, a
+   certificate cache must maintain all of the information contained in a
+   certificate, not just the DNs and the public component.  For example
+   the serial number and validity interval must be associated with the
+   cache entry to comply with the checks described above.  Also note
+   that these procedures apply to human interaction in message
+   submission and delivery and are not directly applicable to forwarding
+   processes.  When non human interaction is involved, a compliant PEM
+   implementation must provide parameters to enable a process to specify
+
+
+
+Kent (BBN)                                                     [Page 27]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   whether certificate validation will succeed or fail if any of the
+   conditions arise which would result in warnings to a human user.
+
+   Finally, in the course of validating certificates as described above,
+   an additional set of checks must be performed.  These checks ensure
+   that the certificates comply with the fundamental DN conventions
+   described throughout this RFC.  UA software is not required to check
+   all of the DN conventions specified in Section 3.6, just those
+   specified here.  Any certificate which does not comply with these
+   constraints is considered invalid and must not be employed in PEM
+   submission or delivery processing.  The user must be notified of the
+   nature of this fatal error and encouraged to report it to his ON.
+
+   First, the subject DN of every certificate must be subordinate to the
+   certificate issuer DN, except when a TLCA is the issuer or in the
+   case of the NOTARY convention.  Second, no issuer DN may terminate
+   with a commonName attribute.  Third, no certificate may contain any
+   DN attribute other than those defined in Section 3.6 (or authorized
+   in a subsequent PEM RFC).  Fourth, no more that one cross-certificate
+   may be employed in the process of validation.  These stringent
+   requirements are levied upon all PEM implementations as part
+   maintaining the certification hierarchy constraints defined in this
+   RFC.  By requiring checks for compliance with the certification
+   hierarchy by the users of the system as well as the issuers, the
+   potential for abuse through the use of non-compliant certificates is
+   minimized.
+
+
+
+   3.6  Distinguished Name Conventions
+
+   In the PEM environment, X.500 distinguished names (DNs) are employed
+   within certificates to uniquely identify issuers and subjects.  The
+   issuers are always certifying authorities (organizations) while the
+   subjects are either certifying authorities, end users or distribution
+   (mailing) lists.  Software used in the PEM environment must be able
+   to unambiguously display the attributes of any DN that might be
+   encountered in a certificate, not only in the course of constructing
+   and signing certificates (e.g., in conjunction with user and
+   certifying authority registration), but also during normal message
+   processing (e.g., in conjunction with submission and delivery of a
+   PEM-protected message).  Thus PEM software must incorporate a
+   facility for mapping DN attribute identifiers to printable strings so
+   that these attributes can be meaningfully displayed for users.
+
+
+
+Kent (BBN)                                                     [Page 28]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   The X.500 series of recommendations places no strict constraints on
+   the form DNs may take, i.e., neither the attributes which may be used
+   to form a DN nor the order in which they may appear in a DN are
+   specified.  X.521 does specify a set of object classes for directory
+   entries and each of the attributes identified therein is also
+   specified individually with regard to data type and maximum size.
+   However, the recommendation specifically accommodates the creation of
+   new object classes and most of the existing object class definitions
+   are not proscriptive with regard to attributes which might be
+   included in an entry, perhaps as DN components.
+
+   Although Annex B to X.521 includes a "recommended" structure for the
+   directory  and from this one could infer a set of constraints on the
+   composition of DNs, this Annex is explicitly NOT part of the standard
+   and thus is not binding on implementors.  The December 1990 version
+   of the OIW Stable Implementor Agreements imposes few constraints on
+   naming schema beyond X.521.  There is work underway now to
+   standardize the top level structure of DNs of the directory for the
+   U.S., but this work is not yet complete and does not address complete
+   DN structure.
+
+   Thus, in support of the requirement cited earlier for PEM
+   implementations, i.e., the need to be able to unambiguously identify
+   and display for a human user all of the attributes of any DN
+   encountered in a certificate, this RFC identifies the set of
+   attributes which constitute the universe from which DN components may
+   be selected for PEM environments.  The definition of such attributes
+   in this RFC is viewed as an interim measure until such time as
+   suitable profiles are established by directory standards groups.  At
+   that time the requirements will be changed to cite such standards.
+
+   For now, each PEM implementation is required to incorporate a
+   database which maps DN attribute identifiers to attribute names.  The
+   contents of the database are specified in this section.  Over time,
+   additional attributes may be added to the database via standards
+   processes and thus it is important that this database be easily
+   modifiable in support of these changes.  However it also is important
+   that this database grow only as a result of changes promulgated
+   through standards processes,  since local or bilateral changes would
+   tend to introduce interoperability barriers within the PEM community.
+
+   The attributes defined for use in distinguished names in the PEM
+   environment (and corresponding abbreviations) are taken from X.520.
+   Only the attribute name and abbreviation are reproduced here.  The
+
+
+
+Kent (BBN)                                                     [Page 29]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   reader is referred to X.520 for a complete description of each
+   attribute, including upper bounds on size.  The permitted attributes
+   and their abbreviations are: countryName (C), stateOrProvinceName
+   (S), localityName (L), organizationName (O), organizationalUnitName
+   (OU), commonName (CN), and streetAddress (SA).
+
+   This RFC also imposes some minimal constraints on the structure of
+   DNs consistent with the certification hierarchy constraints discussed
+   earlier.  The resulting naming schema is consistent with X.521 Annex
+   B.  These constraints are imposed to attach semantics to DNs in an
+   effort to avoid possible confusion for PEM users.  For example, we
+   feel that it is important that a user be able to differentiate
+   between a certificate associated with a specific individual vs. a
+   mailing list.  These constraints are embodied in the definition of
+   five types of DNs described below.  All CAs are expected to issue
+   certificates in which the issuer and subject DNs comply with the
+   syntax and semantics described below.
+
+   These DN types are designed to accommodate a wide range of PEM users
+   as both subjects and issuers in certificates.  For each DN type, a
+   set of (required) attributes is specified which must be present in
+   the name and a set of optional attributes are specified. The
+   attributes are drawn from the list above and, in most cases, the
+   object classes which "inspire" most of these DN  types are defined in
+   X.521.  Note that these DN types are not object classes per se; thus
+   these DN type constraints do not preclude the inclusion of additional
+   attributes in a directory entry which contains a certificate
+   specified by these rules.  These constraints apply only to directory
+   entries in so far as DN attributes are concerned.  A table at the end
+   of this sections provides a concise summary of these DN types.
+
+   1.  Certifying Authority- All certificates must contain an issuer DN
+       of this type.  A subject DN may be of this type only if the
+       subject is itself an issuer of certificates.  There is no single
+       attribute required in a DN of this type.  This is because both
+       countries and international organizations are legitimate CAs and
+       neither has a common attribute.  Thus a DN of this type must
+       contain either countryName or organizationName at a minimum.
+       Optional attributes are: countryName, stateOrProvinceName,
+       localityName, streetAddress and organizationalUnitName. The
+       attribute commonName must not appear in the DN of this class as
+       individuals, mailing lists and organizational roles are not
+       permitted to be issuers in this certification hierarchy.  If and
+       only if the issuer is a top level certifying authority, the
+
+
+
+Kent (BBN)                                                     [Page 30]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+       terminal component of the DN must be an organizationalUnitName
+       with the value "TLCA".  If the issuer is acting in the NOTARY
+       capacity as defined in Section 3.4.3.1 of this RFC, the terminal
+       component of the DN must consist solely of an
+       organizationalUnitName with the value "NOTARY".
+
+   2.  Residential Person- A certificate containing this type of subject
+       DN is issued to an individual who does not wish to claim
+       affiliation with any organization via this certificate.  The
+       required attributes are: countryName, stateOrProvinceName,
+       localityName, streetAddress, and commonName. The terminal
+       component of this DN must be a commonName.   The are no optional
+       attributes.  The attributes organizationName, and
+       organizationalUnitName must not appear in a DN of this type.
+       Initially, certificates of this type are expected to be available
+       only via NOTARY issuers.
+
+   3.  Organizational Person- A certificate with a subject DN of this
+       type is issued to an individual to express some form of
+       affiliation between the individual and the named organization.
+       The required attributes are: organizationName and commonName.
+       CommonName must be the terminal component of the DN.  Optional
+       attributes are: countryName, stateOrProvinceName, localityName,
+       streetAddress, and organizationalUnitName.  GUEST and PERSONA
+       certificates fall into this category, and imply progerssively
+       less affiliation with the issuer.
+
+   4.  Organizational Role- A certificate with a subject DN of this type
+       is issued to represent a position within an organization which
+       may be occupied by different individuals, e.g., serially over
+       time.  The required attributes are: organizationName and
+       commonName.   The commonName must be the terminal component and
+       must specify the name of the role represented by this DN (see
+       X.521, 6.9).  The optional attributes are: countryName,
+       stateOrProvinceName, localityName, streetAddress, and
+       organizationalUnitName.
+
+   5.  Distribution List- A certificate issued with a subject of this
+       type is intended to represent a collection of users (a mailing
+       list or distribution list) to which messages may be directed via
+       this DN.  It is anticipated that a server process will be used to
+       accept mail directed at this DN using PEM and will forward
+       messages to the group members.  The process by which PEM can be
+       utilized with a mail list exploder  is described in RFC [1113D].
+
+
+
+Kent (BBN)                                                     [Page 31]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+       The commonName attribute is required and since this subject DN
+       must be subordinate to an issuer DN, either countryName or
+       organizationName must also appear in this DN.  The DN must not be
+       structured so as to be confused with any of the human user DN
+       types noted above.  We recommend that the string "Distribution
+       List" be incorporated in the DN as a second, terminal commonName
+       attribute to avoid any possible confusion.  In any event, the
+       terminal component of a DN of this type must be a commonName.
+       The optional attributes are: countryName,  organizationName,
+       organizationalUnitName, stateOrProvinceName, localityName and
+       streetAddress.
+
+
+                  Distinguished Name Attribute Conventions
+
+
+   DISTINGUISHED NAME TYPE         MANDATORY       OPTIONAL        PROHIBITED
+
+   Certification Authority         C or O          C,S,L,OU,SA,O   CN
+
+   Residential Person              C,S,L,SA,CN                     O,OU
+
+   Organizational Person           O,CN            C,S,L,SA,OU
+
+   Organizational Role             O,CN            C,S,L,OU,SA
+
+   Distribution List               C or O, CN      OU,S,L,SA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kent (BBN)                                                     [Page 32]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+A  Appendix A: ASN.1 Syntax for Certificates and CRLs
+
+A.1  Certificate Syntax
+
+   The X.509 certificate format is defined by the following ASN.1
+   syntax:
+
+   Certificate ::= SIGNED SEQUENCE{
+           version [0]     Version DEFAULT v1988,
+           serialNumber    CertificateSerialNumber,
+           signature       AlgorithmIdentifier,
+           issuer          Name,
+           validity        Validity,
+           subject         Name,
+           subjectPublicKeyInfo    SubjectPublicKeyInfo}
+
+   Version ::=     INTEGER {v1988(0)}
+
+   CertificateSerialNumber ::=     INTEGER
+
+   Validity ::=    SEQUENCE{
+           notBefore       UTCTime,
+           notAfter        UTCTime}
+
+   SubjectPublicKeyInfo ::=        SEQUENCE{
+           algorithm               AlgorithmIdentifier,
+           subjectPublicKey        BIT STRING}
+
+
+   AlgorithmIdentifier ::= SEQUENCE{
+           algorithm       OBJECT IDENTIFIER,
+           parameters      ANY DEFINED BY algorithm OPTIONAL}
+
+   The components of this structure are defined by ASN.1 syntax defined
+   in the X.500 Series Recommendations.  RFC [1115B] provides references
+   for and the values of AlgortihmIdentifiers used by PEM in the
+   subjectPublicKeyInfo the signature data items.  There is also some
+   ambiguity in X.509 with regard to the representation of a signed
+   value, e.g., a certificate signature.  The interpretation selected in
+   PEM requires that the data to be signed is first ASN.1 encoded as an
+   OCTET STRING and the result is encrypted to form the signed quantity,
+   which is then ASN.1 encoded as an OCTET STRING.  Because the
+   certificate is a signed data object, the distinguished encoding rules
+   (see X.509, section 8.7) must be applied prior to signing.
+
+
+
+Kent (BBN)                                                     [Page 33]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+A.2  Certificate Revocation List Syntax
+
+   The following ASN.1 syntax, derived from X.509 and aligned with the
+   suggested format in recently submitted defect reports, defines the
+   format of CRLs for use in the PEM environment.
+
+   CertificateRevocationList ::= SIGNED SEQUENCE{
+           signature       AlgorithmIdentifier,
+           issuer          Name,
+           lastUpdate      UTCTime,
+           nextUpdate      UTCTime,
+           revokedCertificates
+                           SEQUENCE OF CRLEntry OPTIONAL}
+
+   CRLEntry ::= SEQUENCE{
+           userCertificate SerialNumber,
+           revocationDate  UTCTime}
+
+
+
+B  Appendix B: RSA Data Security Inc. as a TLCA
+
+   THIS APPENDIX HAS NOT, IN ITS ENTIRETY, BEEN REVIEWED BY RASDSI AND
+   THUS SHOULD NOT BE CONSIDERED DEFINITIVE.
+
+
+
+
+B.1  Overview
+
+   The RSA cryptographic algorithm, covered in the U.S. by patents
+   administered through RSA Data Security, Inc.  (hereafter abbreviated
+   RSADSI) has been selected for use in this key management system.
+   This algorithm has been selected because it provides all the
+   necessary algorithmic facilities, is "time tested" and is relatively
+   efficient to implement in either software or hardware.  It is also
+   the primary algorithm identified (at this time) for use in
+   international standards where an asymmetric encryption algorithm is
+   required.  Protocol facilities (e.g., algorithm identifiers) exist to
+   permit use of other asymmetric algorithms if, in the future, it
+   becomes appropriate to employ a different algorithm for key
+   management.  However, the infrastructure described herein is specific
+   to use of the RSA algorithm in many respects and thus might be
+   different if the underlying algorithm were to change.
+
+
+
+Kent (BBN)                                                     [Page 34]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   Below we describe two scenarios under which the use of the RSA
+   algorithm to sign certificates will be administered by RSADSI.  Both
+   support CAs which are represented by multiple ONs.  Both also provide
+   a very high level of security for the certification procedure.  Each
+   protects the private component of the CA, ensures unique certificate
+   serial numbering for the CA, enforces validity interval constraints,
+   and enforces the DN conventions specified in Section 3.6.  Although
+   TLCAs other that RSADSI are not required to provide identical CA
+   support options, they should provide equivalently secure facilities
+   in order to warrant cross certification by RSADSI.
+
+   In the first scenario, an organization acquires a trusted Certificate
+   Signature Unit (CSU) which allows it to generate and retain its
+   private key, issue certificates to its users, and account for each
+   certificate it signs (to ensure serial number uniqueness).  At least
+   one form of CSU will be made available and administered with the
+   cooperation of RSADSI as patent administrator for the public-key
+   technology.  This method for issuing certificates will entail a fee
+   for the acquisition of a CSU as well as an incremental fee for each
+   certificate issued.  RSADSI will make available functional and
+   security specifications for CSU vendors, but retains ultimate
+   authority for approval of CSUs for use with its certification
+   hierarchy.
+
+   The second scenario, better suited to subscriber organizations which
+   expect to be lower-volume issuers, calls for such organizations to
+   act in concert with a "Co-Issuer," a role which RSADSI will fill, at
+   least initially.  In this context, the Co-Issuer essentially "time
+   shares" one or more CSUs among CAs to provide a certificate signing
+   service for CAs not wishing to purchase a CSU. This scenario also
+   involves a per-certificate fee to compensate the Co-Issuer not only
+   for the algorithm license but also to pay for the secure retention of
+   the organization's private component, accounting for certificates
+   issued, etc.  The fees are for both the CSU and Co-Issuer cases will
+   be detailed in the legal agreement executed between RSADSI and an
+   organization wishing to act as a CA.
+
+   This certificate signing paradigm applies only in those circumstances
+   where the RSA patent applies.  There are two broad environments where
+   the patent in not applicable.  First, the RSA algorithm is patented
+   only within the U.S., thus CAs outside of the U.S. are not within the
+   certification domain of RSADSI.  Second, the research that led to the
+   RSA algorithm was sponsored by the National Science Foundation.
+   Hence the U.S. government retains royalty-free license rights to the
+
+
+
+Kent (BBN)                                                     [Page 35]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   algorithm and is expected to establish certificate generation
+   facilities for its affiliated users.  Thus CAs (including TLCAs)
+   operating in these environments outside of the scope of the RSA
+   patent are not required to pay license fees.
+
+   In order to facilitate interoperability, RSADSI will cross certify
+   TLCAs outside its purview if these TLCAs (and their subordinate CAs)
+   conform to the CA requirements defined in this RFCand if they employ
+   security procedures and technology comparable to those employed by
+   RSADSI (as described below).  This cross certification will be
+   performed on a non-discriminatory basis and will not entail onerous
+   fees.
+
+
+
+B.2  The CSU Scenario
+
+   A CSU is a device approved by RSADSI for use in local generation of
+   an CA's component pair and the signing of certificates and CRLs on
+   behalf of the CA.  It offers a CA greater autonomy and responsiveness
+   in the certification process by virtue of local control.  A CA will
+   procure a CSU from an authorized vendor and install it in conjunction
+   with a workstation/PC used by one or more ONs.  Before the CSU can be
+   used to generate certificates, the CA must be registered with RSADSI
+   and RDSDSI must provide the CA with a signed authorization message
+   which enables the CSU.  Once this procedure has been effected,
+   certificates can be signed by the CSU on behalf of the CA in a
+   completely local procedure.   RSADSI will provide additional
+   authorization messages to enable generation of certificates beyond an
+   initial authorized limit, or to add additional CAs to the CSU.
+
+   A CSU must embody a number of security and reliability features to
+   make local certificate and CRL signing as secure and relaible as the
+   functions offered by a Co-Issuer (see below).  For example, the
+   generation of a CA's component pair is a critical operation which, if
+   performed without sufficient security, could undermine confidence in
+   the overall certification system.
+
+   To generate a CA component pair, a CSU should employ a hardware
+   random number generator to seed the generation of candidate primes
+   and employ high quality code to test for primality and other "good
+   RSA key" properties.  Once generated, the private component of a CA
+   should be protected to very high standards, higher than those which
+   may be feasible to apply to individual user private components.  This
+
+
+
+Kent (BBN)                                                     [Page 36]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   motivates the use of physical tamper-protection measures and maybe
+   even means to protect against compromising electromagnetic radiation
+   by the CSU.  (While TEMPEST certification may be overkill for CSUs in
+   most environments, existing and proposed standards for commercial
+   cryptographic modules (e.g., FIPS 140 and DRAFT FIPS 140-1) do
+   specify EMI/EMC requirements.)  In part, the motivation here is that
+   compromise of a CA's private component would result in the revocation
+   of all subordinate certificates, significantly disrupting PEM usage
+   and calling into question the integrity of the certification system.
+
+   Not only must a CSU generate and keep CA private components secret,
+   it must provide mechanisms to assist in the procedural control of the
+   certification function.  Thus the use of a crypto-ignition keys to
+   enable the CSU and provision for n-of-k user authorization facilities
+   are important features.  A CSU should safeguard the CA's private
+   component in such a fashion so that no individual has knowledge of
+   this value, yet the CSU also must provide facilities to enable secure
+   recovery of the private component in the event that the CSU is stolen
+   or destroyed.
+
+   In allowing local issuance of certificates, RSADSI will require the
+   CSU to incorporate a facility to account for the number of
+   certificates issued, to ensure payment of certificate fees.  There
+   also must be a provision for RSADSI to authorize the CSU to sign
+   messages for specified CAs.  Authorization should encompass not only
+   the number of certificates that may be signed, but also specify if
+   the CA is allowed to generate NOTARY certificates or if it is a TLCA
+   and thus authorized to generate cross-certificates.  These facilities
+   must be controllable via the  use of signed "messages" to facillitate
+   remote administration of the CSU by RSADSI.
+
+   A CSU must check each certificate and CRL it signs against the
+   constraints imposed by this RFC, as would a Co-Issuer (see below).
+   Thus requirements for a subject DN to be subordinate to the issuer
+   DN, (except in the case of NOTARY certificates), use of authorized
+   attribute types, correct certificate and CRL syntax, etc. should be
+   checked by a CSU.  These features must not be tamperable even by the
+   CA.
+
+   These requirements for CSU functionality and security motivate the
+   use of CSUs which are dedicated devices, realized in hardware, and
+   designed to meet high security, reliability and robustness standards.
+   The level 3 cryptographic module standards as specified in DRAFT FIPS
+   140-1 are suggestive of the security requirements.  Detailed security
+
+
+
+Kent (BBN)                                                     [Page 37]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   and functionality requirements, including support for good procedural
+   security and recovery procedures, will be specified by RSADSI in
+   separate documentation.
+
+
+
+B.3  The Co-Issuer Scenario
+
+   When RSADSI (or an entity designated by RASDSI) acts as a Co-Issuer
+   of certificates on behalf of an organization which does not possess a
+   CSU, the Co-Issuer actually signs certificates for the organization
+   in a fashion which is "transparent" so that the organization appears
+   to be the issuer with regard to certificate formats and validation
+   procedures.  This is effected by having the Co-Issuer use a CSU to
+   generate and hold the private component used to sign certificates on
+   behalf of the organization.  The motivation for the Co-issuer's role
+   in certificate signing is twofold.  First and foremost, it
+   contributes to the overall integrity of the system by establishing a
+   uniform, high level of protection for the private component used to
+   sign certificates.  Second, it simplifies accounting controls in
+   support of licensing, ensuring that RSADSI is paid for each
+   certificate.
+
+   In the co-issuer case, after verifying the accuracy of the user's
+   credentials, the co-issuing ON will forward this information to the
+   Co-Issuer using privacy-enhanced mail to ensure the integrity and
+   authenticity of the information.  The format for transmission of this
+   data is defined in RFC [FORMS-A].  The Co-Issuer will carry out the
+   actual certificate signing process on behalf of the organization
+   represented by the ON.
+
+   In order to carry out this procedure, the Co-Issuer will generate and
+   retain the private component associated with the public component in
+   the certificate which represents the organization, using a CSU
+   equivalent to that which could be purchased directly by a CA.  In
+   effect the role of CA will be shared between the ONs for the
+   organization and the Co-Issuer.  This shared role will not be visible
+   in the syntax of the certificates issued under this arrangement nor
+   is it apparent from the validation procedure one applies to these
+   certificates.  In this sense, the role of the Co-Issuer as the actual
+   signer of certificates on behalf of organizations is transparent to
+   this aspect of system operation.
+
+
+
+
+
+Kent (BBN)                                                     [Page 38]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   Note that the risks associated with disclosure of a CA's private
+   component are different from those associated with disclosure of a
+   user's private component.  The former component is used only to sign
+   certificates, never to encrypt message traffic.  Thus the exposure of
+   a CA's private component could result in the generation of forged
+   certificates for users affiliated with that organization, but it
+   would not affect privacy-enhanced messages which are protected using
+   legitimate certificates.  Also note that any certificates generated
+   as a result of such a disclosure are readily traceable to the issuing
+   authority which holds this component, due to the non-repudiation
+   feature of the digital signature.  Thus if the Co-Issuer were to
+   disclose the private component of an organization for which it acts
+   in this role, the mere existence of certificates signed with this
+   private component (and verifiable with the organization's public
+   component) would provide non-repudiable evidence of the compromise.
+
+
+
+B.4  Organization Registration Procedures
+
+   Upon receipt of an Organizational Agreement together with a notarized
+   Organizational Notary information form, together with the appropriate
+   application fees, RSADSI will make such investigation of the
+   Organization as it deems necessary.  Upon completion of such
+   investigation, RSADSI shall either: (i) issue to organization a
+   Certificate and grant Organization status as an Issuing Authority or
+   (ii) reject Organization's application from such a Certificate.
+
+   RSADSI shall approve or disapprove the Organization Agreement within
+   fifteen business days after its receipt by RSADSI. RSADSI shall have
+   final approval of the Organization Agreement, but shall not
+   unreasonably deny such approval. Failure to provide accurate and
+   complete information shall be grounds for RSADSI to deny or
+   subsequently rescind the Certificate. Should RSADSI disapprove the
+   Organization Agreement, RSADSI shall notify the Organization of the
+   reason(s) for such disapproval, and where appropriate, permit the
+   Organization to submit revised/accurate information
+
+   Upon receipt of the Organization's Certificate from RSADSI, the
+   Organization shall verify that the registration process has been
+   successfully completed.  It is the Organiztion's responsibility to
+   verify the validity of the Certificate per this RFC.  The
+   Organization shall promptly notify RSADSI if the Certificate does not
+   appear authentic.  The Organization shall complete the validation
+
+
+
+Kent (BBN)                                                     [Page 39]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   process before using PEM.  The Organization shall not utilize an
+   expired, invalid or revoked Certificate.
+
+   The Organization shall promptly Notify RSADSI of any change in its
+   Issuing Authority's Distinguished Name or administrative information.
+   If the Distinguished name has changed, the Organization and its users
+   shall immediately cease originating PEM certified under the
+   Organization's Certificate.  Before resuming use of PEM, the
+   Organization must submit a new Organization Agreement, including
+   payment of a new application fee, and RSADSI must duly accept such
+   new application.  If only the administrative information has changed,
+   the Organization should notify RSADSI and the Organization may
+   continue communicating PEM.
+
+
+
+B.5  Organizational Notary Requirements and Responsibilities
+
+   An Organizational Notary information form shall be filled out by
+   every ON and submitted to RSADSI.  The Organizational Notary
+   information form shall list each Issuing Authority's distinguished
+   name that the ON is authorized to act on behalf of, the ON's
+   distinguished name, administrative information, a signature
+   authorizing the responsibilities of the ON and a notarized signature
+   attesting to the identity of the ON.
+
+   Each Certification Authority shall designate one or more
+   Organizational Notaries ("ONs") who, on behalf of the Organization,
+   shall provide ON services and shall verify User's identity and
+   Affiliation with the Organization.  The Organizational Notary plays a
+   pivotal role in ensuring the day-to-day integrity of Certificate
+   Generation services, and is the primary "gate-keeper" and human
+   contact with its User Community. Consequently, ON requirements have
+   critical impact.  This ON shall be registered with RSADSI as having
+   authorization to sign certificates for the Organization.
+
+   The Organization shall adopt reasonable procedures so that its ONs
+   accurately and properly perform all ON responsibilities. Each ON, at
+   a minimum: (i) is an employee (or general partner, proprietor, or
+   Organization official, if applicable) of the Organization; and (ii)
+   holds a position of trust in the Organization (such as a security
+   officer or a manager). The Organization may establish additional
+   criteria to further ensure the trustworthiness of ONs.
+
+
+
+
+Kent (BBN)                                                     [Page 40]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   An Organization must report any ON changes or additions in writing to
+   RSADSI.  All ONs should be registered with a notarized Organizational
+   Notary information form.
+
+   ONs shall verify and be responsible for User Certificate authenticity
+   and integrity. The ON shall also verify User Affiliation with the
+   Organization. ON responsibilities shall include:
+
+       i. verifying that all Certificate applicants submit a Certificate
+           application to the ON;
+
+       ii. taking reasonable steps to ensure the authenticity of
+           application information, e.g., by requiring the physical
+           presence of the applicant before the ON; or by the ON
+           initiating telephone contact with the applicant using a
+           telephone number listed in the application, after the ON
+           independently confirms the correspondence between the
+           applicant and the telephone number;
+
+       iii. maintaining a copy of all User Information submitted by each
+           applicant and a copy of each User Certificate issued by the
+           ON for at least three (3) years;
+
+       iv. acknowledging to the Organization that the ON has read and
+           understands the requirements and procedures referred to in
+           RFCs [1113-1115], [FORMS-A]; and
+
+       v. where the Organization does not undertake Certificate
+           Generation, submitting to the Co-Issuer a Certificate Request
+           as defined by RFC [FORMS-A].
+
+   Step ii is not applicable for PERSONA certificates and should be
+   interpreted appropriately for certificates issued to organizational
+   roles and for mailing lists.  In the case of PERSONA certificates,
+   step iii need not imply retention of any information which directly
+   identifies a user, though provisions should be made to allow the
+   holder of a PERSONA certificate to unambiguously inform the ON of a
+   compromise of a private component.
+
+   No ON shall provide public key Certificate management services unless
+   its Organization holds a valid Organization License.
+
+
+
+
+
+
+Kent (BBN)                                                     [Page 41]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+B.6  Certificate Revocation List Management
+
+   Certificate-based key distribution requires the use of Certificate
+   Revocation Lists ("CRLs") to provide timely information about, and to
+   ensure the integrity of, revoked Certificates due either to Private
+   Component compromise, or changes in User or Certification Authority
+   Identification Information.
+
+   The Organization shall verify CRL integrity, timeliness, and
+   reasonable security as follows:
+
+
+
+B.6.1  Co-Issuer Scenario
+
+   a. Scheduled Prototype CRLs - The Organization shall Notify the Co-
+   Issuer Vendor of the serial numbers of User Certificates within its
+   User Community to be included in a new CRL one (1) business day prior
+   to the next regularly scheduled date for CRL issuance, even if there
+   are no changes in the CRL entries. The Prototype CRL must be
+   communicated to the Co-Issuer "one business day prior to the next
+   regularly scheduled date for CRL issuance" to provide the Co-Issuer
+   with adequate opportunity to process the serial numbers and include
+   them on a CRL issued by Co-Issuer (on behalf of the Organization). To
+   ensure that the Prototype CRL is as up-to-date as possible, the
+   Organization must not send the Prototype CRL to Co-Issuer more than
+   one business day prior to the next regularly scheduled date for CRL
+   issuance.  The Organization shall issue a regularly scheduled
+   Prototype CRL no more frequently than weekly and no less frequently
+   than monthly.
+
+   b. Unscheduled Prototype CRLs - The Organization shall issue a
+   Prototype CRL more frequently, in case of an actual or perceived
+   security compromise, change(s) in User or Certification Authority
+   Distinguished Name, or upon discovering a material mistake in a
+   current CRL (collectively a "Change or Mistake").  However, the
+   Organization need not generally issue a Prototype CRL to initiate an
+   unscheduled CRL where the Organization learns of the Change or
+   Mistake within two (2) business days preceding the next regularly
+   scheduled CRL.
+
+
+
+
+
+
+
+Kent (BBN)                                                     [Page 42]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+B.6.2  CSU Scenario
+
+   a. Scheduled CRLs - The Organization shall issue a new CRL one (1)
+   business day prior to the next regularly scheduled date for CRL
+   issuance, even if there are no changes in the CRL entries. The
+   Organization shall issue a regularly scheduled CRL no more frequently
+   than weekly and no less frequently than monthly.
+
+   b. Unscheduled CRLs - The Organization shall issue a CRL more
+   frequently, in case of an actual or perceived security compromise,
+   change(s) in User or Issuing Authority Distinguished Name, or upon
+   discovering a material mistake in a current CRL. However, the
+   Organization need not generally issue an unscheduled CRL where the
+   Organization learns of the Change or Mistake within two (2) business
+   days preceding the next regularly scheduled CRL.
+
+   If the Organization fails to issue a new CRL as required, then RSADSI
+   may thereafter issue a new CRL revoking the Organization's
+   Certificate (i) after Notice by RSADSI to the Organization
+   (communicating the Organization's failure to issue a timely CRL), and
+   (ii) where the Organization then fails to promptly issue the new CRL.
+
+   Where the Organization generates Certificates, it shall retain a copy
+   of all CRLs which it issues for at least three (3) years following
+   their issuance.  Where the Organization does not generates
+   Certificates, it shall retain a copy of all Prototype CRLs which it
+   issues for at least three (3) years following their issuance. The
+   Co-Issuer vendor shall retain a copy of all CRLs which it issues, for
+   at least three (3) years following their issuance. CRLs may be
+   communicated and shared between the Co-Issuer vendor and any
+   Organization or User of PEM.
+
+   The requirement to maintain all Prototype CRLs and CRLs for a period
+   of at least three (3) years is intended to ensure available proof in
+   the event of a transactional dispute. The required information may be
+   maintained in paper or electronic form, or both. The default
+   retention period of "at least three (3) years" is consistent with
+   many government records retention requirements, and some commercial
+   practices.  Notwithstanding, the actual retention period should
+   reflect the nature of the planned PEM transactions, available storage
+   media, storage costs, risk analysis, retention strategies and any
+   specific legal retention periods and statute of limitations for such
+   information.
+
+
+
+
+Kent (BBN)                                                     [Page 43]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+B.7  Certificate Generation
+
+B.7.1  CSU Scenario
+
+   The CSU vendor shall initialize the CSU prior to its installation in
+   the Organization. The Organization shall install and maintain the CSU
+   at a registered location listed with the CSU vendor, and in
+   accordance with CSU installation and operating instructions. The
+   Organization shall take reasonable efforts to ensure the security of
+   the CSU, and shall promptly notify the CSU vendor should the CSU
+   become misplaced, stolen, tampered with, damaged or destroyed. The
+   CSU vendor or RSADSI may inspect the CSU, upon giving reasonable
+   Notice to the Organization.
+
+   The CSU will generally be loaded with cryptosystem keys by the CSU
+   vendor prior to installation. The CSU vendor shall initialize the CSU
+   using the CSU Private Component, CSU Secret Key and RSADSI Public
+   Component. The CSU must be kept at the building and address listed
+   with the CSU vendor, but may be moved within such building without
+   notifying the vendor, except when the vendor or RSADSI notifies the
+   Organization of its intention to inspect the CSU. The CSU vendor's or
+   RSADSI's right to inspect the CSU is necessary to ensure the
+   integrity of the Certificate Generation process (confirmation of the
+   CSU's tamper resistance is undertaken by visual observation), to
+   periodically test or update its circuitry or software, and where the
+   CSU is leased, to verify compliance with the provisions of the
+   applicable lease.
+
+   Where multiple CSUs are used by the Organization, each CSU will be
+   uniquely identifiable by a device serial number. CSU installation and
+   operation are further specified in the CSU installation and operation
+   instructions, and should be thoroughly reviewed prior to commencing
+   operation.
+
+
+
+B.7.2  Co-Issuer Scenario
+
+   Where the Organization does not undertake Certificate Generation, a
+   Co-Issuer vendor shall act as an agent on behalf of the Organization
+   so that the Organization substantially appears to be the issuer with
+   regard to Certificate formats and validation procedures. The
+   Organization shall not independently generate Certificates or CRLs.
+   The Co-Issuer vendor shall generate and retain exclusively the
+
+
+
+Kent (BBN)                                                     [Page 44]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+   Organization's Private Component to Sign Certificates on behalf of
+   the Organization.
+
+   A Co-Issuer vendor may generate a Certificate for a User where: Co-
+   Issuer vendor has received a PEM message from the Organization's ON
+   authorizing the issuance of a User Certificate.  The Co-Issuer vendor
+   may rely exclusively upon the accuracy and propriety of the
+   Organization's PEM instructions to generate a User Certificate
+   without additional scrutiny.
+
+   This is the case where the Organization does not use a CSU. Instead,
+   the Organization submits authenticated Certificate authorizations on
+   behalf of its User Community to the Co-Issuer vendor.  The Co-Issuer
+   vendor thereafter issues Certificates Signed by the Organization's
+   Private Key. The Organization should implement sufficient controls to
+   ensure that only intended Certificate authorizations are communicated
+   to the Co-Issuer vendor.
+
+   Additional issues may arise from the Co-Issuer vendor's retention of
+   the Organization's Private Component. The following section imposes
+   on the Co-Issuer vendor considerable obligations to Notify the
+   Organization in the unlikely event of a mistaken or wrongful
+   disclosure of such Private Component. These obligations are intended
+   to ensure (i) speedy, accurate and provable Notification to the
+   Organization of the disclosure, and (ii) facilitation of CRL issuance
+   to the Organization, and it's User Community.
+
+   The Co-Issuer vendor shall take reasonable efforts not to mistakenly
+   or wrongfully disclose the Organization's Private Component,
+   including to the Organization ("Compromise"). If the Private
+   Component of the Organization is Compromised by Co-Issuer vendor, or
+   if the Co-Issuer vendor has reason to believe that there may have
+   been a disclosure by the Co-Issuer vendor, the Co-Issuer vendor shall
+   use reasonable efforts to Notify promptly the Organization of the
+   relevant facts by:
+
+     a. sending PEM to the Organization;
+
+     b. telephoning at least one of its ONs;
+
+     c. sending the Organization via U.S.P.S. Certified Mail, return
+     receipt requested; and
+
+     d. distributing a corresponding CRL to the Organization, to its
+
+
+
+Kent (BBN)                                                     [Page 45]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+     User Community, and to a widely-accessible network information
+     center.
+
+Upon the Organization's request following a Private Component Compromise
+by the Co-Issuer vendor, the Co-Issuer vendor shall (i) within one (1)
+business day, generate and communicate a new Certificate for the
+Organization containing a new Public Component, (ii) promptly Sign and
+reissue all current Certificates previously issued under the old
+compromised Private Component, (iii) bear (with respect to the
+Organization) all reasonable direct costs to reregister the User
+Community with the Certification Authority, and (iv) Notify the
+Organization of the cause of the Compromise, if known, and any remedial
+actions intended to mitigate the possibility of a future Compromise,
+provided such disclosure by the Co-Issuer vendor to the Organization
+does not itself threaten or potentially threaten PEM security. The Co-
+Issuer vendor shall not otherwise be liable for a Private Component
+Compromise.
+
+In the unlikely event that the Co-Issuer vendor mistakenly or wrongfully
+discloses the Organization's Private Component, then upon request from
+the Organization, the Co-Issuer vendor shall provide the Organization
+with a new Organization Certificate, and/or reregister the
+Organization's User Community without additional fee.
+
+
+
+B.8  Security and Confidentiality
+
+Security is an essential component of public key Certification
+procedures.  The Organization and vendors shall employ Reasonable
+Security procedures to safeguard key generation, communication, and
+storage.  These procedures should include, at a minimum, safe storage of
+the CSU when not in use and delegation of the cryptographic ignition
+keys and fill device such that at least two individuals are needed to
+issue certificates using an Organization's key.  Additional procedures
+could, for example, require the use of special access control devices,
+supplemental hardware, additional use of codes or secrets, physical
+procedures, and supplemental documentation.
+
+All vendors and Organizations shall make reasonable efforts to ensure
+the integrity and confidentiality of information it receives, holds or
+transfers in conjunction with its responsibilities under this this RFC,
+by means adequately reliable and secure in both its computing and
+communications environments.
+
+
+
+Kent (BBN)                                                     [Page 46]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+Information furnished by either party to the other to facilitate
+performance that is labelled "COMPANY PRIVATE/CONFIDENTIAL" or other
+agreed-upon indication of its confidential status, with the exception of
+information previously disclosed to the public, shall be considered
+confidential and shall neither be used for competitive purposes nor
+disclosed to third parties by the recipient, except to the limited
+extent that such information: (i) was in possession of or known to the
+recipient prior to the disclosure thereof; (ii) is or becomes public
+knowledge by means other than a breach of confidentiality by the
+recipient; (iii) is thereafter received by the recipient from a third
+party who did not require the recipient to keep it in confidence; (iv)
+is developed by the recipient independently of any disclosure; (v) is
+not identified as material considered "COMPANY PRIVATE/CONFIDENTIAL" at
+the time it is provided; or (vi) is required by an appropriate
+governmental, regulatory or judicial authority to be disclosed to such
+authority.  Such confidential information shall not be unnecessarily
+communicated within the Organization's or vendor's respective
+operations. Each party shall Notify each employee, agent or person to
+whom any such disclosure is made in confidence, that such confidential
+information shall be kept in confidence (by such employee, agent or
+person).
+
+
+
+B.9  Reporting Requirements
+
+The Organization's responsibility to provide "bug" and flaw reports
+("Reports") to vendors will help the vendors provide quality service and
+information to the Organization and the Internet Community.  Reports
+generally will concern (i) the PEM and key management process; or (ii)
+the CSU, where the Organization has purchased or leased a CSU.  Reports
+should generally include the following information:
+
+     a. Organization Name (Organization Submitting the Report);
+
+     b. Name, Street and Email Address, and Phone (of Person(s)
+     Submitting the Report);
+
+     c. Description of the Bug or Flaw; and
+
+     d. Other Information (Which the Organization Determines is Helpful
+     to Identify the Bug or Flaw, and its Resolution).
+
+
+
+
+
+Kent (BBN)                                                     [Page 47]
+
+
+
+
+
+
+
+
+Internet Draft      Certificate-Based Key Management       June 28, 1991
+
+
+
+The Organization should encourage its staff to document PEM
+certification problems and possible solutions, and to regularly
+communicate them to the vendors.  Reports can be communicated to the
+vendors in any form in which Notice is permissible.
+
+The vendors shall make reasonable efforts to communicate to the
+Organization relevant and appropriate Report information received from
+other organizations. However, the identity of an organization submitting
+a Report will be kept confidential, whenever properly marked "COMPANY
+PRIVATE/CONFIDENTIAL"
+
+
+
+C  References
+
+CCITT Recommendation X.411 (1988), "Message Handling Systems: Message
+Transfer System: Abstract Service Definition and Procedures".
+
+[1] CCITT Recommendation X.509 (1988), "The Directory - Authentication
+Framework".
+
+[2] CCITT Recommendation X.520 (1988), "The Directory - Selected
+Attribute Types".  CCITT
+
+[3] NIST Special Publication 500-183, "Stable Agreements for Open
+Systems Interconnection Protocols," Version 4, Edition 1, December 1990.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kent (BBN)                                                     [Page 48]
+
+
+
