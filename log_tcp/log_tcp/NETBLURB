@@ -1,0 +1,41 @@
+From comp.sources.misc Sun Oct 20 00:18:26 1991
+Path: svin02!tuegate.tue.nl!hp4nl!mcsun!unido!fauern!Sirius.dfn.de!darwin.sura.net!gatech!swrinde!cs.utexas.edu!uunet!sparky!kent
+From: wietse@wzv.win.tue.nl (Wietse Venema)
+Newsgroups: comp.sources.misc
+Subject: v23i077:  log_tcp - Package to monitor TCP/UDP connections, Part01/01
+Keywords: security,log_tcp,frontd
+Message-ID: <1991Oct19.025711.14716@sparky.imd.sterling.com>
+Date: 19 Oct 91 02:57:11 GMT
+Sender: kent@sparky.imd.sterling.com (Kent Landfield)
+Followup-To: comp.sources.d
+Organization: Eindhoven University of Technology, The Netherlands
+Lines: 1608
+Approved: kent@sparky.imd.sterling.com
+X-Md4-Signature: d79ef38346de3a9405025bac38985df4
+
+Submitted-by: wietse@wzv.win.tue.nl (Wietse Venema)
+Posting-number: Volume 23, Issue 77
+Archive-name: log_tcp/part01
+Environment: UNIX
+Supersedes: log_tcp: Volume 20, Issue 8
+
+This package provides a couple of tiny programs that log requests for
+internet services (examples: TFTP, EXEC, FTP, RSH, TELNET, RLOGIN,
+FINGER, SYSTAT). Optional features are: access control based on pattern
+matching, and protection against rsh and rlogin attacks from hosts that
+pretend to have someone elses host name.
+
+The programs are nothing but small network daemon front ends. By
+default, they just log the remote host name and then invoke the real
+network daemon daemon, without requiring any changes to existing
+software or configuration files.
+
+Enhancements over the previous release are: support for datagram (UDP
+and RPC) services, and execution of shell commands when a (remote host,
+requested service) pair matches a pattern in the access control tables.
+
+	Wietse Venema (wietse@wzv.win.tue.nl),
+	Eindhoven University of Technology,
+	The Netherlands.
+---
+

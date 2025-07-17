@@ -1,0 +1,170 @@
+@(#) README 1.6 91/10/04 21:28:09
+
+General description
+-------------------
+
+With this package you can monitor connections to the SYSTAT, FINGER,
+FTP, TELNET, RLOGIN, RSH, EXEC, TFTP, old and new TALK, and other IP
+network services.  Connections are reported through the syslog daemon.
+Requirements are that network daemons are started by the inetd program
+or something similar, and the availability of a syslog(3) library.
+
+The programs are tiny front ends. By default, they just report the name
+of the remote host and of the requested service, and then invoke the
+real network daemon; no information is exchanged with the remote client
+process. In the most common case, no changes should be required to
+existing software or to existing configuration files.  Just move the
+vendor-provided daemons to another place and install the front ends
+into their original places.  Installation details are given below.
+
+Early versions of the programs were tested with Ultrix >= 2.2, with
+SunOS >= 3.4 and ISC 2.2. Later versions have been installed on a wide
+variety of platforms (BSD-style, SYSV-style, Apollo's idea of UNIX).
+
+The present release was tested with SunOS 4.1.1, Ultrix 4.1 and Apollo
+SR10.3.5, but it should still run without modification on top of most
+BSD-style TCP/IP implementations.
+
+Restriction
+-----------
+
+Some UDP (and RPC) daemons linger around for a while after they have
+finished their work, just in case another request comes in.  Only the
+request that started such a daemon will be logged. This restriction
+does normally not apply to connection-oriented (TCP) services.
+
+Access control
+--------------
+
+When compiled with -DHOSTS_ACCESS, the front-end programs support a
+simple form of access control that is based on pattern matching.  The
+access-control software provides hooks for the execution of shell
+commands when a pattern fires.  For details, see the hosts_access(5)
+manual page.
+
+Detection of hosts that pretend to have someone elses host name
+---------------------------------------------------------------
+
+Authentication based on host names, such as used by RLOGIN and RSH,
+used to work quite reliably when all host name lookups were done from
+the local /etc/hosts file or its equivalent.
+
+With _distributed_ name services, authentication schemes that rely on
+host names can be subverted by playing games with the address->name
+maps that are maintained by some far-away name server.  Many rshd and
+rlogind implementations still blindly believe the remote host name that
+they get from gethostbyaddr() and don't bother to check if that host
+name really belongs to the system that they are talking to.
+
+The front-end programs verify the remote host name that was returned by
+the name server responsible for the address->name mapping, by looking
+at the host address that is returned by the name server responsible for
+the name->address mapping of that host name. If the latter address does
+not match the original host address, the front ends conclude that they
+are dealing with a host that pretends to have someone elses host name.
+
+If the sources are compiled with -DPARANOID, the front ends will drop
+the connection in case of a host name/address mismatch. Otherwise, the
+front ends just ignore the bad host name and use the host address when
+consulting the access control tables.
+
+Related software
+----------------
+
+Versions of rshd and rlogind, hacked to report the remote user name,
+are available for anonymous ftp (ftp.win.tue.nl:/pub/logdaemon.tar.Z).
+These programs are derived from BSD source; they have been tested only
+with SunOS >= 4.0.
+
+Another way to manage access to tcp/ip services is illustrated by the
+servers provided with the authutil package (comp.sources.unix volume
+22). This has the advantage that one will get the remote username from
+any host supporting RFC 931 security.  By installing the auth package
+(same volume) one supports RFC 931 security too (but you will have to
+believe what the remote host tells you).  Eventually one can start
+cutting off unauthenticated connections. This is obviously a much more
+advanced approach than what my front-end programs provide. The present
+package is more suitable for those who lack the resources to install
+anything that requires more than just renaming a couple of executables.
+
+Configuration and installation (the easy way)
+---------------------------------------------
+
+An advanced installation recipe is given lateron. The "easy way" recipe
+requires no changes to existing software or configuration files.
+
+If you don't run Ultrix, you don't need the miscd front-end program.
+The Ultrix miscd daemon implements among others the SYSTAT service,
+which pipes the output from the WHO command to standard output.
+
+By default, the front-end programs assume that the vendor-provided
+daemons will be moved to the "/usr/etc/..." directory.  If you want
+something else, adjust the REAL_DAEMON and the REAL_DAEMON_DIR macros
+in the files miscd.c and tcpd.c.
+
+Follow the instructions at the beginning of the Makefile and compile
+the programs. The result is three binaries. The `try' program can be
+used to play with host access control tables. The tcpd and miscd
+programs are the actual front end programs.
+
+The tcpd program can be used for monitoring requests for the telnet,
+finger, ftp, exec, rsh, rlogin, tftp, talk, spray, rusers, comsat and
+other services that have a one-to-one mapping onto executable files.
+
+Decide which services you want to be monitored. Move the corresponding
+vendor-provided daemon programs to the location specified by the
+REAL_DAEMON_DIR macro in the file tcpd.c, and copy the tcpd front end
+to the locations where the vendor-provided daemons used to be. That is,
+one copy of (or link to) the tcpd program for each service that you
+want to monitor.
+
+Ultrix only: if you want to monitor connections to the SYSTAT service,
+move the vendor-provided miscd daemon to the location specified by the
+REAL_DAEMON macro in the miscd.c file, and install the miscd front end
+into the original miscd location.
+
+Configuration and installation (the advanced way)
+-------------------------------------------------
+
+Instead of moving the vendor-provided daemons to another directory,
+define the REAL_DAEMON_DIR to reflect the present location of those
+daemons, and install the tcpd command in the same directory (Apollo
+UNIX users will want to install the front end under a different name
+because tcpd is the name of an already existing command. A suitable
+name for the front-end program would be "frontd"). Then perform the
+following edits on the inetd configuration file (usually located in
+/etc/inetd.conf):
+
+    finger  stream  tcp     nowait  nobody  /usr/etc/in.fingerd     in.fingerd
+
+becomes:
+
+    finger  stream  tcp     nowait  nobody  /usr/etc/tcpd           in.fingerd
+
+(the example applies to SunOS 4.x; other UNIX implementations should
+not differ much). Similar changes will be needed for the other services
+that are to be covered by the tcpd (or frontd) front-end program. Send
+a SIGHUP to the inetd process to make the changes effective.
+
+The same trick can be played with the Ultrix miscd daemon but then
+either the miscd daemon front end or the real miscd daemon will have to
+be given a different name.
+
+Acknowledgements
+----------------
+
+Thanks to Brendan Kehoe (brendan@cs.widener.edu), Heimir Sverrisson
+(heimir@hafro.is) and Dan Bernstein (brnstnd@kramden.acf.nyu.edu) for
+feedback on an early release of this product.  The host name/address
+check was suggested by John Kimball (jkimball@src.honeywell.com).
+Willem-Jan Withagen (wjw@eb.ele.tue.nl), Pieter Schoenmakers
+(tiggr@es.ele.tue.nl) and Charles S. Fuller (fuller@wccs.psc.edu)
+provided help on dealing with with Apollo's UNIX environment.  Hal R.
+Brand (BRAND@addvax.llnl.gov) told me how to get the remote IP address
+in case of datagram-oriented services, and suggested the optional shell
+command feature.
+
+	Wietse Venema (wietse@wzv.win.tue.nl),
+	Mathematics and Computing Science,
+	Eindhoven University of Technology,
+	The Netherlands.

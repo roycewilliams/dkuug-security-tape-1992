@@ -1,0 +1,164 @@
+.TH HOSTS_ACCESS 5
+.ad
+.fi
+.SH NAME
+hosts_access \- host access control files
+.SH DESCRIPTION
+.ad
+.fi
+This manual page describes a simple, but effective, access control
+facility that is based on host (or domain) names, netgroups, internet
+addresses (or network numbers) and on network daemon process names.
+.PP
+In the following text, \fIdaemon\fP is the the process name (argv[0]
+value) of a network daemon process, and \fIclient\fP is the name of
+a remote host (or its internet address if the name is not available).
+.IP o
+Access will be granted when a (daemon,client) pair is matched by an
+entry in the \fI/etc/hosts.allow\fP file.
+.IP o
+If the previous test fails (perhaps because the \fIhosts.allow\fP file
+does not exist), access will be denied when a (daemon,client) pair is
+matched by an entry in the \fI/etc/hosts.deny\fP file.
+.IP o
+If the previous test fails (perhaps because the \fIhosts.deny\fP file
+does not exist), access will be granted.
+.PP
+A non-existing access control file is treated as if it were an empty
+file. Thus, access control can be turned off by providing no access
+control files.
+.PP
+The format of the access control files is as follows.
+.IP o
+Lines that begin with a `#\' character are ignored.
+.IP o
+Other lines should have the format (things between [] are optional):
+.sp
+.ti +3
+daemon_list : client_list [ : shell_command ]
+.PP
+\fIdaemon_list\fP is a list of one or more daemon process names
+(argv[0] values).  \fIclient_list\fP is a list of one or more host
+names, domain names, netgroups, internet addresses or internet network
+numbers.  List elements should be separated by blanks and/or commas.
+With the exception of netgroup lookups, all access control lookups are
+case insensitive.
+.PP
+Client_list fields that specify a domain name should begin with a
+`.\' character (see example below). Internet \fInetwork\fP numbers (as
+opposed to internet \fIhost\fP numbers) should be terminated with a `.\'
+character. A netgroup name should begin with the `@\' character.
+Netgroups are usually supported on systems with NIS (formerly YP)
+data bases.
+.PP
+Special meaning is given to the magic token \fIALL\fP.  If it appears
+in a daemon_list, this token matches all network daemon process
+names.  If the magic token appears in a client_list, it matches
+all clients.  Another token that receives special treatment is
+\fILOCAL\fP. If it appears in a daemon_list or client_list,
+it matches any string that does not contain a dot character.
+.PP
+The optional \fIshell_command\fP is executed if the table entry is the
+first one that matches the (daemon,client) pair. The format is: one or
+more statements separated by a `;\' character. Prior to execution,
+the following substitutions are done on the shell_command:
+.TP
+%h
+is replaced by the remote host name
+(or address, if the host name is not available).
+.TP
+%d
+is replaced by the daemon process name (argv[0] value).
+.TP
+%p
+is replaced by the daemon process id.
+.TP
+%%
+is replaced by a single `%\' character.
+.PP
+The resulting command is given to \fI/bin/sh\fP, with standard input,
+output and error connected to \fI/dev/null\fP.  Specify an `&\' at the
+end of the command if you do not want to wait until it has completed.
+.PP
+Shell_commands should not rely on the PATH setting of the inetd.
+Instead, they should use absolute path names, or they should begin with
+an explicit PATH=whatever statement.
+.SH EXAMPLES
+The following example restricts all services to hosts within the local
+domain (no `.\' character in the host name), all hosts below 
+the \fI.some.domain\fP, and all hosts in the \fIthatgroup\fP netgroup:
+.PP
+/etc/hosts.allow: 
+.in +3
+ALL: LOCAL, .some.domain, @thatgroup
+.PP
+/etc/hosts.deny: 
+.in +3
+ALL: ALL
+.PP
+In order to deny some hosts all services, except ftp:
+.PP
+/etc/hosts.allow: 
+.in +3
+in.ftpd: ALL
+.PP
+/etc/hosts.deny: 
+.in +3
+ALL: some.host.name, .some.domain
+.PP
+The following example implements a backfinger facility that is
+triggered when someone invokes your tftp service from a host outside the
+local domain:
+.PP
+/etc/hosts.allow:
+.in +3
+.nf
+in.tftpd: LOCAL, .my.domain
+.PP
+/etc/hosts.deny:
+.in +3
+.nf
+in.tftpd: ALL: (/bin/date; /usr/ucb/finger -l @%h) >>/var/adm/%d.log &
+.fi
+.PP
+If your tftp daemon is run under a uid other than root (strongly
+recommended), the /var/adm/whatever.log file should be writable for
+that uid. Watch out for infinite backfinger loops!
+.SH DIAGNOSTICS
+.ad
+.fi
+An error is reported when a syntax error is found in a host access
+control file; when the length of an entry in a host access control file
+exceeds the STDIO buffer size; when the result of %<character>
+expansion would overflow an internal buffer; when a system call fails
+that shouldn\'t.
+.SH FILES
+.na
+.nf
+/etc/hosts.allow, (daemon,client) pairs that are granted access.
+/etc/hosts.deny, (daemon,client) pairs that are denied access.
+.SH BUGS
+.ad
+.fi
+If there are problems with a name server, the access control software
+will use a host\'s address instead of its name.  A workaround is to
+also list internet addresses and network numbers in the access-control
+files.
+.PP
+Domain name server lookups are case insensitive; NIS (formerly YP)
+netgroup lookups are case sensitive.
+.PP
+Some UDP (and RPC) daemons linger around for a while after they have
+finished their work, just in case another request comes in (in the
+inetd configuration file, these daemons are registered with the `wait\'
+option).  In such cases, access control will apply only to the request
+that started such a daemon. This restriction usually does not apply to
+connection-oriented (TCP) services.
+.SH AUTHOR
+.na
+.nf
+Wietse Venema
+Eindhoven University of Technology
+Department of Mathematics and Computer Science
+Den Dolech 2, P.O. Box 513, 5600 MB Eindhoven, The Netherlands
+\" @(#) hosts_access.5 1.8 91/10/02 23:02:00
